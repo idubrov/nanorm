@@ -48,8 +48,6 @@ public class FactoryImpl implements Factory {
 
     final private Configuration config;
     
-    final private static ResultGetterSetter RESULT_GETTER_SETTER = new ResultGetterSetter();
-    
     /**
      * 
      */
@@ -77,7 +75,7 @@ public class FactoryImpl implements Factory {
         Request request = new Request();
         
         // Statement fragment
-        Statement fragment = config.getStatementBuilder().generateStatement(args);
+        BoundFragment fragment = config.getStatementBuilder().bindParameters(args);
         
         // SQL, parameters and their types
         StringBuilder sql = new StringBuilder();
@@ -94,8 +92,9 @@ public class FactoryImpl implements Factory {
             ResultSet rs = st.executeQuery();
         
             // Prepare result callback and process results
+            ResultGetterSetter rgs = new ResultGetterSetter();
             ResultCallbackSource callbackSource = ResultCollectorUtil.createResultCallback(
-                    config.getResultType(), RESULT_GETTER_SETTER, RESULT_GETTER_SETTER);
+                    config.getResultType(), rgs, rgs);
             ResultCallback callback = callbackSource.forInstance(request);            
             ResultMap resultMapper = config.getResultMapper();
             while(rs.next()) {
@@ -143,6 +142,14 @@ public class FactoryImpl implements Factory {
     }
     
     private static class ResultGetterSetter implements Getter, Setter {
+        /**
+         * {@inheritDoc}
+         */
+        public Type getType() {
+            // TODO: Implement somehow!
+            return null;
+        }
+        
         /**
          * @see com.google.code.nanorm.internal.introspect.Getter#getValue(java.lang.Object[])
          */

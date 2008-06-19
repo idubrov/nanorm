@@ -24,30 +24,21 @@ import com.google.code.nanorm.SQLSource;
  * @author Ivan Dubrov
  * @version 1.0 29.05.2008
  */
-public class DynamicStatementBuilder implements StatementBuilder {
+public class DynamicFragment implements Fragment {
     
     final private Class<? extends SQLSource> statementClass;
     
     /**
      * 
      */
-    public DynamicStatementBuilder(Class<? extends SQLSource> statementClass) {
+    public DynamicFragment(Class<? extends SQLSource> statementClass) {
         this.statementClass = statementClass;
     }
 
     /**
-     * @see com.google.code.nanorm.internal.StatementBuilder#generateStatement(java.lang.Object[])
+     * @see com.google.code.nanorm.internal.Fragment#bindParameters(java.lang.Object[])
      */
-    public Statement generateStatement(Object[] parameters) {
-        Class<?>[] types = new Class<?>[parameters.length];
-        // TODO: Support for primitive types
-        for(int i = 0; i < parameters.length; ++i) {
-            if(parameters[i] == null) {
-                types[i] = Void.class;
-            } else {
-                types[i] = parameters[i].getClass();
-            }
-        }
+    public BoundFragment bindParameters(Object[] parameters) {
         try {
             for(Method method : statementClass.getMethods()) {
                 if(method.getName().equals("sql")) {

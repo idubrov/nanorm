@@ -15,6 +15,8 @@
  */
 package com.google.code.nanorm.internal.introspect;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -26,20 +28,56 @@ import org.apache.commons.beanutils.PropertyUtils;
  */
 public class BeanUtilsGetter implements Getter {
 
-    final private String path;
+    final private String property;
+    
+    final private Class<?> clazz;
 
     /**
      * 
      */
-    public BeanUtilsGetter(String path) {
-        this.path = path;
+    public BeanUtilsGetter(Class<?> clazz, String path) {
+        this.clazz = clazz;
+        this.property = path;
     }
     
     public Object getValue(Object instance) {
         try {
-            return PropertyUtils.getNestedProperty(instance, path);
+            return PropertyUtils.getNestedProperty(instance, property);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Type getType() {
+        String[] paths = property.split("\\.");
+
+        Type type = clazz;
+        for(int i = 0; i < paths.length; ++i) {
+            // TODO: Move this to factory
+            // TODO: This actually should be that way... need to write test on it.
+            //Class<?> clazz = ResultCollectorUtil.resultClass(type);
+            Class<?> clazz = (Class<?>) type;
+            type = findPropertyType(clazz, paths[i]);
+        }
+        return type;
+    }
+    
+    private Type findPropertyType(Class<?> bean, String property) {
+        PropertyDescriptor[] descriptors = PropertyUtils.getPropertyDescriptors(bean);
+        for(PropertyDescriptor desc : descriptors) {
+            if(desc.getName().equals(property)) {
+                // TODO: Check read method the same way it is done in getPropertyType!
+                Type type = desc.getReadMethod().getGenericReturnType();
+                if(type instanceof ParameterizedType) {
+                    return type;
+                } else {
+                    return desc.getPropertyType();
+                }
+            }
+        }
+        throw new RuntimeException("NO PROPERTY FOUND!");
     }
 }

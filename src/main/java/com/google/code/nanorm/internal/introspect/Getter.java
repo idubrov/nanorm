@@ -24,4 +24,6 @@ import java.lang.reflect.Type;
  */
 public interface Getter {
     Object getValue(Object instance);
+    
+    Type getType();
 }

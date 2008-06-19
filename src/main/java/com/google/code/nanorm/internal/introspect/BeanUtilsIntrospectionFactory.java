@@ -15,12 +15,8 @@
  */
 package com.google.code.nanorm.internal.introspect;
 
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-
-import org.apache.commons.beanutils.PropertyUtils;
 
 /**
  *
@@ -33,7 +29,7 @@ public class BeanUtilsIntrospectionFactory implements IntrospectionFactory {
      * @see com.google.code.nanorm.internal.introspect.IntrospectionFactory#buildGetter(java.lang.Class, java.lang.String)
      */
     public Getter buildGetter(Class<?> beanClass, String path) {
-        return new BeanUtilsGetter(path);
+        return new BeanUtilsGetter(beanClass, path);
     }
 
     /**
@@ -43,41 +39,18 @@ public class BeanUtilsIntrospectionFactory implements IntrospectionFactory {
         return new BeanUtilsSetter(path);
     }
     
+    // TODO: Remove this method!
     public Type getPropertyType(Class<?> bean, String property) {
-        String[] path = property.split("\\.");
-
-        Type type = bean;
-        for(int i = 0; i < path.length; ++i) {
-            // TODO: Move this to factory
-            // TODO: This actually should be that way... need to write test on it.
-            //Class<?> clazz = ResultCollectorUtil.resultClass(type);
-            Class<?> clazz = (Class<?>) type;
-            type = findPropertyType(clazz, path[i]);
-        }
-        return type;
+        return buildGetter(bean, property).getType();
     }
     
-    protected Type findPropertyType(Class<?> bean, String property) {
-        PropertyDescriptor[] descriptors = PropertyUtils.getPropertyDescriptors(bean);
-        for(PropertyDescriptor desc : descriptors) {
-            if(desc.getName().equals(property)) {
-                // TODO: Check read method the same way it is done in getPropertyType!
-                Type type = desc.getReadMethod().getGenericReturnType();
-                if(type instanceof ParameterizedType) {
-                    return type;
-                } else {
-                    return desc.getPropertyType();
-                }
-            }
-        }
-        throw new RuntimeException("NO PROPERTY FOUND!");
-    }
+   
 
     /**
      * @see com.google.code.nanorm.internal.introspect.IntrospectionFactory#buildParameterGetter(java.lang.String)
      */
-    public Getter buildParameterGetter(String path) {
-        return new ParameterGetter(this, path);
+    public Getter buildParameterGetter(Type[] types, String path) {
+        return new ParameterGetter(this, types, path);
     }
 
     /**
@@ -91,27 +64,8 @@ public class BeanUtilsIntrospectionFactory implements IntrospectionFactory {
      * {@inheritDoc}
      */
     public Type getParameterType(Type[] types, String path) {
-        // TODO: Copy paste!!!!!!!!
-        int pos = path.indexOf('.');
-        if (pos == -1) {
-            pos = path.length();
-        }
-        String context = path.substring(0, pos);
+        return buildParameterGetter(types, path).getType();
 
-        int parameter;
-        if (context.equals("value")) {
-            parameter = 0;
-        } else {
-            parameter = Integer.parseInt(context) - 1;
-        }
-        Type type = types[parameter];
-        
-        if(pos == path.length()) {
-            return type;
-        }
-        String subpath = path.substring(pos + 1);
-        // TODO: Cast!!!!!
-        return getPropertyType((Class<?>) type, subpath);
     }
 
 }

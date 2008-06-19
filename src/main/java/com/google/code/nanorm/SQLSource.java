@@ -20,21 +20,21 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.code.nanorm.internal.Statement;
-import com.google.code.nanorm.internal.TextStatement;
+import com.google.code.nanorm.internal.BoundFragment;
+import com.google.code.nanorm.internal.TextFragment;
 
-public class SQLSource implements Statement
+public class SQLSource implements BoundFragment
 {
-    private List<List<Statement>> stack = new ArrayList<List<Statement>>();
+    private List<List<BoundFragment>> stack = new ArrayList<List<BoundFragment>>();
     
-    public static class Join implements Statement {
+    public static class Join implements BoundFragment {
         private String open;
         
         private String close;
         
         private String with;
         
-        private List<List<Statement>> clauses = new ArrayList<List<Statement>>();
+        private List<List<BoundFragment>> clauses = new ArrayList<List<BoundFragment>>();
         
         public Join open(String open) {
             this.open = open;
@@ -57,12 +57,12 @@ public class SQLSource implements Statement
                 builder.append(open);
             }
             boolean flag = false;
-            for(List<Statement> items : clauses) {
+            for(List<BoundFragment> items : clauses) {
                 if(flag && with != null) {
                     builder.append(with);
                 }
                 flag = true;
-                for(Statement item : items) {
+                for(BoundFragment item : items) {
                     item.generate(builder, parameters, types);
                 }
             }
@@ -74,17 +74,17 @@ public class SQLSource implements Statement
         
     }
     
-    protected final List<Statement> last() {
+    protected final List<BoundFragment> last() {
         return stack.get(stack.size() - 1);   
     }
     
     public SQLSource()
     {
-        stack.add(new ArrayList<Statement>());
+        stack.add(new ArrayList<BoundFragment>());
     }
     
     public void append(String clause, Object... params) {
-        last().add(new TextStatement(clause).bindParameters((Object[]) params));
+        last().add(new TextFragment(clause).bindParameters((Object[]) params));
     }
     
     public Join join(final String clause, Object... params) {
@@ -100,7 +100,7 @@ public class SQLSource implements Statement
         Join join = new Join();
         
         for(T param : params) {
-            List<Statement> items = new ArrayList<Statement>();
+            List<BoundFragment> items = new ArrayList<BoundFragment>();
             join.clauses.add(items);
             stack.add(items);
             try {
@@ -117,7 +117,7 @@ public class SQLSource implements Statement
     public void generate(StringBuilder builder, List<Object> parameters, List<Type> types)
     {
         assert(stack.size() == 1);
-        for(Statement obj : last()) {
+        for(BoundFragment obj : last()) {
             obj.generate(builder, parameters, types);
         }
     }

@@ -31,7 +31,7 @@ import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
  * @author Ivan Dubrov
  * @version 1.0 19.06.2008
  */
-public class TextStatement implements Statement
+public class TextFragment implements Fragment
 {
     private final static Pattern pattern = Pattern.compile("([^#$]*)([$#]\\{[^}]+\\})");
     
@@ -51,7 +51,7 @@ public class TextStatement implements Statement
     final private IntrospectionFactory introspectionFactory = new BeanUtilsIntrospectionFactory();
     
     // TODO: Derive types from parameter types, not parameter themselves
-    public TextStatement(String sql) {
+    public TextFragment(String sql) {
         this.sql = sql;
         this.sqlBuilder = null;
         this.gettersList = null;
@@ -62,52 +62,25 @@ public class TextStatement implements Statement
     /**
      * 
      */
-    private TextStatement(TextStatement st, Type[] types) {
-        this.sql = st.sql;
+    public TextFragment(String sql, Type[] types) {
         this.sqlBuilder = new StringBuilder();
         this.typesList = new ArrayList<Type>();
         this.gettersList = new ArrayList<Getter>();
         this.parameters = null;
-        configureTypes(types);
+        this.sql = sql;
+        configureTypes(types, sqlBuilder, typesList, gettersList);
     }
     
-    /**
-     * 
-     */
-    public TextStatement(TextStatement st, Object[] parameters) {
-        this.sql = st.sql;
-        this.parameters = parameters;
-        
-        if(parameters == null) {
-            parameters = new Object[0];
+    public BoundFragment bindParameters(Object[] parameters) {
+        if(typesList == null) {
+            List<Type> types = new ArrayList<Type>();
+            List<Getter> getters = new ArrayList<Getter>();
+            StringBuilder builder = new StringBuilder();
+            
+            configureTypes(typesFromParameters(parameters), builder, types, getters);
+            return new BoundFragmentImpl(builder.toString(), getters, types, parameters);
         }
-        if(st.typesList == null) {
-            this.typesList = new ArrayList<Type>();
-            this.gettersList = new ArrayList<Getter>();
-            this.sqlBuilder = new StringBuilder();
-            configureTypes(typesFromParameters(parameters));
-        } else {
-            this.typesList = st.typesList;
-            this.gettersList = st.gettersList;
-            this.sqlBuilder = st.sqlBuilder;
-        }
-    }
-    
-    public TextStatement bindTypes(Type[] types) {
-        return new TextStatement(this, types);
-    }
-    
-    public TextStatement bindParameters(Object[] parameters) {
-        return new TextStatement(this, parameters);        
-    }
-    
-    public void generate(StringBuilder builder, List<Object> pars, List<Type> types)
-    {
-        builder.append(sqlBuilder);
-        for(Getter getter : gettersList) {
-            pars.add(getter.getValue(this.parameters));
-        }
-        types.addAll(this.typesList);
+        return new BoundFragmentImpl(sqlBuilder.toString(), gettersList, typesList, parameters);        
     }
     
     private Type[] typesFromParameters(Object[] parameters) {
@@ -118,26 +91,26 @@ public class TextStatement implements Statement
         return types;
     }
     
-    private void configureTypes(Type[] types) {
+    private void configureTypes(Type[] types, StringBuilder builder, List<Type> typesLst, List<Getter> getters) {
         Matcher matcher = pattern.matcher(sql);
         int end = 0;
         while(matcher.find()) {
             int count = matcher.groupCount();
             if(count > 0) {
-                sqlBuilder.append(matcher.group(1));
+                builder.append(matcher.group(1));
             }
             if(count > 1) {
                 String prop = matcher.group(2);
                 if(prop.startsWith("$")) {
-                    sqlBuilder.append("?");
+                    builder.append("?");
                     
                     prop = prop.substring(2, prop.length() - 1);
                     
                     try {
-                        Getter getter = introspectionFactory.buildParameterGetter(prop);
+                        Getter getter = introspectionFactory.buildParameterGetter(types, prop);
                         Type type = introspectionFactory.getParameterType(types, prop);
-                        typesList.add(type);
-                        gettersList.add(getter);
+                        typesLst.add(type);
+                        getters.add(getter);
                     } catch(Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -145,7 +118,7 @@ public class TextStatement implements Statement
             }
             end = matcher.end(0);
         }
-        sqlBuilder.append(sql, end, sql.length());
+        builder.append(sql, end, sql.length());
     }
     
     // TODO: ToString?

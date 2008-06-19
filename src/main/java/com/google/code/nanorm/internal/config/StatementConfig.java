@@ -19,7 +19,7 @@ import java.lang.reflect.Type;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import com.google.code.nanorm.internal.StatementBuilder;
+import com.google.code.nanorm.internal.Fragment;
 import com.google.code.nanorm.internal.mapping.result.ResultMap;
 
 /**
@@ -29,19 +29,19 @@ import com.google.code.nanorm.internal.mapping.result.ResultMap;
  */
 public class StatementConfig {
     
-    private StatementBuilder statementBuilder;
+    private Fragment statementBuilder;
     
     private ResultMap resultMapper;
     
     private Type resultType;
 
     /** @return Returns the statementBuilder. */
-    public StatementBuilder getStatementBuilder() {
+    public Fragment getStatementBuilder() {
         return statementBuilder;
     }
 
     /** @param statementBuilder The statementBuilder to set. */
-    public void setStatementBuilder(StatementBuilder statementBuilder) {
+    public void setStatementBuilder(Fragment statementBuilder) {
         this.statementBuilder = statementBuilder;
     }
 

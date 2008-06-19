@@ -16,10 +16,10 @@
 package com.google.code.nanorm.internal;
 
 /**
- *
+ * 
  * @author Ivan Dubrov
  * @version 1.0 27.05.2008
  */
-public interface StatementBuilder {
-    Statement generateStatement(Object[] parameters);
+public interface Fragment {
+    BoundFragment bindParameters(Object[] parameters);
 }

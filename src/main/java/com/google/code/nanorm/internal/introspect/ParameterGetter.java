@@ -15,6 +15,8 @@
  */
 package com.google.code.nanorm.internal.introspect;
 
+import java.lang.reflect.Type;
+
 /**
  *
  * @author Ivan Dubrov
@@ -22,19 +24,18 @@ package com.google.code.nanorm.internal.introspect;
  */
 public class ParameterGetter implements Getter {
     
-    private String path;
+    final private String path;
     
-    private IntrospectionFactory factory;
+    final private IntrospectionFactory factory;
     
-    public ParameterGetter(IntrospectionFactory factory, String path) {
+    final private int index;
+    
+    final private Type[] types;
+    
+    public ParameterGetter(IntrospectionFactory factory, Type[] types, String path) {
         this.factory = factory;
-        this.path = path;
-    }
-
-    /**
-     * @see com.google.code.nanorm.internal.introspect.Getter#getValue(java.lang.Object)
-     */
-    public Object getValue(Object instance) {
+        this.types = types;
+        
         int pos = path.indexOf('.');
         if (pos == -1) {
             pos = path.length();
@@ -47,15 +48,33 @@ public class ParameterGetter implements Getter {
         } else {
             parameter = Integer.parseInt(context) - 1;
         }
-        Object value = ((Object[]) instance)[parameter];
+        this.index = parameter;
+        this.path = pos == path.length() ? null : path.substring(pos + 1);
+    }
+
+    /**
+     * @see com.google.code.nanorm.internal.introspect.Getter#getValue(java.lang.Object)
+     */
+    public Object getValue(Object instance) {
+        Object value = ((Object[]) instance)[index];
         
-        if(pos == path.length()) {
+        if(path == null) {
             return value;
         }
-        String subpath = path.substring(pos + 1);
         Getter getter = 
-            factory.buildGetter(value != null ? value.getClass() : void.class, subpath);
+            factory.buildGetter(value != null ? value.getClass() : void.class, path);
         return getter.getValue(value);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Type getType() {
+        Type type = types[index];
+        if(path == null) {
+            return type;
+        }
+        return factory.getPropertyType((Class<?>) type, path);
     }
 
 }

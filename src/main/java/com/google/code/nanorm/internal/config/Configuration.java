@@ -32,9 +32,9 @@ import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.annotations.Source;
 import com.google.code.nanorm.exceptions.ResultMapException;
 import com.google.code.nanorm.exceptions.StatementConfigException;
-import com.google.code.nanorm.internal.DynamicStatementBuilder;
-import com.google.code.nanorm.internal.StatementBuilder;
-import com.google.code.nanorm.internal.StaticStatementBuilder;
+import com.google.code.nanorm.internal.DynamicFragment;
+import com.google.code.nanorm.internal.Fragment;
+import com.google.code.nanorm.internal.TextFragment;
 import com.google.code.nanorm.internal.introspect.BeanUtilsIntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.mapping.result.ResultMapImpl;
@@ -107,11 +107,11 @@ public class Configuration {
         Select select = method.getAnnotation(Select.class);
         Source source = method.getAnnotation(Source.class);
         if(select != null) {
-            StatementBuilder builder = new StaticStatementBuilder(select.value(), method);
+            Fragment builder = new TextFragment(select.value(), method.getGenericParameterTypes());
             stConfig.setStatementBuilder(builder);
         } else if(source != null) {
             Class<? extends SQLSource> sqlSource = source.value();
-            StatementBuilder builder = new DynamicStatementBuilder(sqlSource);
+            Fragment builder = new DynamicFragment(sqlSource);
             stConfig.setStatementBuilder(builder);
         } else {
             // Skip method

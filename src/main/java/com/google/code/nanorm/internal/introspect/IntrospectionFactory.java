@@ -30,7 +30,7 @@ public interface IntrospectionFactory {
     Getter buildGetter(Class<?> beanClass, String path);
 
     // TODO: Pass types...
-    Getter buildParameterGetter(String path);
+    Getter buildParameterGetter(Type[] types, String path);
     
     Type getPropertyType(Class<?> beanClass, String property);
     
