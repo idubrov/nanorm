@@ -16,11 +16,14 @@
 package com.google.code.nanorm.internal.mapping.result;
 
 /**
+ * Source for {@link ResultCallback} instances, not bound to any particular data
+ * instance.
+ * 
  * Instances are thread-safe.
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
  */
 public interface ResultCallbackSource {
-    
+
     ResultCallback forInstance(Object instance);
 }

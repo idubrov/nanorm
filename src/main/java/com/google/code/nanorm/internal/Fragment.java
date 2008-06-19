@@ -16,7 +16,11 @@
 package com.google.code.nanorm.internal;
 
 /**
+ * SQL fragment not bound to any parameters. Instances of this interface are thread-safe.
  * 
+ * Can be bound to parameters to get {@link BoundFragment} instance.
+ * 
+ * @see BoundFragment
  * @author Ivan Dubrov
  * @version 1.0 27.05.2008
  */

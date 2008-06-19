@@ -35,7 +35,6 @@ public class NestedResultMapPropertyMapperImpl implements PropertyMapper {
     final private ResultCallbackSource callbackSource;
     
     /**
-     * @param config
      * @param setter
      * @param resultMap
      */

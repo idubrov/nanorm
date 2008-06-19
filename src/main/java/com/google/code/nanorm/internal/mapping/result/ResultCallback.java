@@ -16,7 +16,10 @@
 package com.google.code.nanorm.internal.mapping.result;
 
 /**
+ * Interface for processing the {@link ResultMap} generated values.
+ * 
  * Instances are not thread-safe.
+ * @see ResultCallbackSource
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
  */

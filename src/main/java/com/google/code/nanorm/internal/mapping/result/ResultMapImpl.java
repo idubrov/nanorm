@@ -113,7 +113,7 @@ public class ResultMapImpl implements ResultMap {
                 }
                 map.put(key, result);
             } else {
-                
+                // TODO: ????
             }
         } else {
             // We don't have a groupBy, create new result object 
@@ -123,9 +123,7 @@ public class ResultMapImpl implements ResultMap {
         
         // Always map nested maps
         for (PropertyMapper mapper : dc.nestedMappers) {
-            if (mapper instanceof NestedResultMapPropertyMapperImpl) {
-                mapper.mapResult(request, result, rs);
-            }
+            mapper.mapResult(request, result, rs);
         }
     }
 
@@ -138,6 +136,7 @@ public class ResultMapImpl implements ResultMap {
             throw new RuntimeException(e);
         }
 
+        // TODO: We, probably, can bulk set those...
         for (PropertyMapper mapper : mappers) {
             mapper.mapResult(request, result, rs);
         }
@@ -232,11 +231,9 @@ public class ResultMapImpl implements ResultMap {
             }
 
             if (mappingConfig.getResultMapConfig() != null) {
-                // TODO: Hacky
+                // TODO: Hacky? Why?
                 Getter getter = introspectionFactory.buildGetter(elementClass, mappingConfig.getProperty());
 
-                // TODO: Could be generic. In that case, get the element type
-                // TODO: In that case, the setter should do "add"
                 ResultMap nestedMap = new ResultMapImpl(propertyType, mappingConfig
                         .getResultMapConfig(), introspectionFactory, typeHandlerFactory);
                 nestedMappers.add(new NestedResultMapPropertyMapperImpl(propertyType, getter,
