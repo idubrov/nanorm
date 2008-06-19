@@ -19,6 +19,8 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.code.nanorm.TypeHandlerFactory;
+
 /**
  *
  * @author Ivan Dubrov
@@ -59,7 +61,7 @@ public class TypeHandlerFactoryImpl implements TypeHandlerFactory {
     }
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandlerFactory#getTypeHandler(java.lang.Class)
+     * {@inheritDoc}
      */
     public TypeHandler<?> getTypeHandler(Type type) {
         TypeHandler<?> typeHandler = typeHandlers.get(type);
@@ -70,13 +72,13 @@ public class TypeHandlerFactoryImpl implements TypeHandlerFactory {
     }
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandlerFactory#getUnknownTypeHandler()
+     * {@inheritDoc}
      */
     public TypeHandler<Object> getUnknownTypeHandler() {
         return unknownTypeHandler;
     }
     
-    final public <T> void register(Type type, TypeHandler<T> handler) {
+    final public void register(Type type, TypeHandler<?> handler) {
         typeHandlers.put(type, handler);
     }
 }

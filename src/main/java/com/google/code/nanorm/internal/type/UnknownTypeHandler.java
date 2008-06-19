@@ -28,9 +28,9 @@ import java.sql.Types;
 public class UnknownTypeHandler implements TypeHandler<Object> {
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getResult(java.sql.ResultSet, int)
+     * @see com.google.code.nanorm.internal.type.TypeHandler#getValue(java.sql.ResultSet, int)
      */
-    public Object getResult(ResultSet rs, int column) throws SQLException {
+    public Object getValue(ResultSet rs, int column) throws SQLException {
         return rs.getObject(column);
     }
 
@@ -44,7 +44,7 @@ public class UnknownTypeHandler implements TypeHandler<Object> {
     /**
      * {@inheritDoc}
      */
-    public void setResult(PreparedStatement st, int column, Object value) throws SQLException {
+    public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
         st.setObject(column, value);
     }
 }

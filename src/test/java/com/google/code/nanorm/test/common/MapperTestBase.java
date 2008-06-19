@@ -23,6 +23,7 @@ import java.sql.Statement;
 import org.junit.After;
 import org.junit.Before;
 
+import com.google.code.nanorm.Configuration;
 import com.google.code.nanorm.Factory;
 import com.google.code.nanorm.Transaction;
 import com.google.code.nanorm.internal.FactoryImpl;
@@ -89,7 +90,7 @@ public class MapperTestBase {
         
         conn.commit();
         
-        factory = new FactoryImpl();
+        factory = new Configuration().buildFactory();
         transaction = factory.useConnection(conn);
         
     }

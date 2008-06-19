@@ -13,18 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.code.nanorm.internal.type;
+package com.google.code.nanorm;
 
 import java.lang.reflect.Type;
 
+import com.google.code.nanorm.internal.type.TypeHandler;
+
 /**
- *
+ * Factory for creating type handlers.
+ * 
+ * @see TypeHandler
  * @author Ivan Dubrov
  * @version 1.0 31.05.2008
  */
 public interface TypeHandlerFactory {
 
+    /**
+     * Get type handler for given type.
+     * @param type type
+     * @return type handler.
+     */
     TypeHandler<?> getTypeHandler(Type type);
     
+    /**
+     * Get type handler for unknown types.
+     * @return type handler for unknown types
+     */
     TypeHandler<Object> getUnknownTypeHandler();
+    
+    /**
+     * Register new type handler.
+     * @param type type
+     * @param handler type handler
+     */
+    void register(Type type, TypeHandler<?> handler);
 }

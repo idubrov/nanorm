@@ -27,6 +27,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.code.nanorm.Configuration;
 import com.google.code.nanorm.Factory;
 import com.google.code.nanorm.Transaction;
 import com.google.code.nanorm.internal.FactoryImpl;
@@ -60,7 +61,7 @@ public class TestCarMapper {
             "INSERT INTO CARS(id, owner, model, year) VALUES (11, 'John', 'Ford Focus', 2004)");
         conn.commit();
         
-        factory = new FactoryImpl();
+        factory = new Configuration().buildFactory();
         transaction = factory.useConnection(conn);
         
     }

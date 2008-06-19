@@ -15,21 +15,44 @@
  */
 package com.google.code.nanorm.internal.type;
 
-import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * TODO: Implement a method which will generate access code for mapping code generation at runtime.
+ * Performs mapping data from {@link ResultSet} and to {@PreparedStatement}
+ * parameters.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 31.05.2008
+ * @param <T> type this type handler works for
  */
 public interface TypeHandler<T> {
-    
-    T getResult(ResultSet rs, int column) throws SQLException;
-    
+
+    /**
+     * Get column mapped value.
+     * @param rs {@link ResultSet} instance
+     * @param column column
+     * @return mapped value.
+     * @throws SQLException
+     */
+    T getValue(ResultSet rs, int column) throws SQLException;
+
+    /**
+     * Get column mapped value.
+     * @param rs {@link ResultSet} instance
+     * @param column column
+     * @return mapped value.
+     * @throws SQLException
+     */
     T getResult(ResultSet rs, String column) throws SQLException;
-    
-    void setResult(PreparedStatement st, int column, Object value) throws SQLException;
+
+    /**
+     * Set parameter for given {@link PreparedStatement}. 
+     * @param st {@link PreparedStatement} instance.
+     * @param column column to set parameter to.
+     * @param value parameter value
+     * @throws SQLException
+     */
+    void setParameter(PreparedStatement st, int column, Object value) throws SQLException;
 }

@@ -28,9 +28,9 @@ import java.sql.Types;
 public class StringTypeHandler implements TypeHandler<String> {
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getResult(java.sql.ResultSet, int)
+     * @see com.google.code.nanorm.internal.type.TypeHandler#getValue(java.sql.ResultSet, int)
      */
-    public String getResult(ResultSet rs, int column) throws SQLException {
+    public String getValue(ResultSet rs, int column) throws SQLException {
         return rs.getString(column);
     }
 
@@ -44,7 +44,7 @@ public class StringTypeHandler implements TypeHandler<String> {
     /**
      * {@inheritDoc}
      */
-    public void setResult(PreparedStatement st, int column, Object value) throws SQLException {
+    public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
         if(value == null) {
             st.setNull(column, Types.VARCHAR);
         } else {

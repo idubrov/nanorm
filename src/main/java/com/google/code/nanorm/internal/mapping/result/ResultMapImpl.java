@@ -30,6 +30,7 @@ import java.util.Set;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
+import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.exceptions.ResultMapException;
 import com.google.code.nanorm.internal.Key;
 import com.google.code.nanorm.internal.Request;
@@ -39,7 +40,6 @@ import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.type.TypeHandler;
-import com.google.code.nanorm.internal.type.TypeHandlerFactory;
 
 /**
  * 
@@ -277,7 +277,7 @@ public class ResultMapImpl implements ResultMap {
 
         public Object getValue(ResultSet rs) throws SQLException {
             if (config.getColumnIndex() != 0) {
-                return typeHandler.getResult(rs, config.getColumnIndex());
+                return typeHandler.getValue(rs, config.getColumnIndex());
             } else {
                 return typeHandler.getResult(rs, config.getColumn());
             }

@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import com.google.code.nanorm.SQLSource;
+import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.annotations.Mapping;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapList;
@@ -38,7 +39,6 @@ import com.google.code.nanorm.internal.TextFragment;
 import com.google.code.nanorm.internal.introspect.BeanUtilsIntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.mapping.result.ResultMapImpl;
-import com.google.code.nanorm.internal.type.TypeHandlerFactory;
 import com.google.code.nanorm.internal.type.TypeHandlerFactoryImpl;
 
 /**
@@ -46,7 +46,7 @@ import com.google.code.nanorm.internal.type.TypeHandlerFactoryImpl;
  * @author Ivan Dubrov
  * @version 1.0 29.05.2008
  */
-public class Configuration {
+public class InternalConfiguration {
     
     // Result map id is <package>.<class>#id
     final private Map<String, ResultMapConfig> resultMapsConfig;
@@ -58,16 +58,17 @@ public class Configuration {
     
     final private IntrospectionFactory introspectionFactory;
     
+    
     /**
      * 
      */
-    public Configuration() {
+    public InternalConfiguration(TypeHandlerFactory typeHandlerFactory, IntrospectionFactory introspectionFactory) {
         resultMapsConfig = new ConcurrentHashMap<String, ResultMapConfig>();
         statementsConfig = new ConcurrentHashMap<String, StatementConfig>();
         
         // TODO: Should be configurable
-        typeHandlerFactory = new TypeHandlerFactoryImpl();
-        introspectionFactory = new BeanUtilsIntrospectionFactory();
+        this.typeHandlerFactory = typeHandlerFactory;
+        this.introspectionFactory = introspectionFactory;
     }
     
     public StatementConfig getStatementConfig(Method method) {

@@ -29,7 +29,8 @@ import java.util.List;
 
 import com.google.code.nanorm.Factory;
 import com.google.code.nanorm.Transaction;
-import com.google.code.nanorm.internal.config.Configuration;
+import com.google.code.nanorm.TypeHandlerFactory;
+import com.google.code.nanorm.internal.config.InternalConfiguration;
 import com.google.code.nanorm.internal.config.StatementConfig;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.Setter;
@@ -40,7 +41,6 @@ import com.google.code.nanorm.internal.mapping.result.ResultMap;
 import com.google.code.nanorm.internal.session.SessionSpi;
 import com.google.code.nanorm.internal.session.SingleConnSessionSpi;
 import com.google.code.nanorm.internal.type.TypeHandler;
-import com.google.code.nanorm.internal.type.TypeHandlerFactory;
 
 /**
  * 
@@ -51,13 +51,13 @@ public class FactoryImpl implements Factory {
 
     final private ThreadLocal<SessionSpi> sessions = new ThreadLocal<SessionSpi>();
 
-    final private Configuration config;
+    final private InternalConfiguration config;
 
     /**
      * 
      */
-    public FactoryImpl() {
-        config = new Configuration();
+    public FactoryImpl(InternalConfiguration internalConfig) {
+        this.config = internalConfig;
     }
 
     /**
@@ -147,7 +147,7 @@ public class FactoryImpl implements Factory {
             Object item = params.get(i);
             Type type = types.get(i);
             TypeHandler<?> typeHandler = factory.getTypeHandler(type);
-            typeHandler.setResult(statement, i + 1, item);
+            typeHandler.setParameter(statement, i + 1, item);
         }
     }
 

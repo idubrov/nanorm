@@ -28,9 +28,9 @@ import java.sql.Types;
 public class DoubleTypeHandler implements TypeHandler<Double> {
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getResult(java.sql.ResultSet, int)
+     * @see com.google.code.nanorm.internal.type.TypeHandler#getValue(java.sql.ResultSet, int)
      */
-    public Double getResult(ResultSet rs, int column) throws SQLException {
+    public Double getValue(ResultSet rs, int column) throws SQLException {
         return rs.getDouble(column);
     }
 
@@ -44,7 +44,7 @@ public class DoubleTypeHandler implements TypeHandler<Double> {
     /**
      * {@inheritDoc}
      */
-    public void setResult(PreparedStatement st, int column, Object value) throws SQLException {
+    public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
         if(value == null) {
             st.setNull(column, Types.DOUBLE);
         } else {

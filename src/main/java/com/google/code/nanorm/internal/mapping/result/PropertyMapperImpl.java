@@ -57,7 +57,7 @@ public class PropertyMapperImpl implements PropertyMapper {
     public void mapResult(Request request, Object result, ResultSet rs) throws SQLException {
         Object value;
         if (config.getColumnIndex() != 0) {
-            value = typeHandler.getResult(rs, config.getColumnIndex());
+            value = typeHandler.getValue(rs, config.getColumnIndex());
         } else {
             value = typeHandler.getResult(rs, config.getColumn());
         }

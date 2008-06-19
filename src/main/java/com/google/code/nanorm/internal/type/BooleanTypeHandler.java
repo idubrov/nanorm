@@ -30,7 +30,7 @@ public class BooleanTypeHandler implements TypeHandler<Boolean> {
     /**
      * {@inheritDoc}
      */
-    public Boolean getResult(ResultSet rs, int column) throws SQLException {
+    public Boolean getValue(ResultSet rs, int column) throws SQLException {
         return rs.getBoolean(column);
     }
 
@@ -44,7 +44,7 @@ public class BooleanTypeHandler implements TypeHandler<Boolean> {
     /**
      * {@inheritDoc}
      */
-    public void setResult(PreparedStatement st, int column, Object value) throws SQLException {
+    public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
         if(value == null) {
             st.setNull(column, Types.BOOLEAN);
         } else {
