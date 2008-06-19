@@ -18,6 +18,7 @@ package com.google.code.nanorm.internal;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -67,8 +68,8 @@ public class FactoryImpl implements Factory {
                 new Class<?>[] {mapperClass }, new MapperInvocationHandler()));
     }
 
-    public void useConnection(Connection conn) {
-        this.conn.set(conn);
+    public void useConnection(Connection connection) {
+        this.conn.set(connection);
     }
    
     protected Object query(StatementConfig config, Object[] args) throws SQLException {
@@ -81,7 +82,7 @@ public class FactoryImpl implements Factory {
         // SQL, parameters and their types
         StringBuilder sql = new StringBuilder();
         List<Object> parameters = new ArrayList<Object>();
-        List<Class<?>> types = new ArrayList<Class<?>>();
+        List<Type> types = new ArrayList<Type>();
         
         // Generate everything
         fragment.generate(sql, parameters, types);
@@ -106,12 +107,12 @@ public class FactoryImpl implements Factory {
         }
     }
     
-    protected void mapParameters(PreparedStatement statement, List<Class<?>> types,
+    protected void mapParameters(PreparedStatement statement, List<Type> types,
             List<Object> params) throws SQLException {
         for (int i = 0; i < params.size(); ++i) {
             Object item = params.get(i);
-            Class<?> type = types.get(i);
-            if (type == Integer.class) {
+            Type type = types.get(i);
+            if (type == Integer.class || type == int.class) {
                 if (item != null) {
                     statement.setInt(i + 1, (Integer) item);
                 } else {
@@ -124,7 +125,7 @@ public class FactoryImpl implements Factory {
                     statement.setNull(i + 1, Types.VARCHAR);
                 }
             } else {
-                throw new RuntimeException("TYPE NOT SUPPORTED");
+                throw new RuntimeException("TYPE " + type + " NOT SUPPORTED");
             }
         }
     }
@@ -142,7 +143,6 @@ public class FactoryImpl implements Factory {
     }
     
     private static class ResultGetterSetter implements Getter, Setter {
-        
         /**
          * @see com.google.code.nanorm.internal.introspect.Getter#getValue(java.lang.Object[])
          */

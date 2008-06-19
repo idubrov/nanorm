@@ -15,10 +15,9 @@
  */
 package com.google.code.nanorm.internal;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,25 +25,100 @@ import com.google.code.nanorm.internal.introspect.BeanUtilsIntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 
+/**
+ * Not thread safe?
+ *
+ * @author Ivan Dubrov
+ * @version 1.0 19.06.2008
+ */
 public class TextStatement implements Statement
 {
     private final static Pattern pattern = Pattern.compile("([^#$]*)([$#]\\{[^}]+\\})");
     
-    private final static Pattern result = Pattern.compile("([^(]+)(\\([^)]+\\))?");
+    // Template
+    final private String sql;
     
-    final private StringBuilder sqlBuilder = new StringBuilder();
+    // Generated
+    final private StringBuilder sqlBuilder;
     
-    final private List<Object> params = new ArrayList<Object>();
+    final private List<Getter> gettersList;
     
-    final private Map<String, String> output = new HashMap<String, String>();
+    final private List<Type> typesList;
     
-    final private List<Class<?>> types = new ArrayList<Class<?>>();
+    final private Object[] parameters;
 
     // TODO: Configurable
     final private IntrospectionFactory introspectionFactory = new BeanUtilsIntrospectionFactory();
     
     // TODO: Derive types from parameter types, not parameter themselves
-    public TextStatement(String sql, Object... parameters) {
+    public TextStatement(String sql) {
+        this.sql = sql;
+        this.sqlBuilder = null;
+        this.gettersList = null;
+        this.typesList = null;
+        this.parameters = null;
+    }
+    
+    /**
+     * 
+     */
+    private TextStatement(TextStatement st, Type[] types) {
+        this.sql = st.sql;
+        this.sqlBuilder = new StringBuilder();
+        this.typesList = new ArrayList<Type>();
+        this.gettersList = new ArrayList<Getter>();
+        this.parameters = null;
+        configureTypes(types);
+    }
+    
+    /**
+     * 
+     */
+    public TextStatement(TextStatement st, Object[] parameters) {
+        this.sql = st.sql;
+        this.parameters = parameters;
+        
+        if(parameters == null) {
+            parameters = new Object[0];
+        }
+        if(st.typesList == null) {
+            this.typesList = new ArrayList<Type>();
+            this.gettersList = new ArrayList<Getter>();
+            this.sqlBuilder = new StringBuilder();
+            configureTypes(typesFromParameters(parameters));
+        } else {
+            this.typesList = st.typesList;
+            this.gettersList = st.gettersList;
+            this.sqlBuilder = st.sqlBuilder;
+        }
+    }
+    
+    public TextStatement bindTypes(Type[] types) {
+        return new TextStatement(this, types);
+    }
+    
+    public TextStatement bindParameters(Object[] parameters) {
+        return new TextStatement(this, parameters);        
+    }
+    
+    public void generate(StringBuilder builder, List<Object> pars, List<Type> types)
+    {
+        builder.append(sqlBuilder);
+        for(Getter getter : gettersList) {
+            pars.add(getter.getValue(this.parameters));
+        }
+        types.addAll(this.typesList);
+    }
+    
+    private Type[] typesFromParameters(Object[] parameters) {
+        Type[] types = new Type[parameters.length];
+        for(int i = 0; i < types.length; ++i) {
+            types[i] = parameters[i] == null ? Void.class : parameters[i].getClass();
+        }
+        return types;
+    }
+    
+    private void configureTypes(Type[] types) {
         Matcher matcher = pattern.matcher(sql);
         int end = 0;
         while(matcher.find()) {
@@ -61,49 +135,17 @@ public class TextStatement implements Statement
                     
                     try {
                         Getter getter = introspectionFactory.buildParameterGetter(prop);
-                        Object value = getter.getValue(parameters);
-                        if(value == null) {
-                            types.add(Void.class);
-                        } else {
-                            types.add(value.getClass());
-                        }
-                        params.add(value);
+                        Type type = introspectionFactory.getParameterType(types, prop);
+                        typesList.add(type);
+                        gettersList.add(getter);
                     } catch(Exception e) {
                         throw new RuntimeException(e);
                     }
-                } else { // Starts with '#'
-                    prop = prop.substring(2, prop.length() - 1);
-                    
-                    Matcher m = result.matcher(prop);
-                    if(!m.matches()) {
-                        throw new RuntimeException("!!!");
-                    }
-                    String property = m.group(1);
-                    String column = m.group(2);
-                    if(m.groupCount() > 1 && column != null) {
-                        column = column.substring(1, column.length() - 1);
-                    } else {
-                        column = property;
-                    }
-                    sqlBuilder.append(column);
-                    output.put(property, column);
                 }
             }
             end = matcher.end(0);
         }
         sqlBuilder.append(sql, end, sql.length());
-    }
-    
-    public List<Object> fillParameters()
-    {
-        return params;
-    }
-
-    public void generate(StringBuilder builder, List<Object> parameters, List<Class<?>> types)
-    {
-        builder.append(sqlBuilder);
-        parameters.addAll(params);
-        types.addAll(this.types);
     }
     
     // TODO: ToString?

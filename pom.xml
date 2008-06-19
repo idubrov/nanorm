@@ -79,7 +79,7 @@
           <systemProperties>
             <property>
               <name>net.sourceforge.cobertura.datafile</name>
-              <value>${project.build.directory}/cobertura/cobertura.ser</value>
+              <value>${basedir}/cobertura.ser</value>
             </property>
           </systemProperties>
         </configuration>
@@ -224,7 +224,6 @@
           <targetJdk>1.5</targetJdk>
           <minimumTokens>100</minimumTokens>
           <rulesets>
-            <!-- Rule sets that come bundled with PMD -->
             <ruleset>/rulesets/basic.xml</ruleset>
             <ruleset>/rulesets/braces.xml</ruleset>
             <ruleset>/rulesets/finalizers.xml</ruleset>

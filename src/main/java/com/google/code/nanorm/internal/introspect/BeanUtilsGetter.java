@@ -15,6 +15,8 @@
  */
 package com.google.code.nanorm.internal.introspect;
 
+import java.lang.reflect.Type;
+
 import org.apache.commons.beanutils.PropertyUtils;
 
 /**
@@ -32,7 +34,7 @@ public class BeanUtilsGetter implements Getter {
     public BeanUtilsGetter(String path) {
         this.path = path;
     }
-
+    
     public Object getValue(Object instance) {
         try {
             return PropertyUtils.getNestedProperty(instance, path);

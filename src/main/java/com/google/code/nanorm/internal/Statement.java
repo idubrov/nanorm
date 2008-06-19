@@ -15,8 +15,9 @@
  */
 package com.google.code.nanorm.internal;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 public interface Statement {
-    void generate(StringBuilder builder, List<Object> parameters, List<Class<?>> types);
+    void generate(StringBuilder builder, List<Object> parameters, List<Type> types);
 }

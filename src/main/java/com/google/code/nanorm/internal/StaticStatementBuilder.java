@@ -31,16 +31,19 @@ public class StaticStatementBuilder implements StatementBuilder {
     
     final private Method method;
     
+    final private TextStatement template;
+    
     public StaticStatementBuilder(String sql, Method method) {
         this.sql = sql;
         this.method = method;
+        this.template = new TextStatement(sql).bindTypes(method.getGenericParameterTypes());
     }
     
     /**
      * @see com.google.code.nanorm.internal.StatementBuilder#generateStatement(java.lang.Object[])
      */
     public Statement generateStatement(Object[] parameters) {
-        return new TextStatement(sql, parameters);
+        return template.bindParameters(parameters);
     }
 
     /**

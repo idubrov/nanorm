@@ -51,12 +51,11 @@ public class ParameterGetter implements Getter {
         
         if(pos == path.length()) {
             return value;
-        } else {
-            String subpath = path.substring(pos + 1);
-            Getter getter = 
-                factory.buildGetter(value != null ? value.getClass() : void.class, subpath);
-            return getter.getValue(value);
         }
+        String subpath = path.substring(pos + 1);
+        Getter getter = 
+            factory.buildGetter(value != null ? value.getClass() : void.class, subpath);
+        return getter.getValue(value);
     }
 
 }

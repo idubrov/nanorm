@@ -15,6 +15,8 @@
  */
 package com.google.code.nanorm;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +51,7 @@ public class SQLSource implements Statement
             return this;
         }
         
-        public void generate(StringBuilder builder, List<Object> parameters, List<Class<?>> types)
+        public void generate(StringBuilder builder, List<Object> parameters, List<Type> types)
         {
             if(open != null) {
                 builder.append(open);
@@ -82,7 +84,7 @@ public class SQLSource implements Statement
     }
     
     public void append(String clause, Object... params) {
-        last().add(new TextStatement(clause, (Object[]) params));
+        last().add(new TextStatement(clause).bindParameters((Object[]) params));
     }
     
     public Join join(final String clause, Object... params) {
@@ -112,7 +114,7 @@ public class SQLSource implements Statement
         return join;
     }
 
-    public void generate(StringBuilder builder, List<Object> parameters, List<Class<?>> types)
+    public void generate(StringBuilder builder, List<Object> parameters, List<Type> types)
     {
         assert(stack.size() == 1);
         for(Statement obj : last()) {

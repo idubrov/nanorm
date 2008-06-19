@@ -16,6 +16,7 @@
 package com.google.code.nanorm.internal.introspect;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -77,6 +78,40 @@ public class BeanUtilsIntrospectionFactory implements IntrospectionFactory {
      */
     public Getter buildParameterGetter(String path) {
         return new ParameterGetter(this, path);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Type getParameterType(Method method, String path) {
+        return getParameterType(method.getGenericParameterTypes(), path);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Type getParameterType(Type[] types, String path) {
+        // TODO: Copy paste!!!!!!!!
+        int pos = path.indexOf('.');
+        if (pos == -1) {
+            pos = path.length();
+        }
+        String context = path.substring(0, pos);
+
+        int parameter;
+        if (context.equals("value")) {
+            parameter = 0;
+        } else {
+            parameter = Integer.parseInt(context) - 1;
+        }
+        Type type = types[parameter];
+        
+        if(pos == path.length()) {
+            return type;
+        }
+        String subpath = path.substring(pos + 1);
+        // TODO: Cast!!!!!
+        return getPropertyType((Class<?>) type, subpath);
     }
 
 }

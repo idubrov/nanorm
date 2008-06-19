@@ -15,6 +15,8 @@
  */
 package com.google.code.nanorm.internal.introspect;
 
+import java.lang.reflect.Type;
+
 /**
  *
  * @author Ivan Dubrov

@@ -15,6 +15,7 @@
  */
 package com.google.code.nanorm.internal.introspect;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 /**
@@ -32,4 +33,8 @@ public interface IntrospectionFactory {
     Getter buildParameterGetter(String path);
     
     Type getPropertyType(Class<?> beanClass, String property);
+    
+    Type getParameterType(Method method, String path);
+    
+    Type getParameterType(Type[] types, String path);
 }
