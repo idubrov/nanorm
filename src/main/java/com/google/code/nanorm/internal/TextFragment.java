@@ -43,10 +43,6 @@ public class TextFragment implements Fragment
     
     final private List<Getter> gettersList;
     
-    final private List<Type> typesList;
-    
-    final private Object[] parameters;
-
     // TODO: Configurable
     final private IntrospectionFactory introspectionFactory = new BeanUtilsIntrospectionFactory();
     
@@ -55,8 +51,6 @@ public class TextFragment implements Fragment
         this.sql = sql;
         this.sqlBuilder = null;
         this.gettersList = null;
-        this.typesList = null;
-        this.parameters = null;
     }
     
     /**
@@ -64,23 +58,20 @@ public class TextFragment implements Fragment
      */
     public TextFragment(String sql, Type[] types) {
         this.sqlBuilder = new StringBuilder();
-        this.typesList = new ArrayList<Type>();
         this.gettersList = new ArrayList<Getter>();
-        this.parameters = null;
         this.sql = sql;
-        configureTypes(types, sqlBuilder, typesList, gettersList);
+        configureTypes(types, sqlBuilder, gettersList);
     }
     
     public BoundFragment bindParameters(Object[] parameters) {
-        if(typesList == null) {
-            List<Type> types = new ArrayList<Type>();
+        if(gettersList == null) {
             List<Getter> getters = new ArrayList<Getter>();
             StringBuilder builder = new StringBuilder();
             
-            configureTypes(typesFromParameters(parameters), builder, types, getters);
-            return new BoundFragmentImpl(builder.toString(), getters, types, parameters);
+            configureTypes(typesFromParameters(parameters), builder, getters);
+            return new BoundFragmentImpl(builder.toString(), getters, parameters);
         }
-        return new BoundFragmentImpl(sqlBuilder.toString(), gettersList, typesList, parameters);        
+        return new BoundFragmentImpl(sqlBuilder.toString(), gettersList, parameters);        
     }
     
     private Type[] typesFromParameters(Object[] parameters) {
@@ -91,7 +82,7 @@ public class TextFragment implements Fragment
         return types;
     }
     
-    private void configureTypes(Type[] types, StringBuilder builder, List<Type> typesLst, List<Getter> getters) {
+    private void configureTypes(Type[] types, StringBuilder builder, List<Getter> getters) {
         Matcher matcher = pattern.matcher(sql);
         int end = 0;
         while(matcher.find()) {
@@ -103,17 +94,8 @@ public class TextFragment implements Fragment
                 String prop = matcher.group(2);
                 if(prop.startsWith("$")) {
                     builder.append("?");
-                    
                     prop = prop.substring(2, prop.length() - 1);
-                    
-                    try {
-                        Getter getter = introspectionFactory.buildParameterGetter(types, prop);
-                        Type type = introspectionFactory.getParameterType(types, prop);
-                        typesLst.add(type);
-                        getters.add(getter);
-                    } catch(Exception e) {
-                        throw new RuntimeException(e);
-                    }
+                    getters.add(introspectionFactory.buildParameterGetter(types, prop));
                 }
             }
             end = matcher.end(0);

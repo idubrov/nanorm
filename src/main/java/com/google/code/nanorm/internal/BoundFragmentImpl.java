@@ -32,21 +32,17 @@ public class BoundFragmentImpl implements BoundFragment {
     
     final private List<Getter> gettersList;
     
-    final private List<Type> typesList;
-    
     final private Object[] parameters;
     
     /**
      * @param sql
      * @param gettersList
-     * @param typesList
      * @param parameters
      */
-    public BoundFragmentImpl(String sql, List<Getter> gettersList, List<Type> typesList,
+    public BoundFragmentImpl(String sql, List<Getter> gettersList,
             Object[] parameters) {
         this.sql = sql;
         this.gettersList = gettersList;
-        this.typesList = typesList;
         this.parameters = parameters;
     }
 
@@ -57,9 +53,8 @@ public class BoundFragmentImpl implements BoundFragment {
         builder.append(sql);
         for(Getter getter : gettersList) {
             params.add(getter.getValue(this.parameters));
+            types.add(getter.getType());
         }
-        types.addAll(this.typesList);
-        
     }
 
 }
