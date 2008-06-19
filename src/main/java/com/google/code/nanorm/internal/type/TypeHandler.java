@@ -15,6 +15,8 @@
  */
 package com.google.code.nanorm.internal.type;
 
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -28,4 +30,6 @@ public interface TypeHandler<T> {
     T getResult(ResultSet rs, int column) throws SQLException;
     
     T getResult(ResultSet rs, String column) throws SQLException;
+    
+    void setResult(PreparedStatement st, int column, Object value) throws SQLException;
 }

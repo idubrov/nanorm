@@ -235,6 +235,11 @@ public class Configuration {
         return resultMapConfig;
     }
     
+    /** @return Returns the typeHandlerFactory. */
+    public TypeHandlerFactory getTypeHandlerFactory() {
+        return typeHandlerFactory;
+    }
+    
     /**
      * @see java.lang.Object#toString()
      */

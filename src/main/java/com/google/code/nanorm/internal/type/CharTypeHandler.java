@@ -15,8 +15,10 @@
  */
 package com.google.code.nanorm.internal.type;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 /**
  *
@@ -47,6 +49,17 @@ public class CharTypeHandler implements TypeHandler<Character> {
             return str.charAt(0);
         }
         throw new RuntimeException("INVALID CHARACTER!!!");
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void setResult(PreparedStatement st, int column, Object value) throws SQLException {
+        if(value == null) {
+            st.setNull(column, Types.CHAR);
+        } else {
+            st.setString(column, ((Character) value).toString());
+        }
     }
 
 }

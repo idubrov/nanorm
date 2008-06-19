@@ -15,6 +15,8 @@
  */
 package com.google.code.nanorm.internal.type;
 
+import java.lang.reflect.Type;
+
 /**
  *
  * @author Ivan Dubrov
@@ -22,7 +24,7 @@ package com.google.code.nanorm.internal.type;
  */
 public interface TypeHandlerFactory {
 
-    TypeHandler<?> getTypeHandler(Class<?> type);
+    TypeHandler<?> getTypeHandler(Type type);
     
     TypeHandler<Object> getUnknownTypeHandler();
 }

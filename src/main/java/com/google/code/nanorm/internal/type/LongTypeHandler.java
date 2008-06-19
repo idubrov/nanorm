@@ -15,8 +15,10 @@
  */
 package com.google.code.nanorm.internal.type;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 /**
  *
@@ -37,5 +39,16 @@ public class LongTypeHandler implements TypeHandler<Long> {
      */
     public Long getResult(ResultSet rs, String column) throws SQLException {
         return rs.getLong(column);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void setResult(PreparedStatement st, int column, Object value) throws SQLException {
+        if(value == null) {
+            st.setNull(column, Types.BIGINT);
+        } else {
+            st.setLong(column, (Long) value);
+        }
     }
 }

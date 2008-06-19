@@ -24,6 +24,7 @@ import org.junit.After;
 import org.junit.Before;
 
 import com.google.code.nanorm.Factory;
+import com.google.code.nanorm.Transaction;
 import com.google.code.nanorm.internal.FactoryImpl;
 
 /**
@@ -36,6 +37,8 @@ public class MapperTestBase {
     protected Connection conn;
     
     protected Factory factory;
+    
+    protected Transaction transaction;
     
     @Before
     public void setUp() throws Exception {
@@ -87,7 +90,7 @@ public class MapperTestBase {
         conn.commit();
         
         factory = new FactoryImpl();
-        factory.useConnection(conn);
+        transaction = factory.useConnection(conn);
         
     }
     
@@ -102,7 +105,8 @@ public class MapperTestBase {
     
     @After
     public void tearDown() throws Exception {
-        factory.useConnection(null);
+        transaction.rollback();
+        transaction.end();
         conn.close();
     }
 

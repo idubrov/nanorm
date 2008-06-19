@@ -15,6 +15,7 @@
  */
 package com.google.code.nanorm.internal.type;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ import java.util.Map;
  */
 public class TypeHandlerFactoryImpl implements TypeHandlerFactory {
     
-    private Map<Class<?>, TypeHandler<?>> typeHandlers = new HashMap<Class<?>, TypeHandler<?>>();
+    private Map<Type, TypeHandler<?>> typeHandlers = new HashMap<Type, TypeHandler<?>>();
     
     private UnknownTypeHandler unknownTypeHandler = new UnknownTypeHandler();
     
@@ -60,7 +61,7 @@ public class TypeHandlerFactoryImpl implements TypeHandlerFactory {
     /**
      * @see com.google.code.nanorm.internal.type.TypeHandlerFactory#getTypeHandler(java.lang.Class)
      */
-    public TypeHandler<?> getTypeHandler(Class<?> type) {
+    public TypeHandler<?> getTypeHandler(Type type) {
         TypeHandler<?> typeHandler = typeHandlers.get(type);
         if(typeHandler == null) {
             typeHandler = unknownTypeHandler;
@@ -75,7 +76,7 @@ public class TypeHandlerFactoryImpl implements TypeHandlerFactory {
         return unknownTypeHandler;
     }
     
-    final public <T> void register(Class<T> type, TypeHandler<T> handler) {
+    final public <T> void register(Type type, TypeHandler<T> handler) {
         typeHandlers.put(type, handler);
     }
 }

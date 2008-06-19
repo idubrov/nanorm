@@ -28,6 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.code.nanorm.Factory;
+import com.google.code.nanorm.Transaction;
 import com.google.code.nanorm.internal.FactoryImpl;
 import com.google.code.nanorm.test.beans.Car;
 
@@ -41,6 +42,8 @@ public class TestCarMapper {
     private Connection conn;
     
     private Factory factory;
+    
+    private Transaction transaction;
     
     @Before
     public void setUp() throws Exception {
@@ -58,7 +61,7 @@ public class TestCarMapper {
         conn.commit();
         
         factory = new FactoryImpl();
-        factory.useConnection(conn);
+        transaction = factory.useConnection(conn);
         
     }
     
@@ -73,7 +76,8 @@ public class TestCarMapper {
     
     @After
     public void tearDown() throws Exception {
-        factory.useConnection(null);
+        transaction.rollback();
+        transaction.end();
         conn.close();
     }
 

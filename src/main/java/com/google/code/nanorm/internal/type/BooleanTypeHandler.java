@@ -15,8 +15,10 @@
  */
 package com.google.code.nanorm.internal.type;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 /**
  *
@@ -26,16 +28,27 @@ import java.sql.SQLException;
 public class BooleanTypeHandler implements TypeHandler<Boolean> {
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getResult(java.sql.ResultSet, int)
+     * {@inheritDoc}
      */
     public Boolean getResult(ResultSet rs, int column) throws SQLException {
         return rs.getBoolean(column);
     }
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getResult(java.sql.ResultSet, java.lang.String)
+     * {@inheritDoc}
      */
     public Boolean getResult(ResultSet rs, String column) throws SQLException {
         return rs.getBoolean(column);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void setResult(PreparedStatement st, int column, Object value) throws SQLException {
+        if(value == null) {
+            st.setNull(column, Types.BOOLEAN);
+        } else {
+            st.setBoolean(column, (Boolean) value);
+        }
     }
 }

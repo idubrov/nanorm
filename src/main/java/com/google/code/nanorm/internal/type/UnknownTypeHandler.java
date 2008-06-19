@@ -15,8 +15,10 @@
  */
 package com.google.code.nanorm.internal.type;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 /**
  *
@@ -38,5 +40,11 @@ public class UnknownTypeHandler implements TypeHandler<Object> {
     public Object getResult(ResultSet rs, String column) throws SQLException {
         return rs.getObject(column);
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void setResult(PreparedStatement st, int column, Object value) throws SQLException {
+        st.setObject(column, value);
+    }
 }

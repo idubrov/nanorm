@@ -25,4 +25,6 @@ public interface Transaction {
     void commit();
     
     void rollback();
+    
+    void end();
 }

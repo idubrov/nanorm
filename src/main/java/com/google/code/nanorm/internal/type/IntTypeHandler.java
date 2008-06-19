@@ -15,8 +15,10 @@
  */
 package com.google.code.nanorm.internal.type;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 /**
  *
@@ -37,5 +39,16 @@ public class IntTypeHandler implements TypeHandler<Integer> {
      */
     public Integer getResult(ResultSet rs, String column) throws SQLException {
         return rs.getInt(column);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void setResult(PreparedStatement st, int column, Object value) throws SQLException {
+        if(value == null) {
+            st.setNull(column, Types.INTEGER);
+        } else {
+            st.setInt(column, (Integer) value);
+        }
     }
 }

@@ -21,5 +21,5 @@ public interface Factory
 {
     <T> T createMapper(Class<T> daoClass);
     
-    void useConnection(Connection conn);
+    Transaction useConnection(Connection conn);
 }
