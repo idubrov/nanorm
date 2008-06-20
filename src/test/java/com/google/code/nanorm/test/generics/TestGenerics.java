@@ -32,15 +32,9 @@ public class TestGenerics {
     
     @Test
     public void testSome() throws Exception {
-//        Class<?> clazz = Owner.class;
-//        
-//        Method m = clazz.getMethod("getItem");
-//        
-//        Type type = m.getGenericReturnType();
-//        ParameterizedType pt = (ParameterizedType) type;
-        
         ParameterizedType pt = new ResolvedParameterizedType(Owner.class);
         String[] path = "getItem.getValue.getValue.getModel".split("\\.");
+        //String[] path = "getItem2.getValue.getValue.getModel".split("\\.");
         for(int i = 0; i < path.length; ++i) {
             // TODO: Check!
             Class<?> clazz = (Class<?>) pt.getRawType();
@@ -71,7 +65,7 @@ public class TestGenerics {
             
             // TODO: Resolve raw type as well!!
             Class<?> resolvedRawType = resolveRawType(pt.getRawType());
-            Type[] resolvedArguments = recursivelyResolve(pt.getActualTypeArguments(), pt);
+            Type[] resolvedArguments = recursivelyResolve(pt.getActualTypeArguments(), owner);
             return new ResolvedParameterizedType(resolvedRawType, resolvedArguments);
         } else {
             throw new RuntimeException("Not supported!");

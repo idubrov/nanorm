@@ -32,4 +32,14 @@ public class Owner {
     public void setItem(Wrapper<Wrapper<Car>> item) {
         this.item = item;
     }
+    
+    private Wrapper2<Car> item2;
+
+    public Wrapper2<Car> getItem2() {
+        return item2;
+    }
+
+    public void setItem2(Wrapper2<Car> item2) {
+        this.item2 = item2;
+    }
 }
