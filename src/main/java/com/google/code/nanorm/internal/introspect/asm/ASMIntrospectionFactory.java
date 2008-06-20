@@ -18,6 +18,7 @@ package com.google.code.nanorm.internal.introspect.asm;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -268,11 +269,11 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
         String[] paths = property.split("\\.");
         Label[] labels = new Label[paths.length];
 
-        java.lang.reflect.Type type = beanClass;
+        ParameterizedType pt = new ResolvedParameterizedType(beanClass);
         int count = isSetter ? paths.length - 1 : paths.length;
         for (int i = 0; i < count; ++i) {
             // TODO: Cast!
-            Class<?> clazz = (Class<?>) type;
+            Class<?> clazz = (Class<?>) pt.getRawType();
             labels[i] = new Label();
 
             // Check not null
@@ -285,11 +286,12 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
                     new Type[0]);
             mg.invokeVirtual(Type.getType(clazz), method);
 
-            type = getter.getGenericReturnType();
+            // TODO: Should not resolve the last?
+            pt = TypeOracle.resolve(getter.getGenericReturnType(), pt);
         }
         if (isSetter) {
-            // TODO: Cast!
-            Class<?> clazz = (Class<?>) type;
+            // TODO: Castu!
+            Class<?> clazz = (Class<?>) pt.getRawType();
 
             // Generate access code
             java.lang.reflect.Method setter = findSetter(clazz, paths[paths.length - 1]);
@@ -307,7 +309,6 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
             mg.visitMethodInsn(Opcodes.INVOKEVIRTUAL, owner, setter.getName(), desc);
             mg.visitInsn(Opcodes.RETURN);
         } else {
-
             // TODO: Primitive types!
             mg.visitInsn(Opcodes.ARETURN);
         }
@@ -330,7 +331,11 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
             nullPropPath.append(paths[i]);
         }
         // Final property type
-        return type;
+        if(pt.getActualTypeArguments().length == 0) {
+            // It is not a generic type, in fact, so unwrap it
+            return pt.getRawType();
+        }
+        return pt;
     }
 
     private void castTo(MethodVisitor mv, Class<?> c) {
@@ -471,13 +476,17 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
     public java.lang.reflect.Type getPropertyType(Class<?> beanClass, String property) {
         String[] paths = property.split("\\.");
 
-        java.lang.reflect.Type type = beanClass;
+        ParameterizedType pt = new ResolvedParameterizedType(beanClass);
         for (int i = 0; i < paths.length; ++i) {
             // TODO: Cast!
-            java.lang.reflect.Method getter = findGetter((Class<?>) type, paths[i]);
-            type = getter.getGenericReturnType();
+            java.lang.reflect.Method getter = findGetter((Class<?>) pt.getRawType(), paths[i]);
+            pt = TypeOracle.resolve(getter.getGenericReturnType(), pt);
         }
-        return type;
+        if(pt.getActualTypeArguments().length == 0) {
+            // It is not a generic type, in fact, so unwrap it
+            return pt.getRawType();
+        }
+        return pt;
     }
 
     private class ASMClassLoader extends ClassLoader {
@@ -488,7 +497,7 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
             super(parent);
         }
 
-        public Class defineClass(String name, byte[] b) {
+        public Class<?> defineClass(String name, byte[] b) {
             return defineClass(name, b, 0, b.length);
         }
     }
