@@ -47,6 +47,18 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
     
     private Map<AccessorKey, Setter> setters;
     
+    private final static Method GETTER_CTOR = Method.getMethod("void <init>(java.lang.reflect.Type)");
+    
+    private final static Method GET_VALUE = Method.getMethod("java.lang.Object getValue(java.lang.Object)");
+    
+    private final static Method CTOR = Method.getMethod("void <init>()");
+    
+    private final static Type JL_REFLECT_TYPE_TYPE = Type.getType(java.lang.reflect.Type.class);
+    
+    private final static Type OBJECT_TYPE = Type.getType(Object.class);
+    
+    private final static Type OBJECT_ARR_TYPE = Type.getType(Object[].class);
+    
     
     // TODO: Synchronization!
     private int num = 0;
@@ -84,7 +96,9 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
 
         // cw.visit(version, access, name, signature, superName, interfaces)
 
-        String name = "com/google/code/nanorm/generated/Getter" + num++;        
+        String name = "com/google/code/nanorm/generated/Getter" + num++;
+        Type owner = Type.getType("L" + name + ";");
+        
         cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, name, null,
                 "java/lang/Object",
                 new String[] {"com/google/code/nanorm/internal/introspect/Getter" });
@@ -93,21 +107,19 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
                 "type", "Ljava/lang/reflect/Type;", 
                 null, null);
         
-        visitConstructor(name, cw);
+        visitConstructor(owner, cw);
 
         // Object getValue(Object instance);
-        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "getValue",
-                "(Ljava/lang/Object;)Ljava/lang/Object;", null, null);
-        
-        mv.visitCode();
-        
+        GeneratorAdapter mg = 
+            new GeneratorAdapter(Opcodes.ACC_PUBLIC, GET_VALUE, null, null, cw);
+        mg.visitCode();
         
         // Regular getter
         java.lang.reflect.Type resultType;
         if(types == null) {
-            mv.visitIntInsn(Opcodes.ALOAD, 1);
-            mv.visitTypeInsn(Opcodes.CHECKCAST, nameOf(beanClass));
-            resultType = visitPath(mv, beanClass, path, false);
+            mg.loadArg(0);
+            mg.checkCast(Type.getType(beanClass));
+            resultType = visitPath(mg, beanClass, path, false);
         } else {
             int pos = path.indexOf('.');
             if (pos == -1) {
@@ -123,30 +135,26 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
             }
 
             // Load parameter from array
-            mv.visitIntInsn(Opcodes.ALOAD, 1);
-            mv.visitTypeInsn(Opcodes.CHECKCAST, "[Ljava/lang/Object;");
-            mv.visitLdcInsn(parameter);
-            mv.visitInsn(Opcodes.AALOAD);
+            mg.loadArg(0);
+            mg.checkCast(OBJECT_ARR_TYPE);
+            mg.push(parameter);
+            mg.arrayLoad(OBJECT_TYPE);
             
             if(pos == path.length()) {
-                mv.visitInsn(Opcodes.ARETURN);
+                mg.returnValue();
                 resultType = types[parameter];
             } else {
                 String subpath = path.substring(pos + 1);
-                mv.visitTypeInsn(Opcodes.CHECKCAST, nameOf((Class<?>) types[parameter]));
-                resultType = visitPath(mv, (Class<?>) types[parameter], subpath, false);
+                mg.checkCast(Type.getType((Class<?>) types[parameter]));
+                resultType = visitPath(mg, (Class<?>) types[parameter], subpath, false);
             }
             
         }
-        
-        // Finish
-        mv.visitMaxs(0, 0);
-        mv.visitEnd();
+        mg.endMethod();
         
         // Type getType();         
-        
         Method getTypeMethod = Method.getMethod("java.lang.reflect.Type getType()");
-        Type owner = Type.getType("L" + name + ";");
+        
         Type type = Type.getType(java.lang.reflect.Type.class);
         
         GeneratorAdapter getTypeGA = 
@@ -155,7 +163,7 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
         getTypeGA.loadThis();
         getTypeGA.getField(owner, "type", type);
         getTypeGA.returnValue();
-        getTypeGA.visitMaxs(0, 0);
+        getTypeGA.endMethod();
         
         cw.visitEnd();
 
@@ -203,7 +211,7 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
                 "type", "Ljava/lang/reflect/Type;", 
                 null, null);
         
-        visitConstructor(name, cw);
+        visitConstructor(cw);
 
         // Object getValue(Object instance);
         MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "setValue",
@@ -223,22 +231,31 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
 
         byte[] code = cw.toByteArray();
         Class<?> clazz = classLoader.defineClass(name.replace('/', '.'), code);
-        Constructor<?> ct = clazz.getConstructor(java.lang.reflect.Type.class);
-        return (Setter) ct.newInstance((Object) null);
+        return (Setter) clazz.newInstance();
     }
     
-    private void visitConstructor(String name, ClassVisitor cw) {
-        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>",
-                "(Ljava/lang/reflect/Type;)V", null, null);
-        mv.visitIntInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V");
+    private void visitConstructor(ClassVisitor cw) {
+        Method m = Method.getMethod("void <init>()");
         
-        mv.visitIntInsn(Opcodes.ALOAD, 0);
-        mv.visitIntInsn(Opcodes.ALOAD, 1);
-        mv.visitFieldInsn(Opcodes.PUTFIELD, name, "type", "Ljava/lang/reflect/Type;");
-        mv.visitInsn(Opcodes.RETURN);
-        mv.visitMaxs(0, 0);
-        mv.visitEnd();
+        GeneratorAdapter mg = 
+            new GeneratorAdapter(Opcodes.ACC_PUBLIC, m, null, null, cw);
+        mg.loadThis();
+        mg.invokeConstructor(Type.getType(Object.class), m);
+        mg.returnValue();
+        mg.endMethod();
+    }
+    
+    private void visitConstructor(Type owner, ClassVisitor cw) {
+        GeneratorAdapter mg = 
+            new GeneratorAdapter(Opcodes.ACC_PUBLIC, GETTER_CTOR, null, null, cw);
+        
+        mg.loadThis();
+        mg.invokeConstructor(OBJECT_TYPE, CTOR);
+        mg.loadThis();
+        mg.loadArg(0);
+        mg.putField(owner, "type", JL_REFLECT_TYPE_TYPE);
+        mg.returnValue();
+        mg.endMethod();
     }
     
     private String nameOf(Class<?> clazz) {
