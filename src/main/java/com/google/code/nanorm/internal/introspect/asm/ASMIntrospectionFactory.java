@@ -16,6 +16,7 @@
 
 package com.google.code.nanorm.internal.introspect.asm;
 
+import java.io.FileOutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
@@ -173,6 +174,10 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
         cw.visitEnd();
 
         byte[] code = cw.toByteArray();
+        /*try {
+            FileOutputStream out = new FileOutputStream("/tmp/Getter" + num + ".class");
+            out.write(code);
+        } catch(Exception e ) { }*/ 
         return createInstance(name, code, resultType);
     }
 
@@ -269,30 +274,37 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
         String[] paths = property.split("\\.");
         Label[] labels = new Label[paths.length];
 
-        ParameterizedType pt = new ResolvedParameterizedType(beanClass);
+        // Generic type
+        java.lang.reflect.Type type = beanClass;
+        // Resolved raw type
+        Class<?> clazz = beanClass;
+        
         int count = isSetter ? paths.length - 1 : paths.length;
         for (int i = 0; i < count; ++i) {
-            // TODO: Cast!
-            Class<?> clazz = (Class<?>) pt.getRawType();
             labels[i] = new Label();
 
             // Check not null
             mg.dup();
             mg.ifNull(labels[i]);
-
+            
             // Generate access code
             java.lang.reflect.Method getter = findGetter(clazz, paths[i]);
             Method method = new Method(getter.getName(), Type.getType(getter.getReturnType()),
                     new Type[0]);
             mg.invokeVirtual(Type.getType(clazz), method);
+            
+            // Resolve the return type using the current context 
+            type = TypeOracle.resolve(getter.getGenericReturnType(), type);
 
-            // TODO: Should not resolve the last?
-            pt = TypeOracle.resolve(getter.getGenericReturnType(), pt);
+            // Find out concrete Class instance behind the generics
+            clazz = TypeOracle.resolveRawType(type);
+
+            // Need to cast, types does not match
+            if(getter.getReturnType() != clazz) {
+                mg.checkCast(Type.getType(TypeOracle.resolveRawType(type)));
+            }
         }
         if (isSetter) {
-            // TODO: Castu!
-            Class<?> clazz = (Class<?>) pt.getRawType();
-
             // Generate access code
             java.lang.reflect.Method setter = findSetter(clazz, paths[paths.length - 1]);
             String owner = clazz.getName().replace('.', '/');
@@ -330,12 +342,7 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
             }
             nullPropPath.append(paths[i]);
         }
-        // Final property type
-        if(pt.getActualTypeArguments().length == 0) {
-            // It is not a generic type, in fact, so unwrap it
-            return pt.getRawType();
-        }
-        return pt;
+        return type;
     }
 
     private void castTo(MethodVisitor mv, Class<?> c) {
@@ -476,19 +483,15 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
     public java.lang.reflect.Type getPropertyType(Class<?> beanClass, String property) {
         String[] paths = property.split("\\.");
 
-        ParameterizedType pt = new ResolvedParameterizedType(beanClass);
+        java.lang.reflect.Type type = beanClass;
         for (int i = 0; i < paths.length; ++i) {
-            // TODO: Cast!
-            java.lang.reflect.Method getter = findGetter((Class<?>) pt.getRawType(), paths[i]);
-            pt = TypeOracle.resolve(getter.getGenericReturnType(), pt);
+            Class<?> clazz = TypeOracle.resolveRawType(type);
+            java.lang.reflect.Method getter = findGetter(clazz, paths[i]);
+            type = TypeOracle.resolve(getter.getGenericReturnType(), type);
         }
-        if(pt.getActualTypeArguments().length == 0) {
-            // It is not a generic type, in fact, so unwrap it
-            return pt.getRawType();
-        }
-        return pt;
+        return type;
     }
-
+    
     private class ASMClassLoader extends ClassLoader {
         /**
          * 

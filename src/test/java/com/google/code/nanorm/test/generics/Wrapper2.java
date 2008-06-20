@@ -23,7 +23,7 @@ package com.google.code.nanorm.test.generics;
  */
 public class Wrapper2<T> {
     
-    private Wrapper<T> value;
+    private Wrapper<T> value = new Wrapper<T>();
 
     public Wrapper<T> getValue() {
         return value;

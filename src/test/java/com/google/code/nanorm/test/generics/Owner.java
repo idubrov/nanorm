@@ -23,7 +23,7 @@ package com.google.code.nanorm.test.generics;
  */
 public class Owner {
     
-    private Wrapper<Wrapper<Car>> item;
+    private Wrapper<Wrapper<Car>> item = new Wrapper<Wrapper<Car>>();
 
     public Wrapper<Wrapper<Car>> getItem() {
         return item;
@@ -33,7 +33,7 @@ public class Owner {
         this.item = item;
     }
     
-    private Wrapper2<Car> item2;
+    private Wrapper2<Car> item2 = new Wrapper2<Car>();
 
     public Wrapper2<Car> getItem2() {
         return item2;

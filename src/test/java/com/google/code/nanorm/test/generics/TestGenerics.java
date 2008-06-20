@@ -17,13 +17,16 @@
 package com.google.code.nanorm.test.generics;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.google.code.nanorm.internal.introspect.asm.ResolvedParameterizedType;
+import com.google.code.nanorm.internal.introspect.Getter;
+import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
+import com.google.code.nanorm.internal.introspect.Setter;
+import com.google.code.nanorm.internal.introspect.asm.ASMIntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.asm.TypeOracle;
 
 /**
@@ -32,18 +35,42 @@ import com.google.code.nanorm.internal.introspect.asm.TypeOracle;
  * @version 1.0 20.06.2008
  */
 public class TestGenerics {
+    
+    private static IntrospectionFactory factory;
+    
+    @BeforeClass
+    public static void setUp() {
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        factory = new ASMIntrospectionFactory(loader);
+    }
+    
+    @Test
+    public void testGenericAccess() throws Exception {
+        Owner owner = new Owner();
+        owner.getItem().setValue(new Wrapper<Car>());
+        owner.getItem().getValue().setValue(new Car());
+        owner.getItem().getValue().getValue().setModel("Lada");
+        
+        Getter getter = factory.buildGetter(Owner.class, "item.value.value.model");
+        
+        Assert.assertEquals("Lada", getter.getValue(owner));
+        
+        Setter setter = factory.buildSetter(Owner.class, "item.value.value.model");
+        
+        setter.setValue(owner, "Kalina");
+        Assert.assertEquals("Kalina", owner.getItem().getValue().getValue().getModel());
+    }
 
     @Test
     public void testSome() throws Exception {
-        ParameterizedType pt = new ResolvedParameterizedType(Owner.class);
+        Type type = Owner.class;
         String[] path = "getItem.getValue.getValue.getModel".split("\\.");
         // String[] path = "getItem2.getValue.getValue.getModel".split("\\.");
         for (int i = 0; i < path.length; ++i) {
             // TODO: Check!
-            Class<?> clazz = (Class<?>) pt.getRawType();
+            Class<?> clazz = TypeOracle.resolveRawType(type);
             Method m = clazz.getMethod(path[i]);
-            Type t = m.getGenericReturnType();
-            pt = TypeOracle.resolve(t, pt);
+            type = TypeOracle.resolve(m.getGenericReturnType(), type);
         }
     }
 
@@ -56,15 +83,15 @@ public class TestGenerics {
         // Code to resolve getValue actual type
         Class<?> clazz = Bean.class;
         Type returnType = clazz.getMethod("getItem").getGenericReturnType();
-        ParameterizedType pt = new ResolvedParameterizedType(clazz);
+        Type type = clazz;
          
         // Resolve return type of getItem method
-        pt = TypeOracle.resolve(returnType, pt);
+        type = TypeOracle.resolve(returnType, type);
         
         // Resolve return type of getValue method
         returnType = Wrapper.class.getMethod("getValue").getGenericReturnType();
-        pt = TypeOracle.resolve(returnType, pt);
+        type = TypeOracle.resolve(returnType, type);
         
-        Assert.assertEquals(String.class, pt.getRawType());
+        Assert.assertEquals(String.class, TypeOracle.resolveRawType(type));
     }
 }

@@ -80,11 +80,40 @@ public class TypeOracle {
      * the given type parameter (which is any type used inside the generic
      * declaring class) and returns it as {@link ParameterizedType}.
      * 
+     * @param type type to resolve
+     * @param context context type (specialized generic or concrete class)
+     * @return resolved type
+     */
+    public static Type resolve(Type type, Type context) {
+        // First, we wrap context into ParameterizedType for simplicity
+        // In fact, it could be only concrete type ({@link Class}) or
+        // parameterized type ({@link ParameterizedType}).
+        ParameterizedType resolved;
+        if (context instanceof Class<?>) {
+            Class<?> clazz = (Class<?>) context;
+            resolved = resolveImpl(type, new ResolvedParameterizedType(clazz));
+        } else if (context instanceof ParameterizedType) {
+            resolved = resolveImpl(type, (ParameterizedType) context);
+        } else {
+            throw new RuntimeException("Not supported!");
+        }
+
+        // If we got parameterized type with zero actual parameters,
+        // that means it is concrete type, simply unwrap it.
+        if (resolved.getActualTypeArguments().length == 0) {
+            return resolved.getRawType();
+        }
+        return resolved;
+    }
+
+    /**
+     * 
+     * 
      * @param type type to resolve.
      * @param context context type
      * @return
      */
-    public static ParameterizedType resolve(Type type, ParameterizedType context) {
+    private static ParameterizedType resolveImpl(Type type, ParameterizedType context) {
         if (type instanceof Class<?>) {
             return new ResolvedParameterizedType((Class<?>) type);
         } else if (type instanceof TypeVariable<?>) {
@@ -110,7 +139,7 @@ public class TypeOracle {
         }
     }
 
-    public static Type[] recursivelyResolve(Type[] arguments, ParameterizedType owner) {
+    private static Type[] recursivelyResolve(Type[] arguments, ParameterizedType owner) {
         Type[] res = new Type[arguments.length];
         for (int i = 0; i < res.length; ++i) {
             if (arguments[i] instanceof Class<?>) {
@@ -140,7 +169,7 @@ public class TypeOracle {
         }
     }
 
-    public static Type resolveTypeVariable(ParameterizedType owner, TypeVariable<?> tv) {
+    private static Type resolveTypeVariable(ParameterizedType owner, TypeVariable<?> tv) {
         // TODO: Cast! Should resolve it as well!
         Class<?> ownerRaw = resolveRawType(owner.getRawType());
         TypeVariable<?>[] params = ownerRaw.getTypeParameters();
