@@ -42,7 +42,8 @@ public class TestGenerics {
         ParameterizedType pt = new ResolvedParameterizedType(Owner.class);
         String[] path = "getItem.getValue.getValue.getModel".split("\\.");
         for(int i = 0; i < path.length; ++i) {
-            Class<?> clazz = resolveRawType(pt.getRawType());
+            // TODO: Check!
+            Class<?> clazz = (Class<?>) pt.getRawType();
             Method m = clazz.getMethod(path[i]);
             Type t = m.getGenericReturnType();
             pt = resolve(t, pt);
@@ -53,7 +54,7 @@ public class TestGenerics {
     
     private ParameterizedType resolve(Type type, ParameterizedType owner) {
         if(type instanceof Class<?>) {
-            return new ResolvedParameterizedType(type);
+            return new ResolvedParameterizedType((Class<?>) type);
         } else if(type instanceof TypeVariable<?>) {
             TypeVariable<?> tv = (TypeVariable<?>) type;
             
@@ -61,7 +62,7 @@ public class TestGenerics {
             if(t instanceof ParameterizedType) {
                 return (ParameterizedType) t;
             } else if(t instanceof Class<?>) {
-                return new ResolvedParameterizedType(t);
+                return new ResolvedParameterizedType((Class<?>) t);
             } else {
                 throw new RuntimeException("Not supported");
             }
@@ -69,7 +70,9 @@ public class TestGenerics {
             ParameterizedType pt = (ParameterizedType) type;
             
             // TODO: Resolve raw type as well!!
-            return new ResolvedParameterizedType(pt.getRawType(), pt.getActualTypeArguments());
+            Class<?> resolvedRawType = resolveRawType(pt.getRawType());
+            Type[] resolvedArguments = recursivelyResolve(pt.getActualTypeArguments(), pt);
+            return new ResolvedParameterizedType(resolvedRawType, resolvedArguments);
         } else {
             throw new RuntimeException("Not supported!");
         }
@@ -86,7 +89,9 @@ public class TestGenerics {
             } else if(arguments[i] instanceof ParameterizedType) {
                 ParameterizedType pt = (ParameterizedType) arguments[i];
                 Type[] subargs = recursivelyResolve(pt.getActualTypeArguments(), owner);
-                res[i] = new ResolvedParameterizedType(pt.getRawType(), subargs);
+                
+                Class<?> resolvedRawType = resolveRawType(pt.getRawType());
+                res[i] = new ResolvedParameterizedType(resolvedRawType, subargs);
             }
         }
         return res;
@@ -114,6 +119,7 @@ public class TestGenerics {
             }
         }
         // Cannot resolve
+        // TODO: Try to derive from bounds.
         return null;
     }
     
@@ -126,14 +132,14 @@ public class TestGenerics {
         /**
          * 
          */
-        public ResolvedParameterizedType(Type rawType) {
+        public ResolvedParameterizedType(Class<?> rawType) {
             this.rawType = rawType;
         }
         
         /**
          * 
          */
-        public ResolvedParameterizedType(Type rawType, Type[] actualTypeArguments) {
+        public ResolvedParameterizedType(Class<?> rawType, Type[] actualTypeArguments) {
             this.rawType = rawType;
             this.actualTypeArguments = actualTypeArguments;
         }
