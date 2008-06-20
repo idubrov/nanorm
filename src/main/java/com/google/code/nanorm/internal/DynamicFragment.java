@@ -18,6 +18,7 @@ package com.google.code.nanorm.internal;
 import java.lang.reflect.Method;
 
 import com.google.code.nanorm.SQLSource;
+import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 
 /**
  *
@@ -28,11 +29,15 @@ public class DynamicFragment implements Fragment {
     
     final private Class<? extends SQLSource> statementClass;
     
+    final private IntrospectionFactory introspectionFactory;
+    
     /**
      * 
      */
-    public DynamicFragment(Class<? extends SQLSource> statementClass) {
+    public DynamicFragment(Class<? extends SQLSource> statementClass, 
+            IntrospectionFactory introspectionFactory) {
         this.statementClass = statementClass;
+        this.introspectionFactory = introspectionFactory;
     }
 
     /**
@@ -43,6 +48,7 @@ public class DynamicFragment implements Fragment {
             for(Method method : statementClass.getMethods()) {
                 if(method.getName().equals("sql")) {
                     SQLSource source = statementClass.newInstance();
+                    source.setIntrospectionFactory(introspectionFactory);
                     method.invoke(source, parameters);
                     return source;
                 }

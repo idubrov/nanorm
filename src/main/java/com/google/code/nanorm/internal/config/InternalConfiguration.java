@@ -108,11 +108,12 @@ public class InternalConfiguration {
         Select select = method.getAnnotation(Select.class);
         Source source = method.getAnnotation(Source.class);
         if(select != null) {
-            Fragment builder = new TextFragment(select.value(), method.getGenericParameterTypes());
+            Fragment builder = new TextFragment(select.value(), method.getGenericParameterTypes(),
+                    introspectionFactory);
             stConfig.setStatementBuilder(builder);
         } else if(source != null) {
             Class<? extends SQLSource> sqlSource = source.value();
-            Fragment builder = new DynamicFragment(sqlSource);
+            Fragment builder = new DynamicFragment(sqlSource, introspectionFactory);
             stConfig.setStatementBuilder(builder);
         } else {
             // Skip method

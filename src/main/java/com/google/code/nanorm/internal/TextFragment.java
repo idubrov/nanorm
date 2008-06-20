@@ -42,9 +42,8 @@ public class TextFragment implements Fragment {
 
     /** List of getters */
     final private List<Getter> gettersList;
-
-    // TODO: Configurable
-    final private IntrospectionFactory introspectionFactory = new BeanUtilsIntrospectionFactory();
+    
+    final private IntrospectionFactory introspectionFactory;
 
     /**
      * Construct text SQL fragment not configured for parameter types. The types
@@ -63,10 +62,11 @@ public class TextFragment implements Fragment {
      * 
      * @param sql
      */
-    public TextFragment(String sql) {
+    public TextFragment(String sql, IntrospectionFactory introspectionFactory) {
         this.sql = sql;
         this.sqlBuilder = null;
         this.gettersList = null;
+        this.introspectionFactory = introspectionFactory;
     }
 
     /**
@@ -74,10 +74,11 @@ public class TextFragment implements Fragment {
      * 
      * Introspects parameter types and creates getters for given types.
      */
-    public TextFragment(String sql, Type[] types) {
+    public TextFragment(String sql, Type[] types, IntrospectionFactory introspectionFactory) {
         this.sqlBuilder = new StringBuilder();
         this.gettersList = new ArrayList<Getter>();
         this.sql = sql;
+        this.introspectionFactory = introspectionFactory;
         configureTypes(types, sqlBuilder, gettersList);
     }
 

@@ -15,17 +15,19 @@
  */
 package com.google.code.nanorm;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.google.code.nanorm.internal.BoundFragment;
 import com.google.code.nanorm.internal.TextFragment;
+import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 
 public class SQLSource implements BoundFragment
 {
     private List<List<BoundFragment>> stack = new ArrayList<List<BoundFragment>>();
+    
+    private IntrospectionFactory introspectionFactory;
     
     public static class Join implements BoundFragment {
         private String open;
@@ -83,8 +85,13 @@ public class SQLSource implements BoundFragment
         stack.add(new ArrayList<BoundFragment>());
     }
     
+    /** @param introspectionFactory The introspectionFactory to set. */
+    public void setIntrospectionFactory(IntrospectionFactory introspectionFactory) {
+        this.introspectionFactory = introspectionFactory;
+    }
+    
     public void append(String clause, Object... params) {
-        last().add(new TextFragment(clause).bindParameters((Object[]) params));
+        last().add(new TextFragment(clause, introspectionFactory).bindParameters((Object[]) params));
     }
     
     public Join join(final String clause, Object... params) {
