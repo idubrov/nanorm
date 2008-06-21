@@ -86,9 +86,9 @@ public class TypeOracle {
      */
     public static Type resolve(Type type, Type context) {
         // First, we wrap context into ParameterizedType for simplicity
-        // In fact, it could be only concrete type ({@link Class}) or
+        // In fact, it should be only concrete type ({@link Class}) or
         // parameterized type ({@link ParameterizedType}).
-        ParameterizedType resolved;
+        Type resolved;
         if (context instanceof Class<?>) {
             Class<?> clazz = (Class<?>) context;
             resolved = resolveImpl(type, new ResolvedParameterizedType(clazz));
@@ -97,97 +97,95 @@ public class TypeOracle {
         } else {
             throw new RuntimeException("Not supported!");
         }
-
-        // If we got parameterized type with zero actual parameters,
-        // that means it is concrete type, simply unwrap it.
-        if (resolved.getActualTypeArguments().length == 0) {
-            return resolved.getRawType();
-        }
         return resolved;
     }
 
     /**
-     * Resolve type using the context.
+     * Resolve raw {@link Class} instance from given {@link Type}, which could
+     * be either {@link Class} instance of {@link ParameterizedType} instance.
+     * 
+     * @param type type to resolve
+     * @return resolved {@link Class} instance
+     */
+    public static Class<?> resolveRawType(Type type) {
+        if (type instanceof Class<?>) {
+            return (Class<?>) type;
+        } else if (type instanceof ParameterizedType) {
+            ParameterizedType pt = (ParameterizedType) type;
+            if (pt.getRawType() instanceof Class<?>) {
+                return (Class<?>) pt.getRawType();
+            }
+            throw new RuntimeException("Not supported!");
+        } else {
+            throw new RuntimeException("Not supported!");
+        }
+    }
+
+    /**
+     * Resolve type using the given context.
+     * 
+     * Returns {@link Class} instances as is. Resolves {@link TypeVariable}
+     * using {@link #resolveTypeVariable(TypeVariable, ParameterizedType)}.
+     * Resolves {@link ParameterizedType} recursively.
+     * 
+     * TODO: Implement support for wildcards.
      * 
      * @see #resolve(Type, Type)
+     * @see #resolveTypeVariable(TypeVariable, ParameterizedType)
      * @param type type to resolve.
      * @param context context type
-     * @return
+     * @return resolved type
      */
-    private static ParameterizedType resolveImpl(Type type, ParameterizedType context) {
+    private static Type resolveImpl(Type type, ParameterizedType context) {
         if (type instanceof Class<?>) {
-            // If type is concrete class -- nothing to resolve, all type info is known
-            return new ResolvedParameterizedType((Class<?>) type);
+            // If type is concrete class -- nothing to resolve, all type info is
+            // known
+            return type;
         } else if (type instanceof TypeVariable<?>) {
             // If type is type variable -- resolve it
             TypeVariable<?> tv = (TypeVariable<?>) type;
 
-            Type t = resolveTypeVariable(tv, context);
-            if (t instanceof ParameterizedType) {
-                return (ParameterizedType) t;
-            } else if (t instanceof Class<?>) {
-                return new ResolvedParameterizedType((Class<?>) t);
-            } else {
-                throw new RuntimeException("Not supported");
-            }
+            return resolveTypeVariable(tv, context);
         } else if (type instanceof ParameterizedType) {
             ParameterizedType pt = (ParameterizedType) type;
 
             // First resolve raw type
             // TODO: Pass context?
             Class<?> resolvedRawType = resolveRawType(pt.getRawType());
-            
+
             // Recursively resolve actual type arguments
-            Type[] resolvedArguments = recursivelyResolve(pt.getActualTypeArguments(), context);
-            return new ResolvedParameterizedType(resolvedRawType, resolvedArguments);
-        } else {
-            throw new RuntimeException("Not supported!");
-        }
-    }
-
-    private static Type[] recursivelyResolve(Type[] arguments, ParameterizedType context) {
-        Type[] res = new Type[arguments.length];
-        for (int i = 0; i < res.length; ++i) {
-            if (arguments[i] instanceof Class<?>) {
-                // If type is class -- nothing to resolve
-                res[i] = arguments[i];
-            } else if (arguments[i] instanceof TypeVariable<?>) {
-                TypeVariable<?> tv = (TypeVariable<?>) arguments[i];
-                res[i] = resolveTypeVariable(tv, context);
-            } else if (arguments[i] instanceof ParameterizedType) {
-                ParameterizedType pt = (ParameterizedType) arguments[i];
-                Type[] subargs = recursivelyResolve(pt.getActualTypeArguments(), context);
-
-                Class<?> resolvedRawType = resolveRawType(pt.getRawType());
-                res[i] = new ResolvedParameterizedType(resolvedRawType, subargs);
+            Type[] arguments = pt.getActualTypeArguments();
+            Type[] res = new Type[arguments.length];
+            for (int i = 0; i < res.length; ++i) {
+                res[i] = resolveImpl(arguments[i], context);
             }
-        }
-        return res;
-    }
-
-    public static Class<?> resolveRawType(Type type) {
-        if (type instanceof Class<?>) {
-            return (Class<?>) type;
-        } else if (type instanceof ParameterizedType) {
-            ParameterizedType pt = (ParameterizedType) type;
-            return resolveRawType(pt.getRawType());
+            return new ResolvedParameterizedType(resolvedRawType, res);
         } else {
             throw new RuntimeException("Not supported!");
         }
     }
 
-    private static Type resolveTypeVariable(TypeVariable<?> tv, ParameterizedType owner) {
-        // TODO: Cast! Should resolve it as well!
-        Class<?> ownerRaw = resolveRawType(owner.getRawType());
+    /**
+     * Resolve {@link TypeVariable} using given context. Finds the actual
+     * argument for given {@link TypeVariable} and returns it.
+     * 
+     * TODO: Try to get type information from bounds in corner cases.
+     * 
+     * @param tv
+     * @param context
+     * @return resolved type variable
+     */
+    private static Type resolveTypeVariable(TypeVariable<?> tv, ParameterizedType context) {
+        Class<?> ownerRaw = resolveRawType(context.getRawType());
         TypeVariable<?>[] params = ownerRaw.getTypeParameters();
         for (int i = 0; i < params.length; ++i) {
             if (params[i].equals(tv)) {
-                Type argument = owner.getActualTypeArguments()[i];
+                Type argument = context.getActualTypeArguments()[i];
+                // TODO: This could be TypeVariable, in that case we probably need to get
+                // information from bounds.
                 return argument;
             }
         }
-        // Cannot resolve
-        // TODO: Try to derive from bounds.
-        return null;
+        throw new RuntimeException("Could not resolve!");
     }
 }
