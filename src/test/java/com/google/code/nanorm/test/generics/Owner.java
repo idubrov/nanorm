@@ -23,7 +23,15 @@ package com.google.code.nanorm.test.generics;
  */
 public class Owner {
     
-    private Wrapper<Wrapper<Car>> item = new Wrapper<Wrapper<Car>>();
+    private Wrapper<Wrapper<Car>> item;
+    
+    private Wrapper2<Car> item2;
+    
+    private Wrapper<? extends Car> item3;
+    
+    private Wrapper<?> item4;
+    
+    private Wrapper3<Car> item5;
 
     public Wrapper<Wrapper<Car>> getItem() {
         return item;
@@ -33,13 +41,35 @@ public class Owner {
         this.item = item;
     }
     
-    private Wrapper2<Car> item2 = new Wrapper2<Car>();
-
     public Wrapper2<Car> getItem2() {
         return item2;
     }
 
     public void setItem2(Wrapper2<Car> item2) {
         this.item2 = item2;
+    }
+
+    public Wrapper<? extends Car> getItem3() {
+        return item3;
+    }
+
+    public void setItem3(Wrapper<? extends Car> item3) {
+        this.item3 = item3;
+    }
+
+    public Wrapper<?> getItem4() {
+        return item4;
+    }
+
+    public void setItem4(Wrapper<?> item4) {
+        this.item4 = item4;
+    }
+
+    public Wrapper3<Car> getItem5() {
+        return item5;
+    }
+
+    public void setItem5(Wrapper3<Car> item5) {
+        this.item5 = item5;
     }
 }

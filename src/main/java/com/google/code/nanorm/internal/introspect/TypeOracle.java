@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-package com.google.code.nanorm.internal.introspect.asm;
+package com.google.code.nanorm.internal.introspect;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
+
+import com.google.code.nanorm.exceptions.TypeOracleException;
+import com.google.code.nanorm.internal.introspect.asm.ResolvedParameterizedType;
 
 /**
  * Utilities to resolve generic types using the reflection. Used for resolving
@@ -95,19 +99,21 @@ public class TypeOracle {
         } else if (context instanceof ParameterizedType) {
             resolved = resolveImpl(type, (ParameterizedType) context);
         } else {
-            throw new RuntimeException("Not supported!");
+            throw new IllegalArgumentException("Illegal context argument: " + context
+                    + ". Context type could be only java.lang.Class or "
+                    + "java.lang.reflect.ParameterizedType instance.");
         }
         return resolved;
     }
 
     /**
-     * Resolve raw {@link Class} instance from given {@link Type}, which could
-     * be either {@link Class} instance of {@link ParameterizedType} instance.
+     * Resolve {@link Class} instance from given {@link Type}, which could be
+     * either {@link Class} instance of {@link ParameterizedType} instance.
      * 
      * @param type type to resolve
      * @return resolved {@link Class} instance
      */
-    public static Class<?> resolveRawType(Type type) {
+    public static Class<?> resolveClass(Type type) {
         if (type instanceof Class<?>) {
             return (Class<?>) type;
         } else if (type instanceof ParameterizedType) {
@@ -115,9 +121,12 @@ public class TypeOracle {
             if (pt.getRawType() instanceof Class<?>) {
                 return (Class<?>) pt.getRawType();
             }
-            throw new RuntimeException("Not supported!");
+            throw new IllegalArgumentException("Illegal raw type of parameterized type: "
+                    + pt.getRawType() + ". Raw type could be only java.lang.Class instance.");
         } else {
-            throw new RuntimeException("Not supported!");
+            throw new IllegalArgumentException("Illegal type argument: " + type
+                    + ". Type could be only java.lang.Class instance or "
+                    + "java.lang.reflect.ParameterizedType instance.");
         }
     }
 
@@ -151,7 +160,7 @@ public class TypeOracle {
 
             // First resolve raw type
             // TODO: Pass context?
-            Class<?> resolvedRawType = resolveRawType(pt.getRawType());
+            Class<?> resolvedRawType = resolveClass(pt.getRawType());
 
             // Recursively resolve actual type arguments
             Type[] arguments = pt.getActualTypeArguments();
@@ -160,6 +169,17 @@ public class TypeOracle {
                 res[i] = resolveImpl(arguments[i], context);
             }
             return new ResolvedParameterizedType(resolvedRawType, res);
+        } else if (type instanceof WildcardType) {
+            WildcardType wildcard = (WildcardType) type;
+
+            Type[] bounds = wildcard.getUpperBounds();
+            if (bounds.length == 0) {
+                // TODO: Log!
+                return Object.class;
+            }
+
+            // Currently only one bound is possible
+            return bounds[0];
         } else {
             throw new RuntimeException("Not supported!");
         }
@@ -176,12 +196,13 @@ public class TypeOracle {
      * @return resolved type variable
      */
     private static Type resolveTypeVariable(TypeVariable<?> tv, ParameterizedType context) {
-        Class<?> ownerRaw = resolveRawType(context.getRawType());
+        Class<?> ownerRaw = resolveClass(context.getRawType());
         TypeVariable<?>[] params = ownerRaw.getTypeParameters();
         for (int i = 0; i < params.length; ++i) {
             if (params[i].equals(tv)) {
                 Type argument = context.getActualTypeArguments()[i];
-                // TODO: This could be TypeVariable, in that case we probably need to get
+                // TODO: This could be TypeVariable, in that case we probably
+                // need to get
                 // information from bounds.
                 return argument;
             }

@@ -35,6 +35,7 @@ import org.objectweb.asm.commons.Method;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Setter;
+import com.google.code.nanorm.internal.introspect.TypeOracle;
 
 /**
  * 
@@ -297,11 +298,11 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
             type = TypeOracle.resolve(getter.getGenericReturnType(), type);
 
             // Find out concrete Class instance behind the generics
-            clazz = TypeOracle.resolveRawType(type);
+            clazz = TypeOracle.resolveClass(type);
 
             // Need to cast, types does not match
             if(getter.getReturnType() != clazz) {
-                mg.checkCast(Type.getType(TypeOracle.resolveRawType(type)));
+                mg.checkCast(Type.getType(TypeOracle.resolveClass(type)));
             }
         }
         if (isSetter) {
@@ -485,7 +486,7 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
 
         java.lang.reflect.Type type = beanClass;
         for (int i = 0; i < paths.length; ++i) {
-            Class<?> clazz = TypeOracle.resolveRawType(type);
+            Class<?> clazz = TypeOracle.resolveClass(type);
             java.lang.reflect.Method getter = findGetter(clazz, paths[i]);
             type = TypeOracle.resolve(getter.getGenericReturnType(), type);
         }

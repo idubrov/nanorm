@@ -21,15 +21,15 @@ package com.google.code.nanorm.test.generics;
  * @author Ivan Dubrov
  * @version 1.0 20.06.2008
  */
-public class Wrapper2<T> {
+public class Wrapper3<T> {
     
-    private Wrapper<T> value;
+    private T[] value;
 
-    public Wrapper<T> getValue() {
+    public T[] getValue() {
         return value;
     }
 
-    public void setValue(Wrapper<T> value) {
+    public void setValue(T[] value) {
         this.value = value;
     }
 }

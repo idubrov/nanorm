@@ -26,8 +26,8 @@ import org.junit.Test;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Setter;
+import com.google.code.nanorm.internal.introspect.TypeOracle;
 import com.google.code.nanorm.internal.introspect.asm.ASMIntrospectionFactory;
-import com.google.code.nanorm.internal.introspect.asm.TypeOracle;
 
 /**
  * 
@@ -45,22 +45,67 @@ public class TestGenerics {
     }
     
     @Test
+    public void testGenericTypes() throws Exception {
+        Assert.assertEquals(String.class, factory.getPropertyType(Owner.class, "item.value.value.model"));
+        Assert.assertEquals(String.class, factory.getPropertyType(Owner.class, "item2.value.value.model"));
+        Assert.assertEquals(String.class, factory.getPropertyType(Owner.class, "item3.value.model"));
+        //Assert.assertEquals(String.class, factory.getPropertyType(Owner.class, "item4.value.value.model"));
+    }
+    
+    @Test
     public void testGenericAccess() throws Exception {
         Owner owner = new Owner();
+        owner.setItem(new Wrapper<Wrapper<Car>>());
         owner.getItem().setValue(new Wrapper<Car>());
         owner.getItem().getValue().setValue(new Car());
+        
+        // Test
         owner.getItem().getValue().getValue().setModel("Lada");
-        
         Getter getter = factory.buildGetter(Owner.class, "item.value.value.model");
-        
         Assert.assertEquals("Lada", getter.getValue(owner));
         
         Setter setter = factory.buildSetter(Owner.class, "item.value.value.model");
-        
         setter.setValue(owner, "Kalina");
         Assert.assertEquals("Kalina", owner.getItem().getValue().getValue().getModel());
     }
+    
+    @Test
+    public void testGenericAccess2() throws Exception {
+        Owner owner = new Owner();
+        owner.setItem2(new Wrapper2<Car>());
+        owner.getItem2().setValue(new Wrapper<Car>());
+        owner.getItem2().getValue().setValue(new Car());
+        
+        // Test
+        owner.getItem2().getValue().getValue().setModel("Lada");
+        Getter getter = factory.buildGetter(Owner.class, "item2.value.value.model");
+        Assert.assertEquals("Lada", getter.getValue(owner));
+        
+        Setter setter = factory.buildSetter(Owner.class, "item2.value.value.model");
+        setter.setValue(owner, "Kalina");
+        Assert.assertEquals("Kalina", owner.getItem2().getValue().getValue().getModel());
+        
+        
+    }
 
+    @Test
+    public void testGenericAccess3() throws Exception {
+        Owner owner = new Owner();
+        Wrapper<Car> w = new Wrapper<Car>();
+        owner.setItem3(w);
+        w.setValue(new Car());
+        
+        // Test
+        owner.getItem3().getValue().setModel("Lada");
+        Getter getter = factory.buildGetter(Owner.class, "item3.value.model");
+        Assert.assertEquals("Lada", getter.getValue(owner));
+        
+        Setter setter = factory.buildSetter(Owner.class, "item3.value.model");
+        setter.setValue(owner, "Kalina");
+        Assert.assertEquals("Kalina", owner.getItem3().getValue().getModel());
+    }
+
+    
     @Test
     public void testSome() throws Exception {
         Type type = Owner.class;
@@ -68,7 +113,7 @@ public class TestGenerics {
         // String[] path = "getItem2.getValue.getValue.getModel".split("\\.");
         for (int i = 0; i < path.length; ++i) {
             // TODO: Check!
-            Class<?> clazz = TypeOracle.resolveRawType(type);
+            Class<?> clazz = TypeOracle.resolveClass(type);
             Method m = clazz.getMethod(path[i]);
             type = TypeOracle.resolve(m.getGenericReturnType(), type);
         }
@@ -92,6 +137,6 @@ public class TestGenerics {
         returnType = Wrapper.class.getMethod("getValue").getGenericReturnType();
         type = TypeOracle.resolve(returnType, type);
         
-        Assert.assertEquals(String.class, TypeOracle.resolveRawType(type));
+        Assert.assertEquals(String.class, TypeOracle.resolveClass(type));
     }
 }
