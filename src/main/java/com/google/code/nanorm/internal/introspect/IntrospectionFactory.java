@@ -25,6 +25,8 @@ import java.lang.reflect.Type;
  */
 public interface IntrospectionFactory {
     
+    String ZERO_PARAMETER_ALIAS = "value";
+    
     Setter buildSetter(Class<?> beanClass, String path);
     
     Getter buildGetter(Class<?> beanClass, String path);

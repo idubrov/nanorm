@@ -158,6 +158,18 @@ public class TestGetter {
     }
     
     @Test
+    public void testGetterArray3() {
+        Car car = new Car();
+        car.setModel("Kalina");
+        Car[] cars = new Car[5];
+        cars[3] = car;
+            
+        Getter getter = factory.buildGetter(Car[].class, "[3].model");
+
+        Assert.assertEquals("Kalina", getter.getValue(cars));
+    }
+    
+    @Test
     public void testSetterArray() {
         Owner owner = new Owner();
         Crash crash = new Crash();

@@ -61,6 +61,10 @@ public final class PropertyNavigator {
         return pos == path.length();
     }
     
+    public final String getPath() {
+        return path;
+    }
+    
     public final int next() {
         // Skip '.' after property access
         if(token == PROPERTY && path.charAt(pos) == '.') {

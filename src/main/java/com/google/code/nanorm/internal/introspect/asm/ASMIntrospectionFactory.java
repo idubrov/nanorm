@@ -16,26 +16,21 @@
 
 package com.google.code.nanorm.internal.introspect.asm;
 
-import java.io.FileOutputStream;
-import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import com.google.code.nanorm.exceptions.IntrospectionException;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.PropertyNavigator;
@@ -43,6 +38,10 @@ import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.introspect.TypeOracle;
 
 /**
+ * ASM based {@link IntrospectionFactory} implementation. Uses runtime code
+ * generation to create getters and setters.
+ * 
+ * TODO: Debugging.
  * 
  * @author Ivan Dubrov
  * @version 1.0 19.06.2008
@@ -51,9 +50,9 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
 
     private ASMClassLoader classLoader;
 
-    private Map<AccessorKey, Getter> getters;
+    private Map<AccessorKey, Object> getters;
 
-    private Map<AccessorKey, Setter> setters;
+    private Map<AccessorKey, Object> setters;
 
     private final static Method GETTER_CTOR = Method
             .getMethod("void <init>(java.lang.reflect.Type)");
@@ -85,45 +84,87 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
     private final static Type STRING_TYPE = Type.getType(String.class);
 
     // TODO: Synchronization!
-    private int num = 0;
+    private final AtomicInteger counter = new AtomicInteger(0);
+    
+    private final Object lock = new Object();
 
     /**
      * 
      */
     public ASMIntrospectionFactory(ClassLoader parentLoader) {
         classLoader = new ASMClassLoader(parentLoader);
-        getters = new HashMap<AccessorKey, Getter>();
-        setters = new HashMap<AccessorKey, Setter>();
+        getters = new ConcurrentHashMap<AccessorKey, Object>();
+        setters = new ConcurrentHashMap<AccessorKey, Object>();
     }
 
     /**
      * {@inheritDoc}
      */
-    public Getter buildGetter(Class<?> beanClass, String path) {
-        try {
-            AccessorKey key = new AccessorKey(beanClass, path);
-            Getter getter = getters.get(key);
-            if (getter == null) {
-                getter = buildGetterClass(beanClass, path, null);
-                getters.put(key, getter);
-            }
-            return getter;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("!", e);
-        }
+    public Getter buildGetter(final Class<?> beanClass, final String path) {
+        AccessorKey key = new AccessorKey(beanClass, path);
+        Builder builder = new Builder() {
+            private java.lang.reflect.Type[] resultType = new java.lang.reflect.Type[1];
 
+            public byte[] generateCode(String name) {
+                return buildGetterCode(name, beanClass, path, null, resultType);
+            }
+
+            public Object generateInstance(Class<?> clazz) {
+
+                return createGetterInstance(clazz, resultType[0]);
+            }
+        };
+        return (Getter) checkAndGenerate(getters, key, builder);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Getter buildParameterGetter(final java.lang.reflect.Type[] types, final String path) {
+        AccessorKey key = new AccessorKey(types, path);
+        Builder builder = new Builder() {
+            private java.lang.reflect.Type[] resultType = new java.lang.reflect.Type[1];
+
+            public byte[] generateCode(String name) {
+                return buildGetterCode(name, null, path, types, resultType);
+            }
+
+            public Object generateInstance(Class<?> clazz) {
+                return createGetterInstance(clazz, resultType[0]);
+            }
+        };
+        return (Getter) checkAndGenerate(getters, key, builder);
     }
 
-    protected Getter buildGetterClass(Class<?> beanClass, String path,
-            java.lang.reflect.Type[] types) throws NoSuchMethodException,
-            IllegalArgumentException, InstantiationException, IllegalAccessException,
-            InvocationTargetException {
+    /**
+     * {@inheritDoc}
+     */
+    public Setter buildSetter(final Class<?> beanClass, final String path) {
+        AccessorKey key = new AccessorKey(beanClass, path);
+        Builder builder = new Builder() {
+
+            public byte[] generateCode(String name) {
+                return buildSetterCode(name, beanClass, path);
+            }
+
+            public Object generateInstance(Class<?> clazz) {
+                try {
+                    return clazz.newInstance();
+                } catch(Exception e) {
+                    throw new IntrospectionException("Failed to create accessor instance!", e);
+                }
+            }
+
+        };
+        return (Setter) checkAndGenerate(setters, key, builder);
+    }
+
+
+
+    protected byte[] buildGetterCode(String name, Class<?> beanClass, String path,
+            java.lang.reflect.Type[] types, java.lang.reflect.Type[] resultType) {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 
-        // cw.visit(version, access, name, signature, superName, interfaces)
-
-        String name = "com/google/code/nanorm/generated/Getter" + num++;
         Type owner = Type.getType("L" + name + ";");
 
         cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, name, null, "java/lang/Object",
@@ -138,13 +179,13 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
         GeneratorAdapter mg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, GET_VALUE, null, null, cw);
         mg.visitCode();
 
-        // Regular getter
-        java.lang.reflect.Type resultType;
         if (types == null) {
+            // Regular getter
             mg.loadArg(0);
             mg.checkCast(Type.getType(beanClass));
-            resultType = visitPath(mg, beanClass, path, false);
+            resultType[0] = visitPath(mg, beanClass, path, false);
         } else {
+            // Parameter access
             int pos = path.indexOf('.');
             if (pos == -1) {
                 pos = path.length();
@@ -152,7 +193,7 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
             String context = path.substring(0, pos);
 
             int parameter;
-            if (context.equals("value")) {
+            if (context.equals(ZERO_PARAMETER_ALIAS)) {
                 parameter = 0;
             } else {
                 parameter = Integer.parseInt(context) - 1;
@@ -164,15 +205,17 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
             mg.push(parameter);
             mg.arrayLoad(OBJECT_TYPE);
 
+            // Either return value or proceed with property navigation
             if (pos == path.length()) {
                 mg.returnValue();
-                resultType = types[parameter];
+                resultType[0] = types[parameter];
             } else {
-                String subpath = path.substring(pos + 1);
+                path = path.substring(pos + 1);
+                // TODO: Parameter type could be not class!
                 mg.checkCast(Type.getType((Class<?>) types[parameter]));
-                resultType = visitPath(mg, (Class<?>) types[parameter], subpath, false);
+                beanClass = (Class<?>) types[parameter];
+                resultType[0] = visitPath(mg, beanClass, path, false);
             }
-
         }
         mg.endMethod();
 
@@ -189,27 +232,21 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
         cw.visitEnd();
 
         byte[] code = cw.toByteArray();
-        /*
-         * try { FileOutputStream out = new FileOutputStream("/tmp/Getter" + num +
-         * ".class"); out.write(code); } catch(Exception e ) { }
-         */
-        return createInstance(name, code, resultType);
+        return code;
     }
 
-    private Getter createInstance(String name, byte[] code, java.lang.reflect.Type resultType)
-            throws SecurityException, NoSuchMethodException, IllegalArgumentException,
-            InstantiationException, IllegalAccessException, InvocationTargetException {
-        Class<?> clazz = classLoader.defineClass(name.replace('/', '.'), code);
-        Constructor<?> ct = clazz.getConstructor(java.lang.reflect.Type.class);
-        return (Getter) ct.newInstance(resultType);
+    private Getter createGetterInstance(Class<?> clazz, java.lang.reflect.Type resultType) {
+        try {
+            Constructor<?> ct = clazz.getConstructor(java.lang.reflect.Type.class);
+            return (Getter) ct.newInstance(resultType);
+        } catch(Exception e) {
+            throw new IntrospectionException("Failed to create getter instance!", e);
+        }
     }
 
-    protected Setter buildSetterClass(Class<?> beanClass, String path)
-            throws NoSuchMethodException, IllegalArgumentException, InstantiationException,
-            IllegalAccessException, InvocationTargetException {
+    protected byte[] buildSetterCode(String name, Class<?> beanClass, String path) {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 
-        String name = "com/google/code/nanorm/generated/Setter" + num++;
         cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, name, null, "java/lang/Object",
                 new String[] {"com/google/code/nanorm/internal/introspect/Setter" });
 
@@ -231,8 +268,7 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
         cw.visitEnd();
 
         byte[] code = cw.toByteArray();
-        Class<?> clazz = classLoader.defineClass(name.replace('/', '.'), code);
-        return (Setter) clazz.newInstance();
+        return code;
     }
 
     private void visitConstructor(ClassVisitor cw) {
@@ -258,12 +294,8 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
         mg.endMethod();
     }
 
-    private String nameOf(Class<?> clazz) {
-        return clazz.getName().replace('.', '/');
-    }
-
     protected java.lang.reflect.Type visitPath(GeneratorAdapter mg, final Class<?> beanClass,
-            String path, boolean isSetter) throws NoSuchMethodException {
+            String path, boolean isSetter) {
 
         PropertyNavigator nav = new PropertyNavigator(path);
         Label npeLabel = new Label(); // NPE handling code
@@ -281,7 +313,7 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
             // Check current value is not null
             mg.dup();
             mg.push(pos); // Push current path position for better NPE
-                            // diagnostics
+            // diagnostics
             mg.swap();
             mg.ifNull(npeLabel);
             mg.pop();
@@ -297,21 +329,22 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
                 // TODO: Could be generic array!
                 if (!clazz.isArray()) {
                     throw new IllegalArgumentException("Array expected at property "
-                            + path.substring(0, pos) + "(full property is " + path + ".)");
+                            + path.substring(0, pos) + "(full property is " + path
+                            + "). Actual type was " + clazz);
                 }
                 clazz = clazz.getComponentType();
                 type = clazz;
-                
+
                 mg.push(nav.getIndex());
                 mg.arrayLoad(Type.getType(clazz));
-            } else if(nav.getToken() == PropertyNavigator.PROPERTY) {
+            } else if (nav.getToken() == PropertyNavigator.PROPERTY) {
 
                 java.lang.reflect.Method getter = findGetter(clazz, nav.getProperty());
                 Method method = new Method(getter.getName(),
                         Type.getType(getter.getReturnType()), new Type[0]);
-                
+
                 mg.invokeVirtual(Type.getType(clazz), method);
-                
+
                 // Resolve the return type using the current context
                 type = TypeOracle.resolve(getter.getGenericReturnType(), type);
 
@@ -333,19 +366,20 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
                 // TODO: Could be generic array!
                 if (!clazz.isArray()) {
                     throw new IllegalArgumentException("Array expected at property "
-                            + path.substring(0, pos) + "(full property is " + path + ".)");
+                            + path.substring(0, pos) + "(full property is " + path
+                            + "). Actual type was " + clazz);
                 }
-                
+
                 // Push array index
                 mg.push(nav.getIndex());
-                
+
                 // Cast parameter to required type
                 Type t = Type.getType(clazz.getComponentType());
                 mg.loadArg(1);
                 mg.unbox(t);
-                
+
                 mg.arrayStore(t);
-            } else if(nav.getToken() == PropertyNavigator.PROPERTY) {
+            } else if (nav.getToken() == PropertyNavigator.PROPERTY) {
                 // TODO: Arrays!
                 java.lang.reflect.Method setter = findSetter(clazz, nav.getProperty());
                 Class<?> paramType = setter.getParameterTypes()[0];
@@ -401,51 +435,44 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
         }
     }
 
-    private java.lang.reflect.Method findSetter(Class<?> clazz, String property)
-            throws SecurityException, NoSuchMethodException {
+    private java.lang.reflect.Method findSetter(Class<?> clazz, String property) {
         String name = "set" + Character.toUpperCase(property.charAt(0)) + property.substring(1);
         for (java.lang.reflect.Method method : clazz.getDeclaredMethods()) {
             if (method.getParameterTypes().length == 1 && method.getName().equals(name)) {
                 return method;
             }
         }
-        throw new NoSuchMethodException(clazz + "." + name + "(<any type>)");
+        throw new IntrospectionException("Cannot find setter method " + clazz + "." + name
+                + "(<any type>)");
+    }
+   
+    private interface Builder {
+        byte[] generateCode(String name);
+
+        Object generateInstance(Class<?> clazz);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public Getter buildParameterGetter(java.lang.reflect.Type[] types, String path) {
-        try {
-            AccessorKey key = new AccessorKey(types, path);
-            Getter getter = getters.get(key);
-            if (getter == null) {
-                getter = buildGetterClass(null, path, types);
-                getters.put(key, getter);
-            }
-            return getter;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("!", e);
-        }
-    }
+    private Object checkAndGenerate(Map<AccessorKey, Object> cache, AccessorKey key,
+            Builder builder) {
+        Object instance = cache.get(key);
+        if (instance == null) {
+            String name = "com/google/code/nanorm/generated/Accessor" + counter.incrementAndGet();
 
-    /**
-     * {@inheritDoc}
-     */
-    public Setter buildSetter(Class<?> beanClass, String path) {
-        try {
-            AccessorKey key = new AccessorKey(beanClass, path);
-            Setter setter = setters.get(key);
-            if (setter == null) {
-                setter = buildSetterClass(beanClass, path);
-                setters.put(key, setter);
+            byte[] code = builder.generateCode(name);
+
+            // Re-check we didn't created other instance while we were
+            // generating
+            synchronized (lock) {
+                instance = cache.get(key);
+
+                if (instance == null) {
+                    Class<?> clazz = classLoader.defineClass(name.replace('/', '.'), code);
+                    instance = builder.generateInstance(clazz);
+                    cache.put(key, instance);
+                }
             }
-            return setter;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("!", e);
         }
+        return instance;
     }
 
     /**
@@ -466,7 +493,7 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
         String context = path.substring(0, pos);
 
         int parameter;
-        if (context.equals("value")) {
+        if (context.equals(ZERO_PARAMETER_ALIAS)) {
             parameter = 0;
         } else {
             parameter = Integer.parseInt(context) - 1;
@@ -494,14 +521,28 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
         return type;
     }
 
+    /**
+     * Classloader used for accessors.
+     *
+     * @author Ivan Dubrov
+     * @version 1.0 21.06.2008
+     */
     private class ASMClassLoader extends ClassLoader {
         /**
+         * Constructor.
          * 
+         * @param parent parent classloader 
          */
         public ASMClassLoader(ClassLoader parent) {
             super(parent);
         }
 
+        /**
+         * Define class in the classloader.
+         * @param name class name
+         * @param b code
+         * @return {@link Class} instance.
+         */
         public Class<?> defineClass(String name, byte[] b) {
             return defineClass(name, b, 0, b.length);
         }
