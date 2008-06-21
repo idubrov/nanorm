@@ -66,8 +66,14 @@ public final class PropertyNavigator {
     }
     
     public final int next() {
+        // TODO: Check end
         // Skip '.' after property access
         if(token == PROPERTY && path.charAt(pos) == '.') {
+            pos++;
+        } else if(token == INDEX) {
+            if(path.charAt(pos) != '.') {
+                throw unexpected();
+            }
             pos++;
         }
         
@@ -97,14 +103,6 @@ public final class PropertyNavigator {
                 
                 // Skip ']'
                 pos++;
-                
-                // Skip '.' after indexing operator
-                if(pos < path.length()) {
-                    if(path.charAt(pos) != '.') {
-                        throw unexpected();
-                    }
-                    pos++;
-                }
                 return ind;
             }
             if(!Character.isDigit(c)) {

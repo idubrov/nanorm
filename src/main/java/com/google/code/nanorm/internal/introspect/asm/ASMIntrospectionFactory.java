@@ -510,6 +510,7 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
      * {@inheritDoc}
      */
     public java.lang.reflect.Type getPropertyType(Class<?> beanClass, String property) {
+        // TODO: !!!!! Arrays!!!!
         String[] paths = property.split("\\.");
 
         java.lang.reflect.Type type = beanClass;
