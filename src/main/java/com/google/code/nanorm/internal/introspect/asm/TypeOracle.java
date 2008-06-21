@@ -107,19 +107,22 @@ public class TypeOracle {
     }
 
     /**
+     * Resolve type using the context.
      * 
-     * 
+     * @see #resolve(Type, Type)
      * @param type type to resolve.
      * @param context context type
      * @return
      */
     private static ParameterizedType resolveImpl(Type type, ParameterizedType context) {
         if (type instanceof Class<?>) {
+            // If type is concrete class -- nothing to resolve, all type info is known
             return new ResolvedParameterizedType((Class<?>) type);
         } else if (type instanceof TypeVariable<?>) {
+            // If type is type variable -- resolve it
             TypeVariable<?> tv = (TypeVariable<?>) type;
 
-            Type t = resolveTypeVariable(context, tv);
+            Type t = resolveTypeVariable(tv, context);
             if (t instanceof ParameterizedType) {
                 return (ParameterizedType) t;
             } else if (t instanceof Class<?>) {
@@ -130,8 +133,11 @@ public class TypeOracle {
         } else if (type instanceof ParameterizedType) {
             ParameterizedType pt = (ParameterizedType) type;
 
-            // TODO: Resolve raw type as well!!
+            // First resolve raw type
+            // TODO: Pass context?
             Class<?> resolvedRawType = resolveRawType(pt.getRawType());
+            
+            // Recursively resolve actual type arguments
             Type[] resolvedArguments = recursivelyResolve(pt.getActualTypeArguments(), context);
             return new ResolvedParameterizedType(resolvedRawType, resolvedArguments);
         } else {
@@ -139,17 +145,18 @@ public class TypeOracle {
         }
     }
 
-    private static Type[] recursivelyResolve(Type[] arguments, ParameterizedType owner) {
+    private static Type[] recursivelyResolve(Type[] arguments, ParameterizedType context) {
         Type[] res = new Type[arguments.length];
         for (int i = 0; i < res.length; ++i) {
             if (arguments[i] instanceof Class<?>) {
+                // If type is class -- nothing to resolve
                 res[i] = arguments[i];
             } else if (arguments[i] instanceof TypeVariable<?>) {
                 TypeVariable<?> tv = (TypeVariable<?>) arguments[i];
-                res[i] = resolveTypeVariable(owner, tv);
+                res[i] = resolveTypeVariable(tv, context);
             } else if (arguments[i] instanceof ParameterizedType) {
                 ParameterizedType pt = (ParameterizedType) arguments[i];
-                Type[] subargs = recursivelyResolve(pt.getActualTypeArguments(), owner);
+                Type[] subargs = recursivelyResolve(pt.getActualTypeArguments(), context);
 
                 Class<?> resolvedRawType = resolveRawType(pt.getRawType());
                 res[i] = new ResolvedParameterizedType(resolvedRawType, subargs);
@@ -169,7 +176,7 @@ public class TypeOracle {
         }
     }
 
-    private static Type resolveTypeVariable(ParameterizedType owner, TypeVariable<?> tv) {
+    private static Type resolveTypeVariable(TypeVariable<?> tv, ParameterizedType owner) {
         // TODO: Cast! Should resolve it as well!
         Class<?> ownerRaw = resolveRawType(owner.getRawType());
         TypeVariable<?>[] params = ownerRaw.getTypeParameters();
