@@ -21,7 +21,6 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 
-import com.google.code.nanorm.exceptions.TypeOracleException;
 import com.google.code.nanorm.internal.introspect.asm.ResolvedParameterizedType;
 
 /**
