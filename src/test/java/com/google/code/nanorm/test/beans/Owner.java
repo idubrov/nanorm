@@ -32,6 +32,8 @@ public class Owner {
     
     private List<Crash> crashes;
     
+    private Crash[] crashes2;
+    
     /** @return Returns the id. */
     public int getId() {
         return id;
@@ -70,5 +72,15 @@ public class Owner {
     /** @param crashes The crashes to set. */
     public void setCrashes(List<Crash> crashes) {
         this.crashes = crashes;
+    }
+    
+    /** @return Returns the crashes2. */
+    public Crash[] getCrashes2() {
+        return crashes2;
+    }
+    
+    /** @param crashes2 The crashes2 to set. */
+    public void setCrashes2(Crash[] crashes2) {
+        this.crashes2 = crashes2;
     }
 }

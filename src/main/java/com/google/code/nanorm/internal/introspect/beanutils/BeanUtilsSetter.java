@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.code.nanorm.internal.introspect;
+package com.google.code.nanorm.internal.introspect.beanutils;
 
 import org.apache.commons.beanutils.PropertyUtils;
+
+import com.google.code.nanorm.internal.introspect.Setter;
 
 /**
  * 

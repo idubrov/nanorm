@@ -65,7 +65,13 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
 
     private final static Type OBJECT_TYPE = Type.getType(Object.class);
 
+    private final static Type VOID_TYPE = Type.getType(void.class);
+
     private final static Type OBJECT_ARR_TYPE = Type.getType(Object[].class);
+
+    private final static Type NPE_TYPE = Type.getType(NullPointerException.class);
+
+    private final static Method NPE_CTOR = Method.getMethod("void <init>(java.lang.String)");
 
     // TODO: Synchronization!
     private int num = 0;
@@ -162,23 +168,20 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
         // Type getType();
         Method getTypeMethod = Method.getMethod("java.lang.reflect.Type getType()");
 
-        Type type = Type.getType(java.lang.reflect.Type.class);
+        mg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, getTypeMethod, null, null, cw);
 
-        GeneratorAdapter getTypeGA = new GeneratorAdapter(Opcodes.ACC_PUBLIC, getTypeMethod,
-                null, null, cw);
-
-        getTypeGA.loadThis();
-        getTypeGA.getField(owner, "type", type);
-        getTypeGA.returnValue();
-        getTypeGA.endMethod();
+        mg.loadThis();
+        mg.getField(owner, "type", JL_REFLECT_TYPE_TYPE);
+        mg.returnValue();
+        mg.endMethod();
 
         cw.visitEnd();
 
         byte[] code = cw.toByteArray();
-        /*try {
-            FileOutputStream out = new FileOutputStream("/tmp/Getter" + num + ".class");
-            out.write(code);
-        } catch(Exception e ) { }*/ 
+        /*
+         * try { FileOutputStream out = new FileOutputStream("/tmp/Getter" + num +
+         * ".class"); out.write(code); } catch(Exception e ) { }
+         */
         return createInstance(name, code, resultType);
     }
 
@@ -189,28 +192,6 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
         Constructor<?> ct = clazz.getConstructor(java.lang.reflect.Type.class);
         return (Getter) ct.newInstance(resultType);
     }
-
-    // private String getWrapper(Class<?> c) {
-    // if (c == Integer.TYPE) {
-    // return "java/lang/Integer";
-    // } else if (c == Void.TYPE) {
-    // return "java/lang/Void";
-    // } else if (c == Boolean.TYPE) {
-    // return "java/lang/Boolean";
-    // } else if (c == Byte.TYPE) {
-    // return "java/lang/Byte";
-    // } else if (c == Character.TYPE) {
-    // return "java/lang/Character";
-    // } else if (c == Short.TYPE) {
-    // return "java/lang/Short";
-    // } else if (c == Double.TYPE) {
-    // return "java/lang/Double";
-    // } else if (c == Float.TYPE) {
-    // return "java/lang/Float";
-    // } else /* if (c == Long.TYPE) */{
-    // return "java/lang/Long";
-    // }
-    // }
 
     protected Setter buildSetterClass(Class<?> beanClass, String path)
             throws NoSuchMethodException, IllegalArgumentException, InstantiationException,
@@ -279,7 +260,7 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
         java.lang.reflect.Type type = beanClass;
         // Resolved raw type
         Class<?> clazz = beanClass;
-        
+
         int count = isSetter ? paths.length - 1 : paths.length;
         for (int i = 0; i < count; ++i) {
             labels[i] = new Label();
@@ -287,28 +268,27 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
             // Check not null
             mg.dup();
             mg.ifNull(labels[i]);
-            
+
             // Generate access code
             java.lang.reflect.Method getter = findGetter(clazz, paths[i]);
             Method method = new Method(getter.getName(), Type.getType(getter.getReturnType()),
                     new Type[0]);
             mg.invokeVirtual(Type.getType(clazz), method);
-            
-            // Resolve the return type using the current context 
+
+            // Resolve the return type using the current context
             type = TypeOracle.resolve(getter.getGenericReturnType(), type);
 
             // Find out concrete Class instance behind the generics
             clazz = TypeOracle.resolveClass(type);
 
             // Need to cast, types does not match
-            if(getter.getReturnType() != clazz) {
+            if (getter.getReturnType() != clazz) {
                 mg.checkCast(Type.getType(TypeOracle.resolveClass(type)));
             }
         }
         if (isSetter) {
             // Generate access code
             java.lang.reflect.Method setter = findSetter(clazz, paths[paths.length - 1]);
-            String owner = clazz.getName().replace('.', '/');
             Class<?> paramType = setter.getParameterTypes()[0];
             String desc;
 
@@ -316,27 +296,20 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
             desc = "(" + t.getDescriptor() + ")V";
 
             // Cast parameter to required type
-            mg.visitIntInsn(Opcodes.ALOAD, 2);
-            castTo(mg, paramType);
+            mg.loadArg(1);
+            mg.unbox(t);
 
-            mg.visitMethodInsn(Opcodes.INVOKEVIRTUAL, owner, setter.getName(), desc);
-            mg.visitInsn(Opcodes.RETURN);
-        } else {
-            // TODO: Primitive types!
-            mg.visitInsn(Opcodes.ARETURN);
+            Method method = new Method(setter.getName(), VOID_TYPE, new Type[] {t });
+            mg.invokeVirtual(Type.getType(clazz), method);
         }
+        mg.returnValue();
 
         // NPE handling code
         StringBuilder nullPropPath = new StringBuilder();
         for (int i = 0; i < count; ++i) {
             mg.visitLabel(labels[i]);
-            mg.visitTypeInsn(Opcodes.NEW, nameOf(NullPointerException.class));
-            mg.visitInsn(Opcodes.DUP);
-            mg.visitLdcInsn(nullPropPath + " property is null for " + beanClass.getName()
-                    + " instance.");
-            mg.visitMethodInsn(Opcodes.INVOKESPECIAL, nameOf(NullPointerException.class),
-                    "<init>", "(Ljava/lang/String;)V");
-            mg.visitInsn(Opcodes.ATHROW);
+            mg.throwException(NPE_TYPE, nullPropPath + " property is null for "
+                    + beanClass.getName() + " instance.");
 
             if (i != 0) {
                 nullPropPath.append('.');
@@ -344,44 +317,6 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
             nullPropPath.append(paths[i]);
         }
         return type;
-    }
-
-    private void castTo(MethodVisitor mv, Class<?> c) {
-        if (!c.isPrimitive()) {
-            mv.visitTypeInsn(Opcodes.CHECKCAST, nameOf(c));
-        } else {
-            if (c == Integer.TYPE) {
-                mv.visitTypeInsn(Opcodes.CHECKCAST, "java/lang/Integer");
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I");
-            } else if (c == Void.TYPE) {
-                mv.visitInsn(Opcodes.POP);
-                mv.visitInsn(Opcodes.ACONST_NULL);
-            } else if (c == Boolean.TYPE) {
-                mv.visitTypeInsn(Opcodes.CHECKCAST, "java/lang/Boolean");
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Boolean", "booleanValue",
-                        "()Z");
-            } else if (c == Byte.TYPE) {
-                mv.visitTypeInsn(Opcodes.CHECKCAST, "java/lang/Byte");
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Byte", "byteValue", "()B");
-            } else if (c == Character.TYPE) {
-                mv.visitTypeInsn(Opcodes.CHECKCAST, "java/lang/Character");
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Character", "charValue",
-                        "()C");
-            } else if (c == Short.TYPE) {
-                mv.visitTypeInsn(Opcodes.CHECKCAST, "java/lang/Short");
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Short", "shortValue", "()S");
-            } else if (c == Double.TYPE) {
-                mv.visitTypeInsn(Opcodes.CHECKCAST, "java/lang/Double");
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Double", "doubleValue",
-                        "()D");
-            } else if (c == Float.TYPE) {
-                mv.visitTypeInsn(Opcodes.CHECKCAST, "java/lang/Float");
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Float", "floatValue", "()F");
-            } else /* if (c == Long.TYPE) */{
-                mv.visitTypeInsn(Opcodes.CHECKCAST, "java/lang/Long");
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Long", "longValue", "()J");
-            }
-        }
     }
 
     private java.lang.reflect.Method findGetter(Class<?> clazz, String property) {
@@ -492,7 +427,7 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
         }
         return type;
     }
-    
+
     private class ASMClassLoader extends ClassLoader {
         /**
          * 

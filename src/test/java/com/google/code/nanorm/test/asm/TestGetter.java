@@ -27,6 +27,7 @@ import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.introspect.asm.ASMIntrospectionFactory;
 import com.google.code.nanorm.test.beans.Car;
+import com.google.code.nanorm.test.beans.Crash;
 import com.google.code.nanorm.test.beans.Owner;
 
 /**
@@ -56,7 +57,7 @@ public class TestGetter {
         
         Assert.assertEquals(String.class, getter.getType());
     }
-
+    
     @Test
     public void testGetterNPE() {
         Car car = new Car();
@@ -97,7 +98,6 @@ public class TestGetter {
         Getter getter = factory.buildParameterGetter(types, "2.owner.firstName");
 
         Assert.assertEquals("Ivan", getter.getValue(arr));
-        
         Assert.assertEquals(String.class, getter.getType());
     }
     
@@ -106,8 +106,25 @@ public class TestGetter {
         String[] arr = new String[] { "one", "two", "three", "four" };
         Type[] types = new Type[] { String.class, String.class, String.class, String.class }; 
         Getter getter = factory.buildParameterGetter(types, "2");
+        
         Assert.assertEquals("two", getter.getValue(arr));
         Assert.assertEquals(String.class, getter.getType());
     }
+    
+    /*
+    @Test
+    public void testGetterArray() {
+        Owner owner = new Owner();
+        Crash crash = new Crash();
+        crash.setYear(2007);
+        Crash[] crashes = new Crash[10];
+        crashes[3] = crash;
+        owner.setCrashes2(crashes);
+            
+        Getter getter = factory.buildGetter(Car.class, "owner.crashes2[3].year");
+
+        Assert.assertEquals(2007, getter.getValue(owner));
+        Assert.assertEquals(int.class, getter.getType());
+    }*/
 }
 

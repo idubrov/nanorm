@@ -21,39 +21,39 @@ package com.google.code.nanorm.test.generics;
  * @author Ivan Dubrov
  * @version 1.0 20.06.2008
  */
-public class Owner {
+public class Container {
     
-    private Wrapper<Wrapper<Car>> item;
+    private Wrapper<Wrapper<Thing>> item;
     
-    private Wrapper2<Car> item2;
+    private Wrapper2<Thing> item2;
     
-    private Wrapper<? extends Car> item3;
+    private Wrapper<? extends Thing> item3;
     
     private Wrapper<?> item4;
     
-    private Wrapper3<Car> item5;
+    private Wrapper3<Thing> item5;
 
-    public Wrapper<Wrapper<Car>> getItem() {
+    public Wrapper<Wrapper<Thing>> getItem() {
         return item;
     }
 
-    public void setItem(Wrapper<Wrapper<Car>> item) {
+    public void setItem(Wrapper<Wrapper<Thing>> item) {
         this.item = item;
     }
     
-    public Wrapper2<Car> getItem2() {
+    public Wrapper2<Thing> getItem2() {
         return item2;
     }
 
-    public void setItem2(Wrapper2<Car> item2) {
+    public void setItem2(Wrapper2<Thing> item2) {
         this.item2 = item2;
     }
 
-    public Wrapper<? extends Car> getItem3() {
+    public Wrapper<? extends Thing> getItem3() {
         return item3;
     }
 
-    public void setItem3(Wrapper<? extends Car> item3) {
+    public void setItem3(Wrapper<? extends Thing> item3) {
         this.item3 = item3;
     }
 
@@ -65,11 +65,11 @@ public class Owner {
         this.item4 = item4;
     }
 
-    public Wrapper3<Car> getItem5() {
+    public Wrapper3<Thing> getItem5() {
         return item5;
     }
 
-    public void setItem5(Wrapper3<Car> item5) {
+    public void setItem5(Wrapper3<Thing> item5) {
         this.item5 = item5;
     }
 }

@@ -18,9 +18,9 @@ package com.google.code.nanorm;
 
 import com.google.code.nanorm.internal.FactoryImpl;
 import com.google.code.nanorm.internal.config.InternalConfiguration;
-import com.google.code.nanorm.internal.introspect.BeanUtilsIntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.asm.ASMIntrospectionFactory;
+import com.google.code.nanorm.internal.introspect.beanutils.BeanUtilsIntrospectionFactory;
 import com.google.code.nanorm.internal.type.TypeHandlerFactoryImpl;
 
 /**

@@ -42,7 +42,7 @@ import com.google.code.nanorm.internal.introspect.asm.ResolvedParameterizedType;
  * }
  * 
  * // Type that uses wrapper:
- * public class Bean {
+ * public class SampleBean {
  *     private Wrapper&lt;String&gt item;
  *     
  *     public Wrapper&lt;String&gt getItem() {
@@ -55,7 +55,7 @@ import com.google.code.nanorm.internal.introspect.asm.ResolvedParameterizedType;
  * }
  * 
  * // Code to resolve getValue actual type
- * Class&lt;?&gt; clazz = Bean.class;
+ * Class&lt;?&gt; clazz = SampleBean.class;
  * Type returnType = clazz.getMethod("getItem").getGenericReturnType();
  * ParameterizedType pt = new ResolvedParameterizedType(clazz);
  * 

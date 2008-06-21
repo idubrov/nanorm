@@ -21,7 +21,7 @@ package com.google.code.nanorm.test.generics;
  * @author Ivan Dubrov
  * @version 1.0 20.06.2008
  */
-public class Bean {
+public class SampleBean {
     
     private Wrapper<String> item;
 

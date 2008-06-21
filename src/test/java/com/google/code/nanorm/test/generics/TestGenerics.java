@@ -46,42 +46,42 @@ public class TestGenerics {
     
     @Test
     public void testGenericTypes() throws Exception {
-        Assert.assertEquals(String.class, factory.getPropertyType(Owner.class, "item.value.value.model"));
-        Assert.assertEquals(String.class, factory.getPropertyType(Owner.class, "item2.value.value.model"));
-        Assert.assertEquals(String.class, factory.getPropertyType(Owner.class, "item3.value.model"));
+        Assert.assertEquals(String.class, factory.getPropertyType(Container.class, "item.value.value.model"));
+        Assert.assertEquals(String.class, factory.getPropertyType(Container.class, "item2.value.value.model"));
+        Assert.assertEquals(String.class, factory.getPropertyType(Container.class, "item3.value.model"));
         //Assert.assertEquals(String.class, factory.getPropertyType(Owner.class, "item4.value.value.model"));
     }
     
     @Test
     public void testGenericAccess() throws Exception {
-        Owner owner = new Owner();
-        owner.setItem(new Wrapper<Wrapper<Car>>());
-        owner.getItem().setValue(new Wrapper<Car>());
-        owner.getItem().getValue().setValue(new Car());
+        Container owner = new Container();
+        owner.setItem(new Wrapper<Wrapper<Thing>>());
+        owner.getItem().setValue(new Wrapper<Thing>());
+        owner.getItem().getValue().setValue(new Thing());
         
         // Test
         owner.getItem().getValue().getValue().setModel("Lada");
-        Getter getter = factory.buildGetter(Owner.class, "item.value.value.model");
+        Getter getter = factory.buildGetter(Container.class, "item.value.value.model");
         Assert.assertEquals("Lada", getter.getValue(owner));
         
-        Setter setter = factory.buildSetter(Owner.class, "item.value.value.model");
+        Setter setter = factory.buildSetter(Container.class, "item.value.value.model");
         setter.setValue(owner, "Kalina");
         Assert.assertEquals("Kalina", owner.getItem().getValue().getValue().getModel());
     }
     
     @Test
     public void testGenericAccess2() throws Exception {
-        Owner owner = new Owner();
-        owner.setItem2(new Wrapper2<Car>());
-        owner.getItem2().setValue(new Wrapper<Car>());
-        owner.getItem2().getValue().setValue(new Car());
+        Container owner = new Container();
+        owner.setItem2(new Wrapper2<Thing>());
+        owner.getItem2().setValue(new Wrapper<Thing>());
+        owner.getItem2().getValue().setValue(new Thing());
         
         // Test
         owner.getItem2().getValue().getValue().setModel("Lada");
-        Getter getter = factory.buildGetter(Owner.class, "item2.value.value.model");
+        Getter getter = factory.buildGetter(Container.class, "item2.value.value.model");
         Assert.assertEquals("Lada", getter.getValue(owner));
         
-        Setter setter = factory.buildSetter(Owner.class, "item2.value.value.model");
+        Setter setter = factory.buildSetter(Container.class, "item2.value.value.model");
         setter.setValue(owner, "Kalina");
         Assert.assertEquals("Kalina", owner.getItem2().getValue().getValue().getModel());
         
@@ -90,17 +90,17 @@ public class TestGenerics {
 
     @Test
     public void testGenericAccess3() throws Exception {
-        Owner owner = new Owner();
-        Wrapper<Car> w = new Wrapper<Car>();
+        Container owner = new Container();
+        Wrapper<Thing> w = new Wrapper<Thing>();
         owner.setItem3(w);
-        w.setValue(new Car());
+        w.setValue(new Thing());
         
         // Test
         owner.getItem3().getValue().setModel("Lada");
-        Getter getter = factory.buildGetter(Owner.class, "item3.value.model");
+        Getter getter = factory.buildGetter(Container.class, "item3.value.model");
         Assert.assertEquals("Lada", getter.getValue(owner));
         
-        Setter setter = factory.buildSetter(Owner.class, "item3.value.model");
+        Setter setter = factory.buildSetter(Container.class, "item3.value.model");
         setter.setValue(owner, "Kalina");
         Assert.assertEquals("Kalina", owner.getItem3().getValue().getModel());
     }
@@ -108,7 +108,7 @@ public class TestGenerics {
     
     @Test
     public void testSome() throws Exception {
-        Type type = Owner.class;
+        Type type = Container.class;
         String[] path = "getItem.getValue.getValue.getModel".split("\\.");
         // String[] path = "getItem2.getValue.getValue.getModel".split("\\.");
         for (int i = 0; i < path.length; ++i) {
@@ -126,7 +126,7 @@ public class TestGenerics {
     @Test
     public void testSample() throws Exception {
         // Code to resolve getValue actual type
-        Class<?> clazz = Bean.class;
+        Class<?> clazz = SampleBean.class;
         Type returnType = clazz.getMethod("getItem").getGenericReturnType();
         Type type = clazz;
          
