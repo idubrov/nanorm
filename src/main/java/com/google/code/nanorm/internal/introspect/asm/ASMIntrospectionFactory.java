@@ -17,9 +17,13 @@
 package com.google.code.nanorm.internal.introspect.asm;
 
 import java.io.FileOutputStream;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,6 +38,7 @@ import org.objectweb.asm.commons.Method;
 
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
+import com.google.code.nanorm.internal.introspect.PropertyNavigator;
 import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.introspect.TypeOracle;
 
@@ -72,6 +77,12 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
     private final static Type NPE_TYPE = Type.getType(NullPointerException.class);
 
     private final static Method NPE_CTOR = Method.getMethod("void <init>(java.lang.String)");
+
+    private final static Method SUBSTRING = Method.getMethod("String substring(int, int)");
+
+    private final static Method CONCAT = Method.getMethod("String concat(String)");
+
+    private final static Type STRING_TYPE = Type.getType(String.class);
 
     // TODO: Synchronization!
     private int num = 0;
@@ -252,70 +263,125 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
     }
 
     protected java.lang.reflect.Type visitPath(GeneratorAdapter mg, final Class<?> beanClass,
-            String property, boolean isSetter) throws NoSuchMethodException {
-        String[] paths = property.split("\\.");
-        Label[] labels = new Label[paths.length];
+            String path, boolean isSetter) throws NoSuchMethodException {
+
+        PropertyNavigator nav = new PropertyNavigator(path);
+        Label npeLabel = new Label(); // NPE handling code
 
         // Generic type
         java.lang.reflect.Type type = beanClass;
         // Resolved raw type
         Class<?> clazz = beanClass;
 
-        int count = isSetter ? paths.length - 1 : paths.length;
-        for (int i = 0; i < count; ++i) {
-            labels[i] = new Label();
+        // int count = isSetter ? paths.length - 1 : paths.length;
+        int pos = 0;
+        while (!nav.isLast()) {
+            pos = nav.getPosition();
 
-            // Check not null
+            // Check current value is not null
             mg.dup();
-            mg.ifNull(labels[i]);
+            mg.push(pos); // Push current path position for better NPE
+                            // diagnostics
+            mg.swap();
+            mg.ifNull(npeLabel);
+            mg.pop();
+
+            nav.next();
+            // Don't need to "get" last path part
+            if (nav.isLast() && isSetter) {
+                break;
+            }
 
             // Generate access code
-            java.lang.reflect.Method getter = findGetter(clazz, paths[i]);
-            Method method = new Method(getter.getName(), Type.getType(getter.getReturnType()),
-                    new Type[0]);
-            mg.invokeVirtual(Type.getType(clazz), method);
+            if (nav.getToken() == PropertyNavigator.INDEX) {
+                // TODO: Could be generic array!
+                if (!clazz.isArray()) {
+                    throw new IllegalArgumentException("Array expected at property "
+                            + path.substring(0, pos) + "(full property is " + path + ".)");
+                }
+                clazz = clazz.getComponentType();
+                type = clazz;
+                
+                mg.push(nav.getIndex());
+                mg.arrayLoad(Type.getType(clazz));
+            } else if(nav.getToken() == PropertyNavigator.PROPERTY) {
 
-            // Resolve the return type using the current context
-            type = TypeOracle.resolve(getter.getGenericReturnType(), type);
+                java.lang.reflect.Method getter = findGetter(clazz, nav.getProperty());
+                Method method = new Method(getter.getName(),
+                        Type.getType(getter.getReturnType()), new Type[0]);
+                
+                mg.invokeVirtual(Type.getType(clazz), method);
+                
+                // Resolve the return type using the current context
+                type = TypeOracle.resolve(getter.getGenericReturnType(), type);
 
-            // Find out concrete Class instance behind the generics
-            clazz = TypeOracle.resolveClass(type);
+                // Find out concrete Class instance behind the generics
+                clazz = TypeOracle.resolveClass(type);
 
-            // Need to cast, types does not match
-            if (getter.getReturnType() != clazz) {
-                mg.checkCast(Type.getType(TypeOracle.resolveClass(type)));
+                // Need to cast, types does not match
+                if (getter.getReturnType() != clazz) {
+                    mg.checkCast(Type.getType(TypeOracle.resolveClass(type)));
+                }
+            } else {
+                // TODO: !
+                throw new IllegalStateException("Unexpeted!!!!");
             }
         }
         if (isSetter) {
             // Generate access code
-            java.lang.reflect.Method setter = findSetter(clazz, paths[paths.length - 1]);
-            Class<?> paramType = setter.getParameterTypes()[0];
-            String desc;
+            if (nav.getToken() == PropertyNavigator.INDEX) {
+                // TODO: Could be generic array!
+                if (!clazz.isArray()) {
+                    throw new IllegalArgumentException("Array expected at property "
+                            + path.substring(0, pos) + "(full property is " + path + ".)");
+                }
+                
+                // Push array index
+                mg.push(nav.getIndex());
+                
+                // Cast parameter to required type
+                Type t = Type.getType(clazz.getComponentType());
+                mg.loadArg(1);
+                mg.unbox(t);
+                
+                mg.arrayStore(t);
+            } else if(nav.getToken() == PropertyNavigator.PROPERTY) {
+                // TODO: Arrays!
+                java.lang.reflect.Method setter = findSetter(clazz, nav.getProperty());
+                Class<?> paramType = setter.getParameterTypes()[0];
 
-            org.objectweb.asm.Type t = org.objectweb.asm.Type.getType(paramType);
-            desc = "(" + t.getDescriptor() + ")V";
+                Type t = Type.getType(paramType);
 
-            // Cast parameter to required type
-            mg.loadArg(1);
-            mg.unbox(t);
+                // Cast parameter to required type
+                mg.loadArg(1);
+                mg.unbox(t);
 
-            Method method = new Method(setter.getName(), VOID_TYPE, new Type[] {t });
-            mg.invokeVirtual(Type.getType(clazz), method);
+                Method method = new Method(setter.getName(), VOID_TYPE, new Type[] {t });
+                mg.invokeVirtual(Type.getType(clazz), method);
+            }
         }
+        mg.box(Type.getType(clazz));
         mg.returnValue();
 
-        // NPE handling code
-        StringBuilder nullPropPath = new StringBuilder();
-        for (int i = 0; i < count; ++i) {
-            mg.visitLabel(labels[i]);
-            mg.throwException(NPE_TYPE, nullPropPath + " property is null for "
-                    + beanClass.getName() + " instance.");
+        // NPE handling code. We have position in the property path on top of
+        // the stack.
+        mg.visitLabel(npeLabel);
+        mg.push(path);
+        mg.swap();
+        mg.push(0);
+        mg.swap();
+        mg.invokeVirtual(STRING_TYPE, SUBSTRING);
+        mg.push(" property is null for " + beanClass.getName()
+                + " instance (full path is owner.firstName).");
+        mg.invokeVirtual(STRING_TYPE, CONCAT);
+        // Now we have message on the top
 
-            if (i != 0) {
-                nullPropPath.append('.');
-            }
-            nullPropPath.append(paths[i]);
-        }
+        mg.newInstance(NPE_TYPE);
+        mg.dupX1();
+        mg.swap();
+        // Now we have: msg, ex, ex
+        mg.invokeConstructor(NPE_TYPE, NPE_CTOR);
+        mg.throwException();
         return type;
     }
 

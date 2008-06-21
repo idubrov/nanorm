@@ -27,8 +27,6 @@ public final class PropertyNavigator {
 
     public static int PROPERTY = 2;
     
-    private int token;
-
     private int index = -1;
 
     private String property;
@@ -36,6 +34,8 @@ public final class PropertyNavigator {
     private int pos;
     
     private String path;
+    
+    private int token;
     
     public PropertyNavigator(String path) {
         this.path = path;
@@ -49,20 +49,35 @@ public final class PropertyNavigator {
         return property;
     }
     
+    public final int getPosition() {
+        return pos;
+    }
+    
+    public final int getToken() {
+        return token;
+    }
+    
     public final boolean isLast() {
         return pos == path.length();
     }
     
     public final int next() {
+        // Skip '.' after property access
+        if(token == PROPERTY && path.charAt(pos) == '.') {
+            pos++;
+        }
+        
         char c = path.charAt(pos);
         if(c == '[') {
             index = parseIndex();
             property = null;
-            return INDEX;
+            token = INDEX;
+            return token;
         } else if(Character.isJavaIdentifierStart(c)) {
             property = parseProperty();
             index = -1;
-            return PROPERTY;
+            token = PROPERTY;
+            return token;
         }
         throw unexpected();
     }
@@ -101,17 +116,8 @@ public final class PropertyNavigator {
         int start = pos;
         while(pos < path.length()) {
             char c = path.charAt(pos);
-            if(c == '.' || c == '[') {
-                String prop = path.substring(start, pos);
-                
-                // Skip '.'
-                if(c == '.') {
-                    pos++;
-                }
-                return prop;
-            }
             if(!Character.isJavaIdentifierPart(c)) {
-                throw unexpected();
+                return path.substring(start, pos);
             }
             pos++;
         }

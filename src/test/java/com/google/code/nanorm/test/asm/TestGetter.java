@@ -68,7 +68,22 @@ public class TestGetter {
             getter.getValue(car);
         } catch (NullPointerException e) {
             Assert.assertEquals(
-                    "owner property is null for com.google.code.nanorm.test.beans.Car instance.",
+                    "owner property is null for com.google.code.nanorm.test.beans.Car instance (full path is owner.firstName).",
+                    e.getMessage());
+        }
+    }
+    
+    @Test
+    public void testSetterNPE() {
+        Car car = new Car();
+        car.setOwner(null);
+        Setter setter = factory.buildSetter(Car.class, "owner.firstName");
+
+        try {
+            setter.setValue(car, "Ivan");
+        } catch (NullPointerException e) {
+            Assert.assertEquals(
+                    "owner property is null for com.google.code.nanorm.test.beans.Car instance (full path is owner.firstName).",
                     e.getMessage());
         }
     }
@@ -111,7 +126,6 @@ public class TestGetter {
         Assert.assertEquals(String.class, getter.getType());
     }
     
-    /*
     @Test
     public void testGetterArray() {
         Owner owner = new Owner();
@@ -120,11 +134,57 @@ public class TestGetter {
         Crash[] crashes = new Crash[10];
         crashes[3] = crash;
         owner.setCrashes2(crashes);
+        Car car = new Car();
+        car.setOwner(owner);
             
         Getter getter = factory.buildGetter(Car.class, "owner.crashes2[3].year");
 
-        Assert.assertEquals(2007, getter.getValue(owner));
+        Assert.assertEquals(2007, getter.getValue(car));
         Assert.assertEquals(int.class, getter.getType());
-    }*/
+    }
+    
+    @Test
+    public void testGetterArray2() {
+        Owner owner = new Owner();
+        int[] crashes = new int[10];
+        crashes[2] = 2006;
+        owner.setCrashes3(crashes);
+        Car car = new Car();
+        car.setOwner(owner);
+            
+        Getter getter = factory.buildGetter(Car.class, "owner.crashes3[2]");
+
+        Assert.assertEquals(2006, getter.getValue(car));
+    }
+    
+    @Test
+    public void testSetterArray() {
+        Owner owner = new Owner();
+        Crash crash = new Crash();
+        Crash[] crashes = new Crash[10];
+        crashes[3] = crash;
+        owner.setCrashes2(crashes);
+        Car car = new Car();
+        car.setOwner(owner);
+            
+        Setter setter = factory.buildSetter(Car.class, "owner.crashes2[3].year");
+
+        setter.setValue(car, 2003);
+        Assert.assertEquals(2003, car.getOwner().getCrashes2()[3].getYear());
+    }
+    
+    @Test
+    public void testSetterArray2() {
+        Owner owner = new Owner();
+        int[] crashes = new int[10];
+        owner.setCrashes3(crashes);
+        Car car = new Car();
+        car.setOwner(owner);
+            
+        Setter setter = factory.buildSetter(Car.class, "owner.crashes3[2]");
+
+        setter.setValue(car, 2002);
+        Assert.assertEquals(2002, car.getOwner().getCrashes3()[2]);
+    }
 }
 

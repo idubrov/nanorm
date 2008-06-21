@@ -171,6 +171,10 @@ public class TestPropNavigator {
         Assert.assertEquals("prop1", nav.getProperty());
         
         Assert.assertFalse(nav.isLast());
+        Assert.assertEquals(PROPERTY, nav.next());
+        Assert.assertEquals("prop2", nav.getProperty());
+        
+        Assert.assertFalse(nav.isLast());
         try {
             nav.next();
             Assert.fail();
