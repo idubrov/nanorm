@@ -18,7 +18,7 @@ package com.google.code.nanorm.test;
 
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.asm.ASMIntrospectionFactory;
-import com.google.code.nanorm.internal.introspect.beanutils.BeanUtilsIntrospectionFactory;
+import com.google.code.nanorm.internal.introspect.reflect.BeanUtilsIntrospectionFactory;
 
 /**
  *

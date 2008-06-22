@@ -37,7 +37,7 @@ import com.google.code.nanorm.internal.DynamicFragment;
 import com.google.code.nanorm.internal.Fragment;
 import com.google.code.nanorm.internal.TextFragment;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
-import com.google.code.nanorm.internal.introspect.beanutils.BeanUtilsIntrospectionFactory;
+import com.google.code.nanorm.internal.introspect.reflect.BeanUtilsIntrospectionFactory;
 import com.google.code.nanorm.internal.mapping.result.ResultMapImpl;
 import com.google.code.nanorm.internal.type.TypeHandlerFactoryImpl;
 

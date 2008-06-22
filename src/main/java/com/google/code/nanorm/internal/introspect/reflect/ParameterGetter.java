@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.code.nanorm.internal.introspect;
+package com.google.code.nanorm.internal.introspect.reflect;
 
 import java.lang.reflect.Type;
+
+import com.google.code.nanorm.internal.introspect.Getter;
+import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 
 /**
  *

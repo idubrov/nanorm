@@ -38,14 +38,16 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import com.google.code.nanorm.internal.introspect.PropertyVisitor;
 import com.google.code.nanorm.internal.introspect.TypeOracle;
+import com.google.code.nanorm.internal.introspect.IntrospectUtils;
 
 /**
  *
  * @author Ivan Dubrov
  * @version 1.0 22.06.2008
  */
-public class AccessorBuilder implements PropertyPathVisitor<byte[]> {
+public class AccessorBuilder implements PropertyVisitor<byte[]> {
     
     private ClassWriter cw;
     
@@ -200,7 +202,7 @@ public class AccessorBuilder implements PropertyPathVisitor<byte[]> {
         checkNull(pos);
         
         if(isLast && isSetter) {
-            java.lang.reflect.Method setter = Utils.findSetter(beanClass, property);
+            java.lang.reflect.Method setter = IntrospectUtils.findSetter(beanClass, property);
             Class<?> paramType = setter.getParameterTypes()[0];
 
             Type t = Type.getType(paramType);

@@ -27,6 +27,7 @@ import com.google.code.nanorm.internal.introspect.AbstractIntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Setter;
+import com.google.code.nanorm.internal.introspect.IntrospectUtils;
 
 /**
  * ASM based {@link IntrospectionFactory} implementation. Uses runtime code
@@ -78,8 +79,8 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory implem
             Type[] finalType = new Type[1];
 
             byte[] code = types == null ? 
-                    Utils.visitPath(path, beanClass, builder, finalType) :
-                    Utils.visitPath(path, types, builder, finalType);
+                    IntrospectUtils.visitPath(path, beanClass, builder, finalType) :
+                    IntrospectUtils.visitPath(path, types, builder, finalType);
 
             // Re-check we didn't created other instance while we were
             // generating
@@ -120,7 +121,7 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory implem
             AccessorBuilder builder = new AccessorBuilder(name, true);
             Type[] finalType = new Type[1];
 
-            byte[] code = Utils.visitPath(path, beanClass, builder, finalType);
+            byte[] code = IntrospectUtils.visitPath(path, beanClass, builder, finalType);
 
             // Re-check we didn't created other instance while we were
             // generating

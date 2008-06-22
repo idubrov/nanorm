@@ -16,42 +16,57 @@
 
 package com.google.code.nanorm.internal.introspect;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-import org.objectweb.asm.commons.Method;
-
-import com.google.code.nanorm.exceptions.IntrospectionException;
-
 /**
- * 
+ *
  * @author Ivan Dubrov
  * @version 1.0 22.06.2008
  */
-public abstract class AbstractIntrospectionFactory implements IntrospectionFactory {
+public final class VoidPropertyVisitor implements PropertyVisitor<Void> {
     
-
-    /**
-     * {@inheritDoc}
-     */
-    public Type getPropertyType(Class<?> clazz, String path) {
-        Type[] resultType = new Type[1];
-        IntrospectUtils.visitPath(path, clazz, VoidPropertyVisitor.INSTANCE, resultType);
-        return resultType[0];
+    public final static VoidPropertyVisitor INSTANCE = new VoidPropertyVisitor();
+    
+    private VoidPropertyVisitor() {
+        // Nothing.
     }
 
     /**
      * {@inheritDoc}
      */
-    public java.lang.reflect.Type getParameterType(java.lang.reflect.Method method, String path) {
-        return getParameterType(method.getGenericParameterTypes(), path);
+    public void visitBegin(Class<?> beanClass, String path) {
+        // Nothing.
     }
 
     /**
      * {@inheritDoc}
      */
-    public java.lang.reflect.Type getParameterType(java.lang.reflect.Type[] types, String path) {
-        Type[] resultType = new Type[1];
-        IntrospectUtils.visitPath(path, types, VoidPropertyVisitor.INSTANCE, resultType);
-        return resultType[0];
+    public void visitBegin(Type[] types, int pos, String path) {
+        // Nothing.
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Void visitEnd() {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void visitIndex(int pos, int index, boolean isLast, Class<?> beanClass,
+            Class<?> componentClass) {
+        // Nothing.
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void visitProperty(int pos, String property, Method getter, boolean isLast,
+            Class<?> beanClass, Class<?> propClass) {
+        // Nothing.
+    }
+
 }

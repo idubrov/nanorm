@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.code.nanorm.internal.introspect.asm;
+package com.google.code.nanorm.internal.introspect;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -24,7 +24,7 @@ import java.lang.reflect.Type;
  * @author Ivan Dubrov
  * @version 1.0 22.06.2008
  */
-public interface PropertyPathVisitor<T> {
+public interface PropertyVisitor<T> {
     
     void visitBegin(Class<?> beanClass, String path);
     

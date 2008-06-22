@@ -14,31 +14,28 @@
  * limitations under the License.
  */
 
-package com.google.code.nanorm.internal.introspect.asm;
+package com.google.code.nanorm.internal.introspect;
 
 import java.lang.reflect.Type;
 
 import com.google.code.nanorm.exceptions.IntrospectionException;
-import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
-import com.google.code.nanorm.internal.introspect.PropertyNavigator;
-import com.google.code.nanorm.internal.introspect.TypeOracle;
 
 /**
  *
  * @author Ivan Dubrov
  * @version 1.0 22.06.2008
  */
-public class Utils {    
+public class IntrospectUtils {    
     
-    public static <T> T visitPath(String path, Class<?> beanClass, PropertyPathVisitor<T> visitor, Type[] finalType) {
+    public static <T> T visitPath(String path, Class<?> beanClass, PropertyVisitor<T> visitor, Type[] finalType) {
         return visitPath(path, beanClass, null, visitor, finalType);
     }
     
-    public static <T> T visitPath(String path, Type[] types, PropertyPathVisitor<T> visitor, Type[] finalType) {
+    public static <T> T visitPath(String path, Type[] types, PropertyVisitor<T> visitor, Type[] finalType) {
         return visitPath(path, null, types, visitor, finalType);
     }
     
-    private static <T> T visitPath(String path, Class<?> beanClass, Type[] types, PropertyPathVisitor<T> visitor, Type[] finalType) {
+    private static <T> T visitPath(String path, Class<?> beanClass, Type[] types, PropertyVisitor<T> visitor, Type[] finalType) {
         if(types == null) {
             visitor.visitBegin(beanClass, path);
         } else {
