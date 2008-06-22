@@ -22,6 +22,7 @@ import java.lang.reflect.Type;
 import org.apache.commons.beanutils.PropertyUtils;
 
 import com.google.code.nanorm.internal.introspect.Getter;
+import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 
 /**
  * 
@@ -33,11 +34,14 @@ public class BeanUtilsGetter implements Getter {
     final private String property;
     
     final private Class<?> clazz;
+    
+    final private IntrospectionFactory factory;
 
     /**
      * 
      */
-    public BeanUtilsGetter(Class<?> clazz, String path) {
+    public BeanUtilsGetter(IntrospectionFactory factory, Class<?> clazz, String path) {
+        this.factory = factory;
         this.clazz = clazz;
         this.property = path;
     }
@@ -54,32 +58,6 @@ public class BeanUtilsGetter implements Getter {
      * {@inheritDoc}
      */
     public Type getType() {
-        String[] paths = property.split("\\.");
-
-        Type type = clazz;
-        for(int i = 0; i < paths.length; ++i) {
-            // TODO: Move this to factory
-            // TODO: This actually should be that way... need to write test on it.
-            //Class<?> clazz = ResultCollectorUtil.resultClass(type);
-            Class<?> clazz = (Class<?>) type;
-            type = findPropertyType(clazz, paths[i]);
-        }
-        return type;
-    }
-    
-    private Type findPropertyType(Class<?> bean, String property) {
-        PropertyDescriptor[] descriptors = PropertyUtils.getPropertyDescriptors(bean);
-        for(PropertyDescriptor desc : descriptors) {
-            if(desc.getName().equals(property)) {
-                // TODO: Check read method the same way it is done in getPropertyType!
-                Type type = desc.getReadMethod().getGenericReturnType();
-                if(type instanceof ParameterizedType) {
-                    return type;
-                } else {
-                    return desc.getPropertyType();
-                }
-            }
-        }
-        throw new RuntimeException("NO PROPERTY FOUND!");
+       return factory.getPropertyType(clazz, property);
     }
 }

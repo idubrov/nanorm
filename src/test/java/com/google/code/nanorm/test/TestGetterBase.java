@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.google.code.nanorm.test.asm;
+package com.google.code.nanorm.test;
 
 import java.lang.reflect.Type;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.google.code.nanorm.internal.introspect.Getter;
@@ -35,14 +35,15 @@ import com.google.code.nanorm.test.beans.Owner;
  * @author Ivan Dubrov
  * @version 1.0 19.06.2008
  */
-public class TestGetter {
+public abstract class TestGetterBase {
 
-    private static IntrospectionFactory factory;
+    protected IntrospectionFactory factory;
+    
+    protected abstract IntrospectionFactory provideIntrospectionFactory();
 
-    @BeforeClass
-    public static void setUp() {
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        factory = new ASMIntrospectionFactory(cl);
+    @Before
+    public void setUp() {
+        factory = provideIntrospectionFactory();
     }
 
     @Test
@@ -56,36 +57,6 @@ public class TestGetter {
         Assert.assertEquals("Ivan", getter.getValue(car));
         
         Assert.assertEquals(String.class, getter.getType());
-    }
-    
-    @Test
-    public void testGetterNPE() {
-        Car car = new Car();
-        car.setOwner(null);
-        Getter getter = factory.buildGetter(Car.class, "owner.firstName");
-
-        try {
-            getter.getValue(car);
-        } catch (NullPointerException e) {
-            Assert.assertEquals(
-                    "owner property is null for com.google.code.nanorm.test.beans.Car instance (full path is owner.firstName).",
-                    e.getMessage());
-        }
-    }
-    
-    @Test
-    public void testSetterNPE() {
-        Car car = new Car();
-        car.setOwner(null);
-        Setter setter = factory.buildSetter(Car.class, "owner.firstName");
-
-        try {
-            setter.setValue(car, "Ivan");
-        } catch (NullPointerException e) {
-            Assert.assertEquals(
-                    "owner property is null for com.google.code.nanorm.test.beans.Car instance (full path is owner.firstName).",
-                    e.getMessage());
-        }
     }
     
     @Test
@@ -157,17 +128,7 @@ public class TestGetter {
         Assert.assertEquals(2006, getter.getValue(car));
     }
     
-    @Test
-    public void testGetterArray3() {
-        Car car = new Car();
-        car.setModel("Kalina");
-        Car[] cars = new Car[5];
-        cars[3] = car;
-            
-        Getter getter = factory.buildGetter(Car[].class, "[3].model");
-
-        Assert.assertEquals("Kalina", getter.getValue(cars));
-    }
+    
     
     @Test
     public void testSetterArray() {

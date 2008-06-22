@@ -16,8 +16,21 @@
 
 package com.google.code.nanorm.internal.introspect.asm;
 
+import static com.google.code.nanorm.internal.introspect.asm.Constants.CONCAT;
+import static com.google.code.nanorm.internal.introspect.asm.Constants.CTOR;
+import static com.google.code.nanorm.internal.introspect.asm.Constants.GETTER_CTOR;
+import static com.google.code.nanorm.internal.introspect.asm.Constants.GET_VALUE;
+import static com.google.code.nanorm.internal.introspect.asm.Constants.JL_REFLECT_TYPE_TYPE;
+import static com.google.code.nanorm.internal.introspect.asm.Constants.NPE_CTOR;
+import static com.google.code.nanorm.internal.introspect.asm.Constants.NPE_TYPE;
+import static com.google.code.nanorm.internal.introspect.asm.Constants.OBJECT_ARR_TYPE;
+import static com.google.code.nanorm.internal.introspect.asm.Constants.OBJECT_TYPE;
+import static com.google.code.nanorm.internal.introspect.asm.Constants.SET_VALUE;
+import static com.google.code.nanorm.internal.introspect.asm.Constants.STRING_TYPE;
+import static com.google.code.nanorm.internal.introspect.asm.Constants.SUBSTRING;
+import static com.google.code.nanorm.internal.introspect.asm.Constants.VOID_TYPE;
+
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -31,6 +44,7 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import com.google.code.nanorm.exceptions.IntrospectionException;
+import com.google.code.nanorm.internal.introspect.AbstractIntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.PropertyNavigator;
@@ -46,7 +60,8 @@ import com.google.code.nanorm.internal.introspect.TypeOracle;
  * @author Ivan Dubrov
  * @version 1.0 19.06.2008
  */
-public class ASMIntrospectionFactory implements IntrospectionFactory {
+public class ASMIntrospectionFactory extends AbstractIntrospectionFactory implements
+        IntrospectionFactory {
 
     private ASMClassLoader classLoader;
 
@@ -54,38 +69,9 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
 
     private Map<AccessorKey, Object> setters;
 
-    private final static Method GETTER_CTOR = Method
-            .getMethod("void <init>(java.lang.reflect.Type)");
-
-    private final static Method GET_VALUE = Method
-            .getMethod("java.lang.Object getValue(java.lang.Object)");
-
-    private final static Method SET_VALUE = Method
-            .getMethod("void setValue(java.lang.Object, java.lang.Object)");
-
-    private final static Method CTOR = Method.getMethod("void <init>()");
-
-    private final static Type JL_REFLECT_TYPE_TYPE = Type.getType(java.lang.reflect.Type.class);
-
-    private final static Type OBJECT_TYPE = Type.getType(Object.class);
-
-    private final static Type VOID_TYPE = Type.getType(void.class);
-
-    private final static Type OBJECT_ARR_TYPE = Type.getType(Object[].class);
-
-    private final static Type NPE_TYPE = Type.getType(NullPointerException.class);
-
-    private final static Method NPE_CTOR = Method.getMethod("void <init>(java.lang.String)");
-
-    private final static Method SUBSTRING = Method.getMethod("String substring(int, int)");
-
-    private final static Method CONCAT = Method.getMethod("String concat(String)");
-
-    private final static Type STRING_TYPE = Type.getType(String.class);
-
     // TODO: Synchronization!
     private final AtomicInteger counter = new AtomicInteger(0);
-    
+
     private final Object lock = new Object();
 
     /**
@@ -106,7 +92,9 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
             private java.lang.reflect.Type[] resultType = new java.lang.reflect.Type[1];
 
             public byte[] generateCode(String name) {
-                return buildGetterCode(name, beanClass, path, null, resultType);
+                PropertyPathVisitor<byte[]> v = new GetterBuilder(name, false);
+                return Utils.visitPath(path, beanClass, v, resultType);
+                //return buildGetterCode(name, beanClass, path, null, resultType);
             }
 
             public Object generateInstance(Class<?> clazz) {
@@ -116,7 +104,7 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
         };
         return (Getter) checkAndGenerate(getters, key, builder);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -126,7 +114,8 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
             private java.lang.reflect.Type[] resultType = new java.lang.reflect.Type[1];
 
             public byte[] generateCode(String name) {
-                return buildGetterCode(name, null, path, types, resultType);
+                PropertyPathVisitor<byte[]> v = new GetterBuilder(name, false);
+                return Utils.visitPath(path, types, v, resultType);
             }
 
             public Object generateInstance(Class<?> clazz) {
@@ -144,13 +133,15 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
         Builder builder = new Builder() {
 
             public byte[] generateCode(String name) {
-                return buildSetterCode(name, beanClass, path);
+                PropertyPathVisitor<byte[]> v = new GetterBuilder(name, true);
+                return Utils.visitPath(path, beanClass, v, null);
+                //return buildSetterCode(name, beanClass, path);
             }
 
             public Object generateInstance(Class<?> clazz) {
                 try {
                     return clazz.newInstance();
-                } catch(Exception e) {
+                } catch (Exception e) {
                     throw new IntrospectionException("Failed to create accessor instance!", e);
                 }
             }
@@ -158,8 +149,6 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
         };
         return (Setter) checkAndGenerate(setters, key, builder);
     }
-
-
 
     protected byte[] buildGetterCode(String name, Class<?> beanClass, String path,
             java.lang.reflect.Type[] types, java.lang.reflect.Type[] resultType) {
@@ -239,7 +228,7 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
         try {
             Constructor<?> ct = clazz.getConstructor(java.lang.reflect.Type.class);
             return (Getter) ct.newInstance(resultType);
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new IntrospectionException("Failed to create getter instance!", e);
         }
     }
@@ -352,6 +341,8 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
                 clazz = TypeOracle.resolveClass(type);
 
                 // Need to cast, types does not match
+                // TODO: We probably don't need to cast, if getter.getReturnType() is instanceof 
+                // next getter class 
                 if (getter.getReturnType() != clazz) {
                     mg.checkCast(Type.getType(TypeOracle.resolveClass(type)));
                 }
@@ -419,33 +410,6 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
         return type;
     }
 
-    private java.lang.reflect.Method findGetter(Class<?> clazz, String property) {
-        try {
-            String name = "get" + Character.toUpperCase(property.charAt(0))
-                    + property.substring(1);
-            try {
-                return clazz.getMethod(name);
-            } catch (NoSuchMethodException e) {
-                // TODO: Hack!
-                name = "is" + Character.toUpperCase(property.charAt(0)) + property.substring(1);
-                return clazz.getMethod(name);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private java.lang.reflect.Method findSetter(Class<?> clazz, String property) {
-        String name = "set" + Character.toUpperCase(property.charAt(0)) + property.substring(1);
-        for (java.lang.reflect.Method method : clazz.getDeclaredMethods()) {
-            if (method.getParameterTypes().length == 1 && method.getName().equals(name)) {
-                return method;
-            }
-        }
-        throw new IntrospectionException("Cannot find setter method " + clazz + "." + name
-                + "(<any type>)");
-    }
-   
     private interface Builder {
         byte[] generateCode(String name);
 
@@ -476,55 +440,8 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
     }
 
     /**
-     * {@inheritDoc}
-     */
-    public java.lang.reflect.Type getParameterType(java.lang.reflect.Method method, String path) {
-        return getParameterType(method.getGenericParameterTypes(), path);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public java.lang.reflect.Type getParameterType(java.lang.reflect.Type[] types, String path) {
-        int pos = path.indexOf('.');
-        if (pos == -1) {
-            pos = path.length();
-        }
-        String context = path.substring(0, pos);
-
-        int parameter;
-        if (context.equals(ZERO_PARAMETER_ALIAS)) {
-            parameter = 0;
-        } else {
-            parameter = Integer.parseInt(context) - 1;
-        }
-
-        if (pos == path.length()) {
-            return types[parameter];
-        }
-        String subpath = path.substring(pos + 1);
-        return getPropertyType((Class<?>) types[parameter], subpath);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public java.lang.reflect.Type getPropertyType(Class<?> beanClass, String property) {
-        // TODO: !!!!! Arrays!!!!
-        String[] paths = property.split("\\.");
-
-        java.lang.reflect.Type type = beanClass;
-        for (int i = 0; i < paths.length; ++i) {
-            Class<?> clazz = TypeOracle.resolveClass(type);
-            java.lang.reflect.Method getter = findGetter(clazz, paths[i]);
-            type = TypeOracle.resolve(getter.getGenericReturnType(), type);
-        }
-        return type;
-    }
-
-    /**
      * Classloader used for accessors.
-     *
+     * 
      * @author Ivan Dubrov
      * @version 1.0 21.06.2008
      */
@@ -532,7 +449,7 @@ public class ASMIntrospectionFactory implements IntrospectionFactory {
         /**
          * Constructor.
          * 
-         * @param parent parent classloader 
+         * @param parent parent classloader
          */
         public ASMClassLoader(ClassLoader parent) {
             super(parent);
