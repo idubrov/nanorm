@@ -38,7 +38,7 @@ public class Configuration {
      */
     public Configuration() {
         typeHandlerFactory = new TypeHandlerFactoryImpl();
-        //introspectionFactory = new BeanUtilsIntrospectionFactory();
+        //introspectionFactory = new ReflectIntrospectionFactory();
         
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         introspectionFactory = new ASMIntrospectionFactory(cl);

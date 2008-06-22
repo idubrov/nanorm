@@ -53,7 +53,7 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
     
     private Class<?> initialBeanClass;
     
-    private GeneratorAdapter gettermg;
+    private GeneratorAdapter accessormg;
     
     private Label npeLabel = new Label();
     
@@ -123,16 +123,16 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
         
         if(isSetter) {
             // void setValue(Object instance);
-            gettermg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, SET_VALUE, null, null, cw);
+            accessormg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, SET_VALUE, null, null, cw);
         } else {
             // Object getValue(Object instance);
-            gettermg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, GET_VALUE, null, null, cw);
+            accessormg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, GET_VALUE, null, null, cw);
         }
-        gettermg.visitCode();
+        accessormg.visitCode();
 
         // Regular getter/setter
-        gettermg.loadArg(0);
-        gettermg.checkCast(Type.getType(beanClass));
+        accessormg.loadArg(0);
+        accessormg.checkCast(Type.getType(beanClass));
     }
     
     /**
@@ -146,23 +146,23 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
 
         if(isSetter) {
             // void setValue(Object instance);
-            gettermg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, SET_VALUE, null, null, cw);
+            accessormg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, SET_VALUE, null, null, cw);
         } else {
             // Object getValue(Object instance);
-            gettermg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, GET_VALUE, null, null, cw);
+            accessormg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, GET_VALUE, null, null, cw);
         }
-        gettermg.visitCode();
+        accessormg.visitCode();
         
         //  Load parameter from array
-        gettermg.loadArg(0);
-        gettermg.checkCast(OBJECT_ARR_TYPE);
-        gettermg.push(parameter);
-        gettermg.arrayLoad(OBJECT_TYPE);
+        accessormg.loadArg(0);
+        accessormg.checkCast(OBJECT_ARR_TYPE);
+        accessormg.push(parameter);
+        accessormg.arrayLoad(OBJECT_TYPE);
 
         // TODO: If it is end -- do not cast!
         Class<?> c = (Class<?>) types[parameter];
         if(!c.isPrimitive()) {
-            gettermg.checkCast(Type.getType(c));
+            accessormg.checkCast(Type.getType(c));
         }
     }
 
@@ -174,20 +174,20 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
         
         if(isLast && isSetter) {
             // Push array index
-            gettermg.push(index);
+            accessormg.push(index);
 
             // Cast parameter to required type
             Type t = Type.getType(componentClass);
-            gettermg.loadArg(1);
-            gettermg.unbox(t);
+            accessormg.loadArg(1);
+            accessormg.unbox(t);
 
-            gettermg.arrayStore(t);
+            accessormg.arrayStore(t);
         } else {
-            gettermg.push(index);
-            gettermg.arrayLoad(Type.getType(componentClass));
+            accessormg.push(index);
+            accessormg.arrayLoad(Type.getType(componentClass));
         
             if(isLast) {
-                gettermg.box(Type.getType(componentClass));
+                accessormg.box(Type.getType(componentClass));
             }
         }
     }
@@ -206,72 +206,72 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
             Type t = Type.getType(paramType);
             
             // Cast parameter to required type
-            gettermg.loadArg(1);
-            gettermg.unbox(t);
+            accessormg.loadArg(1);
+            accessormg.unbox(t);
 
             Method method = new Method(setter.getName(), VOID_TYPE, new Type[] {t });
-            gettermg.invokeVirtual(Type.getType(beanClass), method);
+            accessormg.invokeVirtual(Type.getType(beanClass), method);
         } else {
         
             Method method = new Method(getter.getName(),
                     Type.getType(getter.getReturnType()), new Type[0]);
             
-            gettermg.invokeVirtual(Type.getType(beanClass), method);
+            accessormg.invokeVirtual(Type.getType(beanClass), method);
             
             // Need to cast, types does not match
             // TODO: We probably don't need to cast, if getter.getReturnType() is instanceof 
             // next getter class 
             if (getter.getReturnType() != propClass) {
-                gettermg.checkCast(Type.getType(propClass));
+                accessormg.checkCast(Type.getType(propClass));
             }
             
             if(isLast) {
-                gettermg.box(Type.getType(propClass));
+                accessormg.box(Type.getType(propClass));
             }
         }
     }
     
     protected void checkNull(int pos) {
      // Check current value is not null
-        gettermg.dup();
-        gettermg.push(pos); // Push current path position for better NPE
+        accessormg.dup();
+        accessormg.push(pos); // Push current path position for better NPE
         // diagnostics
-        gettermg.swap();
-        gettermg.ifNull(npeLabel);
-        gettermg.pop();
+        accessormg.swap();
+        accessormg.ifNull(npeLabel);
+        accessormg.pop();
     }
     
     protected void npeHandler() {
         // NPE handling code. We have position in the property path on top of
         // the stack.
-        gettermg.visitLabel(npeLabel);
-        gettermg.push(fullPath);
-        gettermg.swap();
-        gettermg.push(0);
-        gettermg.swap();
-        gettermg.invokeVirtual(STRING_TYPE, SUBSTRING);
-        gettermg.push(" property is null for " + initialBeanClass.getName()
+        accessormg.visitLabel(npeLabel);
+        accessormg.push(fullPath);
+        accessormg.swap();
+        accessormg.push(0);
+        accessormg.swap();
+        accessormg.invokeVirtual(STRING_TYPE, SUBSTRING);
+        accessormg.push(" property is null for " + initialBeanClass.getName()
                 + " instance (full path is owner.firstName).");
-        gettermg.invokeVirtual(STRING_TYPE, CONCAT);
+        accessormg.invokeVirtual(STRING_TYPE, CONCAT);
         // Now we have message on the top
 
-        gettermg.newInstance(NPE_TYPE);
-        gettermg.dupX1();
-        gettermg.swap();
+        accessormg.newInstance(NPE_TYPE);
+        accessormg.dupX1();
+        accessormg.swap();
         // Now we have: msg, ex, ex
         
-        gettermg.invokeConstructor(NPE_TYPE, NPE_CTOR);
-        gettermg.throwException();
+        accessormg.invokeConstructor(NPE_TYPE, NPE_CTOR);
+        accessormg.throwException();
     }
     
     /**
      * {@inheritDoc}
      */
     public byte[] visitEnd() {
-        gettermg.returnValue();
+        accessormg.returnValue();
         npeHandler();
         
-        gettermg.endMethod();
+        accessormg.endMethod();
         cw.visitEnd();
         
         byte[] code = cw.toByteArray();

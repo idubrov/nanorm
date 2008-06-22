@@ -15,11 +15,17 @@
  */
 package com.google.code.nanorm.internal.introspect.reflect;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.code.nanorm.internal.FactoryImpl;
+import com.google.code.nanorm.internal.QueryDelegate;
+import com.google.code.nanorm.internal.config.InternalConfiguration;
+import com.google.code.nanorm.internal.config.StatementConfig;
 import com.google.code.nanorm.internal.introspect.AbstractIntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectUtils;
@@ -80,5 +86,42 @@ public class ReflectIntrospectionFactory extends AbstractIntrospectionFactory im
             setters.put(key, m);
         }
         return m;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public <T> T createMapper(Class<T> interfaze, InternalConfiguration config, QueryDelegate delegate) {
+        return interfaze.cast(Proxy.newProxyInstance(getClass().getClassLoader(),
+                new Class<?>[] {interfaze }, new MapperInvocationHandler(config, delegate)));
+    }
+    
+    /**
+     * Invocation handler for mapper interface implementation.
+     *
+     * @author Ivan Dubrov
+     * @version 1.0 19.06.2008
+     */
+    private class MapperInvocationHandler implements InvocationHandler {
+        private final InternalConfiguration config;
+        
+        private final QueryDelegate delegate;
+        
+        /**
+         * 
+         */
+        public MapperInvocationHandler(InternalConfiguration config, QueryDelegate delegate) {
+            this.config = config;
+            this.delegate = delegate;
+        }
+
+        /**
+         * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object,
+         * java.lang.reflect.Method, java.lang.Object[])
+         */
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            StatementConfig stConfig = config.getStatementConfig(method);
+            return delegate.query(stConfig, args);
+        }
     }
 }

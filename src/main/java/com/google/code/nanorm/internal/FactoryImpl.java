@@ -29,6 +29,7 @@ import java.util.List;
 import com.google.code.nanorm.Factory;
 import com.google.code.nanorm.Transaction;
 import com.google.code.nanorm.TypeHandlerFactory;
+import com.google.code.nanorm.exceptions.DataException;
 import com.google.code.nanorm.internal.config.InternalConfiguration;
 import com.google.code.nanorm.internal.config.StatementConfig;
 import com.google.code.nanorm.internal.introspect.Getter;
@@ -46,7 +47,7 @@ import com.google.code.nanorm.internal.type.TypeHandler;
  * @author Ivan Dubrov
  * @version 1.0 27.05.2008
  */
-public class FactoryImpl implements Factory {
+public class FactoryImpl implements Factory, QueryDelegate {
 
     final private ThreadLocal<SessionSpi> sessions = new ThreadLocal<SessionSpi>();
 
@@ -66,8 +67,9 @@ public class FactoryImpl implements Factory {
         config.configure(mapperClass);
 
         // TODO: Check we mapped this class!
-        return mapperClass.cast(Proxy.newProxyInstance(getClass().getClassLoader(),
-                new Class<?>[] {mapperClass }, new MapperInvocationHandler()));
+        /*return mapperClass.cast(Proxy.newProxyInstance(getClass().getClassLoader(),
+                new Class<?>[] {mapperClass }, new MapperInvocationHandler()));*/
+        return config.getIntrospectionFactory().createMapper(mapperClass, config, this);
     }
 
     public Transaction useConnection(Connection connection) {
@@ -82,8 +84,8 @@ public class FactoryImpl implements Factory {
         sessions.set(spi);
         return new TransactionImpl(spi);
     }
-
-    protected Object query(StatementConfig config, Object[] args) throws SQLException {
+    
+    public Object query(StatementConfig config, Object[] args) {
         // Request-scoped data
         Request request = new Request();
 
@@ -128,6 +130,8 @@ public class FactoryImpl implements Factory {
             } finally {
                 st.close();
             }
+        } catch(SQLException e) {
+            throw new DataException("SQL exception occured while executing the query!", e);
         } finally {
             try {
                 spi.releaseConnection(conn);

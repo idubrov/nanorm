@@ -240,6 +240,11 @@ public class InternalConfiguration {
         return typeHandlerFactory;
     }
     
+    /** @return Returns the introspectionFactory. */
+    public IntrospectionFactory getIntrospectionFactory() {
+        return introspectionFactory;
+    }
+    
     /**
      * @see java.lang.Object#toString()
      */

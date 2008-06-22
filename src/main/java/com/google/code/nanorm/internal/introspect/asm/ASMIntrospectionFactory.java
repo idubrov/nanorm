@@ -18,16 +18,23 @@ package com.google.code.nanorm.internal.introspect.asm;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.code.nanorm.exceptions.IntrospectionException;
+import com.google.code.nanorm.internal.FactoryImpl;
+import com.google.code.nanorm.internal.QueryDelegate;
+import com.google.code.nanorm.internal.config.InternalConfiguration;
+import com.google.code.nanorm.internal.config.StatementConfig;
 import com.google.code.nanorm.internal.introspect.AbstractIntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectUtils;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Setter;
+import com.google.code.nanorm.internal.introspect.asm.MapperBuilder.MethodConfig;
 
 /**
  * ASM based {@link IntrospectionFactory} implementation. Uses runtime code
@@ -41,11 +48,11 @@ import com.google.code.nanorm.internal.introspect.Setter;
 public class ASMIntrospectionFactory extends AbstractIntrospectionFactory implements
         IntrospectionFactory {
 
-    private ASMClassLoader classLoader;
+    private final ASMClassLoader classLoader;
 
-    private Map<AccessorKey, Getter> getters;
+    private final Map<AccessorKey, Getter> getters;
 
-    private Map<AccessorKey, Setter> setters;
+    private final Map<AccessorKey, Setter> setters;
 
     // TODO: Synchronization!
     private final AtomicInteger counter = new AtomicInteger(0);
@@ -140,6 +147,42 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory implem
             }
         }
         return instance;
+    }
+    
+
+    /**
+     * {@inheritDoc}
+     */
+    public <T> T createMapper(Class<T> interfaze, InternalConfiguration config,
+            QueryDelegate delegate) {
+        
+        // TODO: Cache!
+        List<MethodConfig> methods = new ArrayList<MethodConfig>();
+        List<StatementConfig> configs = new ArrayList<StatementConfig>();
+        for(java.lang.reflect.Method m : interfaze.getDeclaredMethods()) {
+            StatementConfig stConfig = config.getStatementConfig(m); 
+            if(stConfig != null) {
+                MethodConfig cfg = new MethodConfig();
+                cfg.method = m;
+                cfg.index = methods.size();
+                
+                methods.add(cfg);
+                configs.add(stConfig);
+            }
+        }
+        
+        String name = "com/google/code/nanorm/generated/Mapper" + counter.incrementAndGet();
+        byte[] code = MapperBuilder.buildMapper(name, interfaze, methods.toArray(new MethodConfig[methods.size()]));
+        
+        Class<?> clazz = classLoader.defineClass(name.replace('/', '.'), code);
+        Object instance;
+        try {
+            Constructor<?> ctor = clazz.getConstructor(QueryDelegate.class, StatementConfig[].class);
+            instance = ctor.newInstance(delegate, configs.toArray(new StatementConfig[configs.size()]));
+        } catch(Exception e) {
+            throw new IntrospectionException("Failed to create mapper instance!", e);
+        }
+        return interfaze.cast(instance);
     }
 
     /**

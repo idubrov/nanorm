@@ -18,6 +18,11 @@ package com.google.code.nanorm.internal.introspect;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
+import com.google.code.nanorm.internal.FactoryImpl;
+import com.google.code.nanorm.internal.QueryDelegate;
+import com.google.code.nanorm.internal.config.InternalConfiguration;
+import com.google.code.nanorm.internal.config.StatementConfig;
+
 /**
  *
  * @author Ivan Dubrov
@@ -39,4 +44,6 @@ public interface IntrospectionFactory {
     Type getParameterType(Method method, String path);
     
     Type getParameterType(Type[] types, String path);
+    
+    <T> T createMapper(Class<T> interfaze, InternalConfiguration config, QueryDelegate delegate);
 }
