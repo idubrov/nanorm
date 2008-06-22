@@ -20,7 +20,7 @@ import com.google.code.nanorm.internal.FactoryImpl;
 import com.google.code.nanorm.internal.config.InternalConfiguration;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.asm.ASMIntrospectionFactory;
-import com.google.code.nanorm.internal.introspect.reflect.BeanUtilsIntrospectionFactory;
+import com.google.code.nanorm.internal.introspect.reflect.ReflectIntrospectionFactory;
 import com.google.code.nanorm.internal.type.TypeHandlerFactoryImpl;
 
 /**

@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
-import com.google.code.nanorm.internal.introspect.reflect.BeanUtilsIntrospectionFactory;
+import com.google.code.nanorm.internal.introspect.reflect.ReflectIntrospectionFactory;
 
 /**
  * Text fragment of the SQL.

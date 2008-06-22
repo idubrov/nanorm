@@ -18,6 +18,7 @@ package com.google.code.nanorm.internal.introspect.reflect;
 import java.lang.reflect.Type;
 
 import com.google.code.nanorm.internal.introspect.Getter;
+import com.google.code.nanorm.internal.introspect.IntrospectUtils;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 
 /**
@@ -31,53 +32,27 @@ public class ParameterGetter implements Getter {
     
     final private IntrospectionFactory factory;
     
-    final private int index;
-    
     final private Type[] types;
     
     public ParameterGetter(IntrospectionFactory factory, Type[] types, String path) {
         this.factory = factory;
         this.types = types;
-        
-        int pos = path.indexOf('.');
-        if (pos == -1) {
-            pos = path.length();
-        }
-        String context = path.substring(0, pos);
-
-        int parameter;
-        if (context.equals("value")) {
-            parameter = 0;
-        } else {
-            parameter = Integer.parseInt(context) - 1;
-        }
-        this.index = parameter;
-        this.path = pos == path.length() ? null : path.substring(pos + 1);
+        this.path = path;
     }
 
     /**
      * @see com.google.code.nanorm.internal.introspect.Getter#getValue(java.lang.Object)
      */
     public Object getValue(Object instance) {
-        Object value = ((Object[]) instance)[index];
-        
-        if(path == null) {
-            return value;
-        }
-        Getter getter = 
-            factory.buildGetter(value != null ? value.getClass() : void.class, path);
-        return getter.getValue(value);
+        ReflectAccessor accessor = new ReflectAccessor(instance);
+        return IntrospectUtils.visitPath(path, types, accessor, null);
     }
 
     /**
      * {@inheritDoc}
      */
     public Type getType() {
-        Type type = types[index];
-        if(path == null) {
-            return type;
-        }
-        return factory.getPropertyType((Class<?>) type, path);
+        return factory.getParameterType(types, path);
     }
 
 }

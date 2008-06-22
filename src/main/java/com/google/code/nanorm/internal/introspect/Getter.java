@@ -25,5 +25,6 @@ import java.lang.reflect.Type;
 public interface Getter {
     Object getValue(Object instance);
     
+    // TODO: Should take instance as a parameter?
     Type getType();
 }

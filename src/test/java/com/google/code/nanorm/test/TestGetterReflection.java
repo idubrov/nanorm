@@ -18,7 +18,7 @@ package com.google.code.nanorm.test;
 
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.asm.ASMIntrospectionFactory;
-import com.google.code.nanorm.internal.introspect.reflect.BeanUtilsIntrospectionFactory;
+import com.google.code.nanorm.internal.introspect.reflect.ReflectIntrospectionFactory;
 
 /**
  *
@@ -28,6 +28,6 @@ import com.google.code.nanorm.internal.introspect.reflect.BeanUtilsIntrospection
 public class TestGetterReflection extends TestGetterBase {
 
     protected IntrospectionFactory provideIntrospectionFactory() {
-        return new BeanUtilsIntrospectionFactory();
+        return new ReflectIntrospectionFactory();
     }
 }

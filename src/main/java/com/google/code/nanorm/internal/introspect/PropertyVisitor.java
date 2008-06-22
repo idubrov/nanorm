@@ -28,7 +28,7 @@ public interface PropertyVisitor<T> {
     
     void visitBegin(Class<?> beanClass, String path);
     
-    void visitBegin(Type[] types, int pos, String path);
+    void visitBegin(Type[] types, int parameter, String path);
     
     void visitProperty(int pos, String property, Method getter, boolean isLast, Class<?> beanClass, Class<?> propClass);
     

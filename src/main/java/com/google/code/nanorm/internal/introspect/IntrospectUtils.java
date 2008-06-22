@@ -16,6 +16,8 @@
 
 package com.google.code.nanorm.internal.introspect;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 import com.google.code.nanorm.exceptions.IntrospectionException;
@@ -100,7 +102,7 @@ public class IntrospectUtils {
             finalType[0] = type;
         }
         return visitor.visitEnd();
-    }
+    }   
 
     public static java.lang.reflect.Method findGetter(Class<?> clazz, String property) {
         try {
@@ -116,6 +118,19 @@ public class IntrospectUtils {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static java.lang.reflect.Method findGetterCaseInsensitive(Class<?> clazz, String property) {
+        for(Method m : clazz.getDeclaredMethods()) {
+            String name = "get" + property;
+            if(m.getName().equalsIgnoreCase("get" + property)) {
+                return m;
+            } else if(m.getName().equalsIgnoreCase("is" + property)) {
+                // TODO: Should check only for booleans!
+                return m;
+            } 
+        }
+        return null;
     }
 
     public static java.lang.reflect.Method findSetter(Class<?> clazz, String property) {

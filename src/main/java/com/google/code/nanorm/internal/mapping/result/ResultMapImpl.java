@@ -15,7 +15,7 @@
  */
 package com.google.code.nanorm.internal.mapping.result;
 
-import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.beanutils.PropertyUtils;
-
 import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.exceptions.ResultMapException;
 import com.google.code.nanorm.internal.Key;
@@ -37,6 +35,7 @@ import com.google.code.nanorm.internal.Request;
 import com.google.code.nanorm.internal.config.ResultMapConfig;
 import com.google.code.nanorm.internal.config.ResultMappingConfig;
 import com.google.code.nanorm.internal.introspect.Getter;
+import com.google.code.nanorm.internal.introspect.IntrospectUtils;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.type.TypeHandler;
@@ -57,7 +56,7 @@ public class ResultMapImpl implements ResultMap {
     final private TypeHandlerFactory typeHandlerFactory;
 
     private DynamicConfig dynamicConfig;
-    
+
     final private DynamicConfig finDynamicConfig;
 
     public ResultMapImpl(Type resultType, ResultMapConfig config,
@@ -66,7 +65,7 @@ public class ResultMapImpl implements ResultMap {
         this.introspectionFactory = introspectionFactory;
         this.typeHandlerFactory = typeHandlerFactory;
         this.elementClass = ResultCollectorUtil.resultClass(resultType);
-        
+
         if (!config.isAuto()) {
             List<ResultMappingConfig> list = Arrays.asList(config.getMappings());
             finDynamicConfig = generatePropertyMappers(list);
@@ -96,7 +95,7 @@ public class ResultMapImpl implements ResultMap {
         // We have a groupBy
         if (key != null) {
             result = null;
-            
+
             // Look in the request map for objects under this key
             Map<Key, Object> map = request.getKey2Objects().get(this);
             if (map != null) {
@@ -116,11 +115,11 @@ public class ResultMapImpl implements ResultMap {
                 // TODO: ????
             }
         } else {
-            // We don't have a groupBy, create new result object 
+            // We don't have a groupBy, create new result object
             result = createResult(request, dc.mappers, rs);
             callback.handleResult(result);
         }
-        
+
         // Always map nested maps
         for (PropertyMapper mapper : dc.nestedMappers) {
             mapper.mapResult(request, result, rs);
@@ -185,13 +184,15 @@ public class ResultMapImpl implements ResultMap {
                 config.setColumn(column);
 
                 // Find property with case-insensitive search
-                PropertyDescriptor[] descriptors = PropertyUtils
-                        .getPropertyDescriptors(elementClass);
-                for (PropertyDescriptor descriptor : descriptors) {
-                    if (descriptor.getName().equalsIgnoreCase(column)) {
-                        config.setProperty(descriptor.getName());
-                        break;
-                    }
+                Method getter = IntrospectUtils.findGetterCaseInsensitive(elementClass, column);
+                if (getter.getName().startsWith("get")) {
+                    String prop = Character.toLowerCase(getter.getName().charAt(3))
+                            + getter.getName().substring(4);
+                    config.setProperty(prop);
+                } else if (getter.getName().startsWith("is")) {
+                    String prop = Character.toLowerCase(getter.getName().charAt(2))
+                            + getter.getName().substring(3);
+                    config.setProperty(prop);
                 }
                 if (config.getProperty() == null) {
                     // FIXME: Just skip it?
@@ -205,7 +206,7 @@ public class ResultMapImpl implements ResultMap {
     }
 
     final private DynamicConfig generatePropertyMappers(List<ResultMappingConfig> configs) {
-        
+
         String[] groupBy = config.getGroupBy();
 
         List<PropertyMapper> mappers = new ArrayList<PropertyMapper>();
@@ -217,7 +218,7 @@ public class ResultMapImpl implements ResultMap {
 
             Setter setter = introspectionFactory.buildSetter(elementClass, mappingConfig
                     .getProperty());
-            
+
             // TODO: Check all groupBy's are found!
             if (groupBy != null && search(groupBy, mappingConfig.getProperty())) {
                 if (mappingConfig.getResultMapConfig() != null) {
@@ -232,7 +233,8 @@ public class ResultMapImpl implements ResultMap {
 
             if (mappingConfig.getResultMapConfig() != null) {
                 // TODO: Hacky? Why?
-                Getter getter = introspectionFactory.buildGetter(elementClass, mappingConfig.getProperty());
+                Getter getter = introspectionFactory.buildGetter(elementClass, mappingConfig
+                        .getProperty());
 
                 ResultMap nestedMap = new ResultMapImpl(propertyType, mappingConfig
                         .getResultMapConfig(), introspectionFactory, typeHandlerFactory);
@@ -240,7 +242,8 @@ public class ResultMapImpl implements ResultMap {
                         setter, nestedMap));
             } else {
                 // TODO: Cast...
-                // TODO: This will fail if collection property is not mapped as nested map!
+                // TODO: This will fail if collection property is not mapped as
+                // nested map!
                 TypeHandler<?> typeHandler = typeHandlerFactory
                         .getTypeHandler((Class<?>) propertyType);
                 mappers.add(new PropertyMapperImpl(mappingConfig, setter, typeHandler));
@@ -261,12 +264,12 @@ public class ResultMapImpl implements ResultMap {
         }
         return false;
     }
-    
+
     private static class DynamicConfig {
         public PropertyMapper[] mappers;
-        
+
         public KeyGenerator[] keyGenerators;
-        
+
         public PropertyMapper[] nestedMappers;
     }
 
