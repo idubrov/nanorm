@@ -45,7 +45,7 @@ import com.google.code.nanorm.internal.introspect.TypeOracle;
  * @author Ivan Dubrov
  * @version 1.0 22.06.2008
  */
-public class GetterBuilder implements PropertyPathVisitor<byte[]> {
+public class AccessorBuilder implements PropertyPathVisitor<byte[]> {
     
     private ClassWriter cw;
     
@@ -59,7 +59,7 @@ public class GetterBuilder implements PropertyPathVisitor<byte[]> {
     
     private final boolean isSetter;
     
-    public GetterBuilder(String name, boolean isSetter) {
+    public AccessorBuilder(String name, boolean isSetter) {
         this.isSetter = isSetter;
         
         cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
@@ -68,9 +68,6 @@ public class GetterBuilder implements PropertyPathVisitor<byte[]> {
         if(isSetter) {
             cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, name, null, "java/lang/Object",
                     new String[] {"com/google/code/nanorm/internal/introspect/Setter" });
-
-            cw.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_FINAL, "type",
-                    "Ljava/lang/reflect/Type;", null, null);
 
             visitSetterConstructor();
         } else {
