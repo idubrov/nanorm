@@ -37,6 +37,11 @@ public final class PropertyNavigator {
     
     private int token;
     
+    public PropertyNavigator(String path, int pos) {
+        this.path = path;
+        this.pos = pos;
+    }
+    
     public PropertyNavigator(String path) {
         this.path = path;
     }
@@ -57,8 +62,8 @@ public final class PropertyNavigator {
         return token;
     }
     
-    public final boolean isLast() {
-        return pos == path.length();
+    public final boolean hasNext() {
+        return pos >= path.length();
     }
     
     public final String getPath() {

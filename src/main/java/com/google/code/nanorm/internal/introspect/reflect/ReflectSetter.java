@@ -51,18 +51,18 @@ public class ReflectSetter implements Setter {
     public void setValue(Object instance, Object toSet) {
         PropertyNavigator nav = new PropertyNavigator(path);
 
-        while (!nav.isLast()) {
+        while (!nav.hasNext()) {
             int pos = nav.getPosition();
             
             int token = nav.next();
             if (token == PropertyNavigator.INDEX) {
-                if(nav.isLast()) {
+                if(nav.hasNext()) {
                     Array.set(instance, nav.getIndex(), toSet);
                 } else {
                     instance = Array.get(instance, nav.getIndex());
                 }
             } else if (token == PropertyNavigator.PROPERTY) {
-                if(nav.isLast()) {
+                if(nav.hasNext()) {
                     Method setter = factory.lookupSetter(instance.getClass(), nav.getProperty());
                     try {
                         setter.invoke(instance, toSet);

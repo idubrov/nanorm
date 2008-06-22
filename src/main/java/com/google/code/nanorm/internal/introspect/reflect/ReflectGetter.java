@@ -54,7 +54,7 @@ public class ReflectGetter implements Getter {
     public Object getValue(Object instance) {
         PropertyNavigator nav = new PropertyNavigator(path);
 
-        while (!nav.isLast()) {
+        while (!nav.hasNext()) {
             int pos = nav.getPosition();
             
             int token = nav.next();

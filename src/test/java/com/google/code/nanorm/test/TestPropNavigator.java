@@ -34,105 +34,105 @@ public class TestPropNavigator {
     public void testPath1() {
         PropertyNavigator nav = new PropertyNavigator("prop1.prop2.prop3");
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(PROPERTY, nav.next());
         Assert.assertEquals("prop1", nav.getProperty());
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(PROPERTY, nav.next());
         Assert.assertEquals("prop2", nav.getProperty());
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(PROPERTY, nav.next());
         Assert.assertEquals("prop3", nav.getProperty());
         
-        Assert.assertTrue(nav.isLast());
+        Assert.assertTrue(nav.hasNext());
     }
     
     @Test
     public void testPath2() {
         PropertyNavigator nav = new PropertyNavigator("prop1.prop2[5].prop3");
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(PROPERTY, nav.next());
         Assert.assertEquals("prop1", nav.getProperty());
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(PROPERTY, nav.next());
         Assert.assertEquals("prop2", nav.getProperty());
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(INDEX, nav.next());
         Assert.assertEquals(5, nav.getIndex());
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(PROPERTY, nav.next());
         Assert.assertEquals("prop3", nav.getProperty());
         
-        Assert.assertTrue(nav.isLast());
+        Assert.assertTrue(nav.hasNext());
     }
     
     @Test
     public void testPath3() {
         PropertyNavigator nav = new PropertyNavigator("prop1.prop2.prop3[7]");
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(PROPERTY, nav.next());
         Assert.assertEquals("prop1", nav.getProperty());
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(PROPERTY, nav.next());
         Assert.assertEquals("prop2", nav.getProperty());
         
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(PROPERTY, nav.next());
         Assert.assertEquals("prop3", nav.getProperty());
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(INDEX, nav.next());
         Assert.assertEquals(7, nav.getIndex());
         
-        Assert.assertTrue(nav.isLast());
+        Assert.assertTrue(nav.hasNext());
     }
     
     @Test
     public void testPath4() {
         PropertyNavigator nav = new PropertyNavigator("[2].prop1.prop2.prop3");
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(INDEX, nav.next());
         Assert.assertEquals(2, nav.getIndex());
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(PROPERTY, nav.next());
         Assert.assertEquals("prop1", nav.getProperty());
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(PROPERTY, nav.next());
         Assert.assertEquals("prop2", nav.getProperty());
         
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(PROPERTY, nav.next());
         Assert.assertEquals("prop3", nav.getProperty());
         
-        Assert.assertTrue(nav.isLast());
+        Assert.assertTrue(nav.hasNext());
     }
     
     @Test
     public void testPath5() {
         PropertyNavigator nav = new PropertyNavigator("prop1.prop2[5a].prop3");
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(PROPERTY, nav.next());
         Assert.assertEquals("prop1", nav.getProperty());
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(PROPERTY, nav.next());
         Assert.assertEquals("prop2", nav.getProperty());
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         try {
             nav.next();
             Assert.fail();
@@ -145,19 +145,19 @@ public class TestPropNavigator {
     public void testPath6() {
         PropertyNavigator nav = new PropertyNavigator("prop1.prop2[5]b.prop3");
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(PROPERTY, nav.next());
         Assert.assertEquals("prop1", nav.getProperty());
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(PROPERTY, nav.next());
         Assert.assertEquals("prop2", nav.getProperty());
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(INDEX, nav.next());
         Assert.assertEquals(5, nav.getIndex());
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         try {
             nav.next();
             Assert.fail();
@@ -170,15 +170,15 @@ public class TestPropNavigator {
     public void testPath7() {
         PropertyNavigator nav = new PropertyNavigator("prop1.prop2]5].prop3");
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(PROPERTY, nav.next());
         Assert.assertEquals("prop1", nav.getProperty());
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(PROPERTY, nav.next());
         Assert.assertEquals("prop2", nav.getProperty());
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         try {
             nav.next();
             Assert.fail();
@@ -191,15 +191,15 @@ public class TestPropNavigator {
     public void testPath8() {
         PropertyNavigator nav = new PropertyNavigator("prop1.prop2.^prop3");
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(PROPERTY, nav.next());
         Assert.assertEquals("prop1", nav.getProperty());
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         Assert.assertEquals(PROPERTY, nav.next());
         Assert.assertEquals("prop2", nav.getProperty());
         
-        Assert.assertFalse(nav.isLast());
+        Assert.assertFalse(nav.hasNext());
         try {
             nav.next();
             Assert.fail();

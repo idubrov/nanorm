@@ -66,7 +66,7 @@ public class IntrospectUtils {
         PropertyNavigator nav = new PropertyNavigator(path);
 
         Type type = beanClass;
-        while (!nav.isLast()) {
+        while (!nav.hasNext()) {
             int pos = nav.getPosition();
             
             int token = nav.next();
@@ -78,7 +78,7 @@ public class IntrospectUtils {
                             + "). Actual type was " + beanClass);
                 }
                 Class<?> propClass = beanClass.getComponentType();
-                visitor.visitIndex(pos, nav.getIndex(), nav.isLast(), beanClass, propClass);
+                visitor.visitIndex(pos, nav.getIndex(), nav.hasNext(), beanClass, propClass);
                 
                 beanClass = propClass;
                 type = beanClass;
@@ -91,7 +91,7 @@ public class IntrospectUtils {
                 // Find out concrete Class instance behind the generics
                 Class<?> propClass = TypeOracle.resolveClass(type);
                 
-                visitor.visitProperty(pos, nav.getProperty(), getter, nav.isLast(), beanClass, propClass);
+                visitor.visitProperty(pos, nav.getProperty(), getter, nav.hasNext(), beanClass, propClass);
                 beanClass = propClass;
             } else {
                 throw new IllegalStateException("Unexpected token type " + token
