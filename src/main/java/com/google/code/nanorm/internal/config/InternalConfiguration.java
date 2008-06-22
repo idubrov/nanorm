@@ -37,9 +37,7 @@ import com.google.code.nanorm.internal.DynamicFragment;
 import com.google.code.nanorm.internal.Fragment;
 import com.google.code.nanorm.internal.TextFragment;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
-import com.google.code.nanorm.internal.introspect.reflect.ReflectIntrospectionFactory;
 import com.google.code.nanorm.internal.mapping.result.ResultMapImpl;
-import com.google.code.nanorm.internal.type.TypeHandlerFactoryImpl;
 
 /**
  * TODO: Merge processing and searching. Maybe, lazy loading (when referenced). 

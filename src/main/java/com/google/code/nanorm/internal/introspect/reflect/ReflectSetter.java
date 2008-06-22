@@ -17,14 +17,10 @@ package com.google.code.nanorm.internal.introspect.reflect;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.code.nanorm.exceptions.IntrospectionException;
-import com.google.code.nanorm.internal.introspect.IntrospectUtils;
 import com.google.code.nanorm.internal.introspect.PropertyNavigator;
 import com.google.code.nanorm.internal.introspect.Setter;
-import com.google.code.nanorm.internal.introspect.asm.AccessorKey;
 
 /**
  * 

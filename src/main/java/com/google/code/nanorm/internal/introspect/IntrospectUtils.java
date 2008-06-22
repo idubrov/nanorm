@@ -16,7 +16,6 @@
 
 package com.google.code.nanorm.internal.introspect;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
@@ -27,7 +26,11 @@ import com.google.code.nanorm.exceptions.IntrospectionException;
  * @author Ivan Dubrov
  * @version 1.0 22.06.2008
  */
-public class IntrospectUtils {    
+public final class IntrospectUtils {
+    
+    private IntrospectUtils() {
+        // Nothing.
+    }
     
     public static <T> T visitPath(String path, Class<?> beanClass, PropertyVisitor<T> visitor, Type[] finalType) {
         return visitPath(path, beanClass, null, visitor, finalType);

@@ -21,7 +21,6 @@ import java.lang.reflect.Type;
 
 import com.google.code.nanorm.exceptions.IntrospectionException;
 import com.google.code.nanorm.internal.introspect.Getter;
-import com.google.code.nanorm.internal.introspect.IntrospectUtils;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.PropertyNavigator;
 

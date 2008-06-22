@@ -51,23 +51,6 @@ public class AccessorKey {
         this.path = path;
     }
 
-
-
-    /** @return Returns the beanClass. */
-    public Class<?> getBeanClass() {
-        return beanClass;
-    }
-
-    /** @return Returns the path. */
-    public String getPath() {
-        return path;
-    }
-
-    /** @return Returns the types. */
-    public Type[] getTypes() {
-        return types;
-    }
-
     /**
      * {@inheritDoc}
      */

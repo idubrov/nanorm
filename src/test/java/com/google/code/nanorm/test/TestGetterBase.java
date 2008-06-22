@@ -25,7 +25,6 @@ import org.junit.Test;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Setter;
-import com.google.code.nanorm.internal.introspect.asm.ASMIntrospectionFactory;
 import com.google.code.nanorm.test.beans.Car;
 import com.google.code.nanorm.test.beans.Crash;
 import com.google.code.nanorm.test.beans.Owner;

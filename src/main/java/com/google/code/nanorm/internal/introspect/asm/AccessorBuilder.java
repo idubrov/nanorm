@@ -30,7 +30,6 @@ import static com.google.code.nanorm.internal.introspect.asm.Constants.STRING_TY
 import static com.google.code.nanorm.internal.introspect.asm.Constants.SUBSTRING;
 import static com.google.code.nanorm.internal.introspect.asm.Constants.VOID_TYPE;
 
-import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
@@ -38,9 +37,8 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import com.google.code.nanorm.internal.introspect.PropertyVisitor;
-import com.google.code.nanorm.internal.introspect.TypeOracle;
 import com.google.code.nanorm.internal.introspect.IntrospectUtils;
+import com.google.code.nanorm.internal.introspect.PropertyVisitor;
 
 /**
  *

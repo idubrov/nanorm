@@ -18,10 +18,6 @@ package com.google.code.nanorm.internal.introspect;
 
 import java.lang.reflect.Type;
 
-import org.objectweb.asm.commons.Method;
-
-import com.google.code.nanorm.exceptions.IntrospectionException;
-
 /**
  * 
  * @author Ivan Dubrov

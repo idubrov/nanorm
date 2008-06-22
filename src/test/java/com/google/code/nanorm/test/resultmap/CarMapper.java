@@ -17,7 +17,6 @@ package com.google.code.nanorm.test.resultmap;
 
 import java.util.List;
 
-
 import com.google.code.nanorm.SQLSource;
 import com.google.code.nanorm.annotations.Mapping;
 import com.google.code.nanorm.annotations.ResultMap;

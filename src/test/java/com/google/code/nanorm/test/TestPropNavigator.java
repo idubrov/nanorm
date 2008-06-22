@@ -16,12 +16,13 @@
 
 package com.google.code.nanorm.test;
 
+import static com.google.code.nanorm.internal.introspect.PropertyNavigator.INDEX;
+import static com.google.code.nanorm.internal.introspect.PropertyNavigator.PROPERTY;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.code.nanorm.internal.introspect.PropertyNavigator;
-import static com.google.code.nanorm.internal.introspect.PropertyNavigator.INDEX;
-import static com.google.code.nanorm.internal.introspect.PropertyNavigator.PROPERTY;
 
 /**
  *

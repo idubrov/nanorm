@@ -25,9 +25,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.google.code.nanorm.exceptions.IntrospectionException;
 import com.google.code.nanorm.internal.introspect.AbstractIntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Getter;
+import com.google.code.nanorm.internal.introspect.IntrospectUtils;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Setter;
-import com.google.code.nanorm.internal.introspect.IntrospectUtils;
 
 /**
  * ASM based {@link IntrospectionFactory} implementation. Uses runtime code
