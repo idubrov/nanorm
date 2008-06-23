@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.code.nanorm.test.asm;
+package com.google.code.nanorm.test.perf;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -32,10 +32,10 @@ import com.google.code.nanorm.test.beans.Owner;
  * @author Ivan Dubrov
  * @version 1.0 19.06.2008
  */
+@Ignore
 public class TestPerformance {
 
     
-    @Ignore
     @Test
     public void testGetterArray() {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();

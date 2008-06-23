@@ -290,6 +290,13 @@
       <artifactId>asm-all</artifactId>
       <version>3.1</version>
     </dependency>
+    
+    <dependency>
+      <groupId>org.apache.ibatis</groupId>
+      <artifactId>ibatis-sqlmap</artifactId>
+      <version>2.3.0</version>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>com.h2database</groupId>

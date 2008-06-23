@@ -158,5 +158,18 @@ public abstract class TestGetterBase {
         setter.setValue(car, 2002);
         Assert.assertEquals(2002, car.getOwner().getCrashes3()[2]);
     }
+    
+    // TODO: This test, in fact, should work on Reflection-based factory!
+    @Test
+    public void testGetterArray3() {
+        Car car = new Car();
+        car.setModel("Kalina");
+        Car[] cars = new Car[5];
+        cars[3] = car;
+            
+        Getter getter = factory.buildGetter(Car[].class, "[3].model");
+
+        Assert.assertEquals("Kalina", getter.getValue(cars));
+    }
 }
 

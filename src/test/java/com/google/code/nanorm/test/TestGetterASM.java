@@ -68,17 +68,4 @@ public class TestGetterASM extends TestGetterBase {
                     + "instance (full path is owner.firstName).", e.getMessage());
         }
     }
-
-    // TODO: This test, in fact, should work on Reflection-based factory!
-    @Test
-    public void testGetterArray3() {
-        Car car = new Car();
-        car.setModel("Kalina");
-        Car[] cars = new Car[5];
-        cars[3] = car;
-            
-        Getter getter = factory.buildGetter(Car[].class, "[3].model");
-
-        Assert.assertEquals("Kalina", getter.getValue(cars));
-    }
 }
