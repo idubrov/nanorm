@@ -245,7 +245,7 @@ public class ResultMapImpl implements ResultMap {
                 // TODO: This will fail if collection property is not mapped as
                 // nested map!
                 TypeHandler<?> typeHandler = typeHandlerFactory
-                        .getTypeHandler((Class<?>) propertyType);
+                        .getTypeHandler(propertyType);
                 mappers.add(new PropertyMapper(mappingConfig, setter, typeHandler));
             }
         }
