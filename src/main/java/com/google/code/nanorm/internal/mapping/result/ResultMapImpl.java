@@ -121,7 +121,7 @@ public class ResultMapImpl implements ResultMap {
         }
 
         // Always map nested maps
-        for (PropertyMapper mapper : dc.nestedMappers) {
+        for (NestedMapPropertyMapper mapper : dc.nestedMappers) {
             mapper.mapResult(request, result, rs);
         }
     }
@@ -210,7 +210,7 @@ public class ResultMapImpl implements ResultMap {
         String[] groupBy = config.getGroupBy();
 
         List<PropertyMapper> mappers = new ArrayList<PropertyMapper>();
-        List<PropertyMapper> nestedMappers = new ArrayList<PropertyMapper>();
+        List<NestedMapPropertyMapper> nestedMappers = new ArrayList<NestedMapPropertyMapper>();
         List<KeyGenerator> keyGenerators = new ArrayList<KeyGenerator>();
         for (ResultMappingConfig mappingConfig : configs) {
             Type propertyType = introspectionFactory.getPropertyType(elementClass, mappingConfig
@@ -226,7 +226,7 @@ public class ResultMapImpl implements ResultMap {
                 }
 
                 KeyGenerator keyGen = new KeyGenerator();
-                keyGen.typeHandler = typeHandlerFactory.getTypeHandler((Class<?>) propertyType);
+                keyGen.typeHandler = typeHandlerFactory.getTypeHandler(propertyType);
                 keyGen.config = mappingConfig;
                 keyGenerators.add(keyGen);
             }
@@ -238,7 +238,7 @@ public class ResultMapImpl implements ResultMap {
 
                 ResultMap nestedMap = new ResultMapImpl(propertyType, mappingConfig
                         .getResultMapConfig(), introspectionFactory, typeHandlerFactory);
-                nestedMappers.add(new NestedResultMapPropertyMapperImpl(propertyType, getter,
+                nestedMappers.add(new NestedMapPropertyMapper(propertyType, getter,
                         setter, nestedMap));
             } else {
                 // TODO: Cast...
@@ -246,12 +246,12 @@ public class ResultMapImpl implements ResultMap {
                 // nested map!
                 TypeHandler<?> typeHandler = typeHandlerFactory
                         .getTypeHandler((Class<?>) propertyType);
-                mappers.add(new PropertyMapperImpl(mappingConfig, setter, typeHandler));
+                mappers.add(new PropertyMapper(mappingConfig, setter, typeHandler));
             }
         }
         DynamicConfig dc = new DynamicConfig();
         dc.mappers = mappers.toArray(new PropertyMapper[mappers.size()]);
-        dc.nestedMappers = nestedMappers.toArray(new PropertyMapper[nestedMappers.size()]);
+        dc.nestedMappers = nestedMappers.toArray(new NestedMapPropertyMapper[nestedMappers.size()]);
         dc.keyGenerators = keyGenerators.toArray(new KeyGenerator[keyGenerators.size()]);
         return dc;
     }
@@ -270,7 +270,7 @@ public class ResultMapImpl implements ResultMap {
 
         public KeyGenerator[] keyGenerators;
 
-        public PropertyMapper[] nestedMappers;
+        public NestedMapPropertyMapper[] nestedMappers;
     }
 
     private static class KeyGenerator {

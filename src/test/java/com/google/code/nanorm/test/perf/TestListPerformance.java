@@ -16,6 +16,8 @@
 
 package com.google.code.nanorm.test.perf;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
@@ -47,49 +49,81 @@ public class TestListPerformance extends MapperTestBase {
     public void testPerformance() throws Exception {
         Mapper mapper1 = new MapperImpl();
         Mapper mapper2 = factory.createMapper(Mapper.class);
-
-        SqlMapClient client = 
-            SqlMapClientBuilder.buildSqlMapClient(TestListPerformance.class.getResourceAsStream("sql-map-config.xml"));
-        
-        
+        Mapper mapper3 = new MapperImpl2();
 
         check(mapper1.getPrimitiveTypes(1));
         check(mapper2.getPrimitiveTypes(1));
+        check(mapper3.getPrimitiveTypes(1));
         
-        SqlMapSession session = client.openSession(conn);
-        check((PrimitiveTypesBean) session.queryForObject("selectPrimitiveBean", 1));
-        
+        /*
         for (int i = 0; i < 10000; ++i) {
             mapper1.getPrimitiveTypes(1);
             mapper2.getPrimitiveTypes(1);
+            mapper3.getPrimitiveTypes(1);
         }
 
         long t1 = System.currentTimeMillis();
-        for (int i = 0; i < 100000; ++i) {
+        for (int i = 0; i < 10000; ++i) {
             mapper1.getPrimitiveTypes(1);
         }
         long t2 = System.currentTimeMillis();
-
-        long t5 = System.currentTimeMillis();
-        for (int i = 0; i < 100000; ++i) {
-            session.queryForObject("selectPrimitiveBean", 1);
-        }
-        long t6 = System.currentTimeMillis();
-
-        
+                
         long t3 = System.currentTimeMillis();
-        for (int i = 0; i < 100000; ++i) {
+        for (int i = 0; i < 10000; ++i) {
             mapper2.getPrimitiveTypes(1);
         }
         long t4 = System.currentTimeMillis();
         
-        
 
+        long t5 = System.currentTimeMillis();
+        for (int i = 0; i < 10000; ++i) {
+            mapper3.getPrimitiveTypes(1);
+        }
+        long t6 = System.currentTimeMillis();
+
+   
         System.err.println("R: " + (t2 - t1) + " vs " + (t4 - t3) + " vs " + (t6 - t5));
         System.err.println((double) (t4 - t3) / (t2 - t1));
         System.err.println((double) (t6 - t5) / (t4 - t3));
         
         System.err.println((double) ((t6 - t5) - (t2 - t1)) / ((t4 - t3) - (t2 - t1)));
+        */
+        Mapper mapper = mapper3;
+        
+        for (int i = 0; i < 100000; ++i) {
+            check(mapper.getPrimitiveTypes(1));
+        }
+        
+        ThreadMXBean mx = ManagementFactory.getThreadMXBean();
+        long start = mx.getCurrentThreadCpuTime();
+        for(int i = 0; i < 1000000; ++i) {
+            mapper.getPrimitiveTypes(1);
+        }
+        long end = mx.getCurrentThreadCpuTime();
+        long duration1 = end - start;
+        System.err.println(duration1);
+
+    }
+    
+    private class MapperImpl2 implements Mapper {
+        private SqlMapSession session;
+        
+        /**
+         * @param session
+         */
+        public MapperImpl2() {
+            SqlMapClient client = 
+                SqlMapClientBuilder.buildSqlMapClient(TestListPerformance.class.getResourceAsStream("sql-map-config.xml"));
+            session = client.openSession(conn);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public PrimitiveTypesBean getPrimitiveTypes(int id) throws Exception {
+            return (PrimitiveTypesBean) session.queryForObject("selectPrimitiveBean", 1);
+        }
+        
     }
 
     private class MapperImpl implements Mapper {

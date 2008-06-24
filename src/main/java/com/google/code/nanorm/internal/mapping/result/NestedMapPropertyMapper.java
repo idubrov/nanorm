@@ -28,7 +28,7 @@ import com.google.code.nanorm.internal.introspect.Setter;
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
  */
-public class NestedResultMapPropertyMapperImpl implements PropertyMapper {
+public class NestedMapPropertyMapper {
 
     final private ResultMap resultMap;
     
@@ -38,7 +38,7 @@ public class NestedResultMapPropertyMapperImpl implements PropertyMapper {
      * @param setter
      * @param resultMap
      */
-    public NestedResultMapPropertyMapperImpl(Type type, Getter getter,
+    public NestedMapPropertyMapper(Type type, Getter getter,
             Setter setter, ResultMap resultMap) {
         this.resultMap = resultMap;
         this.callbackSource = ResultCollectorUtil.createResultCallback(type, getter, setter);
@@ -47,7 +47,7 @@ public class NestedResultMapPropertyMapperImpl implements PropertyMapper {
     /**
      * @see com.google.code.nanorm.internal.mapping.result.PropertyMapper#mapResult(java.lang.Object, java.sql.ResultSet)
      */
-    public void mapResult(Request request, final Object result, ResultSet rs) throws SQLException {
+    public final void mapResult(Request request, final Object result, ResultSet rs) throws SQLException {
         ResultCallback callback = callbackSource.forInstance(result);
         resultMap.processResultSet(request, rs, callback);
     }
