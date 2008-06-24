@@ -16,12 +16,15 @@
 
 package com.google.code.nanorm.internal.introspect;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 
-import com.google.code.nanorm.internal.introspect.asm.ResolvedParameterizedType;
+import com.google.code.nanorm.exceptions.IntrospectionException;
+import com.google.code.nanorm.test.generics.Thing;
 
 /**
  * Utilities to resolve generic types using the reflection. Used for resolving
@@ -107,7 +110,8 @@ public class TypeOracle {
 
     /**
      * Resolve {@link Class} instance from given {@link Type}, which could be
-     * either {@link Class} instance of {@link ParameterizedType} instance.
+     * either {@link Class} instance, {@link ParameterizedType} instance or
+     * {@link GenericArrayType} instance.
      * 
      * @param type type to resolve
      * @return resolved {@link Class} instance
@@ -122,6 +126,11 @@ public class TypeOracle {
             }
             throw new IllegalArgumentException("Illegal raw type of parameterized type: "
                     + pt.getRawType() + ". Raw type could be only java.lang.Class instance.");
+        } else if (type instanceof GenericArrayType) {
+            GenericArrayType arr = (GenericArrayType) type;
+            
+            Class<?> clazz = resolveClass(arr.getGenericComponentType());
+            return Array.newInstance(clazz, 0).getClass();
         } else {
             throw new IllegalArgumentException("Illegal type argument: " + type
                     + ". Type could be only java.lang.Class instance or "
@@ -178,7 +187,13 @@ public class TypeOracle {
             }
 
             // Currently only one bound is possible
+            // TODO: Should we resolve it as well?
             return bounds[0];
+        } else if (type instanceof GenericArrayType) {
+            GenericArrayType array = (GenericArrayType) type;
+
+            Type resolvedComponent = resolveImpl(array.getGenericComponentType(), context);
+            return new ResolvedGenericArrayType(resolvedComponent);
         } else {
             throw new RuntimeException("Not supported!");
         }

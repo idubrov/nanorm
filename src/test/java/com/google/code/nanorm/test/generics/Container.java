@@ -29,9 +29,9 @@ public class Container {
     
     private Wrapper<? extends Thing> item3;
     
-    private Wrapper<?> item4;
-    
     private Wrapper3<Thing> item5;
+    
+    private Wrapper<Thing[]> item6;
 
     public Wrapper<Wrapper<Thing>> getItem() {
         return item;
@@ -57,19 +57,19 @@ public class Container {
         this.item3 = item3;
     }
 
-    public Wrapper<?> getItem4() {
-        return item4;
-    }
-
-    public void setItem4(Wrapper<?> item4) {
-        this.item4 = item4;
-    }
-
     public Wrapper3<Thing> getItem5() {
         return item5;
     }
 
     public void setItem5(Wrapper3<Thing> item5) {
         this.item5 = item5;
+    }
+    
+    public Wrapper<Thing[]> getItem6() {
+        return item6;
+    }
+
+    public void setItem6(Wrapper<Thing[]> item6) {
+        this.item6 = item6;
     }
 }

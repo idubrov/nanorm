@@ -153,7 +153,6 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
     public void visitIndex(int pos, int index, boolean isLast, Class<?> beanClass) {
         checkNull(pos);
 
-        // TODO: Write test on this!
         if (actualClass != beanClass) {
             accessormg.checkCast(Type.getType(beanClass));
         }

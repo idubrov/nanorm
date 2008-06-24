@@ -14,30 +14,27 @@
  * limitations under the License.
  */
 
-package com.google.code.nanorm.test.generics;
+package com.google.code.nanorm.internal.introspect;
 
-/**
- *
- * @author Ivan Dubrov
- * @version 1.0 20.06.2008
- */
-public class Thing {
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.Type;
 
-    private String name;
+public class ResolvedGenericArrayType implements GenericArrayType {
     
-    public Thing() {
-        // Nothing...
+    private final Type componentType;
+    
+    /**
+     * @param componentType
+     */
+    public ResolvedGenericArrayType(Type componentType) {
+        this.componentType = componentType;
     }
 
-    public Thing(String name) {
-        this.name = name;
+    /**
+     * {@inheritDoc}
+     */
+    public Type getGenericComponentType() {
+        return componentType;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String model) {
-        this.name = model;
-    }
 }

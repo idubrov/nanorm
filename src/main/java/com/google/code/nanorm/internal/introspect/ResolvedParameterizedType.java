@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.code.nanorm.internal.introspect.asm;
+package com.google.code.nanorm.internal.introspect;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
