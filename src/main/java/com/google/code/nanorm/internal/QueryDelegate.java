@@ -24,6 +24,6 @@ import com.google.code.nanorm.internal.config.StatementConfig;
  * @version 1.0 22.06.2008
  */
 public interface QueryDelegate {
-
+    
     Object query(StatementConfig config, Object[] args);
 }

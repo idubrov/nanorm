@@ -87,7 +87,7 @@ public class FactoryImpl implements Factory, QueryDelegate {
     
     public Object query(StatementConfig config, Object[] args) {
         // Request-scoped data
-        Request request = new Request();
+        Request request = new Request(this);
 
         // Statement fragment
         BoundFragment fragment = config.getStatementBuilder().bindParameters(args);
@@ -125,7 +125,7 @@ public class FactoryImpl implements Factory, QueryDelegate {
                     // Prepare result callback and process results
                     ResultGetterSetter rgs = new ResultGetterSetter();
                     ResultCallbackSource callbackSource = ResultCollectorUtil.createResultCallback(
-                            config.getResultType(), rgs, rgs);
+                            config.getResultType(), rgs, rgs, config);
                     ResultCallback callback = callbackSource.forInstance(request);
                     ResultMap resultMapper = config.getResultMapper();
                     while (rs.next()) {

@@ -24,7 +24,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @version 1.0 28.05.2008
  */
 public class ResultMappingConfig {
-
+    
     private String property;
     
     private String column;
@@ -32,7 +32,11 @@ public class ResultMappingConfig {
     private int columnIndex;
     
     private ResultMapConfig resultMapConfig;
-
+    
+    private String subselectKey;
+    
+    private StatementConfig subselect;
+    
     /** @return Returns the property. */
     public String getProperty() {
         return property;
@@ -73,6 +77,26 @@ public class ResultMappingConfig {
         this.resultMapConfig = resultMapConfig;
     }
     
+    /** @return Returns the select. */
+    protected String getSubselectKey() {
+        return subselectKey;
+    }
+    
+    /** @param select The select to set. */
+    protected void setSubselectKey(String select) {
+        this.subselectKey = select;
+    }
+    
+    /** @return Returns the subselect. */
+    public StatementConfig getSubselect() {
+        return subselect;
+    }
+    
+    /** @param subselect The subselect to set. */
+    public void setSubselect(StatementConfig subselect) {
+        this.subselect = subselect;
+    }
+    
     /**
      * @see java.lang.Object#toString()
      */
@@ -83,6 +107,8 @@ public class ResultMappingConfig {
             append("column", column).
             append("columnIndex", columnIndex).
             append("resultMapConfig", resultMapConfig).
+            append("subselectKey", subselectKey).
+            append("subselect", subselect).
             toString();
     }
 }

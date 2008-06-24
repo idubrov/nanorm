@@ -24,7 +24,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 public class ResultMapConfig {
     
-    private String id;
+    private final String id;
 
     private ResultMappingConfig[] mappings;
 
@@ -69,6 +69,11 @@ public class ResultMapConfig {
         this.groupBy = groupBy;
     }
 
+    /** @return Returns the id. */
+    public String getId() {
+        return id;
+    }
+    
     /**
      * @see java.lang.Object#toString()
      */

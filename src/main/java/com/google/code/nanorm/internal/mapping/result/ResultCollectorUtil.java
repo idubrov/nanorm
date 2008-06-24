@@ -30,14 +30,14 @@ import com.google.code.nanorm.internal.introspect.Setter;
 public class ResultCollectorUtil {
     
     public static ResultCallbackSource createResultCallback(Type type, 
-            Getter getter, Setter setter) {
+            Getter getter, Setter setter, Object targetName) {
         if(type instanceof ParameterizedType) {
             ParameterizedType pt = (ParameterizedType) type;
             if(pt.getRawType() == List.class) {
                 return new ArrayListCallbackSource(getter, setter);
             }
         } else {
-            return new SingleResultCallbackSource(setter);
+            return new SingleResultCallbackSource(setter, targetName);
         }
         throw new RuntimeException("Unexpected type");
     }

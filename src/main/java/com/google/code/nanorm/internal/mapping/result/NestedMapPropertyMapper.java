@@ -39,9 +39,9 @@ public class NestedMapPropertyMapper {
      * @param resultMap
      */
     public NestedMapPropertyMapper(Type type, Getter getter,
-            Setter setter, ResultMap resultMap) {
+            Setter setter, ResultMap resultMap, Object target) {
         this.resultMap = resultMap;
-        this.callbackSource = ResultCollectorUtil.createResultCallback(type, getter, setter);
+        this.callbackSource = ResultCollectorUtil.createResultCallback(type, getter, setter, target);
     }
 
     /**

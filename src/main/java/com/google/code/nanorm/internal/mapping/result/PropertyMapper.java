@@ -42,8 +42,7 @@ public class PropertyMapper {
      * @param setters
      * @param typeHandlers
      */
-    public PropertyMapper(ResultMappingConfig config, Setter setter,
-            TypeHandler<?> typeHandler) {
+    public PropertyMapper(ResultMappingConfig config, Setter setter, TypeHandler<?> typeHandler) {
         this.config = config;
         this.setter = setter;
         this.typeHandler = typeHandler;
@@ -60,6 +59,10 @@ public class PropertyMapper {
             value = typeHandler.getValue(rs, config.getColumnIndex());
         } else {
             value = typeHandler.getResult(rs, config.getColumn());
+        }
+        if (config.getSubselect() != null) {
+            value = request.getQueryDelegate()
+                    .query(config.getSubselect(), new Object[] {value });
         }
         setter.setValue(result, value);
     }

@@ -29,6 +29,8 @@ import com.google.code.nanorm.internal.mapping.result.ResultMap;
  */
 public class StatementConfig {
     
+    private final String id;
+    
     private boolean update;
     
     private Fragment statementBuilder;
@@ -36,6 +38,15 @@ public class StatementConfig {
     private ResultMap resultMapper;
     
     private Type resultType;
+    
+    private Type[] parameterTypes;
+    
+    /**
+     * 
+     */
+    public StatementConfig(String id) {
+        this.id = id;
+    }
     
     /** @return Returns the update. */
     public boolean isUpdate() {
@@ -77,16 +88,33 @@ public class StatementConfig {
         this.resultType = resultType;
     }
     
+    /** @return Returns the parameterTypes. */
+    public Type[] getParameterTypes() {
+        return parameterTypes;
+    }
+    
+    /** @param parameterTypes The parameterTypes to set. */
+    public void setParameterTypes(Type[] parameterTypes) {
+        this.parameterTypes = parameterTypes;
+    }
+    
+    /** @return Returns the id. */
+    public String getId() {
+        return id;
+    }
+    
     /**
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
         return new ToStringBuilder(this).
+            append("id", id).
             append("update", update).
             append("resultType", resultType).
             append("resultMapper", resultMapper).
             append("statementBuilder", statementBuilder).
+            append("parameterTypes", parameterTypes).
             toString();
     }
 }

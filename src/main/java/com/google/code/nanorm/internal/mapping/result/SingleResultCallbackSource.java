@@ -24,14 +24,17 @@ import com.google.code.nanorm.internal.introspect.Setter;
  */
 public class SingleResultCallbackSource implements ResultCallbackSource {
     
-    final private Setter setter;
+    private final Setter setter;
+    
+    private final Object targetName;
     
     /**
      * @param instance
      * @param setter
      */
-    public SingleResultCallbackSource(Setter setter) {
+    public SingleResultCallbackSource(Setter setter, Object targetName) {
         this.setter = setter;
+        this.targetName = targetName;
     }
 
     /**
@@ -46,7 +49,7 @@ public class SingleResultCallbackSource implements ResultCallbackSource {
              */
             public void handleResult(Object obj) {
                 if(set) {
-                    throw new RuntimeException("Single result expected!");
+                    throw new RuntimeException("Single result expected for " + targetName);
                 }
                 setter.setValue(instance, obj);
                 set = true;

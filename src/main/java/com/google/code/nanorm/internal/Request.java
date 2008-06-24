@@ -28,9 +28,18 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 public class Request {
     
+    private final QueryDelegate queryDelegate;
+    
+    private final Map<Object, Map<Key, Object>> key2Objects = new HashMap<Object, Map<Key,Object>>();
+    
     private Object result;
     
-    private Map<Object, Map<Key, Object>> key2Objects = new HashMap<Object, Map<Key,Object>>();
+    /**
+     * @param queryDelegate
+     */
+    public Request(QueryDelegate queryDelegate) {
+        this.queryDelegate = queryDelegate;
+    }
 
     /** @return Returns the result. */
     public Object getResult() {
@@ -47,6 +56,11 @@ public class Request {
         return key2Objects;
     }
     
+    /** @return Returns the queryDelegate. */
+    public QueryDelegate getQueryDelegate() {
+        return queryDelegate;
+    }
+    
     /**
      * @see java.lang.Object#toString()
      */
@@ -55,6 +69,7 @@ public class Request {
         return new ToStringBuilder(this).
             append("result", result).
             append("key2Objects", key2Objects).
+            append("queryDelegate", queryDelegate).
             toString();
     }
 }

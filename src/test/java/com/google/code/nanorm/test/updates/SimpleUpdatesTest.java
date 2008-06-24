@@ -20,8 +20,6 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 import com.google.code.nanorm.annotations.Insert;
-import com.google.code.nanorm.annotations.Mapping;
-import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.test.beans.Car;
 import com.google.code.nanorm.test.common.MapperTestBase;

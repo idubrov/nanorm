@@ -28,9 +28,9 @@ import com.google.code.nanorm.internal.introspect.Setter;
  */
 public class ArrayListCallbackSource implements ResultCallbackSource {
 
-    final private Getter getter;
+    private final Getter getter;
     
-    final private Setter setter;
+    private final Setter setter;
     
     /**
      * @param instance

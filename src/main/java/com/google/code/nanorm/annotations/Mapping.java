@@ -35,4 +35,6 @@ public @interface Mapping {
     int columnIndex() default 0;
     
     ResultMapRef resultMap() default @ResultMapRef();
+    
+    String subselect() default ""; 
 }

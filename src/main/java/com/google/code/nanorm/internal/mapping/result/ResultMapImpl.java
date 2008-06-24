@@ -29,8 +29,10 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.code.nanorm.TypeHandlerFactory;
+import com.google.code.nanorm.exceptions.ConfigurationException;
 import com.google.code.nanorm.exceptions.ResultMapException;
 import com.google.code.nanorm.internal.Key;
+import com.google.code.nanorm.internal.QueryDelegate;
 import com.google.code.nanorm.internal.Request;
 import com.google.code.nanorm.internal.config.ResultMapConfig;
 import com.google.code.nanorm.internal.config.ResultMappingConfig;
@@ -231,26 +233,37 @@ public class ResultMapImpl implements ResultMap {
                 keyGenerators.add(keyGen);
             }
 
-            if (mappingConfig.getResultMapConfig() != null) {
+            if (mappingConfig.getSubselect() != null) {
+                Type[] parameterTypes = mappingConfig.getSubselect().getParameterTypes();
+                if (parameterTypes == null || parameterTypes.length != 1) {
+                    throw new ConfigurationException("Invalid subselect statement "
+                            + "for property " + mappingConfig.getProperty() + " of "
+                            + "result map " + config.getId() + " with id "
+                            + mappingConfig.getSubselect().getId()
+                            + ", subselect statement must have exactly one parameter");
+                }
+                TypeHandler<?> typeHandler = typeHandlerFactory.getTypeHandler(parameterTypes[0]);
+                mappers.add(new PropertyMapper(mappingConfig, setter, typeHandler));
+            } else if (mappingConfig.getResultMapConfig() != null) {
                 // TODO: Hacky? Why?
                 Getter getter = introspectionFactory.buildGetter(elementClass, mappingConfig
                         .getProperty());
 
                 ResultMap nestedMap = new ResultMapImpl(propertyType, mappingConfig
                         .getResultMapConfig(), introspectionFactory, typeHandlerFactory);
-                nestedMappers.add(new NestedMapPropertyMapper(propertyType, getter,
-                        setter, nestedMap));
+                nestedMappers.add(new NestedMapPropertyMapper(propertyType, getter, setter,
+                        nestedMap, mappingConfig));
             } else {
                 // TODO: This will fail if collection property is not mapped as
                 // nested map!
-                TypeHandler<?> typeHandler = typeHandlerFactory
-                        .getTypeHandler(propertyType);
+                TypeHandler<?> typeHandler = typeHandlerFactory.getTypeHandler(propertyType);
                 mappers.add(new PropertyMapper(mappingConfig, setter, typeHandler));
             }
         }
         DynamicConfig dc = new DynamicConfig();
         dc.mappers = mappers.toArray(new PropertyMapper[mappers.size()]);
-        dc.nestedMappers = nestedMappers.toArray(new NestedMapPropertyMapper[nestedMappers.size()]);
+        dc.nestedMappers = nestedMappers
+                .toArray(new NestedMapPropertyMapper[nestedMappers.size()]);
         dc.keyGenerators = keyGenerators.toArray(new KeyGenerator[keyGenerators.size()]);
         return dc;
     }
