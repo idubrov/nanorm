@@ -15,6 +15,7 @@
  */
 package com.google.code.nanorm.internal.mapping.result;
 
+import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.internal.introspect.Setter;
 
 /**
@@ -40,8 +41,8 @@ public class SingleResultCallbackSource implements ResultCallbackSource {
     /**
      * @see com.google.code.nanorm.internal.mapping.result.ResultCallbackSource#forInstance(java.lang.Object)
      */
-    public ResultCallback forInstance(final Object instance) {
-        return new ResultCallback() {
+    public ResultCallback<Object> forInstance(final Object instance) {
+        return new ResultCallback<Object>() {
             private boolean set;
             
             /**

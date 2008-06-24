@@ -19,6 +19,7 @@ import java.lang.reflect.Type;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.internal.Request;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.Setter;

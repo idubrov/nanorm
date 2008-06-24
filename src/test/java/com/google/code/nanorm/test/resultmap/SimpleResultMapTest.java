@@ -15,15 +15,20 @@
  */
 package com.google.code.nanorm.test.resultmap;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
 
+import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.annotations.Mapping;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.test.beans.Car;
 import com.google.code.nanorm.test.common.MapperTestBase;
+import com.google.code.nanorm.test.resultmap.TestCarMapper.CarMapper;
 
 /**
  * 
@@ -47,6 +52,18 @@ public class SimpleResultMapTest extends MapperTestBase {
             @Mapping(property = "owner.firstName", column = "owner") })
         @Select("SELECT id, model, owner FROM cars WHERE ID = ${1}")
         Car getCarById3(int id);
+        
+        // Test list
+        @ResultMap(auto = true, mappings = {     
+                @Mapping(property = "owner.firstName", column = "owner") })
+        @Select("SELECT id, model, owner, year FROM cars ORDER BY id ASC")
+        List<Car> listCars();
+        
+        // Test result callback
+        @ResultMap(auto = true, mappings = {     
+                @Mapping(property = "owner.firstName", column = "owner") })
+        @Select("SELECT id, model, owner, year FROM cars ORDER BY id ASC")
+        void listCars2(ResultCallback<Car> callback);
     }
     
     @Test
@@ -89,5 +106,51 @@ public class SimpleResultMapTest extends MapperTestBase {
         Assert.assertEquals(0, car.getYear());
         Assert.assertEquals("John", car.getOwner().getFirstName());
         Assert.assertEquals(null, car.getOwner().getLastName());
+    }
+    
+    @Test
+    public void testSelectList() {
+        Mapper1 mapper = factory.createMapper(Mapper1.class);
+
+        List<Car> cars = mapper.listCars();
+        Assert.assertEquals(2, cars.size());
+        
+        Car car = cars.get(0);
+        Assert.assertEquals(1, car.getId());
+        Assert.assertEquals("Toyota Vista", car.getModel());
+        Assert.assertEquals("Rocky", car.getOwner().getFirstName());
+        Assert.assertEquals(2006, car.getYear());
+        
+        car = cars.get(1);
+        Assert.assertEquals(2, car.getId());
+        Assert.assertEquals("Ford Focus", car.getModel());
+        Assert.assertEquals("John", car.getOwner().getFirstName());
+        Assert.assertEquals(2004, car.getYear());
+    }
+    
+    @Test
+    public void testSelectList2() {
+        Mapper1 mapper = factory.createMapper(Mapper1.class);
+
+        final List<Car> cars = new ArrayList<Car>();
+        ResultCallback<Car> rc = new ResultCallback<Car>() {
+            public void handleResult(Car car) {
+                cars.add(car);
+            }
+        };
+        mapper.listCars2(rc);
+        Assert.assertEquals(2, cars.size());
+        
+        Car car = cars.get(0);
+        Assert.assertEquals(1, car.getId());
+        Assert.assertEquals("Toyota Vista", car.getModel());
+        Assert.assertEquals("Rocky", car.getOwner().getFirstName());
+        Assert.assertEquals(2006, car.getYear());
+        
+        car = cars.get(1);
+        Assert.assertEquals(2, car.getId());
+        Assert.assertEquals("Ford Focus", car.getModel());
+        Assert.assertEquals("John", car.getOwner().getFirstName());
+        Assert.assertEquals(2004, car.getYear());
     }
 }

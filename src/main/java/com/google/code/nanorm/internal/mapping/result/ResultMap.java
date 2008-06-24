@@ -18,6 +18,7 @@ package com.google.code.nanorm.internal.mapping.result;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.internal.Request;
 
 /**

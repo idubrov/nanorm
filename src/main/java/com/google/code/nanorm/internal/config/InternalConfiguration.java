@@ -16,6 +16,8 @@
 package com.google.code.nanorm.internal.config;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +25,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.SQLSource;
 import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.annotations.Delete;
@@ -41,6 +44,7 @@ import com.google.code.nanorm.internal.DynamicFragment;
 import com.google.code.nanorm.internal.Fragment;
 import com.google.code.nanorm.internal.TextFragment;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
+import com.google.code.nanorm.internal.introspect.TypeOracle;
 import com.google.code.nanorm.internal.mapping.result.ResultMapImpl;
 
 /**
@@ -118,7 +122,7 @@ public class InternalConfiguration {
         }
         postProcessList.clear();
     }
-
+  
     /**
      * TODO: Javadoc TODO: Validate we don't have more than one from insert,
      * select, update and delete.
@@ -135,10 +139,7 @@ public class InternalConfiguration {
         StatementConfig stConfig = new StatementConfig(key);
 
         ResultMapConfig config = getResultMapConfig(method);
-        stConfig.setResultMapper(new ResultMapImpl(method.getGenericReturnType(), config,
-                introspectionFactory, typeHandlerFactory));
-        stConfig.setResultType(method.getGenericReturnType());
-
+        
         Select select = method.getAnnotation(Select.class);
         Update update = method.getAnnotation(Update.class);
         Insert insert = method.getAnnotation(Insert.class);
@@ -171,6 +172,34 @@ public class InternalConfiguration {
             stConfig.setStatementBuilder(builder);
             stConfig.setUpdate(isUpdate);
         }
+        
+        // For update we always use method return value, but for select we try to find ResultCallback
+        // if return type is void
+        Type returnType = null;
+        if(select != null && method.getReturnType() == void.class) {
+            // Try to find ResultCallback
+            Type[] types = method.getGenericParameterTypes();
+            for(int i = 0; i < types.length; ++i) {
+                if(types[i] instanceof ParameterizedType) {
+                    ParameterizedType pt = (ParameterizedType) types[i];
+                    if(pt.getRawType() == ResultCallback.class) {
+                        // Return the only type argument of ResultCallback class
+                        returnType = pt.getActualTypeArguments()[0];
+                        stConfig.setCallbackIndex(i);
+                        break;
+                    }
+                }
+            }
+            if(returnType == null) {
+                throw new ConfigurationException("Cannot deduce return type for query method " + method);
+            }
+        } else {
+            returnType = method.getGenericReturnType();
+        }
+        stConfig.setResultMapper(new ResultMapImpl(returnType, config,
+                introspectionFactory, typeHandlerFactory));
+        stConfig.setResultType(returnType);
+        
         stConfig.setParameterTypes(method.getGenericParameterTypes());
         statementsConfig.put(key, stConfig);
     }

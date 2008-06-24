@@ -18,6 +18,7 @@ package com.google.code.nanorm.internal.mapping.result;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.Setter;
 
@@ -46,8 +47,8 @@ public class ArrayListCallbackSource implements ResultCallbackSource {
      * @see com.google.code.nanorm.internal.mapping.result.ResultCallbackSource#forInstance(java.lang.Object)
      */
     @SuppressWarnings("unchecked")
-    public ResultCallback forInstance(final Object instance) {
-        return new ResultCallback() {
+    public ResultCallback<Object> forInstance(final Object instance) {
+        return new ResultCallback<Object>() {
             private List<Object> list;
             {
                 list = (List<Object>) getter.getValue(instance);
@@ -57,7 +58,7 @@ public class ArrayListCallbackSource implements ResultCallbackSource {
                 }
             }
             /**
-             * @see com.google.code.nanorm.internal.mapping.result.ResultCallback#handleResult(java.lang.Object)
+             * @see com.google.code.nanorm.ResultCallback#handleResult(java.lang.Object)
              */
             public void handleResult(Object obj) {
                 list.add(obj);

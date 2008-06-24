@@ -29,7 +29,14 @@ import org.junit.Test;
 
 import com.google.code.nanorm.Configuration;
 import com.google.code.nanorm.Factory;
+import com.google.code.nanorm.SQLSource;
 import com.google.code.nanorm.Transaction;
+import com.google.code.nanorm.annotations.Mapping;
+import com.google.code.nanorm.annotations.ResultMap;
+import com.google.code.nanorm.annotations.ResultMapList;
+import com.google.code.nanorm.annotations.ResultMapRef;
+import com.google.code.nanorm.annotations.Select;
+import com.google.code.nanorm.annotations.Source;
 import com.google.code.nanorm.test.beans.Car;
 
 /**
@@ -44,6 +51,42 @@ public class TestCarMapper {
     private Factory factory;
     
     private Transaction transaction;
+    
+    @ResultMapList({
+        @ResultMap(id = "car", auto = true, mappings = {     
+            @Mapping(property = "owner.firstName", column = "owner")
+        })
+    })
+    public interface CarMapper {
+        @ResultMapRef("car")
+        @Select("SELECT id, model, owner, year FROM cars WHERE ID = ${1}")
+        Car getCarById(int id);
+        
+        @ResultMapRef("car")
+        @Select("SELECT id, model, owner, year FROM cars ORDER BY id ASC")
+        List<Car> listCars();
+        
+        @Source(SelectModelYearSource.class)
+        @ResultMapRef("car")
+        List<Car> listByModelYear(String model, int year);
+        
+        public static class SelectModelYearSource extends SQLSource {
+            public void sql(String model, int year)
+            {
+                append("SELECT id, model, owner, year FROM cars WHERE ");
+                if(model != null) {
+                    append(" model = ${value}", model);
+                    if(year != 0) {
+                        append(" AND ");
+                    }
+                }
+                if(year != 0) {
+                    append(" YEAR = ${value}", year);
+                }
+                append(" ORDER BY id ASC");
+            }
+        }
+    }
     
     @Before
     public void setUp() throws Exception {

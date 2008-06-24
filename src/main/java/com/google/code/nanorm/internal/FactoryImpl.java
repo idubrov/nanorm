@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.code.nanorm.Factory;
+import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.Transaction;
 import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.exceptions.DataException;
@@ -34,7 +35,6 @@ import com.google.code.nanorm.internal.config.InternalConfiguration;
 import com.google.code.nanorm.internal.config.StatementConfig;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.Setter;
-import com.google.code.nanorm.internal.mapping.result.ResultCallback;
 import com.google.code.nanorm.internal.mapping.result.ResultCallbackSource;
 import com.google.code.nanorm.internal.mapping.result.ResultCollectorUtil;
 import com.google.code.nanorm.internal.mapping.result.ResultMap;
@@ -67,13 +67,16 @@ public class FactoryImpl implements Factory, QueryDelegate {
         config.configure(mapperClass);
 
         // TODO: Check we mapped this class!
-        /*return mapperClass.cast(Proxy.newProxyInstance(getClass().getClassLoader(),
-                new Class<?>[] {mapperClass }, new MapperInvocationHandler()));*/
+        /*
+         * return
+         * mapperClass.cast(Proxy.newProxyInstance(getClass().getClassLoader(),
+         * new Class<?>[] {mapperClass }, new MapperInvocationHandler()));
+         */
         return config.getIntrospectionFactory().createMapper(mapperClass, config, this);
     }
 
     public Transaction useConnection(Connection connection) {
-        if(connection == null) {
+        if (connection == null) {
             throw new IllegalArgumentException("Connection must not be null!");
         }
         if (sessions.get() != null) {
@@ -84,7 +87,7 @@ public class FactoryImpl implements Factory, QueryDelegate {
         sessions.set(spi);
         return new TransactionImpl(spi);
     }
-    
+
     public Object query(StatementConfig config, Object[] args) {
         // Request-scoped data
         Request request = new Request(this);
@@ -101,13 +104,13 @@ public class FactoryImpl implements Factory, QueryDelegate {
         fragment.generate(sql, parameters, types);
 
         SessionSpi spi = sessions.get();
-        if(spi == null) {
+        if (spi == null) {
             throw new IllegalStateException("Open session first!");
         }
         Connection conn;
         try {
             conn = spi.getConnection();
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         try {
@@ -115,18 +118,30 @@ public class FactoryImpl implements Factory, QueryDelegate {
             try {
                 // Map parameters and execute query
                 mapParameters(st, types, parameters);
-                
+
                 Object result;
-                if(config.isUpdate()) {
+                if (config.isUpdate()) {
                     result = st.executeUpdate();
                 } else {
                     ResultSet rs = st.executeQuery();
-    
-                    // Prepare result callback and process results
-                    ResultGetterSetter rgs = new ResultGetterSetter();
-                    ResultCallbackSource callbackSource = ResultCollectorUtil.createResultCallback(
-                            config.getResultType(), rgs, rgs, config);
-                    ResultCallback callback = callbackSource.forInstance(request);
+
+                    // If we have ResultCallback in parameters -- use it
+                    ResultCallback<Object> callback;
+                    if (config.getCallbackIndex() != StatementConfig.RETURN_VALUE) {
+                        // This is OK, since we deduced result type exactly from
+                        // this parameter
+                        @SuppressWarnings("unchecked")
+                        ResultCallback<Object> temp = (ResultCallback<Object>) args[config
+                                .getCallbackIndex()];
+                        callback = temp;
+                    } else {
+                        // Prepare result callback and process results
+                        ResultGetterSetter rgs = new ResultGetterSetter();
+                        ResultCallbackSource callbackSource = ResultCollectorUtil
+                                .createResultCallback(config.getResultType(), rgs, rgs, config);
+
+                        callback = callbackSource.forInstance(request);
+                    }
                     ResultMap resultMapper = config.getResultMapper();
                     while (rs.next()) {
                         resultMapper.processResultSet(request, rs, callback);
@@ -137,7 +152,7 @@ public class FactoryImpl implements Factory, QueryDelegate {
             } finally {
                 st.close();
             }
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             throw new DataException("SQL exception occured while executing the query!", e);
         } finally {
             try {
@@ -148,11 +163,11 @@ public class FactoryImpl implements Factory, QueryDelegate {
         }
     }
 
-    protected void mapParameters(PreparedStatement statement, List<Type> types,
+    private void mapParameters(PreparedStatement statement, List<Type> types,
             List<Object> params) throws SQLException {
-        
+
         TypeHandlerFactory factory = config.getTypeHandlerFactory();
-        
+
         for (int i = 0; i < params.size(); ++i) {
             Object item = params.get(i);
             Type type = types.get(i);
@@ -188,14 +203,14 @@ public class FactoryImpl implements Factory, QueryDelegate {
     }
 
     // TODO: toString
-    
+
     /**
      * {@link Transaction} implementation.
      */
     private class TransactionImpl implements Transaction {
-        
+
         final private SessionSpi spi;
-        
+
         /**
          * Constructor.
          * @param spi {@link SessionSpi} implementation.
@@ -220,8 +235,7 @@ public class FactoryImpl implements Factory, QueryDelegate {
          */
         public void end() {
             if (sessions.get() != spi) {
-                throw new IllegalStateException(
-                        "This transaction is not bound to this thread!");
+                throw new IllegalStateException("This transaction is not bound to this thread!");
             }
             try {
                 // Remove from active sessions thread local

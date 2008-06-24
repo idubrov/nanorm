@@ -15,6 +15,8 @@
  */
 package com.google.code.nanorm.internal.mapping.result;
 
+import com.google.code.nanorm.ResultCallback;
+
 /**
  * Source for {@link ResultCallback} instances, not bound to any particular data
  * instance.
@@ -25,5 +27,5 @@ package com.google.code.nanorm.internal.mapping.result;
  */
 public interface ResultCallbackSource {
 
-    ResultCallback forInstance(Object instance);
+    ResultCallback<Object> forInstance(Object instance);
 }

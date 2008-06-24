@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.code.nanorm.internal.mapping.result;
+package com.google.code.nanorm;
+
+import com.google.code.nanorm.internal.mapping.result.ResultCallbackSource;
+import com.google.code.nanorm.internal.mapping.result.ResultMap;
 
 /**
  * Interface for processing the {@link ResultMap} generated values.
@@ -23,7 +26,7 @@ package com.google.code.nanorm.internal.mapping.result;
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
  */
-public interface ResultCallback {
+public interface ResultCallback<T> {
     
-    void handleResult(Object obj);
+    void handleResult(T obj);
 }

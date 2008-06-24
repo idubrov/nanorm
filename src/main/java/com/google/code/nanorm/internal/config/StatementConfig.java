@@ -29,6 +29,8 @@ import com.google.code.nanorm.internal.mapping.result.ResultMap;
  */
 public class StatementConfig {
     
+    public static final int RETURN_VALUE = -1;
+    
     private final String id;
     
     private boolean update;
@@ -40,6 +42,8 @@ public class StatementConfig {
     private Type resultType;
     
     private Type[] parameterTypes;
+    
+    private int callbackIndex = -1;
     
     /**
      * 
@@ -101,6 +105,16 @@ public class StatementConfig {
     /** @return Returns the id. */
     public String getId() {
         return id;
+    }
+    
+    /** @return Returns the callbackIndex. */
+    public int getCallbackIndex() {
+        return callbackIndex;
+    }
+    
+    /** @param callbackIndex The callbackIndex to set. */
+    public void setCallbackIndex(int callbackIndex) {
+        this.callbackIndex = callbackIndex;
     }
     
     /**
