@@ -28,7 +28,6 @@ import static com.google.code.nanorm.internal.introspect.asm.Constants.OBJECT_TY
 import static com.google.code.nanorm.internal.introspect.asm.Constants.SET_VALUE;
 import static com.google.code.nanorm.internal.introspect.asm.Constants.STRING_TYPE;
 import static com.google.code.nanorm.internal.introspect.asm.Constants.SUBSTRING;
-import static com.google.code.nanorm.internal.introspect.asm.Constants.VOID_TYPE;
 
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -56,6 +55,8 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
     private GeneratorAdapter accessormg;
     
     private Label npeLabel = new Label();
+    
+    private int npeLocal = -1;
     
     private final boolean isSetter;
     
@@ -128,6 +129,7 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
             // Object getValue(Object instance);
             accessormg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, GET_VALUE, null, null, cw);
         }
+        npeLocal = accessormg.newLocal(Type.INT_TYPE);
         accessormg.visitCode();
 
         // Regular getter/setter
@@ -151,6 +153,7 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
             // Object getValue(Object instance);
             accessormg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, GET_VALUE, null, null, cw);
         }
+        npeLocal = accessormg.newLocal(Type.INT_TYPE);
         accessormg.visitCode();
         
         //  Load parameter from array
@@ -209,7 +212,7 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
             accessormg.loadArg(1);
             accessormg.unbox(t);
 
-            Method method = new Method(setter.getName(), VOID_TYPE, new Type[] {t });
+            Method method = new Method(setter.getName(), Type.VOID_TYPE, new Type[] {t });
             accessormg.invokeVirtual(Type.getType(beanClass), method);
         } else {
         
@@ -232,23 +235,23 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
     }
     
     protected void checkNull(int pos) {
-     // Check current value is not null
-        accessormg.dup();
+        // Check current value is not null
+        accessormg.dup();        
         accessormg.push(pos); // Push current path position for better NPE
+        accessormg.storeLocal(npeLocal);
         // diagnostics
-        accessormg.swap();
         accessormg.ifNull(npeLabel);
-        accessormg.pop();
     }
     
+    /**
+     * NPE handling code. We have position in the property path in the {@link #npeLocal}
+     * local variable.
+     */
     protected void npeHandler() {
-        // NPE handling code. We have position in the property path on top of
-        // the stack.
         accessormg.visitLabel(npeLabel);
         accessormg.push(fullPath);
-        accessormg.swap();
         accessormg.push(0);
-        accessormg.swap();
+        accessormg.loadLocal(npeLocal);
         accessormg.invokeVirtual(STRING_TYPE, SUBSTRING);
         accessormg.push(" property is null for " + initialBeanClass.getName()
                 + " instance (full path is owner.firstName).");

@@ -47,8 +47,6 @@ public class Constants {
 
     final static Type OBJECT_TYPE = Type.getType(Object.class);
 
-    final static Type VOID_TYPE = Type.getType(void.class);
-
     final static Type OBJECT_ARR_TYPE = Type.getType(Object[].class);
 
     final static Type NPE_TYPE = Type.getType(NullPointerException.class);
@@ -67,5 +65,4 @@ public class Constants {
             .getMethod("Object query(com.google.code.nanorm.internal.config.StatementConfig, Object[])");
 
     final static Type STATEMENT_CONFIGS_ARR_TYPE = Type.getType(StatementConfig[].class);
-
 }
