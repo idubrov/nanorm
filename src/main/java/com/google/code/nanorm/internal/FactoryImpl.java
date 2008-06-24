@@ -102,7 +102,7 @@ public class FactoryImpl implements Factory, QueryDelegate {
 
         SessionSpi spi = sessions.get();
         if(spi == null) {
-            throw new IllegalStateException("Session was not opened!");
+            throw new IllegalStateException("Open session first!");
         }
         Connection conn;
         try {
@@ -115,18 +115,25 @@ public class FactoryImpl implements Factory, QueryDelegate {
             try {
                 // Map parameters and execute query
                 mapParameters(st, types, parameters);
-                ResultSet rs = st.executeQuery();
-
-                // Prepare result callback and process results
-                ResultGetterSetter rgs = new ResultGetterSetter();
-                ResultCallbackSource callbackSource = ResultCollectorUtil.createResultCallback(
-                        config.getResultType(), rgs, rgs);
-                ResultCallback callback = callbackSource.forInstance(request);
-                ResultMap resultMapper = config.getResultMapper();
-                while (rs.next()) {
-                    resultMapper.processResultSet(request, rs, callback);
+                
+                Object result;
+                if(config.isUpdate()) {
+                    result = st.executeUpdate();
+                } else {
+                    ResultSet rs = st.executeQuery();
+    
+                    // Prepare result callback and process results
+                    ResultGetterSetter rgs = new ResultGetterSetter();
+                    ResultCallbackSource callbackSource = ResultCollectorUtil.createResultCallback(
+                            config.getResultType(), rgs, rgs);
+                    ResultCallback callback = callbackSource.forInstance(request);
+                    ResultMap resultMapper = config.getResultMapper();
+                    while (rs.next()) {
+                        resultMapper.processResultSet(request, rs, callback);
+                    }
+                    result = request.getResult();
                 }
-                return request.getResult();
+                return result;
             } finally {
                 st.close();
             }
@@ -151,24 +158,6 @@ public class FactoryImpl implements Factory, QueryDelegate {
             Type type = types.get(i);
             TypeHandler<?> typeHandler = factory.getTypeHandler(type);
             typeHandler.setParameter(statement, i + 1, item);
-        }
-    }
-
-    /**
-     * Invocation handler for mapper interface implementation.
-     *
-     * @author Ivan Dubrov
-     * @version 1.0 19.06.2008
-     */
-    private class MapperInvocationHandler implements InvocationHandler {
-
-        /**
-         * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object,
-         * java.lang.reflect.Method, java.lang.Object[])
-         */
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            StatementConfig stConfig = config.getStatementConfig(method);
-            return query(stConfig, args);
         }
     }
 

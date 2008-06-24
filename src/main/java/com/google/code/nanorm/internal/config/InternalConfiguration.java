@@ -25,12 +25,15 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 import com.google.code.nanorm.SQLSource;
 import com.google.code.nanorm.TypeHandlerFactory;
+import com.google.code.nanorm.annotations.Delete;
+import com.google.code.nanorm.annotations.Insert;
 import com.google.code.nanorm.annotations.Mapping;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapList;
 import com.google.code.nanorm.annotations.ResultMapRef;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.annotations.Source;
+import com.google.code.nanorm.annotations.Update;
 import com.google.code.nanorm.exceptions.ResultMapException;
 import com.google.code.nanorm.exceptions.StatementConfigException;
 import com.google.code.nanorm.internal.DynamicFragment;
@@ -104,11 +107,21 @@ public class InternalConfiguration {
         stConfig.setResultType(method.getGenericReturnType());
         
         Select select = method.getAnnotation(Select.class);
+        Update update = method.getAnnotation(Update.class);
+        Insert insert = method.getAnnotation(Insert.class);
+        Delete delete = method.getAnnotation(Delete.class);
         Source source = method.getAnnotation(Source.class);
+        String sql = null;
+        boolean isUpdate = true;
         if(select != null) {
-            Fragment builder = new TextFragment(select.value(), method.getGenericParameterTypes(),
-                    introspectionFactory);
-            stConfig.setStatementBuilder(builder);
+            sql = select.value();
+            isUpdate = false;
+        } else if(update != null) {
+            sql = update.value();
+        } else if(insert != null) {
+            sql = insert.value();
+        } else if(delete != null) {
+            sql = delete.value();
         } else if(source != null) {
             Class<? extends SQLSource> sqlSource = source.value();
             Fragment builder = new DynamicFragment(sqlSource, introspectionFactory);
@@ -117,6 +130,13 @@ public class InternalConfiguration {
             // Skip method
             // TODO: Logging!
             return;
+        }
+        if(sql != null) {
+            // TODO: Batch case!
+            Fragment builder = new TextFragment(sql, method.getGenericParameterTypes(),
+                    introspectionFactory);
+            stConfig.setStatementBuilder(builder);
+            stConfig.setUpdate(isUpdate);
         }
         statementsConfig.put(key, stConfig);
     }

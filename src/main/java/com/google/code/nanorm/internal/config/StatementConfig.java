@@ -29,11 +29,23 @@ import com.google.code.nanorm.internal.mapping.result.ResultMap;
  */
 public class StatementConfig {
     
+    private boolean update;
+    
     private Fragment statementBuilder;
     
     private ResultMap resultMapper;
     
     private Type resultType;
+    
+    /** @return Returns the update. */
+    public boolean isUpdate() {
+        return update;
+    }
+    
+    /** @param update The update to set. */
+    public void setUpdate(boolean update) {
+        this.update = update;
+    }
 
     /** @return Returns the statementBuilder. */
     public Fragment getStatementBuilder() {
@@ -71,6 +83,7 @@ public class StatementConfig {
     @Override
     public String toString() {
         return new ToStringBuilder(this).
+            append("update", update).
             append("resultType", resultType).
             append("resultMapper", resultMapper).
             append("statementBuilder", statementBuilder).

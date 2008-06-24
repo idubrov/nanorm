@@ -111,7 +111,7 @@ public class MapperBuilder {
         mg.loadArgArray();
 
         mg.invokeInterface(QUERY_DELEGATE_TYPE, QUERY_METHOD);
-        mg.checkCast(returnType);
+        mg.unbox(returnType);
         mg.returnValue();
         mg.endMethod();
     }
