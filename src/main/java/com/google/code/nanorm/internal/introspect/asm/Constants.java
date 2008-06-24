@@ -19,7 +19,6 @@ package com.google.code.nanorm.internal.introspect.asm;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.Method;
 
-import com.google.code.nanorm.internal.FactoryImpl;
 import com.google.code.nanorm.internal.QueryDelegate;
 import com.google.code.nanorm.internal.config.StatementConfig;
 

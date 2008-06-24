@@ -25,7 +25,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.code.nanorm.exceptions.IntrospectionException;
-import com.google.code.nanorm.internal.FactoryImpl;
 import com.google.code.nanorm.internal.QueryDelegate;
 import com.google.code.nanorm.internal.config.InternalConfiguration;
 import com.google.code.nanorm.internal.config.StatementConfig;

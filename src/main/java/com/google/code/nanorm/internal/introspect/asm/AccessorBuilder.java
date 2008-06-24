@@ -23,7 +23,6 @@ import static com.google.code.nanorm.internal.introspect.asm.Constants.GET_VALUE
 import static com.google.code.nanorm.internal.introspect.asm.Constants.JL_REFLECT_TYPE_TYPE;
 import static com.google.code.nanorm.internal.introspect.asm.Constants.NPE_CTOR;
 import static com.google.code.nanorm.internal.introspect.asm.Constants.NPE_TYPE;
-import static com.google.code.nanorm.internal.introspect.asm.Constants.OBJECT_ARR_TYPE;
 import static com.google.code.nanorm.internal.introspect.asm.Constants.OBJECT_TYPE;
 import static com.google.code.nanorm.internal.introspect.asm.Constants.SET_VALUE;
 import static com.google.code.nanorm.internal.introspect.asm.Constants.STRING_TYPE;

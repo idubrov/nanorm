@@ -19,7 +19,9 @@ package com.google.code.nanorm.internal.introspect.asm;
 import static com.google.code.nanorm.internal.introspect.asm.Constants.CTOR;
 import static com.google.code.nanorm.internal.introspect.asm.Constants.MAPPER_CTOR;
 import static com.google.code.nanorm.internal.introspect.asm.Constants.OBJECT_TYPE;
-import static com.google.code.nanorm.internal.introspect.asm.Constants.*;
+import static com.google.code.nanorm.internal.introspect.asm.Constants.QUERY_DELEGATE_TYPE;
+import static com.google.code.nanorm.internal.introspect.asm.Constants.QUERY_METHOD;
+import static com.google.code.nanorm.internal.introspect.asm.Constants.STATEMENT_CONFIGS_ARR_TYPE;
 
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
@@ -27,7 +29,6 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import com.google.code.nanorm.internal.FactoryImpl;
 import com.google.code.nanorm.internal.config.StatementConfig;
 
 /**

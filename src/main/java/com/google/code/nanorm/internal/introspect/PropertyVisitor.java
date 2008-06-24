@@ -17,7 +17,6 @@
 package com.google.code.nanorm.internal.introspect;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 
 /**
  * Event-based interface of property path visitor.

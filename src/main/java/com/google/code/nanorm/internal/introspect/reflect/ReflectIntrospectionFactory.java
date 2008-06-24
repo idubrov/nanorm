@@ -22,7 +22,6 @@ import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.google.code.nanorm.internal.FactoryImpl;
 import com.google.code.nanorm.internal.QueryDelegate;
 import com.google.code.nanorm.internal.config.InternalConfiguration;
 import com.google.code.nanorm.internal.config.StatementConfig;

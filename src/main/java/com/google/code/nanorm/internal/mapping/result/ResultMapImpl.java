@@ -33,7 +33,6 @@ import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.exceptions.ConfigurationException;
 import com.google.code.nanorm.exceptions.ResultMapException;
 import com.google.code.nanorm.internal.Key;
-import com.google.code.nanorm.internal.QueryDelegate;
 import com.google.code.nanorm.internal.Request;
 import com.google.code.nanorm.internal.config.ResultMapConfig;
 import com.google.code.nanorm.internal.config.ResultMappingConfig;

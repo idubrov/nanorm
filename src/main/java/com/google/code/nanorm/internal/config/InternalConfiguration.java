@@ -44,7 +44,6 @@ import com.google.code.nanorm.internal.DynamicFragment;
 import com.google.code.nanorm.internal.Fragment;
 import com.google.code.nanorm.internal.TextFragment;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
-import com.google.code.nanorm.internal.introspect.TypeOracle;
 import com.google.code.nanorm.internal.mapping.result.ResultMapImpl;
 
 /**

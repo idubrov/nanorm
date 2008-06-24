@@ -28,7 +28,6 @@ import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.test.beans.Car;
 import com.google.code.nanorm.test.common.MapperTestBase;
-import com.google.code.nanorm.test.resultmap.TestCarMapper.CarMapper;
 
 /**
  * 

@@ -23,9 +23,6 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 
-import com.google.code.nanorm.exceptions.IntrospectionException;
-import com.google.code.nanorm.test.generics.Thing;
-
 /**
  * Utilities to resolve generic types using the reflection. Used for resolving
  * concrete types while generating the property accessors for nested properties.
