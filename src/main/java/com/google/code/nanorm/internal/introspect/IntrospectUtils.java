@@ -22,7 +22,7 @@ import java.lang.reflect.Type;
 import com.google.code.nanorm.exceptions.IntrospectionException;
 
 /**
- *
+ * TODO: Setter/getter validation.
  * @author Ivan Dubrov
  * @version 1.0 22.06.2008
  */
@@ -68,7 +68,7 @@ public final class IntrospectUtils {
             visitor.visitBegin(Object[].class, path);
             
             // ...and indexing which returns Object instance
-            visitor.visitIndex(0, parameter, false, Object[].class, Object.class);
+            visitor.visitIndex(0, parameter, false, Object[].class);
         }
         
         PropertyNavigator nav = new PropertyNavigator(path);
@@ -86,7 +86,7 @@ public final class IntrospectUtils {
                             + "). Actual type was " + beanClass);
                 }
                 Class<?> propClass = beanClass.getComponentType();
-                visitor.visitIndex(pos, nav.getIndex(), nav.hasNext(), beanClass, propClass);
+                visitor.visitIndex(pos, nav.getIndex(), nav.hasNext(), beanClass);
                 
                 beanClass = propClass;
                 type = beanClass;
@@ -99,7 +99,7 @@ public final class IntrospectUtils {
                 // Find out concrete Class instance behind the generics
                 Class<?> propClass = TypeOracle.resolveClass(type);
                 
-                visitor.visitProperty(pos, nav.getProperty(), getter, nav.hasNext(), beanClass, propClass);
+                visitor.visitProperty(pos, nav.getProperty(), getter, nav.hasNext(), beanClass);
                 beanClass = propClass;
             } else {
                 throw new IllegalStateException("Unexpected token type " + token

@@ -44,13 +44,11 @@ public interface PropertyVisitor<T> {
      * @param getter property getter
      * @param isLast is that last element in the property path
      * @param beanClass instance type
-     * @param propClass property type
      */
     void visitProperty(int pos, String property, Method getter, boolean isLast,
-            Class<?> beanClass, Class<?> propClass);
+            Class<?> beanClass);
 
-    void visitIndex(int pos, int index, boolean isLast, Class<?> beanClass,
-            Class<?> componentClass);
+    void visitIndex(int pos, int index, boolean isLast, Class<?> beanClass);
 
     T visitEnd();
 }

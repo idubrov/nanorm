@@ -36,42 +36,43 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectUtils;
 import com.google.code.nanorm.internal.introspect.PropertyVisitor;
 
 /**
- *
+ * 
  * @author Ivan Dubrov
  * @version 1.0 22.06.2008
  */
 public class AccessorBuilder implements PropertyVisitor<byte[]> {
-    
+
     private ClassWriter cw;
-    
+
     private String fullPath;
-    
+
     private Class<?> initialBeanClass;
-    
-    /** 
-     * Actual type in the stack. 
+
+    /**
+     * Actual type in the stack.
      */
     private Class<?> actualClass;
-    
+
     private GeneratorAdapter accessormg;
-    
+
     private Label npeLabel = new Label();
-    
+
     private int npeLocal = -1;
-    
+
     private final boolean isSetter;
-    
+
     public AccessorBuilder(String name, boolean isSetter) {
         this.isSetter = isSetter;
-        
+
         cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 
         Type owner = Type.getType("L" + name + ";");
-        if(isSetter) {
+        if (isSetter) {
             cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, name, null, "java/lang/Object",
                     new String[] {"com/google/code/nanorm/internal/introspect/Setter" });
 
@@ -87,7 +88,7 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
             visitGetType(owner);
         }
     }
-    
+
     private void visitSetterConstructor() {
         Method m = Method.getMethod("void <init>()");
 
@@ -97,7 +98,7 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
         mg.returnValue();
         mg.endMethod();
     }
-    
+
     private void visitGetterConstructor(Type owner) {
         GeneratorAdapter mg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, GETTER_CTOR, null, null,
                 cw);
@@ -110,24 +111,28 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
         mg.returnValue();
         mg.endMethod();
     }
-    
+
+    /**
+     * Generate {@link Getter#getType()} method.
+     * @param owner
+     */
     private void visitGetType(Type owner) {
-        // Type getType();
         Method getTypeMethod = Method.getMethod("java.lang.reflect.Type getType()");
 
-        GeneratorAdapter mg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, getTypeMethod, null, null, cw);
+        GeneratorAdapter mg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, getTypeMethod, null, null,
+                cw);
 
         mg.loadThis();
         mg.getField(owner, "type", JL_REFLECT_TYPE_TYPE);
         mg.returnValue();
         mg.endMethod();
     }
-    
+
     public void visitBegin(Class<?> beanClass, String path) {
         this.fullPath = path;
         this.initialBeanClass = beanClass;
-        
-        if(isSetter) {
+
+        if (isSetter) {
             // void setValue(Object instance);
             accessormg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, SET_VALUE, null, null, cw);
         } else {
@@ -137,44 +142,43 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
         npeLocal = accessormg.newLocal(Type.INT_TYPE);
         accessormg.visitCode();
 
-        // Regular getter/setter
+        // Load argument and remember type on the stack
         accessormg.loadArg(0);
-        
-        // Remember type in the stack, it is object
         actualClass = Object.class;
     }
-    
+
     /**
      * {@inheritDoc}
      */
-    public void visitIndex(int pos, int index, boolean isLast, Class<?> beanClass, Class<?> componentClass) {
+    public void visitIndex(int pos, int index, boolean isLast, Class<?> beanClass) {
         checkNull(pos);
 
         // TODO: Write test on this!
-        if(actualClass != beanClass) {
+        if (actualClass != beanClass) {
             accessormg.checkCast(Type.getType(beanClass));
         }
-        
-        if(isLast && isSetter) {
+
+        if (isLast && isSetter) {
             // Push array index
             accessormg.push(index);
 
             // Cast parameter to required type
-            Type t = Type.getType(componentClass);
+            Type t = Type.getType(beanClass.getComponentType());
             accessormg.loadArg(1);
             accessormg.unbox(t);
 
             accessormg.arrayStore(t);
         } else {
             accessormg.push(index);
-            accessormg.arrayLoad(Type.getType(componentClass));
-        
-            if(isLast) {
-                accessormg.box(Type.getType(componentClass));
+            Type t = Type.getType(beanClass.getComponentType());
+            accessormg.arrayLoad(t);
+
+            if (isLast) {
+                accessormg.box(t);
             }
-            
+
             // Remember type in the stack
-            actualClass = componentClass;
+            actualClass = beanClass.getComponentType();
         }
     }
 
@@ -182,20 +186,21 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
      * {@inheritDoc}
      */
     public void visitProperty(int pos, String property, java.lang.reflect.Method getter,
-            boolean isLast, Class<?> beanClass, Class<?> propClass) {
+            boolean isLast, Class<?> beanClass) {
         checkNull(pos);
-        
-        // If expected class is not equal to the actual class in the stack, do cast
-        if(actualClass != beanClass) {
+
+        // If expected class is not equal to the actual class in the stack, do
+        // cast
+        if (actualClass != beanClass) {
             accessormg.checkCast(Type.getType(beanClass));
         }
-        
-        if(isLast && isSetter) {
+
+        if (isLast && isSetter) {
             java.lang.reflect.Method setter = IntrospectUtils.findSetter(beanClass, property);
             Class<?> paramType = setter.getParameterTypes()[0];
 
             Type t = Type.getType(paramType);
-            
+
             // Cast parameter to required type
             accessormg.loadArg(1);
             accessormg.unbox(t);
@@ -203,33 +208,33 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
             Method method = new Method(setter.getName(), Type.VOID_TYPE, new Type[] {t });
             accessormg.invokeVirtual(Type.getType(beanClass), method);
         } else {
-        
-            Method method = new Method(getter.getName(),
-                    Type.getType(getter.getReturnType()), new Type[0]);
-            
+
+            Type t = Type.getType(getter.getReturnType());
+            Method method = new Method(getter.getName(), t, new Type[0]);
+
             accessormg.invokeVirtual(Type.getType(beanClass), method);
-            
-            if(isLast) {
-                accessormg.box(Type.getType(propClass));
+
+            if (isLast) {
+                accessormg.box(t);
             }
-            
-            // Remember type in the stack 
+
+            // Remember type in the stack
             actualClass = getter.getReturnType();
         }
     }
-    
+
     protected void checkNull(int pos) {
         // Check current value is not null
-        accessormg.dup();        
+        accessormg.dup();
         accessormg.push(pos); // Push current path position for better NPE
         accessormg.storeLocal(npeLocal);
         // diagnostics
         accessormg.ifNull(npeLabel);
     }
-    
+
     /**
-     * NPE handling code. We have position in the property path in the {@link #npeLocal}
-     * local variable.
+     * NPE handling code. We have position in the property path in the
+     * {@link #npeLocal} local variable.
      */
     protected void npeHandler() {
         accessormg.visitLabel(npeLabel);
@@ -246,21 +251,21 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
         accessormg.dupX1();
         accessormg.swap();
         // Now we have: msg, ex, ex
-        
+
         accessormg.invokeConstructor(NPE_TYPE, NPE_CTOR);
         accessormg.throwException();
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public byte[] visitEnd() {
         accessormg.returnValue();
         npeHandler();
-        
+
         accessormg.endMethod();
         cw.visitEnd();
-        
+
         byte[] code = cw.toByteArray();
         return code;
     }
