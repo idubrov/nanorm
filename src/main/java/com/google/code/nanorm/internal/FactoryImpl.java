@@ -139,6 +139,8 @@ public class FactoryImpl implements Factory, QueryDelegate {
 
                         callback = callbackSource.forInstance(request);
                     }
+                    
+                    // Iterate through the result set
                     ResultMap resultMapper = config.getResultMapper();
                     while (rs.next()) {
                         resultMapper.processResultSet(request, rs, callback);
@@ -152,11 +154,7 @@ public class FactoryImpl implements Factory, QueryDelegate {
         } catch (SQLException e) {
             throw new DataException("SQL exception occured while executing the query!", e);
         } finally {
-            try {
-                spi.releaseConnection(conn);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            spi.releaseConnection(conn);
         }
     }
 
