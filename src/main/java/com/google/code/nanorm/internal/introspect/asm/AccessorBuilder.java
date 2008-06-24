@@ -52,6 +52,11 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
     
     private Class<?> initialBeanClass;
     
+    /** 
+     * Actual type in the stack. 
+     */
+    private Class<?> actualClass;
+    
     private GeneratorAdapter accessormg;
     
     private Label npeLabel = new Label();
@@ -134,46 +139,21 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
 
         // Regular getter/setter
         accessormg.loadArg(0);
-        accessormg.checkCast(Type.getType(beanClass));
+        
+        // Remember type in the stack, it is object
+        actualClass = Object.class;
     }
     
     /**
      * {@inheritDoc}
      */
-    public void visitBegin(java.lang.reflect.Type[] types, int parameter, String path) {
-        this.fullPath = path;
-        
-        // TODO: Cast!
-        this.initialBeanClass = (Class<?>) types[parameter];
-
-        if(isSetter) {
-            // void setValue(Object instance);
-            accessormg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, SET_VALUE, null, null, cw);
-        } else {
-            // Object getValue(Object instance);
-            accessormg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, GET_VALUE, null, null, cw);
-        }
-        npeLocal = accessormg.newLocal(Type.INT_TYPE);
-        accessormg.visitCode();
-        
-        //  Load parameter from array
-        accessormg.loadArg(0);
-        accessormg.checkCast(OBJECT_ARR_TYPE);
-        accessormg.push(parameter);
-        accessormg.arrayLoad(OBJECT_TYPE);
-
-        // TODO: If it is end -- do not cast!
-        Class<?> c = (Class<?>) types[parameter];
-        if(!c.isPrimitive()) {
-            accessormg.checkCast(Type.getType(c));
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public void visitIndex(int pos, int index, boolean isLast, Class<?> beanClass, Class<?> componentClass) {
         checkNull(pos);
+
+        // TODO: Write test on this!
+        if(actualClass != beanClass) {
+            accessormg.checkCast(Type.getType(beanClass));
+        }
         
         if(isLast && isSetter) {
             // Push array index
@@ -192,6 +172,9 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
             if(isLast) {
                 accessormg.box(Type.getType(componentClass));
             }
+            
+            // Remember type in the stack
+            actualClass = componentClass;
         }
     }
 
@@ -201,6 +184,11 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
     public void visitProperty(int pos, String property, java.lang.reflect.Method getter,
             boolean isLast, Class<?> beanClass, Class<?> propClass) {
         checkNull(pos);
+        
+        // If expected class is not equal to the actual class in the stack, do cast
+        if(actualClass != beanClass) {
+            accessormg.checkCast(Type.getType(beanClass));
+        }
         
         if(isLast && isSetter) {
             java.lang.reflect.Method setter = IntrospectUtils.findSetter(beanClass, property);
@@ -221,16 +209,12 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
             
             accessormg.invokeVirtual(Type.getType(beanClass), method);
             
-            // Need to cast, types does not match
-            // TODO: We probably don't need to cast, if getter.getReturnType() is instanceof 
-            // next getter class 
-            if (getter.getReturnType() != propClass) {
-                accessormg.checkCast(Type.getType(propClass));
-            }
-            
             if(isLast) {
                 accessormg.box(Type.getType(propClass));
             }
+            
+            // Remember type in the stack 
+            actualClass = getter.getReturnType();
         }
     }
     

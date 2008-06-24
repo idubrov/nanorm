@@ -63,7 +63,12 @@ public final class IntrospectUtils {
                 path = "";
             }
             beanClass = (Class<?>) types[parameter];
-            visitor.visitBegin(types, parameter, path);
+
+            // Emulate parameters as Object[] as the instance type
+            visitor.visitBegin(Object[].class, path);
+            
+            // ...and indexing which returns Object instance
+            visitor.visitIndex(0, parameter, false, Object[].class, Object.class);
         }
         
         PropertyNavigator nav = new PropertyNavigator(path);

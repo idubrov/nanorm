@@ -20,19 +20,37 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 /**
- *
+ * Event-based interface of property path visitor.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 22.06.2008
+ * @param <T>
  */
 public interface PropertyVisitor<T> {
-    
+
+    /**
+     * Property path beginning for case when property path is applied to the
+     * regular instance.
+     * 
+     * @param beanClass type this property path is applied to.
+     * @param path property path
+     */
     void visitBegin(Class<?> beanClass, String path);
-    
-    void visitBegin(Type[] types, int parameter, String path);
-    
-    void visitProperty(int pos, String property, Method getter, boolean isLast, Class<?> beanClass, Class<?> propClass);
-    
-    void visitIndex(int pos, int index, boolean isLast, Class<?> beanClass, Class<?> componentClass);
-    
+
+    /**
+     * Visit property access.
+     * @param pos position in the property path (for better error reporting).
+     * @param property property name
+     * @param getter property getter
+     * @param isLast is that last element in the property path
+     * @param beanClass instance type
+     * @param propClass property type
+     */
+    void visitProperty(int pos, String property, Method getter, boolean isLast,
+            Class<?> beanClass, Class<?> propClass);
+
+    void visitIndex(int pos, int index, boolean isLast, Class<?> beanClass,
+            Class<?> componentClass);
+
     T visitEnd();
 }

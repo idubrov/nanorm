@@ -42,13 +42,6 @@ public final class VoidPropertyVisitor implements PropertyVisitor<Void> {
     /**
      * {@inheritDoc}
      */
-    public void visitBegin(Type[] types, int pos, String path) {
-        // Nothing.
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public Void visitEnd() {
         return null;
     }
