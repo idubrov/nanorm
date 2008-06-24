@@ -36,6 +36,7 @@ import com.google.code.nanorm.internal.mapping.result.ResultCallbackSource;
 import com.google.code.nanorm.internal.mapping.result.ResultCollectorUtil;
 import com.google.code.nanorm.internal.mapping.result.ResultMap;
 import com.google.code.nanorm.internal.session.SessionSpi;
+import com.google.code.nanorm.internal.session.SessionSpiConfig;
 import com.google.code.nanorm.internal.session.SingleConnSessionSpi;
 import com.google.code.nanorm.internal.type.TypeHandler;
 
@@ -49,12 +50,15 @@ public class FactoryImpl implements Factory, QueryDelegate {
     final private ThreadLocal<SessionSpi> sessions = new ThreadLocal<SessionSpi>();
 
     final private InternalConfiguration config;
+    
+    final private SessionSpiConfig sessionSpiConfig;
 
     /**
      * 
      */
     public FactoryImpl(InternalConfiguration internalConfig) {
         this.config = internalConfig;
+        this.sessionSpiConfig = null;
     }
 
     /**
@@ -71,8 +75,21 @@ public class FactoryImpl implements Factory, QueryDelegate {
          */
         return config.getIntrospectionFactory().createMapper(mapperClass, config, this);
     }
+    
+    public Transaction openSession() {
+        if (sessionSpiConfig == null) {
+            throw new IllegalArgumentException("Session SPI is not configured!");
+        }
+        if (sessions.get() != null) {
+            throw new IllegalStateException("Session was already started for this thread!");
+        }
 
-    public Transaction useConnection(Connection connection) {
+        final SessionSpi spi = sessionSpiConfig.newSessionSpi();
+        sessions.set(spi);
+        return new TransactionImpl(spi);
+    }
+
+    public Transaction openSession(Connection connection) {
         if (connection == null) {
             throw new IllegalArgumentException("Connection must not be null!");
         }
@@ -218,37 +235,32 @@ public class FactoryImpl implements Factory, QueryDelegate {
          * {@inheritDoc}
          */
         public void commit() {
-            try {
-                spi.commit();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            checkThread();
+            spi.commit();
         }
 
         /**
          * {@inheritDoc}
          */
         public void end() {
-            if (sessions.get() != spi) {
-                throw new IllegalStateException("This transaction is not bound to this thread!");
-            }
-            try {
-                // Remove from active sessions thread local
-                sessions.remove();
-                spi.end();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            checkThread();
+            
+            // Remove from active sessions thread local
+            sessions.remove();
+            spi.end();
         }
 
         /**
          * {@inheritDoc}
          */
         public void rollback() {
-            try {
-                spi.rollback();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            checkThread();
+            spi.rollback();
+        }
+        
+        private void checkThread() {
+            if (sessions.get() != spi) {
+                throw new IllegalStateException("This transaction is not bound to this thread!");
             }
         }
     }

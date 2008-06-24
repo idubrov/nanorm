@@ -90,7 +90,7 @@ public class MapperTestBase {
         conn.commit();
         
         factory = new Configuration().buildFactory();
-        transaction = factory.useConnection(conn);
+        transaction = factory.openSession(conn);
         
     }
     
