@@ -22,16 +22,21 @@ import java.util.Map;
 import com.google.code.nanorm.TypeHandlerFactory;
 
 /**
- *
+ * Type handler factory implementation.
+ * 
+ * @see TypeHandlerFactory
  * @author Ivan Dubrov
  * @version 1.0 31.05.2008
  */
-public class TypeHandlerFactoryImpl implements TypeHandlerFactory {
+public final class TypeHandlerFactoryImpl implements TypeHandlerFactory {
     
-    private Map<Type, TypeHandler<?>> typeHandlers = new HashMap<Type, TypeHandler<?>>();
+    private final Map<Type, TypeHandler<?>> typeHandlers = new HashMap<Type, TypeHandler<?>>();
     
-    private UnknownTypeHandler unknownTypeHandler = new UnknownTypeHandler();
+    private final UnknownTypeHandler unknownTypeHandler = new UnknownTypeHandler();
     
+    /**
+     * Constructor. Registers default type handlers.
+     */
     public TypeHandlerFactoryImpl() {
         register(byte.class, new ByteTypeHandler());
         register(Byte.class, new ByteTypeHandler());
@@ -78,7 +83,10 @@ public class TypeHandlerFactoryImpl implements TypeHandlerFactory {
         return unknownTypeHandler;
     }
     
-    final public void register(Type type, TypeHandler<?> handler) {
+    /**
+     * {@inheritDoc}
+     */
+    public final void register(Type type, TypeHandler<?> handler) {
         typeHandlers.put(type, handler);
     }
 }

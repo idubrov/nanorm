@@ -13,24 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package com.google.code.nanorm.test.generics;
+package com.google.code.nanorm;
 
 /**
- *
+ * Kind of anonymous function interface used for dynamic SQL generation.
+ * 
+ * @see SQLSource
  * @author Ivan Dubrov
- * @version 1.0 20.06.2008
  */
-@SuppressWarnings("all")
-public class SampleBean {
-    
-    private Wrapper<String> item;
-
-    public Wrapper<String> getItem() {
-        return item;
-    }
-
-    public void setItem(Wrapper<String> item) {
-        this.item = item;
-    }
+public interface Block {
+	/**
+	 * Generate SQL fragment.
+	 */
+	void generate();
 }

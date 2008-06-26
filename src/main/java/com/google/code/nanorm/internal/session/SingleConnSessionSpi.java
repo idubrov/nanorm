@@ -92,6 +92,7 @@ public class SingleConnSessionSpi implements SessionSpi {
 
     /**
      * This method does nothing. We use single connection for all requests. 
+     * @param conn not used
      */
     public void releaseConnection(Connection conn) {
         // Nothing. 

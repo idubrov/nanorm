@@ -20,8 +20,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Performs mapping data from {@link ResultSet} and to {@PreparedStatement}
- * parameters.
+ * Performs mapping data from {@link ResultSet} to Java objects and from Java
+ * objects to {@PreparedStatement} parameters.
  * 
  * @author Ivan Dubrov
  * @version 1.0 31.05.2008
@@ -29,30 +29,34 @@ import java.sql.SQLException;
  */
 public interface TypeHandler<T> {
 
-    /**
-     * Get column mapped value.
-     * @param rs {@link ResultSet} instance
-     * @param column column
-     * @return mapped value.
-     * @throws SQLException any SQL error
-     */
-    T getValue(ResultSet rs, int column) throws SQLException;
+	/**
+	 * Get column mapped value.
+	 * 
+	 * @param rs {@link ResultSet} instance
+	 * @param column column
+	 * @return mapped value.
+	 * @throws SQLException any SQL error
+	 */
+	T getValue(ResultSet rs, int column) throws SQLException;
 
-    /**
-     * Get column mapped value.
-     * @param rs {@link ResultSet} instance
-     * @param column column
-     * @return mapped value.
-     * @throws SQLException any SQL error
-     */
-    T getResult(ResultSet rs, String column) throws SQLException;
+	/**
+	 * Get column mapped value.
+	 * 
+	 * @param rs {@link ResultSet} instance
+	 * @param column column
+	 * @return mapped value.
+	 * @throws SQLException any SQL error
+	 */
+	T getResult(ResultSet rs, String column) throws SQLException;
 
-    /**
-     * Set parameter for given {@link PreparedStatement}. 
-     * @param st {@link PreparedStatement} instance.
-     * @param column column to set parameter to.
-     * @param value parameter value
-     * @throws SQLException any SQL error
-     */
-    void setParameter(PreparedStatement st, int column, Object value) throws SQLException;
+	/**
+	 * Set parameter for given {@link PreparedStatement}.
+	 * 
+	 * @param st {@link PreparedStatement} instance.
+	 * @param column column to set parameter to.
+	 * @param value parameter value
+	 * @throws SQLException any SQL error
+	 */
+	void setParameter(PreparedStatement st, int column, Object value)
+			throws SQLException;
 }

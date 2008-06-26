@@ -17,11 +17,16 @@
 package com.google.code.nanorm.internal.session;
 
 /**
- *
+ * Session SPI configuration. Used for creating new session SPI instances.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 25.06.2008
  */
 public interface SessionSpiConfig {
 
-    SessionSpi newSessionSpi();
+	/**
+	 * Create new session SPI from this configuration.
+	 * @return session SPI
+	 */
+	SessionSpi newSessionSpi();
 }

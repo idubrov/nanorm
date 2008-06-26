@@ -33,6 +33,7 @@ import com.google.code.nanorm.test.common.MapperTestBase;
  * @author Ivan Dubrov
  * @version 1.0 27.05.2008
  */
+@SuppressWarnings("all")
 public class ResultMapRefTest extends MapperTestBase {
     @ResultMapList( {
         @ResultMap(id = "car0", mappings = {

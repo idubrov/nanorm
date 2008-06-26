@@ -38,9 +38,9 @@ import com.google.code.nanorm.exceptions.SessionException;
  * @version 1.0 19.06.2008
  */
 public class JDBCSessionSpi implements SessionSpi {
-    final private Connection connection;
+    private final Connection connection;
 
-    final private boolean isAllowMultiple;
+    private final boolean isAllowMultiple;
 
     /**
      * Constructor.
@@ -104,6 +104,7 @@ public class JDBCSessionSpi implements SessionSpi {
 
     /**
      * This method does nothing. We use single connection for all requests.
+     * @param conn not used
      */
     public void releaseConnection(Connection conn) {
         // Nothing.

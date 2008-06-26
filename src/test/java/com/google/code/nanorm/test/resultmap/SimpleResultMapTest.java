@@ -34,6 +34,7 @@ import com.google.code.nanorm.test.common.MapperTestBase;
  * @author Ivan Dubrov
  * @version 1.0 27.05.2008
  */
+@SuppressWarnings("all")
 public class SimpleResultMapTest extends MapperTestBase {
     public interface Mapper1 {
         // No result map -- automatic mapping (no default map as well)

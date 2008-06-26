@@ -29,6 +29,7 @@ import com.google.code.nanorm.internal.introspect.PropertyNavigator;
  * @author Ivan Dubrov
  * @version 1.0 21.06.2008
  */
+@SuppressWarnings("all")
 public class TestPropNavigator {
 
     @Test

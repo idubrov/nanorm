@@ -16,11 +16,14 @@
 package com.google.code.nanorm;
 
 import java.lang.reflect.Type;
+import java.sql.ResultSet;
 
 import com.google.code.nanorm.internal.type.TypeHandler;
 
 /**
- * Factory for creating type handlers.
+ * Factory for creating type handlers. Type handlers are responsible for mapping
+ * data from {@link ResultSet} to Java objects and from Java objects to
+ * {@PreparedStatement} parameters.
  * 
  * @see TypeHandler
  * @author Ivan Dubrov
@@ -28,23 +31,26 @@ import com.google.code.nanorm.internal.type.TypeHandler;
  */
 public interface TypeHandlerFactory {
 
-    /**
-     * Get type handler for given type.
-     * @param type type
-     * @return type handler.
-     */
-    TypeHandler<?> getTypeHandler(Type type);
-    
-    /**
-     * Get type handler for unknown types.
-     * @return type handler for unknown types
-     */
-    TypeHandler<Object> getUnknownTypeHandler();
-    
-    /**
-     * Register new type handler.
-     * @param type type
-     * @param handler type handler
-     */
-    void register(Type type, TypeHandler<?> handler);
+	/**
+	 * Get type handler for given type.
+	 * 
+	 * @param type type
+	 * @return type handler.
+	 */
+	TypeHandler<?> getTypeHandler(Type type);
+
+	/**
+	 * Get type handler for unknown types.
+	 * 
+	 * @return type handler for unknown types
+	 */
+	TypeHandler<Object> getUnknownTypeHandler();
+
+	/**
+	 * Register new type handler.
+	 * 
+	 * @param type type
+	 * @param handler type handler
+	 */
+	void register(Type type, TypeHandler<?> handler);
 }

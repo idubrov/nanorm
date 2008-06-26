@@ -34,6 +34,7 @@ import com.google.code.nanorm.internal.introspect.asm.ASMIntrospectionFactory;
  * @author Ivan Dubrov
  * @version 1.0 20.06.2008
  */
+@SuppressWarnings("all")
 public class TestGenerics {
     
     private static IntrospectionFactory factory;
