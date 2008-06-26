@@ -31,95 +31,102 @@ import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
  * @version 1.0 19.06.2008
  */
 public class TextFragment implements Fragment {
-    private final static Pattern pattern = Pattern.compile("([^#$]*)([$#]\\{[^}]+\\})");
+	private final static Pattern pattern = Pattern
+			.compile("([^#$]*)([$#]\\{[^}]+\\})");
 
-    // Template
-    final private String sql;
+	// Template
+	final private String sql;
 
-    // Generated
-    final private StringBuilder sqlBuilder;
+	// Generated
+	final private StringBuilder sqlBuilder;
 
-    /** List of getters */
-    final private List<Getter> gettersList;
-    
-    final private IntrospectionFactory introspectionFactory;
+	/** List of getters */
+	final private List<Getter> gettersList;
 
-    /**
-     * Construct text SQL fragment not configured for parameter types. The types
-     * will be derived from the actual parameters (see
-     * {@link #bindParameters(Object[])}).
-     * 
-     * This constructor should be used only when parameter types are not known
-     * until beforehead, since it will trigger SQL template parsing and
-     * parameters introspection during the parameters binding.
-     * 
-     * Actually, we can parse sql at this moment, but this will not give any performance improvement
-     * since this constructor is usually used with {@link #bindParameters(Object[])} invoked just
-     * after it, because in dynamic case SQL is generated at the same time as parameters.
-     * 
-     * TODO: Think of skipping TextFragment creation for this case and creation of bound fragment directly.
-     * 
-     * @param sql
-     */
-    public TextFragment(String sql, IntrospectionFactory introspectionFactory) {
-        this.sql = sql;
-        this.sqlBuilder = null;
-        this.gettersList = null;
-        this.introspectionFactory = introspectionFactory;
-    }
+	final private IntrospectionFactory introspectionFactory;
 
-    /**
-     * Construct text SQL fragment, configured for given parameter types.
-     * 
-     * Introspects parameter types and creates getters for given types.
-     */
-    public TextFragment(String sql, Type[] types, IntrospectionFactory introspectionFactory) {
-        this.sqlBuilder = new StringBuilder();
-        this.gettersList = new ArrayList<Getter>();
-        this.sql = sql;
-        this.introspectionFactory = introspectionFactory;
-        configureTypes(types, sqlBuilder, gettersList);
-    }
+	/**
+	 * Construct text SQL fragment not configured for parameter types. The types
+	 * will be derived from the actual parameters (see
+	 * {@link #bindParameters(Object[])}).
+	 * 
+	 * This constructor should be used only when parameter types are not known
+	 * until beforehead, since it will trigger SQL template parsing and
+	 * parameters introspection during the parameters binding.
+	 * 
+	 * Actually, we can parse sql at this moment, but this will not give any
+	 * performance improvement since this constructor is usually used with
+	 * {@link #bindParameters(Object[])} invoked just after it, because in
+	 * dynamic case SQL is generated at the same time as parameters.
+	 * 
+	 * @param sql sql fragment
+	 * @param introspectionFactory introspection factory to use
+	 */
+	public TextFragment(String sql, IntrospectionFactory introspectionFactory) {
+		this.sql = sql;
+		this.sqlBuilder = null;
+		this.gettersList = null;
+		this.introspectionFactory = introspectionFactory;
+	}
 
-    public BoundFragment bindParameters(Object[] parameters) {
-        if (gettersList == null) {
-            List<Getter> getters = new ArrayList<Getter>();
-            StringBuilder builder = new StringBuilder();
+	/**
+	 * Construct text SQL fragment, configured for given parameter types.
+	 * 
+	 * Introspects parameter types and creates getters for given types.
+	 */
+	public TextFragment(String sql, Type[] types,
+			IntrospectionFactory introspectionFactory) {
+		this.sqlBuilder = new StringBuilder();
+		this.gettersList = new ArrayList<Getter>();
+		this.sql = sql;
+		this.introspectionFactory = introspectionFactory;
+		configureTypes(types, sqlBuilder, gettersList);
+	}
 
-            configureTypes(typesFromParameters(parameters), builder, getters);
-            return new BoundFragmentImpl(builder.toString(), getters, parameters);
-        }
-        return new BoundFragmentImpl(sqlBuilder.toString(), gettersList, parameters);
-    }
+	public BoundFragment bindParameters(Object[] parameters) {
+		if (gettersList == null) {
+			List<Getter> getters = new ArrayList<Getter>();
+			StringBuilder builder = new StringBuilder();
 
-    private Type[] typesFromParameters(Object[] parameters) {
-        Type[] types = new Type[parameters.length];
-        for (int i = 0; i < types.length; ++i) {
-            types[i] = parameters[i] == null ? Void.class : parameters[i].getClass();
-        }
-        return types;
-    }
+			configureTypes(typesFromParameters(parameters), builder, getters);
+			return new BoundFragmentImpl(builder.toString(), getters,
+					parameters);
+		}
+		return new BoundFragmentImpl(sqlBuilder.toString(), gettersList,
+				parameters);
+	}
 
-    private void configureTypes(Type[] types, StringBuilder builder, List<Getter> getters) {
-        Matcher matcher = pattern.matcher(sql);
-        int end = 0;
-        while (matcher.find()) {
-            int count = matcher.groupCount();
-            if (count > 0) {
-                builder.append(matcher.group(1));
-            }
-            if (count > 1) {
-                String prop = matcher.group(2);
-                if (prop.startsWith("$")) {
-                    builder.append("?");
-                    prop = prop.substring(2, prop.length() - 1);
-                    getters.add(introspectionFactory.buildParameterGetter(types, prop));
-                }
-            }
-            end = matcher.end(0);
-        }
-        builder.append(sql, end, sql.length());
-    }
+	private Type[] typesFromParameters(Object[] parameters) {
+		Type[] types = new Type[parameters.length];
+		for (int i = 0; i < types.length; ++i) {
+			types[i] = parameters[i] == null ? Void.class : parameters[i]
+					.getClass();
+		}
+		return types;
+	}
 
-    // TODO: ToString?
+	private void configureTypes(Type[] types, StringBuilder builder,
+			List<Getter> getters) {
+		Matcher matcher = pattern.matcher(sql);
+		int end = 0;
+		while (matcher.find()) {
+			int count = matcher.groupCount();
+			if (count > 0) {
+				builder.append(matcher.group(1));
+			}
+			if (count > 1) {
+				String prop = matcher.group(2);
+				if (prop.startsWith("$")) {
+					builder.append("?");
+					prop = prop.substring(2, prop.length() - 1);
+					getters.add(introspectionFactory.buildParameterGetter(
+							types, prop));
+				}
+			}
+			end = matcher.end(0);
+		}
+		builder.append(sql, end, sql.length());
+	}
+
+	// TODO: ToString?
 }

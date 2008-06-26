@@ -34,7 +34,7 @@ public interface TypeHandler<T> {
      * @param rs {@link ResultSet} instance
      * @param column column
      * @return mapped value.
-     * @throws SQLException
+     * @throws SQLException any SQL error
      */
     T getValue(ResultSet rs, int column) throws SQLException;
 
@@ -43,7 +43,7 @@ public interface TypeHandler<T> {
      * @param rs {@link ResultSet} instance
      * @param column column
      * @return mapped value.
-     * @throws SQLException
+     * @throws SQLException any SQL error
      */
     T getResult(ResultSet rs, String column) throws SQLException;
 
@@ -52,7 +52,7 @@ public interface TypeHandler<T> {
      * @param st {@link PreparedStatement} instance.
      * @param column column to set parameter to.
      * @param value parameter value
-     * @throws SQLException
+     * @throws SQLException any SQL error
      */
     void setParameter(PreparedStatement st, int column, Object value) throws SQLException;
 }

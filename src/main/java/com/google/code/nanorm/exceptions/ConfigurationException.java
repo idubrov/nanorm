@@ -16,43 +16,50 @@
 package com.google.code.nanorm.exceptions;
 
 /**
- *
+ * Configuration exception.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 29.05.2008
  */
 public class ConfigurationException extends GenericException {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -8730647955287796474L;
+	/**
+	 * Serial version.
+	 */
+	private static final long serialVersionUID = -8730647955287796474L;
 
-    /**
-     * 
-     */
-    public ConfigurationException() {
-        super();
-    }
+	/**
+	 * Constructor.
+	 */
+	public ConfigurationException() {
+		super();
+	}
 
-    /**
-     * @param message
-     * @param cause
-     */
-    public ConfigurationException(String message, Throwable cause) {
-        super(message, cause);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param message message
+	 * @param cause cause
+	 */
+	public ConfigurationException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
-    /**
-     * @param message
-     */
-    public ConfigurationException(String message) {
-        super(message);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param message message
+	 */
+	public ConfigurationException(String message) {
+		super(message);
+	}
 
-    /**
-     * @param cause
-     */
-    public ConfigurationException(Throwable cause) {
-        super(cause);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param cause cause.
+	 */
+	public ConfigurationException(Throwable cause) {
+		super(cause);
+	}
 }

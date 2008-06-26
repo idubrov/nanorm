@@ -17,24 +17,34 @@
 package com.google.code.nanorm.exceptions;
 
 /**
- *
+ * Introspection exception.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 21.06.2008
  */
 public class IntrospectionException extends GenericException {
 
-    /**
-     * @param message
-     */
-    public IntrospectionException(String message) {
-        super(message);
-    }
+	/**
+	 * Serial version.
+	 */
+	private static final long serialVersionUID = -6918018667566461927L;
 
-    /**
-     * @param message
-     * @param cause
-     */
-    public IntrospectionException(String message, Throwable cause) {
-        super(message, cause);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param message message
+	 */
+	public IntrospectionException(String message) {
+		super(message);
+	}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param message message
+	 * @param cause cause
+	 */
+	public IntrospectionException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

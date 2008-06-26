@@ -38,8 +38,6 @@ import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.annotations.Source;
 import com.google.code.nanorm.annotations.Update;
 import com.google.code.nanorm.exceptions.ConfigurationException;
-import com.google.code.nanorm.exceptions.ResultMapException;
-import com.google.code.nanorm.exceptions.StatementConfigException;
 import com.google.code.nanorm.internal.DynamicFragment;
 import com.google.code.nanorm.internal.Fragment;
 import com.google.code.nanorm.internal.TextFragment;
@@ -85,7 +83,7 @@ public class InternalConfiguration {
 	public StatementConfig getStatementConfig(String key) {
 		StatementConfig statementConfig = statementsConfig.get(key);
 		if (statementConfig == null) {
-			throw new StatementConfigException(
+			throw new ConfigurationException(
 					"Missing configuration for method '" + key + "'");
 		}
 		return statementConfig;
@@ -109,7 +107,10 @@ public class InternalConfiguration {
 		// TODO: Configure supeinterfaces
 	}
 
-	protected void postProcess() {
+	/**
+	 * Post process the configuration, resolving the references of subselects.
+	 */
+	private void postProcess() {
 		// TODO: Check statement return type matches the property type
 		for (ResultMappingConfig rmc : postProcessList) {
 			if (rmc.getSubselectKey() != null) {
@@ -128,12 +129,14 @@ public class InternalConfiguration {
 	}
 
 	/**
-	 * TODO: Javadoc TODO: Validate we don't have more than one from insert,
+	 * Process given method and generate statement configuration from it.
+	 * 
+	 * TODO: Validate we don't have more than one from insert,
 	 * select, update and delete.
 	 * 
-	 * @param method
+	 * @param method method to gather configuration from 
 	 */
-	protected void processMethod(Method method) {
+	private void processMethod(Method method) {
 		String key = method.getDeclaringClass().getName() + "#"
 				+ method.getName();
 		if (statementsConfig.containsKey(key)) {
@@ -213,7 +216,11 @@ public class InternalConfiguration {
 		statementsConfig.put(key, stConfig);
 	}
 
-	protected void processResultMaps(Class<?> clazz) {
+	/**
+	 * Process result maps defined for given class.
+	 * @param clazz class to gather result maps from
+	 */
+	private void processResultMaps(Class<?> clazz) {
 		ResultMap classResultMap = clazz.getAnnotation(ResultMap.class);
 
 		if (classResultMap != null) {
@@ -233,13 +240,23 @@ public class InternalConfiguration {
 		}
 	}
 
-	protected void processResultMap(Class<?> clazz, ResultMap resultMap) {
+	/**
+	 * Process the result map annotation.
+	 * @param clazz declaring class
+	 * @param resultMap result map annotation
+	 */
+	private void processResultMap(Class<?> clazz, ResultMap resultMap) {
 		// TODO: Check id!
 		String key = clazz.getName() + "#" + resultMap.id();
 		resultMapsConfig.put(key, createResultMapConfig(clazz, resultMap));
 	}
 
-	protected ResultMapConfig getResultMapConfig(Method method) {
+	/**
+	 * Get result map config for given method.
+	 * @param method method
+	 * @return
+	 */
+	private  ResultMapConfig getResultMapConfig(Method method) {
 		ResultMap resultMap = method.getAnnotation(ResultMap.class);
 		ResultMapRef ref = method.getAnnotation(ResultMapRef.class);
 		if (resultMap == null) {
@@ -253,7 +270,7 @@ public class InternalConfiguration {
 					return createResultMapConfig(method.getDeclaringClass(),
 							null);
 				}
-				throw new ResultMapException("Missing result map reference '"
+				throw new ConfigurationException("Missing result map reference '"
 						+ ref.value() + "', referenced from '"
 						+ method.getDeclaringClass().getName() + "#"
 						+ method.getName() + "'");
@@ -330,7 +347,13 @@ public class InternalConfiguration {
 		return config;
 	}
 
-	protected ResultMapConfig findResultMap(Class<?> clazz, String refId) {
+	/**
+	 * Find result map config with given reference id.
+	 * @param clazz declaring class
+	 * @param refId reference id
+	 * @return result map config
+	 */
+	private ResultMapConfig findResultMap(Class<?> clazz, String refId) {
 		String key = clazz.getName() + "#" + refId;
 
 		ResultMapConfig resultMapConfig = resultMapsConfig.get(key);

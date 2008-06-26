@@ -19,14 +19,21 @@ import com.google.code.nanorm.internal.mapping.result.ResultCallbackSource;
 import com.google.code.nanorm.internal.mapping.result.ResultMap;
 
 /**
- * Interface for processing the {@link ResultMap} generated values.
+ * Interface for processing the {@link ResultMap} result values.
  * 
  * Instances are not thread-safe.
+ * 
  * @see ResultCallbackSource
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
+ * @param <T> type of values this callback expects
  */
 public interface ResultCallback<T> {
-    
-    void handleResult(T obj);
+
+	/**
+	 * Handle the result.
+	 * 
+	 * @param obj result
+	 */
+	void handleResult(T obj);
 }

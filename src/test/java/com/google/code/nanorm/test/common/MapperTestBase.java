@@ -34,12 +34,25 @@ import com.google.code.nanorm.Transaction;
  */
 public class MapperTestBase {
     
+	/**
+	 * Connection.
+	 */
     protected Connection conn;
     
+    /**
+     * Nanorm factory.
+     */
     protected Factory factory;
     
+    /**
+     * Current transaction.
+     */
     protected Transaction transaction;
     
+    /**
+     * Loads the test data.
+     * @throws Exception any error
+     */
     @Before
     public void setUp() throws Exception {
         Class.forName("org.h2.Driver");
@@ -94,6 +107,11 @@ public class MapperTestBase {
         
     }
     
+    /**
+     * Execute the statement.
+     * @param sql sql statement to execute
+     * @throws SQLException any SQL error
+     */
     protected void execute(String sql) throws SQLException {
         Statement st = conn.createStatement();
         try {
@@ -103,8 +121,12 @@ public class MapperTestBase {
         }
     }
     
+    /**
+     * Rollback the transaction and close the connection.
+     * @throws SQLException any SQL exception 
+     */
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() throws SQLException {
         transaction.rollback();
         transaction.end();
         conn.close();

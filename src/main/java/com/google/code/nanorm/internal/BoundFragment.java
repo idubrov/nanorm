@@ -18,6 +18,21 @@ package com.google.code.nanorm.internal;
 import java.lang.reflect.Type;
 import java.util.List;
 
+/**
+ * Fragment of the SQL code that is bound to concrete query parameters.
+ * 
+ * @author Ivan Dubrov
+ * 
+ */
 public interface BoundFragment {
-    void generate(StringBuilder builder, List<Object> parameters, List<Type> types);
+	/**
+	 * Append SQL fragment, parameter values and parameter types to given
+	 * collections.
+	 * 
+	 * @param builder SQL builder
+	 * @param parameters collection of parameters
+	 * @param types collection of types
+	 */
+	void generate(StringBuilder builder, List<Object> parameters,
+			List<Type> types);
 }

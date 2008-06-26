@@ -22,39 +22,44 @@ import java.util.List;
 import com.google.code.nanorm.internal.introspect.Getter;
 
 /**
- *
+ * Implementation of {@link BoundFragment}. This implementation is based on list
+ * of getters which are used to retrieve types and values of the parameters.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 19.06.2008
  */
 public class BoundFragmentImpl implements BoundFragment {
-    
-    final private String sql;
-    
-    final private List<Getter> gettersList;
-    
-    final private Object[] parameters;
-    
-    /**
-     * @param sql
-     * @param gettersList
-     * @param parameters
-     */
-    public BoundFragmentImpl(String sql, List<Getter> gettersList,
-            Object[] parameters) {
-        this.sql = sql;
-        this.gettersList = gettersList;
-        this.parameters = parameters;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void generate(StringBuilder builder, List<Object> params, List<Type> types) {
-        builder.append(sql);
-        for(Getter getter : gettersList) {
-            params.add(getter.getValue(this.parameters));
-            types.add(getter.getType());
-        }
-    }
+	private final String sql;
+
+	private final List<Getter> gettersList;
+
+	private final Object[] parameters;
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param sql sql fragment
+	 * @param gettersList list of getters
+	 * @param parameters parameters
+	 */
+	public BoundFragmentImpl(String sql, List<Getter> gettersList,
+			Object[] parameters) {
+		this.sql = sql;
+		this.gettersList = gettersList;
+		this.parameters = parameters;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void generate(StringBuilder builder, List<Object> params,
+			List<Type> types) {
+		builder.append(sql);
+		for (Getter getter : gettersList) {
+			params.add(getter.getValue(this.parameters));
+			types.add(getter.getType());
+		}
+	}
 
 }

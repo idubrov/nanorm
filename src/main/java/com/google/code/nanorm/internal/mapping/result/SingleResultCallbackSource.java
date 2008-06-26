@@ -19,30 +19,36 @@ import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.internal.introspect.Setter;
 
 /**
+ * Implementation of {@link ResultCallbackSource} that sets the result
+ * to the property using the setter provided.
  * 
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
+ * @param <T> type of values that are expected by the result callbacks created
+ *            via this interface
  */
-public class SingleResultCallbackSource implements ResultCallbackSource {
+public class SingleResultCallbackSource<T> implements ResultCallbackSource<T> {
     
     private final Setter setter;
     
-    private final Object targetName;
+    private final Object sourceName;
     
     /**
-     * @param instance
-     * @param setter
+     * Constructor.
+     * 
+     * @param setter setter for property this result callback will set
+     * @param sourceName name of the source which will provide the data. Used for error messages generation.
      */
-    public SingleResultCallbackSource(Setter setter, Object targetName) {
+    public SingleResultCallbackSource(Setter setter, Object sourceName) {
         this.setter = setter;
-        this.targetName = targetName;
+        this.sourceName = sourceName;
     }
 
     /**
      * {@inheritDoc}
      */
-    public ResultCallback<Object> forInstance(final Object instance) {
-        return new ResultCallback<Object>() {
+    public ResultCallback<T> forInstance(final Object instance) {
+        return new ResultCallback<T>() {
             private boolean set;
             
             /**
@@ -50,7 +56,7 @@ public class SingleResultCallbackSource implements ResultCallbackSource {
              */
             public void handleResult(Object obj) {
                 if(set) {
-                    throw new RuntimeException("Single result expected for " + targetName);
+                    throw new RuntimeException("Single result expected for " + sourceName);
                 }
                 setter.setValue(instance, obj);
                 set = true;

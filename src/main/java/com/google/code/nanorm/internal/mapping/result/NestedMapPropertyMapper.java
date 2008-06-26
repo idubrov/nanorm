@@ -25,31 +25,46 @@ import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.Setter;
 
 /**
- *
+ * Nested map property mapper. Invokes nested map and pushes the result into the
+ * property identified by given getter and setter.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
  */
 public class NestedMapPropertyMapper {
 
-    final private ResultMap resultMap;
-    
-    final private ResultCallbackSource callbackSource;
-    
-    /**
-     * @param setter
-     * @param resultMap
-     */
-    public NestedMapPropertyMapper(Type type, Getter getter,
-            Setter setter, ResultMap resultMap, Object target) {
-        this.resultMap = resultMap;
-        this.callbackSource = ResultCollectorUtil.createResultCallback(type, getter, setter, target);
-    }
+	private final ResultMap resultMap;
 
-    /**
-     * @see com.google.code.nanorm.internal.mapping.result.PropertyMapper#mapResult(java.lang.Object, java.sql.ResultSet)
-     */
-    public final void mapResult(Request request, final Object result, ResultSet rs) throws SQLException {
-        ResultCallback callback = callbackSource.forInstance(result);
-        resultMap.processResultSet(request, rs, callback);
-    }
+	private final ResultCallbackSource callbackSource;
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param getter property getter
+	 * @param setter property setter
+	 * @param resultMap nested result map
+	 * @param source any object that identifies the mapping source. Used for
+	 *            messages generation.
+	 */
+	public NestedMapPropertyMapper(Getter getter, Setter setter,
+			ResultMap resultMap, Object source) {
+		this.resultMap = resultMap;
+		this.callbackSource = ResultCollectorUtil.createResultCallback(getter,
+				setter, source);
+	}
+
+	/**
+	 * Map the current result set row onto the property. Invokes the nested
+	 * result map and pushes the result into the property.
+	 * 
+	 * @param request request variables
+	 * @param result result object
+	 * @param rs result set 
+	 * @throws SQLException propagated from result set invocations
+	 */
+	public final void mapResult(Request request, final Object result,
+			ResultSet rs) throws SQLException {
+		ResultCallback<?> callback = callbackSource.forInstance(result);
+		resultMap.processResultSet(request, rs, callback);
+	}
 }

@@ -23,46 +23,53 @@ import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.Setter;
 
 /**
+ * Implementation of {@link ResultCallbackSource} that pushes the result into
+ * the array list in the property, identified by given getter/setter.
  * 
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
+ * @param <T> type of values that are expected by the result callbacks created
+ *            via this interface
  */
-public class ArrayListCallbackSource implements ResultCallbackSource {
+public class ArrayListCallbackSource<T> implements ResultCallbackSource<T> {
 
-    private final Getter getter;
-    
-    private final Setter setter;
-    
-    /**
-     * @param instance
-     * @param getter
-     * @param setter
-     */
-    public ArrayListCallbackSource(Getter getter, Setter setter) {
-        this.getter = getter;
-        this.setter = setter;
-    }
+	private final Getter getter;
 
-    /**
-     * @see com.google.code.nanorm.internal.mapping.result.ResultCallbackSource#forInstance(java.lang.Object)
-     */
-    @SuppressWarnings("unchecked")
-    public ResultCallback<Object> forInstance(final Object instance) {
-        return new ResultCallback<Object>() {
-            private List<Object> list;
-            {
-                list = (List<Object>) getter.getValue(instance);
-                if(list == null) {
-                    list = new ArrayList<Object>();
-                    setter.setValue(instance, list);
-                }
-            }
-            /**
-             * @see com.google.code.nanorm.ResultCallback#handleResult(java.lang.Object)
-             */
-            public void handleResult(Object obj) {
-                list.add(obj);
-            }
-        };
-    }
+	private final Setter setter;
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param getter property getter
+	 * @param setter property setter
+	 */
+	public ArrayListCallbackSource(Getter getter, Setter setter) {
+		this.getter = getter;
+		this.setter = setter;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@SuppressWarnings("unchecked")
+	public ResultCallback<T> forInstance(final Object instance) {
+		return new ResultCallback<T>() {
+			private List<T> list;
+			{
+				// Check the list in the property and if null, create it and set
+				list = (List<T>) getter.getValue(instance);
+				if (list == null) {
+					list = new ArrayList<T>();
+					setter.setValue(instance, list);
+				}
+			}
+			
+			/**
+			 * {@inheritDoc}
+			 */
+			public void handleResult(T obj) {
+				list.add(obj);
+			}
+		};
+	}
 }

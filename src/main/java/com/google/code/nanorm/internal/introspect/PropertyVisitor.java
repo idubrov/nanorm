@@ -23,31 +23,45 @@ import java.lang.reflect.Method;
  * 
  * @author Ivan Dubrov
  * @version 1.0 22.06.2008
- * @param <T>
+ * @param <T> property visitor result type
  */
 public interface PropertyVisitor<T> {
 
-    /**
-     * Property path beginning for case when property path is applied to the
-     * regular instance.
-     * 
-     * @param beanClass type this property path is applied to.
-     * @param path property path
-     */
-    void visitBegin(Class<?> beanClass, String path);
+	/**
+	 * Property path beginning for case when property path is applied to the
+	 * regular instance.
+	 * 
+	 * @param beanClass type this property path is applied to.
+	 * @param path property path
+	 */
+	void visitBegin(Class<?> beanClass, String path);
 
-    /**
-     * Visit property access.
-     * @param pos position in the property path (for better error reporting).
-     * @param property property name
-     * @param getter property getter
-     * @param isLast is that last element in the property path
-     * @param beanClass instance type
-     */
-    void visitProperty(int pos, String property, Method getter, boolean isLast,
-            Class<?> beanClass);
+	/**
+	 * Visit property access.
+	 * 
+	 * @param pos position in the property path (for better error reporting).
+	 * @param property property name
+	 * @param getter property getter
+	 * @param isLast is that last element in the property path
+	 * @param beanClass instance type
+	 */
+	void visitProperty(int pos, String property, Method getter, boolean isLast,
+			Class<?> beanClass);
 
-    void visitIndex(int pos, int index, boolean isLast, Class<?> beanClass);
+	/**
+	 * Visit indexing operator.
+	 * 
+	 * @param pos position in the property path (for better error reporting)
+	 * @param index position in the array
+	 * @param isLast is that last element in the property path
+	 * @param beanClass instance type
+	 */
+	void visitIndex(int pos, int index, boolean isLast, Class<?> beanClass);
 
-    T visitEnd();
+	/**
+	 * Finish the property path visiting and return the result.
+	 * 
+	 * @return result
+	 */
+	T visitEnd();
 }

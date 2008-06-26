@@ -19,14 +19,22 @@ package com.google.code.nanorm.internal.introspect;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
 
-public class ResolvedGenericArrayType implements GenericArrayType {
+/**
+ * Simple implementation of {@link GenericArrayType}.
+ * 
+ * @see GenericArrayType
+ * @author Ivan Dubrov
+ */
+public class GenericArrayTypeImpl implements GenericArrayType {
     
     private final Type componentType;
     
     /**
-     * @param componentType
+     * Constructor.
+     * 
+     * @param componentType component type
      */
-    public ResolvedGenericArrayType(Type componentType) {
+    public GenericArrayTypeImpl(Type componentType) {
         this.componentType = componentType;
     }
 
@@ -36,5 +44,4 @@ public class ResolvedGenericArrayType implements GenericArrayType {
     public Type getGenericComponentType() {
         return componentType;
     }
-
 }

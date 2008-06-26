@@ -23,41 +23,42 @@ import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.Setter;
 
 /**
- *
+ * 
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
  */
 public class ResultCollectorUtil {
-    
-    public static ResultCallbackSource createResultCallback(Type type, 
-            Getter getter, Setter setter, Object targetName) {
-        if(type instanceof ParameterizedType) {
-            ParameterizedType pt = (ParameterizedType) type;
-            if(pt.getRawType() == List.class) {
-                return new ArrayListCallbackSource(getter, setter);
-            }
-        } else {
-            return new SingleResultCallbackSource(setter, targetName);
-        }
-        throw new RuntimeException("Unexpected type");
-    }
-    
-    public static Class<?> resultClass(Type resultType) {
-        Class<?> resultClass;
-        if (resultType instanceof ParameterizedType) {
-            ParameterizedType pt = (ParameterizedType) resultType;
-            if (pt.getRawType() == List.class) {
-                // TODO: Cast!
-                // TODO: Move to utils?
-                resultClass = (Class<?>) pt.getActualTypeArguments()[0];
-            } else {
-                throw new RuntimeException("Type not supported: " + pt);
-            }
-        } else if (resultType instanceof Class<?>) {
-            resultClass = (Class<?>) resultType;
-        } else {
-            throw new RuntimeException("Type not supported: " + resultType);
-        }
-        return resultClass;
-    }
+
+	public static <T> ResultCallbackSource<T> createResultCallback(Getter getter,
+			Setter setter, Object mappingSource) {
+		Type type = getter.getType();
+		if (type instanceof ParameterizedType) {
+			ParameterizedType pt = (ParameterizedType) type;
+			if (pt.getRawType() == List.class) {
+				return new ArrayListCallbackSource<T>(getter, setter);
+			}
+		} else {
+			return new SingleResultCallbackSource<T>(setter, mappingSource);
+		}
+		throw new RuntimeException("Unexpected type");
+	}
+
+	public static Class<?> resultClass(Type resultType) {
+		Class<?> resultClass;
+		if (resultType instanceof ParameterizedType) {
+			ParameterizedType pt = (ParameterizedType) resultType;
+			if (pt.getRawType() == List.class) {
+				// TODO: Cast!
+				// TODO: Move to utils?
+				resultClass = (Class<?>) pt.getActualTypeArguments()[0];
+			} else {
+				throw new RuntimeException("Type not supported: " + pt);
+			}
+		} else if (resultType instanceof Class<?>) {
+			resultClass = (Class<?>) resultType;
+		} else {
+			throw new RuntimeException("Type not supported: " + resultType);
+		}
+		return resultClass;
+	}
 }

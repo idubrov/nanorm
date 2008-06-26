@@ -94,7 +94,7 @@ public class TypeOracle {
         Type resolved;
         if (context instanceof Class<?>) {
             Class<?> clazz = (Class<?>) context;
-            resolved = resolveImpl(type, new ResolvedParameterizedType(clazz));
+            resolved = resolveImpl(type, new ParameterizedTypeImpl(clazz));
         } else if (context instanceof ParameterizedType) {
             resolved = resolveImpl(type, (ParameterizedType) context);
         } else {
@@ -173,7 +173,7 @@ public class TypeOracle {
             for (int i = 0; i < res.length; ++i) {
                 res[i] = resolveImpl(arguments[i], context);
             }
-            return new ResolvedParameterizedType(resolvedRawType, res);
+            return new ParameterizedTypeImpl(resolvedRawType, res);
         } else if (type instanceof WildcardType) {
             WildcardType wildcard = (WildcardType) type;
 
@@ -190,7 +190,7 @@ public class TypeOracle {
             GenericArrayType array = (GenericArrayType) type;
 
             Type resolvedComponent = resolveImpl(array.getGenericComponentType(), context);
-            return new ResolvedGenericArrayType(resolvedComponent);
+            return new GenericArrayTypeImpl(resolvedComponent);
         } else {
             throw new RuntimeException("Not supported!");
         }

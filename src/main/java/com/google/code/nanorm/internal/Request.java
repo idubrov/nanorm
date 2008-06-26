@@ -35,7 +35,9 @@ public class Request {
     private Object result;
     
     /**
-     * @param queryDelegate
+     * Constructor.
+     * 
+     * @param queryDelegate query delegate instance
      */
     public Request(QueryDelegate queryDelegate) {
         this.queryDelegate = queryDelegate;

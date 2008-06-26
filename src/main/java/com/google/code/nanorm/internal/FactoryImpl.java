@@ -68,11 +68,6 @@ public class FactoryImpl implements Factory, QueryDelegate {
         config.configure(mapperClass);
 
         // TODO: Check we mapped this class!
-        /*
-         * return
-         * mapperClass.cast(Proxy.newProxyInstance(getClass().getClassLoader(),
-         * new Class<?>[] {mapperClass }, new MapperInvocationHandler()));
-         */
         return config.getIntrospectionFactory().createMapper(mapperClass, config, this);
     }
     
@@ -140,7 +135,7 @@ public class FactoryImpl implements Factory, QueryDelegate {
                     ResultSet rs = st.executeQuery();
 
                     // If we have ResultCallback in parameters -- use it
-                    ResultCallback<Object> callback;
+                    ResultCallback<?> callback;
                     if (config.getCallbackIndex() != StatementConfig.RETURN_VALUE) {
                         // This is OK, since we deduced result type exactly from
                         // this parameter
@@ -150,9 +145,9 @@ public class FactoryImpl implements Factory, QueryDelegate {
                         callback = temp;
                     } else {
                         // Prepare result callback and process results
-                        ResultGetterSetter rgs = new ResultGetterSetter();
+                        ResultGetterSetter rgs = new ResultGetterSetter(config.getResultType());
                         ResultCallbackSource callbackSource = ResultCollectorUtil
-                                .createResultCallback(config.getResultType(), rgs, rgs, config);
+                                .createResultCallback(rgs, rgs, config);
 
                         callback = callbackSource.forInstance(request);
                     }
@@ -189,12 +184,22 @@ public class FactoryImpl implements Factory, QueryDelegate {
     }
 
     private static class ResultGetterSetter implements Getter, Setter {
+    	
+    	private Type type;
+    	
+    	/**
+    	 * Constructor.
+    	 * @param type result map result type.
+    	 */
+    	public ResultGetterSetter(Type type) {
+    		this.type = type;
+		}
+    	
         /**
          * {@inheritDoc}
          */
         public Type getType() {
-            // TODO: Implement somehow!
-            return null;
+            return type;
         }
 
         /**
@@ -227,7 +232,7 @@ public class FactoryImpl implements Factory, QueryDelegate {
          * Constructor.
          * @param spi {@link SessionSpi} implementation.
          */
-        private TransactionImpl(SessionSpi spi) {
+        TransactionImpl(SessionSpi spi) {
             this.spi = spi;
         }
 

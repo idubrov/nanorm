@@ -22,10 +22,18 @@ import com.google.code.nanorm.ResultCallback;
  * instance.
  * 
  * Instances are thread-safe.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
+ * @param <T> type of values that are expected by the result callbacks created
+ *            via this interface
  */
-public interface ResultCallbackSource {
+public interface ResultCallbackSource<T> {
 
-    ResultCallback<Object> forInstance(Object instance);
+	/**
+	 * Create {@link ResultCallback} instance bound to given object instance.
+	 * @param instance object instance
+	 * @return result callback instance
+	 */
+	ResultCallback<T> forInstance(Object instance);
 }

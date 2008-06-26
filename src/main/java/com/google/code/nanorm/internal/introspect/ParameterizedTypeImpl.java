@@ -19,23 +19,35 @@ package com.google.code.nanorm.internal.introspect;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-public class ResolvedParameterizedType implements ParameterizedType {
+/**
+ * Simple implementation of {@link ParameterizedType}.
+ * 
+ * @see ParameterizedType
+ * @author Ivan Dubrov
+ */
+public class ParameterizedTypeImpl implements ParameterizedType {
     
-    private Type rawType;
+    private final Type rawType;
     
-    private Type[] actualTypeArguments = new Type[0];
+    private final Type[] actualTypeArguments;
     
     /**
+     * Constructor.
      * 
+     * @param rawType raw type
      */
-    public ResolvedParameterizedType(Class<?> rawType) {
+    public ParameterizedTypeImpl(Class<?> rawType) {
         this.rawType = rawType;
+        this.actualTypeArguments = new Type[0];
     }
     
     /**
+     * Constructor.
+     * @param rawType raw type
+     * @param actualTypeArguments actual type arguments 
      * 
      */
-    public ResolvedParameterizedType(Class<?> rawType, Type[] actualTypeArguments) {
+    public ParameterizedTypeImpl(Class<?> rawType, Type[] actualTypeArguments) {
         this.rawType = rawType;
         this.actualTypeArguments = actualTypeArguments;
     }

@@ -28,6 +28,6 @@ import com.google.code.nanorm.internal.Request;
  */
 public interface ResultMap {
 
-    void processResultSet(Request request, ResultSet rs, ResultCallback callback) throws SQLException;
+    void processResultSet(Request request, ResultSet rs, ResultCallback<?> callback) throws SQLException;
     
 }

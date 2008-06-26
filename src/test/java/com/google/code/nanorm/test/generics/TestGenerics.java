@@ -158,7 +158,7 @@ public class TestGenerics {
 
     /**
      * @see TypeOracle
-     * @throws Exception
+     * @throws Exception exception
      */
     @Test
     public void testSample() throws Exception {

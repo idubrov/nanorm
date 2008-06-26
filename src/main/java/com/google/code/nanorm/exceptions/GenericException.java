@@ -16,43 +16,50 @@
 package com.google.code.nanorm.exceptions;
 
 /**
- *
+ * Generic Nanorm exception.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 29.05.2008
  */
 public class GenericException extends RuntimeException {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -5875500674511617499L;
+	/**
+	 * Serial version.
+	 */
+	private static final long serialVersionUID = -5875500674511617499L;
 
-    /**
-     * 
-     */
-    public GenericException() {
-        super();
-    }
+	/**
+	 * Constructor.
+	 */
+	public GenericException() {
+		super();
+	}
 
-    /**
-     * @param message
-     * @param cause
-     */
-    public GenericException(String message, Throwable cause) {
-        super(message, cause);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param message message
+	 * @param cause cause
+	 */
+	public GenericException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
-    /**
-     * @param message
-     */
-    public GenericException(String message) {
-        super(message);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param message message
+	 */
+	public GenericException(String message) {
+		super(message);
+	}
 
-    /**
-     * @param cause
-     */
-    public GenericException(Throwable cause) {
-        super(cause);
-    }    
+	/**
+	 * Constructor.
+	 * 
+	 * @param cause cause
+	 */
+	public GenericException(Throwable cause) {
+		super(cause);
+	}
 }

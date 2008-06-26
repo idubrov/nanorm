@@ -38,7 +38,7 @@ public interface SessionSpi {
 
     /**
      * Release connection after performing a query.
-     * @param conn
+     * @param conn connection
      */
     void releaseConnection(Connection conn);
 

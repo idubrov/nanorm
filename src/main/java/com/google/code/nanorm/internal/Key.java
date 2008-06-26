@@ -15,75 +15,76 @@
  */
 package com.google.code.nanorm.internal;
 
+import java.sql.ResultSet;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- *
+ * Result object key. Used for grouping several rows of {@link ResultSet} into
+ * single object.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
  */
 public final class Key {
-    private Object[] tuple;
+	private Object[] tuple;
 
-    /**
-     * @param tuple
-     */
-    public Key(Object[] tuple) {
-        super();
-        this.tuple = tuple;
-    }
+	/**
+	 * Constructor.
+	 * @param tuple tuple of values that identify given object.
+	 */
+	public Key(Object[] tuple) {
+		this.tuple = tuple;
+	}
 
-   
-    /**
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        int code = 0;
-        for(int i = 0; i < tuple.length; ++i) {
-            code |= tuple[i].hashCode();
-        }
-        return code;
-    }
-    
-    /**
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if(this == obj) {
-            return true;
-        }
-        if(obj == null) {
-            return false;
-        }
-        if(obj.getClass() != Key.class) {
-            return false;
-        }
-        Key other = (Key) obj;
-        if(tuple.length != other.tuple.length) {
-            return false;
-        }
-        for(int i = 0; i < tuple.length; ++i) {
-            if(tuple[i] != other.tuple[i]) {
-                if(tuple[i] == null) {
-                    return false;
-                }
-                if(!tuple[i].equals(other.tuple[i])) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		int code = 0;
+		for (int i = 0; i < tuple.length; ++i) {
+			code |= tuple[i].hashCode();
+		}
+		return code;
+	}
 
-    /**
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).
-            append("tuple", tuple).
-            toString();
-    }
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (obj.getClass() != Key.class) {
+			return false;
+		}
+		Key other = (Key) obj;
+		if (tuple.length != other.tuple.length) {
+			return false;
+		}
+		for (int i = 0; i < tuple.length; ++i) {
+			if (tuple[i] != other.tuple[i]) {
+				if (tuple[i] == null) {
+					return false;
+				}
+				if (!tuple[i].equals(other.tuple[i])) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this).append("tuple", tuple).toString();
+	}
 }

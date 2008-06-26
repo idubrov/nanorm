@@ -24,7 +24,7 @@ import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapList;
 import com.google.code.nanorm.annotations.ResultMapRef;
 import com.google.code.nanorm.annotations.Select;
-import com.google.code.nanorm.exceptions.ResultMapException;
+import com.google.code.nanorm.exceptions.ConfigurationException;
 import com.google.code.nanorm.test.beans.Car;
 import com.google.code.nanorm.test.common.MapperTestBase;
 
@@ -106,7 +106,7 @@ public class ResultMapRefTest extends MapperTestBase {
             Mapper2 mapper = factory.createMapper(Mapper2.class);
             mapper.getCarByIdRef3(1);
             Assert.fail();
-        } catch (ResultMapException e) {
+        } catch (ConfigurationException e) {
             // That's ok, result map reference is missing
         }
     }

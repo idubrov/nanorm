@@ -21,47 +21,103 @@ import org.objectweb.asm.commons.Method;
 
 import com.google.code.nanorm.internal.QueryDelegate;
 import com.google.code.nanorm.internal.config.StatementConfig;
+import com.google.code.nanorm.internal.introspect.Getter;
+import com.google.code.nanorm.internal.introspect.Setter;
 
 /**
+ * Internal constants for ASM-based code.
  * 
  * @author Ivan Dubrov
  * @version 1.0 22.06.2008
  */
 public class Constants {
-    final static Method MAPPER_CTOR = Method
-            .getMethod("void <init>(com.google.code.nanorm.internal.QueryDelegate, "
-                    + "com.google.code.nanorm.internal.config.StatementConfig[])");
+	/**
+	 * Mapper constructor.
+	 */
+	final static Method MAPPER_CTOR = Method
+			.getMethod("void <init>(com.google.code.nanorm.internal.QueryDelegate, "
+					+ "com.google.code.nanorm.internal.config.StatementConfig[])");
 
-    final static Method GETTER_CTOR = Method.getMethod("void <init>(java.lang.reflect.Type)");
+	/**
+	 * Getter constructor.
+	 */
+	final static Method GETTER_CTOR = Method
+			.getMethod("void <init>(java.lang.reflect.Type)");
 
-    final static Method GET_VALUE = Method
-            .getMethod("java.lang.Object getValue(java.lang.Object)");
+	/**
+	 * {@link Getter#getValue} method.
+	 */
+	final static Method GET_VALUE = Method
+			.getMethod("java.lang.Object getValue(java.lang.Object)");
 
-    final static Method SET_VALUE = Method
-            .getMethod("void setValue(java.lang.Object, java.lang.Object)");
+	/**
+	 * {@link Setter#setValue(Object, Object)} method.
+	 */
+	final static Method SET_VALUE = Method
+			.getMethod("void setValue(java.lang.Object, java.lang.Object)");
 
-    final static Method CTOR = Method.getMethod("void <init>()");
+	/**
+	 * Parameterless constructor.
+	 */
+	final static Method CTOR = Method.getMethod("void <init>()");
 
-    final static Type JL_REFLECT_TYPE_TYPE = Type.getType(java.lang.reflect.Type.class);
+	/**
+	 * {@link java.lang.reflect.Type}
+	 */
+	final static Type JL_REFLECT_TYPE_TYPE = Type
+			.getType(java.lang.reflect.Type.class);
 
-    final static Type OBJECT_TYPE = Type.getType(Object.class);
+	/**
+	 * {@link Object}
+	 */
+	final static Type OBJECT_TYPE = Type.getType(Object.class);
 
-    final static Type OBJECT_ARR_TYPE = Type.getType(Object[].class);
+	/**
+	 * Array of {@link Object}
+	 */
+	final static Type OBJECT_ARR_TYPE = Type.getType(Object[].class);
 
-    final static Type NPE_TYPE = Type.getType(NullPointerException.class);
+	/**
+	 * {@link NullPointerException}
+	 */
+	final static Type NPE_TYPE = Type.getType(NullPointerException.class);
 
-    final static Method NPE_CTOR = Method.getMethod("void <init>(java.lang.String)");
+	/**
+	 * {@link NullPointerException} constructor.
+	 */
+	final static Method NPE_CTOR = Method
+			.getMethod("void <init>(java.lang.String)");
 
-    final static Method SUBSTRING = Method.getMethod("String substring(int, int)");
+	/**
+	 * {@link String#substring(int, int)}
+	 */
+	final static Method SUBSTRING = Method
+			.getMethod("String substring(int, int)");
 
-    final static Method CONCAT = Method.getMethod("String concat(String)");
+	/**
+	 * {@link String#concat(String)}
+	 */
+	final static Method CONCAT = Method.getMethod("String concat(String)");
 
-    final static Type STRING_TYPE = Type.getType(String.class);
+	/**
+	 * {@link String}
+	 */
+	final static Type STRING_TYPE = Type.getType(String.class);
 
-    final static Type QUERY_DELEGATE_TYPE = Type.getType(QueryDelegate.class);
+	/**
+	 * {@link QueryDelegate}
+	 */
+	final static Type QUERY_DELEGATE_TYPE = Type.getType(QueryDelegate.class);
 
-    final static Method QUERY_METHOD = Method
-            .getMethod("Object query(com.google.code.nanorm.internal.config.StatementConfig, Object[])");
+	/**
+	 * {@link QueryDelegate#query(StatementConfig, Object[])} method.
+	 */
+	final static Method QUERY_METHOD = Method
+			.getMethod("Object query(com.google.code.nanorm.internal.config.StatementConfig, Object[])");
 
-    final static Type STATEMENT_CONFIGS_ARR_TYPE = Type.getType(StatementConfig[].class);
+	/**
+	 * Array of {@link StatementConfig}. 
+	 */
+	final static Type STATEMENT_CONFIGS_ARR_TYPE = Type
+			.getType(StatementConfig[].class);
 }
