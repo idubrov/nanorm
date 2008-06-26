@@ -39,14 +39,14 @@ public class SingleResultCallbackSource implements ResultCallbackSource {
     }
 
     /**
-     * @see com.google.code.nanorm.internal.mapping.result.ResultCallbackSource#forInstance(java.lang.Object)
+     * {@inheritDoc}
      */
     public ResultCallback<Object> forInstance(final Object instance) {
         return new ResultCallback<Object>() {
             private boolean set;
             
             /**
-             * @see com.google.code.nanorm.internal.mapping.result.ResultCollector#handleResult(java.lang.Object)
+             * {@inheritDoc}
              */
             public void handleResult(Object obj) {
                 if(set) {

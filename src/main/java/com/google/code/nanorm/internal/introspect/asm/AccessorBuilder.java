@@ -40,11 +40,11 @@ import com.google.code.nanorm.internal.introspect.IntrospectUtils;
 import com.google.code.nanorm.internal.introspect.PropertyVisitor;
 
 /**
- * 
+ * TODO: Javadoc
  * @author Ivan Dubrov
  * @version 1.0 22.06.2008
  */
-public class AccessorBuilder implements PropertyVisitor<byte[]> {
+public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 
     private ClassWriter cw;
 
@@ -221,7 +221,7 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
         }
     }
 
-    protected void checkNull(int pos) {
+    private void checkNull(int pos) {
         // Check current value is not null
         accessormg.dup();
         accessormg.push(pos); // Push current path position for better NPE
@@ -234,7 +234,7 @@ public class AccessorBuilder implements PropertyVisitor<byte[]> {
      * NPE handling code. We have position in the property path in the
      * {@link #npeLocal} local variable.
      */
-    protected void npeHandler() {
+    private void npeHandler() {
         accessormg.visitLabel(npeLabel);
         accessormg.push(fullPath);
         accessormg.push(0);

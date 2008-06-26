@@ -24,46 +24,53 @@ import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.type.TypeHandler;
 
 /**
+ * Class that maps given column from result set to the property.
  * 
  * @author Ivan Dubrov
  * @version 1.0 04.06.2008
  */
 public class PropertyMapper {
 
-    final private ResultMappingConfig config;
+	final private ResultMappingConfig config;
 
-    final private Setter setter;
+	final private Setter setter;
 
-    final private TypeHandler<?> typeHandler;
+	final private TypeHandler<?> typeHandler;
 
-    /**
-     * @param resultClass
-     * @param configs
-     * @param setters
-     * @param typeHandlers
-     */
-    public PropertyMapper(ResultMappingConfig config, Setter setter, TypeHandler<?> typeHandler) {
-        this.config = config;
-        this.setter = setter;
-        this.typeHandler = typeHandler;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param config property mapping configuration
+	 * @param setter property setter
+	 * @param typeHandler type handler for property
+	 */
+	public PropertyMapper(ResultMappingConfig config, Setter setter,
+			TypeHandler<?> typeHandler) {
+		this.config = config;
+		this.setter = setter;
+		this.typeHandler = typeHandler;
+	}
 
-    /**
-     * 
-     * @see com.google.code.nanorm.internal.mapping.result.ResultMapper#mapResult(java.lang.Object,
-     * java.sql.ResultSet)
-     */
-    public final void mapResult(Request request, Object result, ResultSet rs) throws SQLException {
-        Object value;
-        if (config.getColumnIndex() != 0) {
-            value = typeHandler.getValue(rs, config.getColumnIndex());
-        } else {
-            value = typeHandler.getResult(rs, config.getColumn());
-        }
-        if (config.getSubselect() != null) {
-            value = request.getQueryDelegate()
-                    .query(config.getSubselect(), new Object[] {value });
-        }
-        setter.setValue(result, value);
-    }
+	/**
+	 * Map the {@link ResultSet} row onto the result object.
+	 * 
+	 * @param request {@link Request} instance. Used for executing subqueries.
+	 * @param result result object instance
+	 * @param rs result set
+	 * @throws SQLException SQL exception from result set
+	 */
+	public final void mapResult(Request request, Object result, ResultSet rs)
+			throws SQLException {
+		Object value;
+		if (config.getColumnIndex() != 0) {
+			value = typeHandler.getValue(rs, config.getColumnIndex());
+		} else {
+			value = typeHandler.getResult(rs, config.getColumn());
+		}
+		if (config.getSubselect() != null) {
+			value = request.getQueryDelegate().query(config.getSubselect(),
+					new Object[] { value });
+		}
+		setter.setValue(result, value);
+	}
 }

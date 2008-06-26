@@ -21,23 +21,33 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
+ * Result map configuration.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 28.05.2008
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target( { ElementType.METHOD, ElementType.TYPE })
 public @interface ResultMap {
-    
-    String id() default "";
 
-    Mapping[] mappings() default {};
-    
-    String[] groupBy() default {};
-    
-    /**
-     * Automatically map all columns that were not mapped explicitly.
-     * @return
-     */
-    boolean auto() default false;
+	/**
+	 * Result map identifier.
+	 */
+	String id() default "";
+
+	/**
+	 * Property mappings.
+	 */
+	Mapping[] mappings() default {};
+
+	/**
+	 * Properties that will be used for grouping together several rows of the
+	 * results.
+	 */
+	String[] groupBy() default {};
+
+	/**
+	 * Automatically map all columns that were not mapped explicitly.
+	 */
+	boolean auto() default false;
 }

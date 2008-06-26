@@ -71,6 +71,7 @@ public class ExternalSessionSpi implements SessionSpi {
     }
 
     /**
+     * {@inheritDoc}
      * Always returns true, since we return new connection for every request.
      */
     public boolean isAllowMultipleQueries() {
