@@ -65,12 +65,14 @@ public class SQLSource implements BoundFragment {
 			boolean flag = false;
 			// Join elements in the clauses list
 			for (List<BoundFragment> items : clauses) {
-				if (flag && with != null) {
+				if (items.size() > 0 && flag && with != null) {
 					builder.append(with);
 				}
-				flag = true;
 				for (BoundFragment item : items) {
 					item.generate(builder, parameters, types);
+				}
+				if(items.size() > 0) {
+					flag = true;
 				}
 			}
 
@@ -123,7 +125,7 @@ public class SQLSource implements BoundFragment {
 	 * @param params parameters
 	 * @return join object which could be used to configure join parameters.
 	 */
-	public <T> Join join(Block<T> block, T... params) {
+	public <T> Join join(ParamBlock<T> block, T... params) {
 		Join join = new Join();
 
 		for (T param : params) {
@@ -132,6 +134,25 @@ public class SQLSource implements BoundFragment {
 			stack.add(items);
 			try {
 				block.generate(param);
+			} finally {
+				assert last() == items;
+				stack.remove(stack.size() - 1);
+			}
+		}
+		last().add(join);
+		return join;
+	}
+	
+	
+	public Join join(Block... blocks) {
+		Join join = new Join();
+
+		for (Block block : blocks) {
+			List<BoundFragment> items = new ArrayList<BoundFragment>();
+			join.clauses.add(items);
+			stack.add(items);
+			try {
+				block.generate();
 			} finally {
 				assert last() == items;
 				stack.remove(stack.size() - 1);

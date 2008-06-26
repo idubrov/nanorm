@@ -27,10 +27,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.code.nanorm.Block;
 import com.google.code.nanorm.Configuration;
 import com.google.code.nanorm.Factory;
 import com.google.code.nanorm.SQLSource;
-import com.google.code.nanorm.Transaction;
+import com.google.code.nanorm.Session;
 import com.google.code.nanorm.annotations.Mapping;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapList;
@@ -50,7 +51,7 @@ public class TestCarMapper {
     
     private Factory factory;
     
-    private Transaction transaction;
+    private Session transaction;
     
     @ResultMapList({
         @ResultMap(id = "car", auto = true, mappings = {     
@@ -71,18 +72,23 @@ public class TestCarMapper {
         List<Car> listByModelYear(String model, int year);
         
         public static class SelectModelYearSource extends SQLSource {
-            public void sql(String model, int year)
+            public void sql(final String model, final int year)
             {
                 append("SELECT id, model, owner, year FROM cars WHERE ");
-                if(model != null) {
-                    append(" model = ${value}", model);
-                    if(year != 0) {
-                        append(" AND ");
-                    }
-                }
-                if(year != 0) {
-                    append(" YEAR = ${value}", year);
-                }
+
+                join(new Block() {
+					public void generate() {
+						if(model != null) {
+							append(" model = ${value} ", model);
+						}
+					}
+                }, new Block() {
+					public void generate() {
+						if(year != 0) {
+							append(" YEAR = ${value} ", year);
+						}
+					}
+                }).with(" AND ");
                 append(" ORDER BY id ASC");
             }
         }
@@ -108,6 +114,11 @@ public class TestCarMapper {
         
     }
     
+    /**
+     * Execute SQL statement.
+     * @param sql SQL statement
+     * @throws SQLException any SQL exception
+     */
     protected void execute(String sql) throws SQLException {
         Statement st = conn.createStatement();
         try {
@@ -117,13 +128,20 @@ public class TestCarMapper {
         }
     }
     
+    /**
+     * Rollback the transaction and close connection.
+     * @throws SQLException any SQL exception
+     */
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() throws SQLException {
         transaction.rollback();
         transaction.end();
         conn.close();
     }
 
+    /**
+     * Test selecting the car by id.
+     */
     @Test
     public void testSelectById() {
         CarMapper mapper = factory.createMapper(CarMapper.class);
@@ -135,6 +153,9 @@ public class TestCarMapper {
         Assert.assertEquals(2006, car.getYear());
     }
     
+    /**
+     * Test selecting list of cars.
+     */
     @Test
     public void testSelectList() {
         CarMapper mapper = factory.createMapper(CarMapper.class);
@@ -155,6 +176,9 @@ public class TestCarMapper {
         Assert.assertEquals(2004, car.getYear());
     }
     
+    /**
+     * Test listing by model.
+     */
     @Test
     public void testListByModelYear() {
         CarMapper mapper = factory.createMapper(CarMapper.class);
@@ -166,6 +190,9 @@ public class TestCarMapper {
         Assert.assertEquals(11, car.getId());
     }
     
+    /**
+     * Test listing by year.
+     */
     @Test
     public void testListByModelYear2() {
         CarMapper mapper = factory.createMapper(CarMapper.class);
@@ -177,6 +204,9 @@ public class TestCarMapper {
         Assert.assertEquals(10, car.getId());
     }
     
+    /**
+     * Test listing both by model and year.
+     */
     @Test
     public void testListByModelYear3() {
         CarMapper mapper = factory.createMapper(CarMapper.class);
@@ -184,5 +214,4 @@ public class TestCarMapper {
         List<Car> cars = mapper.listByModelYear("Ford Focus", 2006);
         Assert.assertEquals(0, cars.size());
     }
-
 }

@@ -25,7 +25,7 @@ import java.util.List;
 
 import com.google.code.nanorm.Factory;
 import com.google.code.nanorm.ResultCallback;
-import com.google.code.nanorm.Transaction;
+import com.google.code.nanorm.Session;
 import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.exceptions.DataException;
 import com.google.code.nanorm.internal.config.InternalConfiguration;
@@ -41,20 +41,25 @@ import com.google.code.nanorm.internal.session.SingleConnSessionSpi;
 import com.google.code.nanorm.internal.type.TypeHandler;
 
 /**
+ * Factory implementation.
  * 
  * @author Ivan Dubrov
  * @version 1.0 27.05.2008
  */
 public class FactoryImpl implements Factory, QueryDelegate {
 
-    final private ThreadLocal<SessionSpi> sessions = new ThreadLocal<SessionSpi>();
+	/**
+	 * Thread local that holds per-thread sessions.
+	 */
+    private final ThreadLocal<SessionSpi> sessions = new ThreadLocal<SessionSpi>();
 
-    final private InternalConfiguration config;
+    private final InternalConfiguration config;
     
-    final private SessionSpiConfig sessionSpiConfig;
+    private final SessionSpiConfig sessionSpiConfig;
 
     /**
-     * 
+     * Constructor.
+     * @param internalConfig factory configuration
      */
     public FactoryImpl(InternalConfiguration internalConfig) {
         this.config = internalConfig;
@@ -71,7 +76,10 @@ public class FactoryImpl implements Factory, QueryDelegate {
         return config.getIntrospectionFactory().createMapper(mapperClass, config, this);
     }
     
-    public Transaction openSession() {
+    /**
+     * {@inheritDoc}
+     */
+    public Session openSession() {
         if (sessionSpiConfig == null) {
             throw new IllegalArgumentException("Session SPI is not configured!");
         }
@@ -84,7 +92,10 @@ public class FactoryImpl implements Factory, QueryDelegate {
         return new TransactionImpl(spi);
     }
 
-    public Transaction openSession(Connection connection) {
+    /**
+     * {@inheritDoc}
+     */
+    public Session openSession(Connection connection) {
         if (connection == null) {
             throw new IllegalArgumentException("Connection must not be null!");
         }
@@ -97,12 +108,15 @@ public class FactoryImpl implements Factory, QueryDelegate {
         return new TransactionImpl(spi);
     }
 
-    public Object query(StatementConfig config, Object[] args) {
+    /**
+     * {@inheritDoc}
+     */
+    public Object query(StatementConfig stConfig, Object[] args) {
         // Request-scoped data
         Request request = new Request(this);
 
         // Statement fragment
-        BoundFragment fragment = config.getStatementBuilder().bindParameters(args);
+        BoundFragment fragment = stConfig.getStatementBuilder().bindParameters(args);
 
         // SQL, parameters and their types
         StringBuilder sql = new StringBuilder();
@@ -129,31 +143,31 @@ public class FactoryImpl implements Factory, QueryDelegate {
                 mapParameters(st, types, parameters);
 
                 Object result;
-                if (config.isUpdate()) {
+                if (stConfig.isUpdate()) {
                     result = st.executeUpdate();
                 } else {
                     ResultSet rs = st.executeQuery();
 
                     // If we have ResultCallback in parameters -- use it
                     ResultCallback<?> callback;
-                    if (config.getCallbackIndex() != StatementConfig.RETURN_VALUE) {
+                    if (stConfig.getCallbackIndex() != StatementConfig.RETURN_VALUE) {
                         // This is OK, since we deduced result type exactly from
                         // this parameter
                         @SuppressWarnings("unchecked")
-                        ResultCallback<Object> temp = (ResultCallback<Object>) args[config
+                        ResultCallback<Object> temp = (ResultCallback<Object>) args[stConfig
                                 .getCallbackIndex()];
                         callback = temp;
                     } else {
                         // Prepare result callback and process results
-                        ResultGetterSetter rgs = new ResultGetterSetter(config.getResultType());
-                        ResultCallbackSource callbackSource = ResultCollectorUtil
-                                .createResultCallback(rgs, rgs, config);
+                        ResultGetterSetter rgs = new ResultGetterSetter(stConfig.getResultType());
+                        ResultCallbackSource<?> callbackSource = ResultCollectorUtil
+                                .createResultCallback(rgs, rgs, stConfig);
 
                         callback = callbackSource.forInstance(request);
                     }
                     
                     // Iterate through the result set
-                    ResultMap resultMapper = config.getResultMapper();
+                    ResultMap resultMapper = stConfig.getResultMapper();
                     while (rs.next()) {
                         resultMapper.processResultSet(request, rs, callback);
                     }
@@ -222,9 +236,9 @@ public class FactoryImpl implements Factory, QueryDelegate {
     // TODO: toString
 
     /**
-     * {@link Transaction} implementation.
+     * {@link Session} implementation.
      */
-    private class TransactionImpl implements Transaction {
+    private class TransactionImpl implements Session {
 
         final private SessionSpi spi;
 

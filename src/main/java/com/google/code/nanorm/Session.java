@@ -20,7 +20,7 @@ package com.google.code.nanorm;
  * @author Ivan Dubrov
  * @version 1.0 27.05.2008
  */
-public interface Transaction {
+public interface Session {
 
     void commit();
     

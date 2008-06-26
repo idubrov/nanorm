@@ -25,5 +25,10 @@ package com.google.code.nanorm.internal;
  * @version 1.0 27.05.2008
  */
 public interface Fragment {
+	/**
+	 * Bind parameters to the SQL fragment.
+	 * @param parameters parameters
+	 * @return SQL fragment, bound to the concrete parameters
+	 */
     BoundFragment bindParameters(Object[] parameters);
 }

@@ -36,15 +36,28 @@ import com.google.code.nanorm.test.beans.Owner;
  */
 public abstract class TestGetterBase {
 
+	/**
+	 * Introspection factory.
+	 */
     protected IntrospectionFactory factory;
     
+    /**
+     * Method which will create concrete introspection factory.
+     * @return introspection factory
+     */
     protected abstract IntrospectionFactory provideIntrospectionFactory();
 
+    /**
+     * Create introspection factory.
+     */
     @Before
     public void setUp() {
         factory = provideIntrospectionFactory();
     }
 
+    /**
+     * Test getter generation.
+     */
     @Test
     public void testGetter() {
         Owner owner = new Owner();
@@ -58,6 +71,9 @@ public abstract class TestGetterBase {
         Assert.assertEquals(String.class, getter.getType());
     }
     
+    /**
+     * Test setter generation.
+     */
     @Test
     public void testSetter() {
         Owner owner = new Owner();
@@ -71,6 +87,9 @@ public abstract class TestGetterBase {
         Assert.assertEquals("Ivan", car.getOwner().getFirstName());
     }
     
+    /**
+     * Test parameter getter generation.
+     */
     @Test
     public void testParameterGetter() {
         Owner owner = new Owner();
@@ -86,6 +105,9 @@ public abstract class TestGetterBase {
         Assert.assertEquals(String.class, getter.getType());
     }
     
+    /**
+     * Test parameter getter generation.
+     */
     @Test
     public void testParameterGetter2() {
         String[] arr = new String[] { "one", "two", "three", "four" };
@@ -96,6 +118,9 @@ public abstract class TestGetterBase {
         Assert.assertEquals(String.class, getter.getType());
     }
     
+    /**
+     * Test getter with arrays.
+     */
     @Test
     public void testGetterArray() {
         Owner owner = new Owner();
@@ -113,6 +138,9 @@ public abstract class TestGetterBase {
         Assert.assertEquals(int.class, getter.getType());
     }
     
+    /**
+     * Test getter with arrays.
+     */
     @Test
     public void testGetterArray2() {
         Owner owner = new Owner();
@@ -127,8 +155,9 @@ public abstract class TestGetterBase {
         Assert.assertEquals(2006, getter.getValue(car));
     }
     
-    
-    
+    /**
+     * Test setter with arrays. 
+     */
     @Test
     public void testSetterArray() {
         Owner owner = new Owner();
@@ -145,6 +174,9 @@ public abstract class TestGetterBase {
         Assert.assertEquals(2003, car.getOwner().getCrashes2()[3].getYear());
     }
     
+    /**
+     * Test setter with arrays.
+     */
     @Test
     public void testSetterArray2() {
         Owner owner = new Owner();
@@ -159,7 +191,9 @@ public abstract class TestGetterBase {
         Assert.assertEquals(2002, car.getOwner().getCrashes3()[2]);
     }
     
-    // TODO: This test, in fact, should work on Reflection-based factory!
+    /**
+     * Test getter with arrays.
+     */
     @Test
     public void testGetterArray3() {
         Car car = new Car();

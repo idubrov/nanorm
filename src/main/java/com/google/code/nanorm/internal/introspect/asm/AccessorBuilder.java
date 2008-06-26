@@ -40,231 +40,272 @@ import com.google.code.nanorm.internal.introspect.IntrospectUtils;
 import com.google.code.nanorm.internal.introspect.PropertyVisitor;
 
 /**
- * TODO: Javadoc
+ * Code generator for properties access. Can generate both getters and setters.
+ * Code generation is implemented with ASM library. The result is array of bytes
+ * with Java class definition.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 22.06.2008
  */
 public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 
-    private ClassWriter cw;
+	private ClassWriter cw;
 
-    private String fullPath;
+	private String fullPath;
 
-    private Class<?> initialBeanClass;
+	private Class<?> initialBeanClass;
 
-    /**
-     * Actual type in the stack.
-     */
-    private Class<?> actualClass;
+	/**
+	 * Actual type in the stack.
+	 */
+	private Class<?> actualClass;
 
-    private GeneratorAdapter accessormg;
+	private GeneratorAdapter accessormg;
 
-    private Label npeLabel = new Label();
+	private Label npeLabel = new Label();
 
-    private int npeLocal = -1;
+	private int npeLocal = -1;
 
-    private final boolean isSetter;
+	private final boolean isSetter;
 
-    public AccessorBuilder(String name, boolean isSetter) {
-        this.isSetter = isSetter;
+	/**
+	 * Constructor. Starts generating the Java class code.
+	 * 
+	 * @param name accessor class name
+	 * @param isSetter if we building accessor for setter.
+	 */
+	public AccessorBuilder(String name, boolean isSetter) {
+		this.isSetter = isSetter;
 
-        cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+		cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 
-        Type owner = Type.getType("L" + name + ";");
-        if (isSetter) {
-            cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, name, null, "java/lang/Object",
-                    new String[] {"com/google/code/nanorm/internal/introspect/Setter" });
+		Type owner = Type.getType("L" + name + ";");
+		if (isSetter) {
+			String iface = "com/google/code/nanorm/internal/introspect/Setter";
+			cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, name, null,
+					"java/lang/Object", new String[] { iface });
 
-            visitSetterConstructor();
-        } else {
-            cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, name, null, "java/lang/Object",
-                    new String[] {"com/google/code/nanorm/internal/introspect/Getter" });
+			visitSetterConstructor();
+		} else {
+			String iface = "com/google/code/nanorm/internal/introspect/Getter";
+			cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, name, null,
+					"java/lang/Object", new String[] { iface });
 
-            cw.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_FINAL, "type",
-                    "Ljava/lang/reflect/Type;", null, null);
+			cw.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_FINAL, "type",
+					"Ljava/lang/reflect/Type;", null, null);
 
-            visitGetterConstructor(owner);
-            visitGetType(owner);
-        }
-    }
+			visitGetterConstructor(owner);
+			visitGetType(owner);
+		}
+	}
 
-    private void visitSetterConstructor() {
-        Method m = Method.getMethod("void <init>()");
+	/**
+	 * Generate code for setter constructor.
+	 */
+	private void visitSetterConstructor() {
+		Method m = Method.getMethod("void <init>()");
 
-        GeneratorAdapter mg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, m, null, null, cw);
-        mg.loadThis();
-        mg.invokeConstructor(Type.getType(Object.class), m);
-        mg.returnValue();
-        mg.endMethod();
-    }
+		GeneratorAdapter mg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, m, null,
+				null, cw);
+		mg.loadThis();
+		mg.invokeConstructor(Type.getType(Object.class), m);
+		mg.returnValue();
+		mg.endMethod();
+	}
 
-    private void visitGetterConstructor(Type owner) {
-        GeneratorAdapter mg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, GETTER_CTOR, null, null,
-                cw);
+	/**
+	 * Generate code for getter constructor.
+	 * @param owner type representing the class being generated
+	 */
+	private void visitGetterConstructor(Type owner) {
+		GeneratorAdapter mg = new GeneratorAdapter(Opcodes.ACC_PUBLIC,
+				GETTER_CTOR, null, null, cw);
 
-        mg.loadThis();
-        mg.invokeConstructor(OBJECT_TYPE, CTOR);
-        mg.loadThis();
-        mg.loadArg(0);
-        mg.putField(owner, "type", JL_REFLECT_TYPE_TYPE);
-        mg.returnValue();
-        mg.endMethod();
-    }
+		mg.loadThis();
+		mg.invokeConstructor(OBJECT_TYPE, CTOR);
+		mg.loadThis();
+		mg.loadArg(0);
+		mg.putField(owner, "type", JL_REFLECT_TYPE_TYPE);
+		mg.returnValue();
+		mg.endMethod();
+	}
 
-    /**
-     * Generate {@link Getter#getType()} method.
-     * @param owner
-     */
-    private void visitGetType(Type owner) {
-        Method getTypeMethod = Method.getMethod("java.lang.reflect.Type getType()");
+	/**
+	 * Generate {@link Getter#getType()} method.
+	 * 
+	 * @param owner type representing the class being generated
+	 */
+	private void visitGetType(Type owner) {
+		Method getTypeMethod = Method
+				.getMethod("java.lang.reflect.Type getType()");
 
-        GeneratorAdapter mg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, getTypeMethod, null, null,
-                cw);
+		GeneratorAdapter mg = new GeneratorAdapter(Opcodes.ACC_PUBLIC,
+				getTypeMethod, null, null, cw);
 
-        mg.loadThis();
-        mg.getField(owner, "type", JL_REFLECT_TYPE_TYPE);
-        mg.returnValue();
-        mg.endMethod();
-    }
+		mg.loadThis();
+		mg.getField(owner, "type", JL_REFLECT_TYPE_TYPE);
+		mg.returnValue();
+		mg.endMethod();
+	}
 
-    public void visitBegin(Class<?> beanClass, String path) {
-        this.fullPath = path;
-        this.initialBeanClass = beanClass;
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visitBegin(Class<?> beanClass, String path) {
+		this.fullPath = path;
+		this.initialBeanClass = beanClass;
 
-        if (isSetter) {
-            // void setValue(Object instance);
-            accessormg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, SET_VALUE, null, null, cw);
-        } else {
-            // Object getValue(Object instance);
-            accessormg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, GET_VALUE, null, null, cw);
-        }
-        npeLocal = accessormg.newLocal(Type.INT_TYPE);
-        accessormg.visitCode();
+		if (isSetter) {
+			// void setValue(Object instance);
+			accessormg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, SET_VALUE,
+					null, null, cw);
+		} else {
+			// Object getValue(Object instance);
+			accessormg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, GET_VALUE,
+					null, null, cw);
+		}
+		npeLocal = accessormg.newLocal(Type.INT_TYPE);
+		accessormg.visitCode();
 
-        // Load argument and remember type on the stack
-        accessormg.loadArg(0);
-        actualClass = Object.class;
-    }
+		// Load argument and remember type on the stack
+		accessormg.loadArg(0);
+		actualClass = Object.class;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public void visitIndex(int pos, int index, boolean isLast, Class<?> beanClass) {
-        checkNull(pos);
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visitIndex(int pos, int index, boolean isLast,
+			Class<?> beanClass) {
+		checkNull(pos);
 
-        if (actualClass != beanClass) {
-            accessormg.checkCast(Type.getType(beanClass));
-        }
+		// Do cast if class on top of the stack does not match the type expected
+		if (actualClass != beanClass) {
+			accessormg.checkCast(Type.getType(beanClass));
+		}
 
-        if (isLast && isSetter) {
-            // Push array index
-            accessormg.push(index);
+		if (isLast && isSetter) {
+			// Push array index
+			accessormg.push(index);
 
-            // Cast parameter to required type
-            Type t = Type.getType(beanClass.getComponentType());
-            accessormg.loadArg(1);
-            accessormg.unbox(t);
+			// Cast parameter to required type
+			Type t = Type.getType(beanClass.getComponentType());
+			accessormg.loadArg(1);
+			accessormg.unbox(t);
 
-            accessormg.arrayStore(t);
-        } else {
-            accessormg.push(index);
-            Type t = Type.getType(beanClass.getComponentType());
-            accessormg.arrayLoad(t);
+			// Store to array
+			accessormg.arrayStore(t);
+		} else {
+			// Load from array
+			accessormg.push(index);
+			Type t = Type.getType(beanClass.getComponentType());
+			accessormg.arrayLoad(t);
 
-            if (isLast) {
-                accessormg.box(t);
-            }
+			// If last element in the path -- box the type
+			if (isLast) {
+				accessormg.box(t);
+			}
 
-            // Remember type in the stack
-            actualClass = beanClass.getComponentType();
-        }
-    }
+			// Remember type on top of the stack
+			actualClass = beanClass.getComponentType();
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public void visitProperty(int pos, String property, java.lang.reflect.Method getter,
-            boolean isLast, Class<?> beanClass) {
-        checkNull(pos);
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visitProperty(int pos, String property,
+			java.lang.reflect.Method getter, boolean isLast, Class<?> beanClass) {
+		checkNull(pos);
 
-        // If expected class is not equal to the actual class in the stack, do
-        // cast
-        if (actualClass != beanClass) {
-            accessormg.checkCast(Type.getType(beanClass));
-        }
+		// If expected class is not equal to the actual class in the stack, do
+		// cast
+		if (actualClass != beanClass) {
+			accessormg.checkCast(Type.getType(beanClass));
+		}
 
-        if (isLast && isSetter) {
-            java.lang.reflect.Method setter = IntrospectUtils.findSetter(beanClass, property);
-            Class<?> paramType = setter.getParameterTypes()[0];
+		if (isLast && isSetter) {
+			java.lang.reflect.Method setter = IntrospectUtils.findSetter(
+					beanClass, property);
+			Class<?> paramType = setter.getParameterTypes()[0];
 
-            Type t = Type.getType(paramType);
+			Type t = Type.getType(paramType);
 
-            // Cast parameter to required type
-            accessormg.loadArg(1);
-            accessormg.unbox(t);
+			// Cast parameter to required type
+			accessormg.loadArg(1);
+			accessormg.unbox(t);
 
-            Method method = new Method(setter.getName(), Type.VOID_TYPE, new Type[] {t });
-            accessormg.invokeVirtual(Type.getType(beanClass), method);
-        } else {
+			Method method = new Method(setter.getName(), Type.VOID_TYPE,
+					new Type[] { t });
+			accessormg.invokeVirtual(Type.getType(beanClass), method);
+		} else {
 
-            Type t = Type.getType(getter.getReturnType());
-            Method method = new Method(getter.getName(), t, new Type[0]);
+			Type t = Type.getType(getter.getReturnType());
+			Method method = new Method(getter.getName(), t, new Type[0]);
 
-            accessormg.invokeVirtual(Type.getType(beanClass), method);
+			accessormg.invokeVirtual(Type.getType(beanClass), method);
 
-            if (isLast) {
-                accessormg.box(t);
-            }
+			if (isLast) {
+				accessormg.box(t);
+			}
 
-            // Remember type in the stack
-            actualClass = getter.getReturnType();
-        }
-    }
+			// Remember type in the stack
+			actualClass = getter.getReturnType();
+		}
+	}
 
-    private void checkNull(int pos) {
-        // Check current value is not null
-        accessormg.dup();
-        accessormg.push(pos); // Push current path position for better NPE
-        accessormg.storeLocal(npeLocal);
-        // diagnostics
-        accessormg.ifNull(npeLabel);
-    }
+	/**
+	 * Generate the code that performs null check
+	 * @param pos position in the property path (for better error messages)
+	 */
+	private void checkNull(int pos) {
+		// Check current value is not null
+		accessormg.dup();
+		
+		// Store current path position in local variable for better diagnostics
+		accessormg.push(pos); 
+		accessormg.storeLocal(npeLocal);
+		// diagnostics
+		accessormg.ifNull(npeLabel);
+	}
 
-    /**
-     * NPE handling code. We have position in the property path in the
-     * {@link #npeLocal} local variable.
-     */
-    private void npeHandler() {
-        accessormg.visitLabel(npeLabel);
-        accessormg.push(fullPath);
-        accessormg.push(0);
-        accessormg.loadLocal(npeLocal);
-        accessormg.invokeVirtual(STRING_TYPE, SUBSTRING);
-        accessormg.push(" property is null for " + initialBeanClass.getName()
-                + " instance (full path is owner.firstName).");
-        accessormg.invokeVirtual(STRING_TYPE, CONCAT);
-        // Now we have message on the top
+	/**
+	 * NPE handling code. We have position in the property path in the
+	 * {@link #npeLocal} local variable.
+	 */
+	private void npeHandler() {
+		
+		accessormg.visitLabel(npeLabel);
+		
+		// Create the exception
+		accessormg.newInstance(NPE_TYPE);
+		accessormg.dup();
 
-        accessormg.newInstance(NPE_TYPE);
-        accessormg.dupX1();
-        accessormg.swap();
-        // Now we have: msg, ex, ex
+		// Generate the error message
+		accessormg.push(fullPath);
+		accessormg.push(0);
+		accessormg.loadLocal(npeLocal);
+		accessormg.invokeVirtual(STRING_TYPE, SUBSTRING);
+		accessormg.push(" property is null for " + initialBeanClass.getName()
+				+ " instance (full path is owner.firstName).");
+		accessormg.invokeVirtual(STRING_TYPE, CONCAT);
 
-        accessormg.invokeConstructor(NPE_TYPE, NPE_CTOR);
-        accessormg.throwException();
-    }
+		// Now we have ex, ex, msg on stack
+		accessormg.invokeConstructor(NPE_TYPE, NPE_CTOR);
+		accessormg.throwException();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public byte[] visitEnd() {
-        accessormg.returnValue();
-        npeHandler();
+	/**
+	 * {@inheritDoc}
+	 */
+	public byte[] visitEnd() {
+		accessormg.returnValue();
+		npeHandler();
 
-        accessormg.endMethod();
-        cw.visitEnd();
+		accessormg.endMethod();
+		cw.visitEnd();
 
-        byte[] code = cw.toByteArray();
-        return code;
-    }
+		byte[] code = cw.toByteArray();
+		return code;
+	}
 }

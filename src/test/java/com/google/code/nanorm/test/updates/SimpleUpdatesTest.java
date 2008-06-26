@@ -19,8 +19,8 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import com.google.code.nanorm.annotations.Insert;
 import com.google.code.nanorm.annotations.Select;
+import com.google.code.nanorm.annotations.Update;
 import com.google.code.nanorm.test.beans.Car;
 import com.google.code.nanorm.test.common.MapperTestBase;
 
@@ -35,10 +35,10 @@ public class SimpleUpdatesTest extends MapperTestBase {
         @Select("SELECT id, model, year FROM cars WHERE ID = ${1}")
         Car getCarById(int id);
 
-        @Insert("INSERT INTO cars(id, model, year) VALUES (${1.id}, ${1.model}, ${1.year})")
+        @Update("INSERT INTO cars(id, model, year) VALUES (${1.id}, ${1.model}, ${1.year})")
         void insertCar(Car car);
         
-        @Insert("INSERT INTO cars(id, model, year) VALUES (${1.id}, ${1.model}, ${1.year})")
+        @Update("INSERT INTO cars(id, model, year) VALUES (${1.id}, ${1.model}, ${1.year})")
         int insertCar2(Car car);
     }
     

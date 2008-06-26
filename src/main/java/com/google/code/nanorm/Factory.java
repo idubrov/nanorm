@@ -17,11 +17,45 @@ package com.google.code.nanorm;
 
 import java.sql.Connection;
 
-public interface Factory
-{
-    <T> T createMapper(Class<T> daoClass);
-    
-    Transaction openSession();
-    
-    Transaction openSession(Connection conn);
+/**
+ * Central interface of the Nanorm library. Used for creating the mappers and
+ * opening the sessions.
+ * 
+ * @author Ivan Dubrov
+ */
+public interface Factory {
+	/**
+	 * Create mapper for given interface. Note that mappers are intrinsically
+	 * bound to the factory that created it.
+	 * 
+	 * Mapper instances are thread-safe, though, they use session opened on the
+	 * current thread they are invoked on. The session should be opened using
+	 * the factory that created the mapper. In other words, mapper uses the
+	 * session that was opened on the current thread by the mapper factory.
+	 * 
+	 * Note that mappers created by separate factories are completely isolated
+	 * from each other.
+	 * 
+	 * @param <T> mapper type
+	 * @param iface iface with mapper configuration
+	 * @return mapper
+	 */
+	<T> T createMapper(Class<T> iface);
+
+	/**
+	 * Open session on current thread.
+	 * 
+	 * @return session
+	 */
+	Session openSession();
+
+	/**
+	 * Open session on current thread. The session will use the connection
+	 * provided as a parameter. No transaction management will be performed on
+	 * this session, the transactions should be managed externally.
+	 * 
+	 * @param conn connection
+	 * @return session
+	 */
+	Session openSession(Connection conn);
 }

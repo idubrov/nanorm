@@ -25,7 +25,7 @@ import org.junit.Before;
 
 import com.google.code.nanorm.Configuration;
 import com.google.code.nanorm.Factory;
-import com.google.code.nanorm.Transaction;
+import com.google.code.nanorm.Session;
 
 /**
  *
@@ -47,7 +47,7 @@ public class MapperTestBase {
     /**
      * Current transaction.
      */
-    protected Transaction transaction;
+    protected Session transaction;
     
     /**
      * Loads the test data.

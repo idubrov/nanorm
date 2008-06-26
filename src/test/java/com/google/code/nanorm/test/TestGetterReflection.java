@@ -26,6 +26,9 @@ import com.google.code.nanorm.internal.introspect.reflect.ReflectIntrospectionFa
  */
 public class TestGetterReflection extends TestGetterBase {
 
+	/**
+	 * {@inheritDoc}
+	 */
     protected IntrospectionFactory provideIntrospectionFactory() {
         return new ReflectIntrospectionFactory();
     }

@@ -34,11 +34,17 @@ import com.google.code.nanorm.test.beans.Car;
  */
 public class TestGetterASM extends TestGetterBase {
 
+	/**
+	 * {@inheritDoc}
+	 */
     protected IntrospectionFactory provideIntrospectionFactory() {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         return new ASMIntrospectionFactory(cl);
     }
 
+    /**
+     * Test {@link NullPointerException} handling for getter.
+     */
     @Test
     public void testGetterNPE() {
         Car car = new Car();
@@ -54,6 +60,9 @@ public class TestGetterASM extends TestGetterBase {
         }
     }
 
+    /**
+     * Test {@link NullPointerException} handling for setter.
+     */
     @Test
     public void testSetterNPE() {
         Car car = new Car();

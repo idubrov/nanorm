@@ -28,8 +28,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.SQLSource;
 import com.google.code.nanorm.TypeHandlerFactory;
-import com.google.code.nanorm.annotations.Delete;
-import com.google.code.nanorm.annotations.Insert;
 import com.google.code.nanorm.annotations.Mapping;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapList;
@@ -149,10 +147,9 @@ public class InternalConfiguration {
 
 		ResultMapConfig config = getResultMapConfig(method);
 
+		// TODO: Check we have only one of those!
 		Select select = method.getAnnotation(Select.class);
 		Update update = method.getAnnotation(Update.class);
-		Insert insert = method.getAnnotation(Insert.class);
-		Delete delete = method.getAnnotation(Delete.class);
 		Source source = method.getAnnotation(Source.class);
 		String sql = null;
 		boolean isUpdate = true;
@@ -161,10 +158,6 @@ public class InternalConfiguration {
 			isUpdate = false;
 		} else if (update != null) {
 			sql = update.value();
-		} else if (insert != null) {
-			sql = insert.value();
-		} else if (delete != null) {
-			sql = delete.value();
 		} else if (source != null) {
 			Class<? extends SQLSource> sqlSource = source.value();
 			Fragment builder = new DynamicFragment(sqlSource,

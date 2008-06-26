@@ -21,12 +21,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
+ * Update statement marker.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 27.05.2008
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Update {
+	/**
+	 * SQL statement that performs database update (insert/update or delete).
+	 */
     String value();
 }

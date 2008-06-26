@@ -44,170 +44,193 @@ import com.google.code.nanorm.internal.introspect.asm.MapperBuilder.MethodConfig
  * @author Ivan Dubrov
  * @version 1.0 19.06.2008
  */
-public class ASMIntrospectionFactory extends AbstractIntrospectionFactory implements
-        IntrospectionFactory {
+public class ASMIntrospectionFactory extends AbstractIntrospectionFactory
+		implements IntrospectionFactory {
 
-    private final ASMClassLoader classLoader;
+	private final ASMClassLoader classLoader;
 
-    private final Map<AccessorKey, Getter> getters;
+	private final Map<AccessorKey, Getter> getters;
 
-    private final Map<AccessorKey, Setter> setters;
+	private final Map<AccessorKey, Setter> setters;
 
-    // TODO: Synchronization!
-    private final AtomicInteger counter = new AtomicInteger(0);
+	// TODO: Synchronization!
+	private final AtomicInteger counter = new AtomicInteger(0);
 
-    private final Object lock = new Object();
+	private final Object lock = new Object();
 
-    /**
+	/**
      * 
      */
-    public ASMIntrospectionFactory(ClassLoader parentLoader) {
-        classLoader = new ASMClassLoader(parentLoader);
-        getters = new ConcurrentHashMap<AccessorKey, Getter>();
-        setters = new ConcurrentHashMap<AccessorKey, Setter>();
-    }
+	public ASMIntrospectionFactory(ClassLoader parentLoader) {
+		classLoader = new ASMClassLoader(parentLoader);
+		getters = new ConcurrentHashMap<AccessorKey, Getter>();
+		setters = new ConcurrentHashMap<AccessorKey, Setter>();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public Getter buildGetter(final Class<?> beanClass, final String path) {
-        return buildGetterImpl(beanClass, null, path);
-    }
-    
-    public Getter buildGetterImpl(final Class<?> beanClass, final Type[] types, final String path) {
-        AccessorKey key = types == null ? new AccessorKey(beanClass, path) :
-            new AccessorKey(types, path);
-        Getter instance = getters.get(key);
-        if (instance == null) {
-            String name = "com/google/code/nanorm/generated/Getter" + counter.incrementAndGet();
+	/**
+	 * {@inheritDoc}
+	 */
+	public Getter buildGetter(final Class<?> beanClass, final String path) {
+		return buildGetterImpl(beanClass, null, path);
+	}
 
-            AccessorBuilder builder = new AccessorBuilder(name, false);
-            Type[] finalType = new Type[1];
+	/**
+	 * Create regular getter or parameter getter instance.
+	 * 
+	 * @param beanClass bean class; should be null if types is not null
+	 * @param types parameter types; should be null if beanClass is not null
+	 * @param path property path
+	 * @return
+	 */
+	private Getter buildGetterImpl(final Class<?> beanClass,
+			final Type[] types, final String path) {
+		AccessorKey key = types == null ? new AccessorKey(beanClass, path)
+				: new AccessorKey(types, path);
+		Getter instance = getters.get(key);
+		if (instance == null) {
+			String name = "com/google/code/nanorm/generated/Getter"
+					+ counter.incrementAndGet();
 
-            byte[] code = types == null ? 
-                    IntrospectUtils.visitPath(path, beanClass, builder, finalType) :
-                    IntrospectUtils.visitPath(path, types, builder, finalType);
+			AccessorBuilder builder = new AccessorBuilder(name, false);
+			Type[] finalType = new Type[1];
 
-            // Re-check we didn't created other instance while we were
-            // generating
-            synchronized (lock) {
-                instance = getters.get(key);
+			byte[] code = types == null ? IntrospectUtils.visitPath(path,
+					beanClass, builder, finalType) : IntrospectUtils.visitPath(
+					path, types, builder, finalType);
 
-                if (instance == null) {
-                    Class<?> clazz = classLoader.defineClass(name.replace('/', '.'), code);
-                    try {
-                        Constructor<?> ct = clazz.getConstructor(java.lang.reflect.Type.class);
-                        instance = (Getter) ct.newInstance(finalType[0]);
-                    } catch (Exception e) {
-                        throw new IntrospectionException("Failed to create getter instance!", e);
-                    }
-                    getters.put(key, instance);
-                }
-            }
-        }
-        return instance;
-    }
+			// Re-check we didn't created other instance while we were
+			// generating
+			synchronized (lock) {
+				instance = getters.get(key);
 
-    /**
-     * {@inheritDoc}
-     */
-    public Getter buildParameterGetter(final java.lang.reflect.Type[] types, final String path) {
-        return buildGetterImpl(null, types, path);
-    }
+				if (instance == null) {
+					Class<?> clazz = classLoader.defineClass(name.replace('/',
+							'.'), code);
+					try {
+						Constructor<?> ct = clazz
+								.getConstructor(java.lang.reflect.Type.class);
+						instance = (Getter) ct.newInstance(finalType[0]);
+					} catch (Exception e) {
+						throw new IntrospectionException(
+								"Failed to create getter instance!", e);
+					}
+					getters.put(key, instance);
+				}
+			}
+		}
+		return instance;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public Setter buildSetter(final Class<?> beanClass, final String path) {
-        AccessorKey key = new AccessorKey(beanClass, path);
-        Setter instance = setters.get(key);
-        if (instance == null) {
-            String name = "com/google/code/nanorm/generated/Setter" + counter.incrementAndGet();
+	/**
+	 * {@inheritDoc}
+	 */
+	public Getter buildParameterGetter(final java.lang.reflect.Type[] types,
+			final String path) {
+		return buildGetterImpl(null, types, path);
+	}
 
-            AccessorBuilder builder = new AccessorBuilder(name, true);
-            Type[] finalType = new Type[1];
+	/**
+	 * {@inheritDoc}
+	 */
+	public Setter buildSetter(final Class<?> beanClass, final String path) {
+		AccessorKey key = new AccessorKey(beanClass, path);
+		Setter instance = setters.get(key);
+		if (instance == null) {
+			String name = "com/google/code/nanorm/generated/Setter"
+					+ counter.incrementAndGet();
 
-            byte[] code = IntrospectUtils.visitPath(path, beanClass, builder, finalType);
+			AccessorBuilder builder = new AccessorBuilder(name, true);
+			Type[] finalType = new Type[1];
 
-            // Re-check we didn't created other instance while we were
-            // generating
-            synchronized (lock) {
-                instance = setters.get(key);
+			byte[] code = IntrospectUtils.visitPath(path, beanClass, builder,
+					finalType);
 
-                if (instance == null) {
-                    Class<?> clazz = classLoader.defineClass(name.replace('/', '.'), code);
-                    try {
-                        instance = (Setter) clazz.newInstance();
-                    } catch (Exception e) {
-                        throw new IntrospectionException("Failed to create setter instance!", e);
-                    }
-                    setters.put(key, instance);
-                }
-            }
-        }
-        return instance;
-    }
-    
+			// Re-check we didn't created other instance while we were
+			// generating
+			synchronized (lock) {
+				instance = setters.get(key);
 
-    /**
-     * {@inheritDoc}
-     */
-    public <T> T createMapper(Class<T> interfaze, InternalConfiguration config,
-            QueryDelegate delegate) {
-        
-        // TODO: Cache!
-        List<MethodConfig> methods = new ArrayList<MethodConfig>();
-        List<StatementConfig> configs = new ArrayList<StatementConfig>();
-        for(java.lang.reflect.Method m : interfaze.getDeclaredMethods()) {
-            StatementConfig stConfig = config.getStatementConfig(m); 
-            if(stConfig != null) {
-                MethodConfig cfg = new MethodConfig();
-                cfg.method = m;
-                cfg.index = methods.size();
-                
-                methods.add(cfg);
-                configs.add(stConfig);
-            }
-        }
-        
-        String name = "com/google/code/nanorm/generated/Mapper" + counter.incrementAndGet();
-        byte[] code = MapperBuilder.buildMapper(name, interfaze, methods.toArray(new MethodConfig[methods.size()]));
-        
-        Class<?> clazz = classLoader.defineClass(name.replace('/', '.'), code);
-        Object instance;
-        try {
-            Constructor<?> ctor = clazz.getConstructor(QueryDelegate.class, StatementConfig[].class);
-            instance = ctor.newInstance(delegate, configs.toArray(new StatementConfig[configs.size()]));
-        } catch(Exception e) {
-            throw new IntrospectionException("Failed to create mapper instance!", e);
-        }
-        return interfaze.cast(instance);
-    }
+				if (instance == null) {
+					Class<?> clazz = classLoader.defineClass(name.replace('/',
+							'.'), code);
+					try {
+						instance = (Setter) clazz.newInstance();
+					} catch (Exception e) {
+						throw new IntrospectionException(
+								"Failed to create setter instance!", e);
+					}
+					setters.put(key, instance);
+				}
+			}
+		}
+		return instance;
+	}
 
-    /**
-     * Classloader used for accessors.
-     * 
-     * @author Ivan Dubrov
-     * @version 1.0 21.06.2008
-     */
-    private class ASMClassLoader extends ClassLoader {
-        /**
-         * Constructor.
-         * 
-         * @param parent parent classloader
-         */
-        public ASMClassLoader(ClassLoader parent) {
-            super(parent);
-        }
+	/**
+	 * {@inheritDoc}
+	 */
+	public <T> T createMapper(Class<T> interfaze, InternalConfiguration config,
+			QueryDelegate delegate) {
 
-        /**
-         * Define class in the classloader.
-         * @param name class name
-         * @param b code
-         * @return {@link Class} instance.
-         */
-        public Class<?> defineClass(String name, byte[] b) {
-            return defineClass(name, b, 0, b.length);
-        }
-    }
+		// TODO: Cache!
+		List<MethodConfig> methods = new ArrayList<MethodConfig>();
+		List<StatementConfig> configs = new ArrayList<StatementConfig>();
+		for (java.lang.reflect.Method m : interfaze.getDeclaredMethods()) {
+			StatementConfig stConfig = config.getStatementConfig(m);
+			if (stConfig != null) {
+				MethodConfig cfg = new MethodConfig();
+				cfg.method = m;
+				cfg.index = methods.size();
+
+				methods.add(cfg);
+				configs.add(stConfig);
+			}
+		}
+
+		String name = "com/google/code/nanorm/generated/Mapper"
+				+ counter.incrementAndGet();
+		byte[] code = MapperBuilder.buildMapper(name, interfaze, methods
+				.toArray(new MethodConfig[methods.size()]));
+
+		Class<?> clazz = classLoader.defineClass(name.replace('/', '.'), code);
+		Object instance;
+		try {
+			Constructor<?> ctor = clazz.getConstructor(QueryDelegate.class,
+					StatementConfig[].class);
+			instance = ctor.newInstance(delegate, configs
+					.toArray(new StatementConfig[configs.size()]));
+		} catch (Exception e) {
+			throw new IntrospectionException(
+					"Failed to create mapper instance!", e);
+		}
+		return interfaze.cast(instance);
+	}
+
+	/**
+	 * Classloader used for accessors.
+	 * 
+	 * @author Ivan Dubrov
+	 * @version 1.0 21.06.2008
+	 */
+	private class ASMClassLoader extends ClassLoader {
+		/**
+		 * Constructor.
+		 * 
+		 * @param parent parent classloader
+		 */
+		public ASMClassLoader(ClassLoader parent) {
+			super(parent);
+		}
+
+		/**
+		 * Define class in the classloader.
+		 * 
+		 * @param name class name
+		 * @param b code
+		 * @return {@link Class} instance.
+		 */
+		public Class<?> defineClass(String name, byte[] b) {
+			return defineClass(name, b, 0, b.length);
+		}
+	}
 }

@@ -18,13 +18,24 @@ package com.google.code.nanorm.internal.introspect;
 import java.lang.reflect.Type;
 
 /**
- *
+ * Property getter.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 27.05.2008
  */
 public interface Getter {
+	/**
+	 * Get value of the property for given bean instance.
+	 * @param instance bean instance
+	 * @return property value
+	 */
     Object getValue(Object instance);
     
-    // TODO: Should take instance as a parameter?
+    /**
+     * Get property type.
+     * 
+     * TODO: Should take instance as a parameter?
+     * @return property type
+     */
     Type getType();
 }
