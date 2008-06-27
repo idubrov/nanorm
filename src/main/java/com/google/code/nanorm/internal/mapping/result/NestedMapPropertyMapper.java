@@ -15,7 +15,6 @@
  */
 package com.google.code.nanorm.internal.mapping.result;
 
-import java.lang.reflect.Type;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -64,7 +63,7 @@ public class NestedMapPropertyMapper {
 	 */
 	public final void mapResult(Request request, final Object result,
 			ResultSet rs) throws SQLException {
-		ResultCallback<?> callback = callbackSource.forInstance(result);
+		ResultCallback<Object> callback = callbackSource.forInstance(result);
 		resultMap.processResultSet(request, rs, callback);
 	}
 }

@@ -28,7 +28,6 @@ import com.google.code.nanorm.internal.config.StatementConfig;
 import com.google.code.nanorm.internal.introspect.AbstractIntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectUtils;
-import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.introspect.asm.AccessorKey;
 
@@ -37,12 +36,11 @@ import com.google.code.nanorm.internal.introspect.asm.AccessorKey;
  * @author Ivan Dubrov
  * @version 1.0 04.06.2008
  */
-public class ReflectIntrospectionFactory extends AbstractIntrospectionFactory implements
-        IntrospectionFactory {
+public class ReflectIntrospectionFactory extends AbstractIntrospectionFactory {
     
-    final private Map<AccessorKey, Method> getters = new ConcurrentHashMap<AccessorKey, Method>();
+    private final Map<AccessorKey, Method> getters = new ConcurrentHashMap<AccessorKey, Method>();
     
-    final private Map<AccessorKey, Method> setters = new ConcurrentHashMap<AccessorKey, Method>();
+    private final Map<AccessorKey, Method> setters = new ConcurrentHashMap<AccessorKey, Method>();
 
     /**
      * @see com.google.code.nanorm.internal.introspect.IntrospectionFactory#buildGetter(java.lang.Class,
@@ -61,10 +59,10 @@ public class ReflectIntrospectionFactory extends AbstractIntrospectionFactory im
     }
 
     /**
-     * @see com.google.code.nanorm.internal.introspect.IntrospectionFactory#buildParameterGetter(java.lang.String)
+     * {@inheritDoc}
      */
     public Getter buildParameterGetter(Type[] types, String path) {
-        return new ParameterGetter(this, types, path);
+        return new ReflectParameterGetter(this, types, path);
     }
     
     /**

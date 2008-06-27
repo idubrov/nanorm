@@ -44,8 +44,7 @@ import com.google.code.nanorm.internal.introspect.asm.MapperBuilder.MethodConfig
  * @author Ivan Dubrov
  * @version 1.0 19.06.2008
  */
-public class ASMIntrospectionFactory extends AbstractIntrospectionFactory
-		implements IntrospectionFactory {
+public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 
 	private final ASMClassLoader classLoader;
 
@@ -53,14 +52,15 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory
 
 	private final Map<AccessorKey, Setter> setters;
 
-	// TODO: Synchronization!
 	private final AtomicInteger counter = new AtomicInteger(0);
 
 	private final Object lock = new Object();
 
 	/**
-     * 
-     */
+	 * Constructor.
+	 * 
+	 * @param parentLoader parent classloader for classloader which will load generated clasess
+	 */
 	public ASMIntrospectionFactory(ClassLoader parentLoader) {
 		classLoader = new ASMClassLoader(parentLoader);
 		getters = new ConcurrentHashMap<AccessorKey, Getter>();

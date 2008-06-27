@@ -19,15 +19,27 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.google.code.nanorm.ResultCallback;
+import com.google.code.nanorm.internal.FactoryImpl;
 import com.google.code.nanorm.internal.Request;
 
 /**
- *
+ * Primary interface used for mapping the results.
+ * 
+ * @see FactoryImpl
+ * @see ResultMapImpl
  * @author Ivan Dubrov
  * @version 1.0 28.05.2008
  */
 public interface ResultMap {
 
-    void processResultSet(Request request, ResultSet rs, ResultCallback<?> callback) throws SQLException;
-    
+	/**
+	 * Process the result set row.
+	 * 
+	 * @param request request variables
+	 * @param rs result set
+	 * @param callback callback used for pushing the result object
+	 * @throws SQLException any exception from the result set
+	 */
+	void processResultSet(Request request, ResultSet rs,
+			ResultCallback<Object> callback) throws SQLException;
 }

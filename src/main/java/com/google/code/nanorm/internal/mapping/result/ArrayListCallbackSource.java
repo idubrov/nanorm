@@ -28,10 +28,8 @@ import com.google.code.nanorm.internal.introspect.Setter;
  * 
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
- * @param <T> type of values that are expected by the result callbacks created
- *            via this interface
  */
-public class ArrayListCallbackSource<T> implements ResultCallbackSource<T> {
+public class ArrayListCallbackSource implements ResultCallbackSource {
 
 	private final Getter getter;
 
@@ -52,14 +50,14 @@ public class ArrayListCallbackSource<T> implements ResultCallbackSource<T> {
 	 * {@inheritDoc}
 	 */
 	@SuppressWarnings("unchecked")
-	public ResultCallback<T> forInstance(final Object instance) {
-		return new ResultCallback<T>() {
-			private List<T> list;
+	public ResultCallback forInstance(final Object instance) {
+		return new ResultCallback() {
+			private List<Object> list;
 			{
 				// Check the list in the property and if null, create it and set
-				list = (List<T>) getter.getValue(instance);
+				list = (List<Object>) getter.getValue(instance);
 				if (list == null) {
-					list = new ArrayList<T>();
+					list = new ArrayList<Object>();
 					setter.setValue(instance, list);
 				}
 			}
@@ -67,7 +65,7 @@ public class ArrayListCallbackSource<T> implements ResultCallbackSource<T> {
 			/**
 			 * {@inheritDoc}
 			 */
-			public void handleResult(T obj) {
+			public void handleResult(Object obj) {
 				list.add(obj);
 			}
 		};

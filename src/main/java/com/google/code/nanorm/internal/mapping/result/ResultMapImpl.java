@@ -42,24 +42,32 @@ import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.type.TypeHandler;
 
 /**
+ * Implementation of the result map.
  * 
  * @author Ivan Dubrov
  * @version 1.0 28.05.2008
  */
 public class ResultMapImpl implements ResultMap {
 
-	final private Class<?> elementClass;
+	private final Class<?> elementClass;
 
-	final private ResultMapConfig config;
+	private final ResultMapConfig config;
 
-	final private IntrospectionFactory introspectionFactory;
+	private final IntrospectionFactory introspectionFactory;
 
-	final private TypeHandlerFactory typeHandlerFactory;
+	private final TypeHandlerFactory typeHandlerFactory;
 
 	private DynamicConfig dynamicConfig;
 
-	final private DynamicConfig finDynamicConfig;
+	private final DynamicConfig finDynamicConfig;
 
+	/**
+	 * Constructor.
+	 * @param resultType result type (could be generic collection)
+	 * @param config configuration
+	 * @param introspectionFactory introspection factory
+	 * @param typeHandlerFactory type handler factory
+	 */
 	public ResultMapImpl(Type resultType, ResultMapConfig config,
 			IntrospectionFactory introspectionFactory,
 			TypeHandlerFactory typeHandlerFactory) {
@@ -77,8 +85,11 @@ public class ResultMapImpl implements ResultMap {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void processResultSet(Request request, ResultSet rs,
-			ResultCallback callback) throws SQLException {
+			ResultCallback<Object> callback) throws SQLException {
 		DynamicConfig dc;
 		if (config.isAuto()) {
 			synchronized (this) {
@@ -194,8 +205,8 @@ public class ResultMapImpl implements ResultMap {
 
 			// If column is not in the mapping config, try to automap it
 			if (!usedColumns.contains(column)) {
-				ResultMappingConfig config = new ResultMappingConfig();
-				config.setColumn(column);
+				ResultMappingConfig mappingConfig = new ResultMappingConfig();
+				mappingConfig.setColumn(column);
 
 				// Find property with case-insensitive search
 				Method getter = IntrospectUtils.findGetterCaseInsensitive(
@@ -204,21 +215,21 @@ public class ResultMapImpl implements ResultMap {
 					String prop = Character.toLowerCase(getter.getName()
 							.charAt(3))
 							+ getter.getName().substring(4);
-					config.setProperty(prop);
+					mappingConfig.setProperty(prop);
 				} else if (getter.getName().startsWith("is")) {
 					String prop = Character.toLowerCase(getter.getName()
 							.charAt(2))
 							+ getter.getName().substring(3);
-					config.setProperty(prop);
+					mappingConfig.setProperty(prop);
 				}
-				if (config.getProperty() == null) {
+				if (mappingConfig.getProperty() == null) {
 					// FIXME: Just skip it?
 					throw new ConfigurationException(
 							"No matching property for column '" + column
 									+ "' was found when auto-mapping the bean "
 									+ elementClass);
 				}
-				configs.add(config);
+				configs.add(mappingConfig);
 			}
 		}
 		return configs;

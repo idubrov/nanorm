@@ -149,7 +149,7 @@ public class FactoryImpl implements Factory, QueryDelegate {
                     ResultSet rs = st.executeQuery();
 
                     // If we have ResultCallback in parameters -- use it
-                    ResultCallback<?> callback;
+                    ResultCallback<Object> callback;
                     if (stConfig.getCallbackIndex() != StatementConfig.RETURN_VALUE) {
                         // This is OK, since we deduced result type exactly from
                         // this parameter
@@ -160,7 +160,7 @@ public class FactoryImpl implements Factory, QueryDelegate {
                     } else {
                         // Prepare result callback and process results
                         ResultGetterSetter rgs = new ResultGetterSetter(stConfig.getResultType());
-                        ResultCallbackSource<?> callbackSource = ResultCollectorUtil
+                        ResultCallbackSource callbackSource = ResultCollectorUtil
                                 .createResultCallback(rgs, rgs, stConfig);
 
                         callback = callbackSource.forInstance(request);

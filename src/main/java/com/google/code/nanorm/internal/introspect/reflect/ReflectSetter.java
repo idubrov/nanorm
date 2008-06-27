@@ -23,6 +23,7 @@ import com.google.code.nanorm.internal.introspect.PropertyNavigator;
 import com.google.code.nanorm.internal.introspect.Setter;
 
 /**
+ * Reflection-based nested property setter.
  * 
  * @author Ivan Dubrov
  * @version 1.0 27.05.2008
@@ -34,7 +35,9 @@ public class ReflectSetter implements Setter {
     final private ReflectIntrospectionFactory factory;
 
     /**
-     * 
+     * Constructor.
+     * @param factory introspection factory
+     * @param path property path
      */
     public ReflectSetter(ReflectIntrospectionFactory factory, String path) {
         this.path = path;
@@ -42,35 +45,36 @@ public class ReflectSetter implements Setter {
     }
 
     /**
-     * @see com.google.code.nanorm.internal.introspect.Setter#setValue(java.lang.Object)
+     * {@inheritDoc}
      */
-    public void setValue(Object instance, Object toSet) {
+    public void setValue(final Object instance, Object toSet) {
         PropertyNavigator nav = new PropertyNavigator(path);
 
+        Object current = instance;
         while (!nav.hasNext()) {
             int pos = nav.getPosition();
             
             int token = nav.next();
             if (token == PropertyNavigator.INDEX) {
                 if(nav.hasNext()) {
-                    Array.set(instance, nav.getIndex(), toSet);
+                    Array.set(current, nav.getIndex(), toSet);
                 } else {
-                    instance = Array.get(instance, nav.getIndex());
+                    current = Array.get(current, nav.getIndex());
                 }
             } else if (token == PropertyNavigator.PROPERTY) {
                 if(nav.hasNext()) {
-                    Method setter = factory.lookupSetter(instance.getClass(), nav.getProperty());
+                    Method setter = factory.lookupSetter(current.getClass(), nav.getProperty());
                     try {
-                        setter.invoke(instance, toSet);
+                        setter.invoke(current, toSet);
                     } catch (Exception e) {
                         throw new IntrospectionException("Failed to set property "
                                 + path.substring(0, pos) + " of property path " + path, e);
                     }
                 } else {
-                    Method getter = factory.lookupGetter(instance.getClass(), nav.getProperty());
+                    Method getter = factory.lookupGetter(current.getClass(), nav.getProperty());
                     
                     try {
-                        instance = getter.invoke(instance);
+                        current = getter.invoke(current);
                     } catch (Exception e) {
                         throw new IntrospectionException("Failed to get property "
                                 + path.substring(0, pos) + " of property path " + path, e);

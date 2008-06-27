@@ -24,10 +24,8 @@ import com.google.code.nanorm.internal.introspect.Setter;
  * 
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
- * @param <T> type of values that are expected by the result callbacks created
- *            via this interface
  */
-public class SingleResultCallbackSource<T> implements ResultCallbackSource<T> {
+public class SingleResultCallbackSource implements ResultCallbackSource {
     
     private final Setter setter;
     
@@ -47,8 +45,8 @@ public class SingleResultCallbackSource<T> implements ResultCallbackSource<T> {
     /**
      * {@inheritDoc}
      */
-    public ResultCallback<T> forInstance(final Object instance) {
-        return new ResultCallback<T>() {
+    public ResultCallback<Object> forInstance(final Object instance) {
+        return new ResultCallback<Object>() {
             private boolean set;
             
             /**

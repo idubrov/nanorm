@@ -21,45 +21,60 @@ import java.lang.reflect.Type;
 
 import com.google.code.nanorm.exceptions.IntrospectionException;
 import com.google.code.nanorm.internal.introspect.Getter;
+import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.PropertyNavigator;
 
 /**
- * Reflection-based nested property getter.
+ * Reflection-based implementation of parameter getter.
  * 
  * @author Ivan Dubrov
- * @version 1.0 27.05.2008
+ * @version 1.0 06.06.2008
  */
-public class ReflectGetter implements Getter {
+public class ReflectParameterGetter implements Getter {
 
 	private final String path;
 
-	private final Class<?> clazz;
-
 	private final ReflectIntrospectionFactory factory;
+
+	private final Type[] types;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param factory factory
-	 * @param clazz bean class
+	 * @param factory introspection factory
+	 * @param types parameter types
 	 * @param path property path
 	 */
-	public ReflectGetter(ReflectIntrospectionFactory factory, Class<?> clazz,
+	public ReflectParameterGetter(ReflectIntrospectionFactory factory, Type[] types,
 			String path) {
 		this.factory = factory;
-		this.clazz = clazz;
+		this.types = types;
 		this.path = path;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @see com.google.code.nanorm.internal.introspect.Getter#getValue(java.lang.Object)
 	 */
 	public Object getValue(final Object instance) {
-		PropertyNavigator nav = new PropertyNavigator(path);
+		// Parameter access
+		// TODO: Move to property navigator?
+		int pos = path.indexOf('.');
+		if (pos == -1) {
+			pos = path.length();
+		}
+		String context = path.substring(0, pos);
 
-		Object current = instance;
+		int parameter;
+		if (context.equals(IntrospectionFactory.ZERO_PARAMETER_ALIAS)) {
+			parameter = 0;
+		} else {
+			parameter = Integer.parseInt(context) - 1;
+		}
+		Object current = Array.get(instance, parameter);
+
+		PropertyNavigator nav = new PropertyNavigator(path, pos + 1);
 		while (!nav.hasNext()) {
-			int pos = nav.getPosition();
+			pos = nav.getPosition();
 
 			int token = nav.next();
 			if (token == PropertyNavigator.INDEX) {
@@ -87,6 +102,7 @@ public class ReflectGetter implements Getter {
 	 * {@inheritDoc}
 	 */
 	public Type getType() {
-		return factory.getPropertyType(clazz, path);
+		return factory.getParameterType(types, path);
 	}
+
 }

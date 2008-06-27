@@ -17,47 +17,98 @@ package com.google.code.nanorm.internal.mapping.result;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import com.google.code.nanorm.exceptions.IntrospectionException;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.Setter;
 
 /**
+ * Utility class for finding the result class based on the provided type and
+ * creating {@link ResultCallbackSource} to be used fo pushing the results into
+ * the property.
+ * 
+ * For example, result bean type for <code>java.util.List&lt;Bean&gt</code> will
+ * be <code>Bean</code>
+ * 
+ * Types currently supported:
+ * <ul>
+ * <li>{@link Collection}</li>
+ * <li>{@link List}</li>
+ * <li>{@link ArrayList}</li>
+ * <li>regular bean</li>
+ * </ul>
  * 
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
  */
 public class ResultCollectorUtil {
 
-	public static <T> ResultCallbackSource<T> createResultCallback(Getter getter,
-			Setter setter, Object mappingSource) {
+	/**
+	 * Create result callback for property identified by given getter and
+	 * setter.
+	 * 
+	 * @param getter getter
+	 * @param setter setter
+	 * @param mappingSource any object that identifies the source of the
+	 *            results. Used for better error reporting.
+	 * @return result callback source
+	 */
+	public static ResultCallbackSource createResultCallback(
+			Getter getter, Setter setter, Object mappingSource) {
 		Type type = getter.getType();
 		if (type instanceof ParameterizedType) {
 			ParameterizedType pt = (ParameterizedType) type;
-			if (pt.getRawType() == List.class) {
-				return new ArrayListCallbackSource<T>(getter, setter);
+			if (pt.getRawType() instanceof Class) {
+				Class<?> rawClass = (Class<?>) pt.getRawType();
+				if (rawClass == Collection.class || rawClass == List.class
+						|| rawClass == ArrayList.class) {
+					return new ArrayListCallbackSource(getter, setter);
+				}
 			}
 		} else {
-			return new SingleResultCallbackSource<T>(setter, mappingSource);
+			return new SingleResultCallbackSource(setter, mappingSource);
 		}
-		throw new RuntimeException("Unexpected type");
+		throw new IntrospectionException("Unexpected result type for mapping "
+				+ mappingSource);
 	}
 
+	/**
+	 * Get the result bean class (unwrap it from the collection generic). Result
+	 * bean is the type of the object produced by result map.
+	 * 
+	 * For example, result bean type for
+	 * <code>java.util.List&lt;Bean&gt</code> will be <code>Bean</code>.
+	 * 
+	 * @param resultType result type
+	 * @return result bean class
+	 */
 	public static Class<?> resultClass(Type resultType) {
-		Class<?> resultClass;
+		Class<?> resultClass = null;
 		if (resultType instanceof ParameterizedType) {
 			ParameterizedType pt = (ParameterizedType) resultType;
-			if (pt.getRawType() == List.class) {
-				// TODO: Cast!
-				// TODO: Move to utils?
-				resultClass = (Class<?>) pt.getActualTypeArguments()[0];
-			} else {
-				throw new RuntimeException("Type not supported: " + pt);
+			if (pt.getRawType() instanceof Class) {
+				Class<?> rawClass = (Class<?>) pt.getRawType();
+				if (rawClass == List.class || rawClass == Collection.class
+						|| rawClass == ArrayList.class) {
+					Type beanType = pt.getActualTypeArguments()[0];
+					if (beanType instanceof Class<?>) {
+						resultClass = (Class<?>) beanType;
+					} else {
+						throw new IntrospectionException(
+								"Parameter for result generic must be concrete class! Result generic type is "
+										+ resultType);
+					}
+				}
 			}
 		} else if (resultType instanceof Class<?>) {
 			resultClass = (Class<?>) resultType;
-		} else {
-			throw new RuntimeException("Type not supported: " + resultType);
+		}
+		if (resultClass == null) {
+			throw new IntrospectionException("Result type not supported! Got type "
+					+ resultType);
 		}
 		return resultClass;
 	}
