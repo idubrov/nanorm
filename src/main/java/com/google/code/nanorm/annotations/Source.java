@@ -22,10 +22,17 @@ import java.lang.annotation.Target;
 
 import com.google.code.nanorm.SQLSource;
 
-
+/**
+ * Dynamic SQL configuration.
+ * 
+ * @author Ivan Dubrov
+ */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Source
 {
+	/**
+	 * Type of the SQL generator.
+	 */
     Class<? extends SQLSource> value();
 }

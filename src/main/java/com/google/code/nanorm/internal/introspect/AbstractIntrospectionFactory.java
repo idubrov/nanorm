@@ -25,7 +25,6 @@ import java.lang.reflect.Type;
  */
 public abstract class AbstractIntrospectionFactory implements IntrospectionFactory {
     
-
     /**
      * {@inheritDoc}
      */
@@ -33,13 +32,6 @@ public abstract class AbstractIntrospectionFactory implements IntrospectionFacto
         Type[] resultType = new Type[1];
         IntrospectUtils.visitPath(path, clazz, VoidPropertyVisitor.INSTANCE, resultType);
         return resultType[0];
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public java.lang.reflect.Type getParameterType(java.lang.reflect.Method method, String path) {
-        return getParameterType(method.getGenericParameterTypes(), path);
     }
 
     /**

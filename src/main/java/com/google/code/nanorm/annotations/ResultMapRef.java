@@ -21,14 +21,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
+ * Result map reference.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 28.05.2008
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
 public @interface ResultMapRef {
+	/**
+	 * Reference (id of the result map, refer to {@link ResultMap#id()}).
+	 */
     String value() default "";
-    
+   
+    /**
+     * Result map declaring class.
+     */
     Class<?> declaringClass() default Object.class;
 }

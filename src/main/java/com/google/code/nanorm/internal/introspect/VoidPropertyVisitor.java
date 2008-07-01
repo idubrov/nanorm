@@ -19,12 +19,16 @@ package com.google.code.nanorm.internal.introspect;
 import java.lang.reflect.Method;
 
 /**
- *
+ * Void visitor. Does nothing besides collecting the actual property type.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 22.06.2008
  */
 public final class VoidPropertyVisitor implements PropertyVisitor<Void> {
     
+	/**
+	 * Empty visitor instance. Does nothing.
+	 */
     public final static VoidPropertyVisitor INSTANCE = new VoidPropertyVisitor();
     
     private VoidPropertyVisitor() {

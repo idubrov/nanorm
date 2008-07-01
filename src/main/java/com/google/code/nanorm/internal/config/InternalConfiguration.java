@@ -52,21 +52,27 @@ import com.google.code.nanorm.internal.mapping.result.ResultMapImpl;
  */
 public class InternalConfiguration {
 
-	// Result map id is <package>.<class>#id
-	final private Map<String, ResultMapConfig> resultMapsConfig;
-
-	// Statement id is <package>.<class>#method
-	final private Map<String, StatementConfig> statementsConfig;
-
-	final private List<ResultMappingConfig> postProcessList;
-
-	final private TypeHandlerFactory typeHandlerFactory;
-
-	final private IntrospectionFactory introspectionFactory;
+	/**
+	 * Result map id is [package].[class]#id
+	 */
+	private final Map<String, ResultMapConfig> resultMapsConfig;
 
 	/**
-     * 
-     */
+	 * Statement id is [package].[class]#method
+	 */
+	private final Map<String, StatementConfig> statementsConfig;
+
+	private final List<ResultMappingConfig> postProcessList;
+
+	private final TypeHandlerFactory typeHandlerFactory;
+
+	private final IntrospectionFactory introspectionFactory;
+
+	/**
+	 * Constructor.
+	 * @param typeHandlerFactory type handler factory
+	 * @param introspectionFactory introspection factory
+	 */
 	public InternalConfiguration(TypeHandlerFactory typeHandlerFactory,
 			IntrospectionFactory introspectionFactory) {
 		resultMapsConfig = new HashMap<String, ResultMapConfig>();
@@ -78,6 +84,12 @@ public class InternalConfiguration {
 		this.introspectionFactory = introspectionFactory;
 	}
 
+	/**
+	 * Get statement configuration
+	 * 
+	 * @param key statement configuration key
+	 * @return statement configuration
+	 */
 	public StatementConfig getStatementConfig(String key) {
 		StatementConfig statementConfig = statementsConfig.get(key);
 		if (statementConfig == null) {
@@ -87,14 +99,25 @@ public class InternalConfiguration {
 		return statementConfig;
 	}
 
+	/**
+	 * Get statement configuration for method.
+	 * @param method method
+	 * @return statement configuration for method
+	 */
 	public StatementConfig getStatementConfig(Method method) {
 		String key = method.getDeclaringClass().getName() + "#"
 				+ method.getName();
 		return getStatementConfig(key);
 	}
 
-	// TODO: Should it be synchronized?
-	// TODO: Check we already configured given mapper
+	/**
+	 * Configure mapper.
+	 * 
+	 * TODO: Should it be synchronized?
+	 * TODO: Check we already configured given mapper
+	 * 
+	 * @param mapper mapper interface 
+	 */
 	public synchronized void configure(Class<?> mapper) {
 		processResultMaps(mapper);
 		for (Method method : mapper.getMethods()) {
@@ -129,10 +152,10 @@ public class InternalConfiguration {
 	/**
 	 * Process given method and generate statement configuration from it.
 	 * 
-	 * TODO: Validate we don't have more than one from insert,
-	 * select, update and delete.
+	 * TODO: Validate we don't have more than one from insert, select, update
+	 * and delete.
 	 * 
-	 * @param method method to gather configuration from 
+	 * @param method method to gather configuration from
 	 */
 	private void processMethod(Method method) {
 		String key = method.getDeclaringClass().getName() + "#"
@@ -211,6 +234,7 @@ public class InternalConfiguration {
 
 	/**
 	 * Process result maps defined for given class.
+	 * 
 	 * @param clazz class to gather result maps from
 	 */
 	private void processResultMaps(Class<?> clazz) {
@@ -235,6 +259,7 @@ public class InternalConfiguration {
 
 	/**
 	 * Process the result map annotation.
+	 * 
 	 * @param clazz declaring class
 	 * @param resultMap result map annotation
 	 */
@@ -246,10 +271,11 @@ public class InternalConfiguration {
 
 	/**
 	 * Get result map config for given method.
+	 * 
 	 * @param method method
 	 * @return
 	 */
-	private  ResultMapConfig getResultMapConfig(Method method) {
+	private ResultMapConfig getResultMapConfig(Method method) {
 		ResultMap resultMap = method.getAnnotation(ResultMap.class);
 		ResultMapRef ref = method.getAnnotation(ResultMapRef.class);
 		if (resultMap == null) {
@@ -263,10 +289,11 @@ public class InternalConfiguration {
 					return createResultMapConfig(method.getDeclaringClass(),
 							null);
 				}
-				throw new ConfigurationException("Missing result map reference '"
-						+ ref.value() + "', referenced from '"
-						+ method.getDeclaringClass().getName() + "#"
-						+ method.getName() + "'");
+				throw new ConfigurationException(
+						"Missing result map reference '" + ref.value()
+								+ "', referenced from '"
+								+ method.getDeclaringClass().getName() + "#"
+								+ method.getName() + "'");
 			}
 			return resultMapConfig;
 		}
@@ -277,7 +304,8 @@ public class InternalConfiguration {
 	 * Create {@link ResultMapConfig} instance from {@link ResultMap}
 	 * annotation.
 	 * 
-	 * TODO: Validate we don't have nested map with "select" property at the same time
+	 * TODO: Validate we don't have nested map with "select" property at the
+	 * same time
 	 * 
 	 * @param clazz
 	 * @param resultMap
@@ -342,6 +370,7 @@ public class InternalConfiguration {
 
 	/**
 	 * Find result map config with given reference id.
+	 * 
 	 * @param clazz declaring class
 	 * @param refId reference id
 	 * @return result map config

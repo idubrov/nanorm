@@ -15,33 +15,80 @@
  */
 package com.google.code.nanorm.internal.introspect;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 import com.google.code.nanorm.internal.QueryDelegate;
 import com.google.code.nanorm.internal.config.InternalConfiguration;
 
 /**
- *
+ * Factory used for building getters/setters for nested properties and
+ * parameters, creating mapper instances for given query delegate and
+ * configuration and for introspecting properties types.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 04.06.2008
  */
 public interface IntrospectionFactory {
-    
-    String ZERO_PARAMETER_ALIAS = "value";
-    
-    Setter buildSetter(Class<?> beanClass, String path);
-    
-    Getter buildGetter(Class<?> beanClass, String path);
 
-    // TODO: Pass types...
-    Getter buildParameterGetter(Type[] types, String path);
-    
-    Type getPropertyType(Class<?> beanClass, String property);
-    
-    Type getParameterType(Method method, String path);
-    
-    Type getParameterType(Type[] types, String path);
-    
-    <T> T createMapper(Class<T> interfaze, InternalConfiguration config, QueryDelegate delegate);
+	/**
+	 * Shortcut for first parameter in parameter property path.
+	 */
+	String ZERO_PARAMETER_ALIAS = "value";
+
+	/**
+	 * Build setter instance.
+	 * 
+	 * @param beanClass bean class
+	 * @param path nested property path
+	 * @return setter instance
+	 */
+	Setter buildSetter(Class<?> beanClass, String path);
+
+	/**
+	 * Build getter instance.
+	 * 
+	 * @param beanClass bean class
+	 * @param path nested property path
+	 * @return getter instance
+	 */
+	Getter buildGetter(Class<?> beanClass, String path);
+
+	/**
+	 * Build parameter getter instance.
+	 * 
+	 * @param types parameter types
+	 * @param path nested property path
+	 * @return getter instance
+	 */
+	Getter buildParameterGetter(Type[] types, String path);
+
+	/**
+	 * Get property type.
+	 * 
+	 * @param beanClass bean class
+	 * @param property nested property path
+	 * @return property type
+	 */
+	Type getPropertyType(Class<?> beanClass, String property);
+
+	/**
+	 * Get property type from parameter-based property path.
+	 * 
+	 * @param types parameter types
+	 * @param path nested property path
+	 * @return property type
+	 */
+	Type getParameterType(Type[] types, String path);
+
+	/**
+	 * Create mapper instance.
+	 * 
+	 * @param <T> mapper type
+	 * @param interfaze mapper interface
+	 * @param config mapper configuration
+	 * @param delegate query delegate
+	 * @return mapper instance
+	 */
+	<T> T createMapper(Class<T> interfaze, InternalConfiguration config,
+			QueryDelegate delegate);
 }

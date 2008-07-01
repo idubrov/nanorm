@@ -23,67 +23,84 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @version 1.0 29.05.2008
  */
 public class ResultMapConfig {
-    
-    private final String id;
 
-    private ResultMappingConfig[] mappings;
+	private final String id;
 
-    private boolean auto;
+	private ResultMappingConfig[] mappings;
 
-    private String[] groupBy;
-    
-    /**
-     * 
-     */
-    public ResultMapConfig(String id) {
-        this.id = id;
-    }
+	private boolean auto;
 
-    /** @return Returns the resultMappingsConfigs. */
-    public ResultMappingConfig[] getMappings() {
-        return mappings;
-    }
+	private String[] groupBy;
 
-    /** @param resultMappingsConfigs The resultMappingsConfigs to set. */
-    public void setMappings(ResultMappingConfig[] resultMappingsConfigs) {
-        this.mappings = resultMappingsConfigs;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param id result map config
+	 */
+	public ResultMapConfig(String id) {
+		this.id = id;
+	}
 
-    /** @return Returns the auto. */
-    public boolean isAuto() {
-        return auto;
-    }
+	/** @return Returns the resultMappingsConfigs. */
+	public ResultMappingConfig[] getMappings() {
+		return mappings;
+	}
 
-    /** @param auto The auto to set. */
-    public void setAuto(boolean auto) {
-        this.auto = auto;
-    }
+	/** @param resultMappingsConfigs The resultMappingsConfigs to set. */
+	public void setMappings(ResultMappingConfig[] resultMappingsConfigs) {
+		this.mappings = resultMappingsConfigs;
+	}
 
-    /** @return Returns the groupBy. */
-    public String[] getGroupBy() {
-        return groupBy;
-    }
+	/**
+	 * Get if this result map should auto map the columns not specified in the
+	 * mapping explicitly.
+	 * 
+	 * @return auto map mode.
+	 */
+	public boolean isAuto() {
+		return auto;
+	}
 
-    /** @param groupBy The groupBy to set. */
-    public void setGroupBy(String[] groupBy) {
-        this.groupBy = groupBy;
-    }
+	/**
+	 * Set if this result map should auto map the columns not specified in the
+	 * mapping explicitly.
+	 * 
+	 * @param auto auto map mode
+	 */
+	public void setAuto(boolean auto) {
+		this.auto = auto;
+	}
 
-    /** @return Returns the id. */
-    public String getId() {
-        return id;
-    }
-    
-    /**
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).
-            append("id", id).
-            append("auto", auto).
-            append("groupBy", groupBy).
-            append("mappings", mappings).
-            toString();
-    }
+	/**
+	 * Get the list of properties to group results by.
+	 * 
+	 * @return list of properties to group results by.
+	 */
+	public String[] getGroupBy() {
+		return groupBy;
+	}
+
+	/**
+	 * Set the list of properties to group results by.
+	 * 
+	 * @param groupBy list of properties to group results by.
+	 */
+	public void setGroupBy(String[] groupBy) {
+		this.groupBy = groupBy;
+	}
+
+	/** @return Returns the id. */
+	public String getId() {
+		return id;
+	}
+
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this).append("id", id).append("auto", auto)
+				.append("groupBy", groupBy).append("mappings", mappings)
+				.toString();
+	}
 }

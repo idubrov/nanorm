@@ -19,11 +19,26 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 import com.google.code.nanorm.internal.BoundFragment;
 import com.google.code.nanorm.internal.TextFragment;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 
-public class SQLSource implements BoundFragment {
+/**
+ * Base class for dynamic SQL generators.
+ * 
+ * @author Ivan Dubrov
+ */
+public abstract class SQLSource implements BoundFragment {
+
+	/**
+	 * Name of the method extender should implement for SQL generation.
+	 * 
+	 * The parameters of the method should exactly match the parameters of the
+	 * query method this SQL source is applied to.
+	 */
+	public final static String GENERATOR_METHOD = "sql";
 
 	/**
 	 * Stack of list of bound fragments. Each basic "append" operation adds
@@ -33,6 +48,11 @@ public class SQLSource implements BoundFragment {
 
 	private IntrospectionFactory introspectionFactory;
 
+	/**
+	 * Helper class for generating different joins.
+	 * 
+	 * @author Ivan Dubrov
+	 */
 	public static class Join implements BoundFragment {
 		private String open;
 
@@ -42,21 +62,42 @@ public class SQLSource implements BoundFragment {
 
 		private List<List<BoundFragment>> clauses = new ArrayList<List<BoundFragment>>();
 
-		public Join open(String open) {
-			this.open = open;
+		/**
+		 * Set prepending fragment of join (prepended to the join body).
+		 * 
+		 * @param o open fragment.
+		 * @return this
+		 */
+		public Join open(String o) {
+			this.open = o;
 			return this;
 		}
 
-		public Join close(String close) {
-			this.close = close;
+		/**
+		 * Set appending fragment of join (appended to the join body).
+		 * 
+		 * @param c close fragment
+		 * @return this
+		 */
+		public Join close(String c) {
+			this.close = c;
 			return this;
 		}
 
-		public Join with(String with) {
-			this.with = with;
+		/**
+		 * Set fragment used for joining the clauses.
+		 * 
+		 * @param w fragment used for joining the clauses.
+		 * @return this
+		 */
+		public Join with(String w) {
+			this.with = w;
 			return this;
 		}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public void generate(StringBuilder builder, List<Object> parameters,
 				List<Type> types) {
 			if (open != null) {
@@ -71,7 +112,7 @@ public class SQLSource implements BoundFragment {
 				for (BoundFragment item : items) {
 					item.generate(builder, parameters, types);
 				}
-				if(items.size() > 0) {
+				if (items.size() > 0) {
 					flag = true;
 				}
 			}
@@ -80,7 +121,6 @@ public class SQLSource implements BoundFragment {
 				builder.append(close);
 			}
 		}
-
 	}
 
 	/**
@@ -120,6 +160,7 @@ public class SQLSource implements BoundFragment {
 
 	/**
 	 * Iterate the parameters and apply block to each of them.
+	 * 
 	 * @param <T> parameters type
 	 * @param block block to apply to each parameter
 	 * @param params parameters
@@ -142,8 +183,13 @@ public class SQLSource implements BoundFragment {
 		last().add(join);
 		return join;
 	}
-	
-	
+
+	/**
+	 * Join given generator blocks together.
+	 * 
+	 * @param blocks generator blocks to join
+	 * @return join configuration method.
+	 */
 	public Join join(Block... blocks) {
 		Join join = new Join();
 
@@ -177,5 +223,11 @@ public class SQLSource implements BoundFragment {
 		}
 	}
 
-	// TODO: toString
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this).toString();
+	}
 }

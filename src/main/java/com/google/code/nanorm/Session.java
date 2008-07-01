@@ -16,15 +16,25 @@
 package com.google.code.nanorm;
 
 /**
- *
+ * Interface for controlling the session/transaction.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 27.05.2008
  */
 public interface Session {
 
+	/**
+	 * Commit transaction.
+	 */
     void commit();
     
+    /**
+     * Rollback transaction.
+     */
     void rollback();
     
+    /**
+     * End session.
+     */
     void end();
 }

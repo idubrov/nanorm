@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 
@@ -34,16 +36,20 @@ public class TextFragment implements Fragment {
 	private final static Pattern pattern = Pattern
 			.compile("([^#$]*)([$#]\\{[^}]+\\})");
 
-	// Template
-	final private String sql;
+	/**
+	 * SQL template.
+	 */
+	private final String sql;
 
-	// Generated
-	final private StringBuilder sqlBuilder;
+	/**
+	 * Output SQL.
+	 */
+	private final StringBuilder sqlBuilder;
 
 	/** List of getters */
-	final private List<Getter> gettersList;
+	private final List<Getter> gettersList;
 
-	final private IntrospectionFactory introspectionFactory;
+	private final IntrospectionFactory introspectionFactory;
 
 	/**
 	 * Construct text SQL fragment not configured for parameter types. The types
@@ -73,6 +79,9 @@ public class TextFragment implements Fragment {
 	 * Construct text SQL fragment, configured for given parameter types.
 	 * 
 	 * Introspects parameter types and creates getters for given types.
+	 * @param sql SQL fragment
+	 * @param types  parameter types
+	 * @param introspectionFactory introspection factory 
 	 */
 	public TextFragment(String sql, Type[] types,
 			IntrospectionFactory introspectionFactory) {
@@ -83,6 +92,9 @@ public class TextFragment implements Fragment {
 		configureTypes(types, sqlBuilder, gettersList);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public BoundFragment bindParameters(Object[] parameters) {
 		if (gettersList == null) {
 			List<Getter> getters = new ArrayList<Getter>();
@@ -96,6 +108,12 @@ public class TextFragment implements Fragment {
 				parameters);
 	}
 
+	/**
+	 * Derive types from actual parameters.
+	 * 
+	 * @param parameters parameters
+	 * @return parameter types
+	 */
 	private Type[] typesFromParameters(Object[] parameters) {
 		Type[] types = new Type[parameters.length];
 		for (int i = 0; i < types.length; ++i) {
@@ -105,6 +123,14 @@ public class TextFragment implements Fragment {
 		return types;
 	}
 
+	/**
+	 * Parse the SQL fragment and generate SQL with parameter placeholders and
+	 * list of getters.
+	 * 
+	 * @param types parameter types
+	 * @param builder builder for output SQL
+	 * @param getters getters list to fill
+	 */
 	private void configureTypes(Type[] types, StringBuilder builder,
 			List<Getter> getters) {
 		Matcher matcher = pattern.matcher(sql);
@@ -128,5 +154,12 @@ public class TextFragment implements Fragment {
 		builder.append(sql, end, sql.length());
 	}
 
-	// TODO: ToString?
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this).append("sql",
+				sql).toString();
+	}
 }

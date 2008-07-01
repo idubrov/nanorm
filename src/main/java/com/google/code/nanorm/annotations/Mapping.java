@@ -22,19 +22,37 @@ import java.lang.annotation.Target;
 
 /**
  * TODO: Check this annotation is not applied directly to the method or type!
+ * 
+ * Property mapping configuration.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 28.05.2008
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Mapping {
+	/**
+	 * Property name.
+	 */
     String property();
     
+    /**
+     * Column name.
+     */
     String column() default "";
-    
+
+    /**
+     * Column index.
+     */
     int columnIndex() default 0;
-    
+
+    /**
+     * Nested result map reference.
+     */
     ResultMapRef resultMap() default @ResultMapRef();
     
+    /**
+     * Subselect query.
+     */
     String subselect() default ""; 
 }

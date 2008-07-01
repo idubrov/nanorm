@@ -21,12 +21,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
+ * List of result maps.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 28.05.2008
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface ResultMapList {
+	/**
+	 * Result map list.
+	 */
     ResultMap[] value();
 }

@@ -15,8 +15,21 @@
  */
 package com.google.code.nanorm;
 
-public interface ParamBlock<T>
-{
-    void generate(T parameter);
-
+/**
+ * Dynamic SQL generation block with parameter.
+ * 
+ * Typically the implementations of this interface are declared as an anonymous
+ * classes inside the {@link SQLSource} generator method.
+ * 
+ * @author Ivan Dubrov
+ * @param <T> parameter type
+ */
+public interface ParamBlock<T> {
+	/**
+	 * Apply block generator to given parameter. Typically this method will
+	 * invoke generator methods of {@link SQLSource} instance.
+	 * 
+	 * @param parameter parameter value.
+	 */
+	void generate(T parameter);
 }

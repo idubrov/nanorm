@@ -17,122 +17,177 @@
 package com.google.code.nanorm.internal.introspect;
 
 /**
+ * Property path parser.
  * 
  * @author Ivan Dubrov
  * @version 1.0 21.06.2008
  */
 public final class PropertyNavigator {
 
-    public static int INDEX = 1;
+	/**
+	 * Property path element type. Indexing operation.
+	 */
+	public final static int INDEX = 1;
 
-    public static int PROPERTY = 2;
-    
-    private int index = -1;
+	/**
+	 * Property path element type. Path access operation.
+	 */
+	public final static int PROPERTY = 2;
 
-    private String property;
+	private int index = -1;
 
-    private int pos;
-    
-    private String path;
-    
-    private int token;
-    
-    public PropertyNavigator(String path, int pos) {
-        this.path = path;
-        this.pos = pos;
-    }
-    
-    public PropertyNavigator(String path) {
-        this.path = path;
-    }
+	private String property;
 
-    public final int getIndex() {
-        return index;
-    }
-    
-    public final String getProperty() {
-        return property;
-    }
-    
-    public final int getPosition() {
-        return pos;
-    }
-    
-    public final int getToken() {
-        return token;
-    }
-    
-    public final boolean hasNext() {
-        return pos >= path.length();
-    }
-    
-    public final String getPath() {
-        return path;
-    }
-    
-    public final int next() {
-        // TODO: Check end
-        // Skip '.' after property access
-        if(token == PROPERTY && path.charAt(pos) == '.') {
-            pos++;
-        } else if(token == INDEX) {
-            if(path.charAt(pos) != '.') {
-                throw unexpected();
-            }
-            pos++;
-        }
-        
-        char c = path.charAt(pos);
-        if(c == '[') {
-            index = parseIndex();
-            property = null;
-            token = INDEX;
-            return token;
-        } else if(Character.isJavaIdentifierStart(c)) {
-            property = parseProperty();
-            index = -1;
-            token = PROPERTY;
-            return token;
-        }
-        throw unexpected();
-    }
-    
-    private int parseIndex() {
-        // Skip '['
-        pos++;
-        int start = pos;
-        while(pos < path.length()) {
-            char c = path.charAt(pos);
-            if(c == ']') {
-                int ind = Integer.parseInt(path.substring(start, pos));
-                
-                // Skip ']'
-                pos++;
-                return ind;
-            }
-            if(!Character.isDigit(c)) {
-                // Invalid property path
-                break;
-            }
-            pos++;
-        }
-        throw unexpected();
-    }
-    
-    private String parseProperty() {
-        int start = pos;
-        while(pos < path.length()) {
-            char c = path.charAt(pos);
-            if(!Character.isJavaIdentifierPart(c)) {
-                return path.substring(start, pos);
-            }
-            pos++;
-        }
-        // Return value up to the end
-        return path.substring(start);
-    }
-    
-    private IllegalArgumentException unexpected() {
-        return new IllegalArgumentException("Unexpected character at position " + pos + " in property path '" + path + '\'');
-    }
+	private int pos;
+
+	private String path;
+
+	private int elementType;
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param path property path
+	 * @param pos position to start parse from
+	 */
+	public PropertyNavigator(String path, int pos) {
+		this.path = path;
+		this.pos = pos;
+	}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param path property path
+	 */
+	public PropertyNavigator(String path) {
+		this.path = path;
+	}
+
+	/**
+	 * Index value (for indexing access)
+	 * @return index value
+	 */
+	public final int getIndex() {
+		return index;
+	}
+
+	/**
+	 * Property name (for property access)
+	 * @return property name
+	 */
+	public final String getProperty() {
+		return property;
+	}
+
+	/**
+	 * Get position in the property path.
+	 * @return position in the property path.
+	 */
+	public final int getPosition() {
+		return pos;
+	}
+
+	/**
+	 * Get type of last parsed property path element.
+	 * @return type of last parsed property path element.
+	 */
+	public final int getElementType() {
+		return elementType;
+	}
+
+	/**
+	 * Check if property path has next property path element.
+	 * @return if property path has next property path element.
+	 */
+	public final boolean hasNext() {
+		return pos >= path.length();
+	}
+
+	/**
+	 * Get property path.
+	 * @return property path
+	 */
+	public final String getPath() {
+		return path;
+	}
+
+	/**
+	 * Parse next property path element.
+	 * @return element type
+	 */
+	public final int next() {
+		// TODO: Check end
+		// Skip '.' after property access
+		if (elementType == PROPERTY && path.charAt(pos) == '.') {
+			pos++;
+		} else if (elementType == INDEX) {
+			if (path.charAt(pos) != '.') {
+				throw unexpected();
+			}
+			pos++;
+		}
+
+		char c = path.charAt(pos);
+		if (c == '[') {
+			index = parseIndex();
+			property = null;
+			elementType = INDEX;
+			return elementType;
+		} else if (Character.isJavaIdentifierStart(c)) {
+			property = parseProperty();
+			index = -1;
+			elementType = PROPERTY;
+			return elementType;
+		}
+		throw unexpected();
+	}
+
+	private int parseIndex() {
+		// Skip '['
+		pos++;
+		int start = pos;
+		while (pos < path.length()) {
+			char c = path.charAt(pos);
+			if (c == ']') {
+				int ind = Integer.parseInt(path.substring(start, pos));
+
+				// Skip ']'
+				pos++;
+				return ind;
+			}
+			if (!Character.isDigit(c)) {
+				// Invalid property path
+				break;
+			}
+			pos++;
+		}
+		throw unexpected();
+	}
+
+	/**
+	 * Parse property access.
+	 * @return property name
+	 */
+	private String parseProperty() {
+		int start = pos;
+		while (pos < path.length()) {
+			char c = path.charAt(pos);
+			if (!Character.isJavaIdentifierPart(c)) {
+				return path.substring(start, pos);
+			}
+			pos++;
+		}
+		// Return value up to the end
+		return path.substring(start);
+	}
+
+	/**
+	 * Create exception.
+	 * @return exception
+	 */
+	private IllegalArgumentException unexpected() {
+		return new IllegalArgumentException("Unexpected character at position "
+				+ pos + " in property path '" + path + '\'');
+	}
 }

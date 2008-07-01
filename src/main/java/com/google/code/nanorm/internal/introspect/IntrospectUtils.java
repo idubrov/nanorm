@@ -23,132 +23,202 @@ import com.google.code.nanorm.exceptions.IntrospectionException;
 
 /**
  * TODO: Setter/getter validation.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 22.06.2008
  */
 public final class IntrospectUtils {
-    
-    private IntrospectUtils() {
-        // Nothing.
-    }
-    
-    public static <T> T visitPath(String path, Class<?> beanClass, PropertyVisitor<T> visitor, Type[] finalType) {
-        return visitPath(path, beanClass, null, visitor, finalType);
-    }
-    
-    public static <T> T visitPath(String path, Type[] types, PropertyVisitor<T> visitor, Type[] finalType) {
-        return visitPath(path, null, types, visitor, finalType);
-    }
-    
-    private static <T> T visitPath(String path, Class<?> beanClass, Type[] types, PropertyVisitor<T> visitor, Type[] finalType) {
-        if(types == null) {
-            visitor.visitBegin(beanClass, path);
-        } else {
-            // Parameter access
-            int pos = path.indexOf('.');
-            if (pos == -1) {
-                pos = path.length();
-            }
-            String context = path.substring(0, pos);
 
-            int parameter;
-            if (context.equals(IntrospectionFactory.ZERO_PARAMETER_ALIAS)) {
-                parameter = 0;
-            } else {
-                parameter = Integer.parseInt(context) - 1;
-            }
-            if(pos != path.length()) {
-                path = path.substring(pos + 1);
-            } else {
-                path = "";
-            }
-            beanClass = (Class<?>) types[parameter];
+	private IntrospectUtils() {
+		// Nothing.
+	}
 
-            // Emulate parameters as Object[] as the instance type
-            visitor.visitBegin(Object[].class, path);
-            
-            // ...and indexing which returns Object instance
-            visitor.visitIndex(0, parameter, false, Object[].class);
-        }
-        
-        PropertyNavigator nav = new PropertyNavigator(path);
+	/**
+	 * Visit nested property path and return something as a result of visit.
+	 * 
+	 * @param <T> type of result
+	 * @param path property path
+	 * @param beanClass property bean type
+	 * @param visitor property path visitor
+	 * @param propertyType property type
+	 * @return result of visit
+	 */
+	public static <T> T visitPath(String path, Class<?> beanClass,
+			PropertyVisitor<T> visitor, Type[] propertyType) {
+		return visitPath(path, beanClass, null, visitor, propertyType);
+	}
 
-        Type type = beanClass;
-        while (!nav.hasNext()) {
-            int pos = nav.getPosition();
-            
-            int token = nav.next();
-            if (token == PropertyNavigator.INDEX) {
-                // TODO: Could be generic array!
-                if (!beanClass.isArray()) {
-                    throw new IllegalArgumentException("Array expected at property "
-                            + path.substring(0, pos) + "(full property is " + path
-                            + "). Actual type was " + beanClass);
-                }
-                Class<?> propClass = beanClass.getComponentType();
-                visitor.visitIndex(pos, nav.getIndex(), nav.hasNext(), beanClass);
-                
-                beanClass = propClass;
-                type = beanClass;
-            } else if (token == PropertyNavigator.PROPERTY) {
-                java.lang.reflect.Method getter = findGetter(beanClass, nav.getProperty());
+	/**
+	 * Visit nested property path and return something as a result of visit.
+	 * 
+	 * @param <T> type of result
+	 * @param path property path
+	 * @param types parameter types
+	 * @param visitor property path visitor
+	 * @param propertyType property type
+	 * @return result of visit
+	 */
+	public static <T> T visitPath(String path, Type[] types,
+			PropertyVisitor<T> visitor, Type[] propertyType) {
+		return visitPath(path, null, types, visitor, propertyType);
+	}
 
-                // Resolve the return type using the current context
-                type = TypeOracle.resolve(getter.getGenericReturnType(), type);
+	/**
+	 * Implemenentation of property path visitor.
+	 * 
+	 * @param <T> type of result
+	 * @param path property path
+	 * @param beanClass property bean type
+	 * @param types parameter types
+	 * @param visitor property path visitor
+	 * @param propertyType property type
+	 * @return result of visit
+	 */
+	private static <T> T visitPath(String path, Class<?> beanClass,
+			Type[] types, PropertyVisitor<T> visitor, Type[] propertyType) {
+		if (types == null) {
+			visitor.visitBegin(beanClass, path);
+		} else {
+			// Parameter access
+			int pos = path.indexOf('.');
+			if (pos == -1) {
+				pos = path.length();
+			}
+			String context = path.substring(0, pos);
 
-                // Find out concrete Class instance behind the generics
-                Class<?> propClass = TypeOracle.resolveClass(type);
-                
-                visitor.visitProperty(pos, nav.getProperty(), getter, nav.hasNext(), beanClass);
-                beanClass = propClass;
-            } else {
-                throw new IllegalStateException("Unexpected token type " + token
-                        + " while following property path " + path);
-            }
-        }
-        if(finalType != null) {
-            finalType[0] = type;
-        }
-        return visitor.visitEnd();
-    }   
+			int parameter;
+			if (context.equals(IntrospectionFactory.ZERO_PARAMETER_ALIAS)) {
+				parameter = 0;
+			} else {
+				parameter = Integer.parseInt(context) - 1;
+			}
+			if (pos != path.length()) {
+				path = path.substring(pos + 1);
+			} else {
+				path = "";
+			}
+			beanClass = (Class<?>) types[parameter];
 
-    public static java.lang.reflect.Method findGetter(Class<?> clazz, String property) {
-        try {
-            String name = "get" + Character.toUpperCase(property.charAt(0))
-                    + property.substring(1);
-            try {
-                return clazz.getMethod(name);
-            } catch (NoSuchMethodException e) {
-                // TODO: Hack!
-                name = "is" + Character.toUpperCase(property.charAt(0)) + property.substring(1);
-                return clazz.getMethod(name);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+			// Emulate parameters as Object[] as the instance type
+			visitor.visitBegin(Object[].class, path);
 
-    public static java.lang.reflect.Method findGetterCaseInsensitive(Class<?> clazz, String property) {
-        for(Method m : clazz.getDeclaredMethods()) {
-            String name = "get" + property;
-            if(m.getName().equalsIgnoreCase("get" + property)) {
-                return m;
-            } else if(m.getName().equalsIgnoreCase("is" + property)) {
-                // TODO: Should check only for booleans!
-                return m;
-            } 
-        }
-        return null;
-    }
+			// ...and indexing which returns Object instance
+			visitor.visitIndex(0, parameter, false, Object[].class);
+		}
 
-    public static java.lang.reflect.Method findSetter(Class<?> clazz, String property) {
-        String name = "set" + Character.toUpperCase(property.charAt(0)) + property.substring(1);
-        for (java.lang.reflect.Method method : clazz.getDeclaredMethods()) {
-            if (method.getParameterTypes().length == 1 && method.getName().equals(name)) {
-                return method;
-            }
-        }
-        throw new IntrospectionException("Cannot find setter method " + clazz + "." + name
-                + "(<any type>)");
-    }
+		PropertyNavigator nav = new PropertyNavigator(path);
+
+		Type type = beanClass;
+		while (!nav.hasNext()) {
+			int pos = nav.getPosition();
+
+			int token = nav.next();
+			if (token == PropertyNavigator.INDEX) {
+				// TODO: Could be generic array!
+				if (!beanClass.isArray()) {
+					throw new IllegalArgumentException(
+							"Array expected at property "
+									+ path.substring(0, pos)
+									+ "(full property is " + path
+									+ "). Actual type was " + beanClass);
+				}
+				Class<?> propClass = beanClass.getComponentType();
+				visitor.visitIndex(pos, nav.getIndex(), nav.hasNext(),
+						beanClass);
+
+				beanClass = propClass;
+				type = beanClass;
+			} else if (token == PropertyNavigator.PROPERTY) {
+				java.lang.reflect.Method getter = findGetter(beanClass, nav
+						.getProperty());
+
+				// Resolve the return type using the current context
+				type = TypeOracle.resolve(getter.getGenericReturnType(), type);
+
+				// Find out concrete Class instance behind the generics
+				Class<?> propClass = TypeOracle.resolveClass(type);
+
+				visitor.visitProperty(pos, nav.getProperty(), getter, nav
+						.hasNext(), beanClass);
+				beanClass = propClass;
+			} else {
+				throw new IllegalStateException("Unexpected token type "
+						+ token + " while following property path " + path);
+			}
+		}
+		if (propertyType != null) {
+			propertyType[0] = type;
+		}
+		return visitor.visitEnd();
+	}
+
+	/**
+	 * Find getter method of the bean.
+	 * 
+	 * @param clazz bean class
+	 * @param property property
+	 * @return getter method
+	 */
+	public static Method findGetter(Class<?> clazz,
+			String property) {
+		String name = "get" + Character.toUpperCase(property.charAt(0))
+				+ property.substring(1);
+		try {
+			return clazz.getMethod(name);
+		} catch (NoSuchMethodException e) {
+			name = "is" + Character.toUpperCase(property.charAt(0))
+					+ property.substring(1);
+			try {
+				Method m = clazz.getMethod(name);
+				if (m.getReturnType() == boolean.class) {
+					return m;
+				}
+			} catch (NoSuchMethodException e2) {
+				// Ignore.
+			}
+		}
+		throw new IntrospectionException("Cannot find getter method for property " + property + 
+				" of bean class " + clazz);
+	}
+
+	/**
+	 * Find getter by case insensitive search
+	 * 
+	 * @param clazz bean class
+	 * @param property property
+	 * @return getter method
+	 */
+	public static Method findGetterCaseInsensitive(
+			Class<?> clazz, String property) {
+		for (Method m : clazz.getDeclaredMethods()) {
+			if (m.getName().equalsIgnoreCase("get" + property)) {
+				return m;
+			} else if (m.getName().equalsIgnoreCase("is" + property)
+					&& m.getReturnType() == boolean.class) {
+				return m;
+			}
+		}
+		throw new IntrospectionException("Cannot find getter method for property " + property + 
+				" of bean class " + clazz);
+	}
+
+	/**
+	 * Find setter method for bean.
+	 * @param clazz bean class
+	 * @param property property
+	 * @return setter method
+	 */
+	public static Method findSetter(Class<?> clazz,
+			String property) {
+		String name = "set" + Character.toUpperCase(property.charAt(0))
+				+ property.substring(1);
+		for (Method method : clazz.getDeclaredMethods()) {
+			if (method.getParameterTypes().length == 1
+					&& method.getName().equals(name)) {
+				return method;
+			}
+		}
+		throw new IntrospectionException("Cannot find setter method for property " + property + 
+				" of bean class " + clazz);
+	}
 }
