@@ -28,8 +28,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.code.nanorm.Block;
-import com.google.code.nanorm.Configuration;
-import com.google.code.nanorm.Factory;
+import com.google.code.nanorm.NanormConfiguration;
+import com.google.code.nanorm.NanormFactory;
 import com.google.code.nanorm.SQLSource;
 import com.google.code.nanorm.Session;
 import com.google.code.nanorm.annotations.Mapping;
@@ -50,7 +50,7 @@ public class TestCarMapper {
     
     private Connection conn;
     
-    private Factory factory;
+    private NanormFactory factory;
     
     private Session transaction;
     
@@ -110,7 +110,7 @@ public class TestCarMapper {
             "INSERT INTO CARS(id, owner, model, year) VALUES (11, 'John', 'Ford Focus', 2004)");
         conn.commit();
         
-        factory = new Configuration().buildFactory();
+        factory = new NanormConfiguration().buildFactory();
         transaction = factory.openSession(conn);
         
     }

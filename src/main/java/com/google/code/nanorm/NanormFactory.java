@@ -23,7 +23,7 @@ import java.sql.Connection;
  * 
  * @author Ivan Dubrov
  */
-public interface Factory {
+public interface NanormFactory {
 	/**
 	 * Create mapper for given interface. Note that mappers are intrinsically
 	 * bound to the factory that created it.

@@ -23,8 +23,8 @@ import java.sql.Statement;
 import org.junit.After;
 import org.junit.Before;
 
-import com.google.code.nanorm.Configuration;
-import com.google.code.nanorm.Factory;
+import com.google.code.nanorm.NanormConfiguration;
+import com.google.code.nanorm.NanormFactory;
 import com.google.code.nanorm.Session;
 
 /**
@@ -42,7 +42,7 @@ public class MapperTestBase {
     /**
      * Nanorm factory.
      */
-    protected Factory factory;
+    protected NanormFactory factory;
     
     /**
      * Current transaction.
@@ -102,7 +102,7 @@ public class MapperTestBase {
         
         conn.commit();
         
-        factory = new Configuration().buildFactory();
+        factory = new NanormConfiguration().buildFactory();
         transaction = factory.openSession(conn);
         
     }

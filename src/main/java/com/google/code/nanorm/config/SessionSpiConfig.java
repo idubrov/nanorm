@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package com.google.code.nanorm.internal.session;
+package com.google.code.nanorm.config;
+
+import com.google.code.nanorm.internal.session.SessionSpi;
 
 /**
  * Session SPI configuration. Used for creating new session SPI instances.

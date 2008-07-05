@@ -23,10 +23,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.code.nanorm.Factory;
+import com.google.code.nanorm.NanormFactory;
 import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.Session;
 import com.google.code.nanorm.TypeHandlerFactory;
+import com.google.code.nanorm.config.SessionSpiConfig;
 import com.google.code.nanorm.exceptions.DataException;
 import com.google.code.nanorm.internal.config.InternalConfiguration;
 import com.google.code.nanorm.internal.config.StatementConfig;
@@ -36,7 +37,6 @@ import com.google.code.nanorm.internal.mapping.result.ResultCallbackSource;
 import com.google.code.nanorm.internal.mapping.result.ResultCollectorUtil;
 import com.google.code.nanorm.internal.mapping.result.ResultMap;
 import com.google.code.nanorm.internal.session.SessionSpi;
-import com.google.code.nanorm.internal.session.SessionSpiConfig;
 import com.google.code.nanorm.internal.session.SingleConnSessionSpi;
 import com.google.code.nanorm.internal.type.TypeHandler;
 
@@ -46,7 +46,7 @@ import com.google.code.nanorm.internal.type.TypeHandler;
  * @author Ivan Dubrov
  * @version 1.0 27.05.2008
  */
-public class FactoryImpl implements Factory, QueryDelegate {
+public class FactoryImpl implements NanormFactory, QueryDelegate {
 
 	/**
 	 * Thread local that holds per-thread sessions.
@@ -67,7 +67,7 @@ public class FactoryImpl implements Factory, QueryDelegate {
     }
 
     /**
-     * @see com.google.code.nanorm.Factory#createMapper(java.lang.Class)
+     * @see com.google.code.nanorm.NanormFactory#createMapper(java.lang.Class)
      */
     public <T> T createMapper(Class<T> mapperClass) {
         config.configure(mapperClass);

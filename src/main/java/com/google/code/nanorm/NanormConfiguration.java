@@ -18,6 +18,9 @@ package com.google.code.nanorm;
 
 import java.lang.reflect.Type;
 
+import javax.sql.DataSource;
+
+import com.google.code.nanorm.config.SessionSpiConfig;
 import com.google.code.nanorm.internal.FactoryImpl;
 import com.google.code.nanorm.internal.config.InternalConfiguration;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
@@ -31,18 +34,20 @@ import com.google.code.nanorm.internal.type.TypeHandlerFactoryImpl;
  * @author Ivan Dubrov
  * @version 1.0 19.06.2008
  */
-public class Configuration {
+public class NanormConfiguration {
 
 	private final TypeHandlerFactory typeHandlerFactory;
 
 	private final IntrospectionFactory introspectionFactory;
 
 	private final InternalConfiguration config;
+	
+	private SessionSpiConfig sessionSpiConfig;
 
 	/**
 	 * Constructor.
 	 */
-	public Configuration() {
+	public NanormConfiguration() {
 		typeHandlerFactory = new TypeHandlerFactoryImpl();
 		// introspectionFactory = new ReflectIntrospectionFactory();
 
@@ -63,10 +68,18 @@ public class Configuration {
 	}
 
 	/**
+	 * Set session manager.
+	 */
+	public void setSessionManagement(SessionManagement sessionManagement, DataSource dataSource) {
+		
+	}
+
+	
+	/**
 	 * Build factory.
 	 * @return factory.
 	 */
-	public Factory buildFactory() {
+	public NanormFactory buildFactory() {
 		return new FactoryImpl(config);
 	}
 }
