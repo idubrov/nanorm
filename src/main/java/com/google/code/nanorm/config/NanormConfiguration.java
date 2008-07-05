@@ -67,7 +67,8 @@ public class NanormConfiguration {
 	}
 
 	/**
-	 * Set session manager.
+	 * Set session/transaction management configuration.
+	 * @param sessionConfig session/transaction management configuration.
 	 */
 	public void setSessionConfig(SessionConfig sessionConfig) {
 		this.sessionConfig = sessionConfig;

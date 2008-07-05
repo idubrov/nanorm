@@ -20,14 +20,28 @@ import javax.sql.DataSource;
 import com.google.code.nanorm.internal.session.ExternalSessionSpi;
 import com.google.code.nanorm.internal.session.SessionSpi;
 
+/**
+ * Configuration for external session/transaction management.
+ * TODO: Elaborate
+ * 
+ * @author Ivan Dubrov
+ */
 public class ExternalSessionConfig implements SessionConfig {
 	
 	private final DataSource dataSource;
 	
+	/**
+	 * Constructor.
+	 * 
+	 * @param dataSource data source
+	 */
 	public ExternalSessionConfig(DataSource dataSource) {
 		this.dataSource = dataSource;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public SessionSpi newSessionSpi() {
 		return new ExternalSessionSpi(dataSource);
 	}

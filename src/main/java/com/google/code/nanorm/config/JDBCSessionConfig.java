@@ -20,16 +20,29 @@ import javax.sql.DataSource;
 import com.google.code.nanorm.internal.session.JDBCSessionSpi;
 import com.google.code.nanorm.internal.session.SessionSpi;
 
+/**
+ * JDBC session/transaction management configuration.
+ * TODO: Elaborate
+ * 
+ * @author Ivan Dubrov
+ */
 public class JDBCSessionConfig implements SessionConfig {
 	
 	private final DataSource dataSource;
 	
 	private final boolean allowMultiple = true;
 	
+	/**
+	 * Constructor.
+	 * @param dataSource datasource
+	 */
 	public JDBCSessionConfig(DataSource dataSource) {
 		this.dataSource = dataSource;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public SessionSpi newSessionSpi() {
 		return new JDBCSessionSpi(dataSource, allowMultiple);
 	}

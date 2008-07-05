@@ -24,12 +24,21 @@ import com.google.code.nanorm.exceptions.SessionException;
 import com.google.code.nanorm.internal.session.JTASessionSpi;
 import com.google.code.nanorm.internal.session.SessionSpi;
 
+/**
+ * JTA session/transaction management configuration.
+ * @author Ivan Dubrov
+ */
 public class JTASessionConfig implements SessionConfig {
 	
 	private final DataSource dataSource;
 	
 	private final UserTransaction userTransaction;
 	
+	/**
+	 * Constructor.
+	 * @param dataSource data source
+	 * @param utName user transaction JNDI name
+	 */
 	public JTASessionConfig(DataSource dataSource, String utName) {
 		this.dataSource = dataSource;
 		try {
@@ -46,6 +55,9 @@ public class JTASessionConfig implements SessionConfig {
 
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public SessionSpi newSessionSpi() {
 		return new JTASessionSpi(dataSource, userTransaction);
 	}
