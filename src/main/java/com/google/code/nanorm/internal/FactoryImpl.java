@@ -51,236 +51,259 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 	/**
 	 * Thread local that holds per-thread sessions.
 	 */
-    private final ThreadLocal<SessionSpi> sessions = new ThreadLocal<SessionSpi>();
+	private final ThreadLocal<SessionSpi> sessions = new ThreadLocal<SessionSpi>();
 
-    private final InternalConfiguration config;
-    
-    private final SessionConfig sessionSpiConfig;
+	private final InternalConfiguration config;
 
-    /**
-     * Constructor.
-     * @param internalConfig factory configuration
-     */
-    public FactoryImpl(InternalConfiguration internalConfig, SessionConfig sessionConfig) {
-        this.config = internalConfig;
-        this.sessionSpiConfig = sessionConfig;
-    }
+	private final SessionConfig sessionSpiConfig;
 
-    /**
-     * @see com.google.code.nanorm.NanormFactory#createMapper(java.lang.Class)
-     */
-    public <T> T createMapper(Class<T> mapperClass) {
-        config.configure(mapperClass);
+	/**
+	 * Constructor.
+	 * 
+	 * @param internalConfig factory configuration
+	 * @param sessionConfig session configuration
+	 */
+	public FactoryImpl(InternalConfiguration internalConfig,
+			SessionConfig sessionConfig) {
+		this.config = internalConfig;
+		this.sessionSpiConfig = sessionConfig;
+	}
 
-        // TODO: Check we mapped this class!
-        return config.getIntrospectionFactory().createMapper(mapperClass, config, this);
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public Session openSession() {
-        if (sessionSpiConfig == null) {
-            throw new IllegalArgumentException("Session SPI is not configured!");
-        }
-        if (sessions.get() != null) {
-            throw new IllegalStateException("Session was already started for this thread!");
-        }
+	/**
+	 * @see com.google.code.nanorm.NanormFactory#createMapper(java.lang.Class)
+	 */
+	public <T> T createMapper(Class<T> mapperClass) {
+		config.configure(mapperClass);
 
-        final SessionSpi spi = sessionSpiConfig.newSessionSpi();
-        sessions.set(spi);
-        return new TransactionImpl(spi);
-    }
+		// TODO: Check we mapped this class!
+		return config.getIntrospectionFactory().createMapper(mapperClass,
+				config, this);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public Session openSession(Connection connection) {
-        if (connection == null) {
-            throw new IllegalArgumentException("Connection must not be null!");
-        }
-        if (sessions.get() != null) {
-            throw new IllegalStateException("Session was already started for this thread!");
-        }
-
-        final SessionSpi spi = new SingleConnSessionSpi(connection);
-        sessions.set(spi);
-        return new TransactionImpl(spi);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Object query(StatementConfig stConfig, Object[] args) {
-        // Request-scoped data
-        Request request = new Request(this);
-
-        // Statement fragment
-        BoundFragment fragment = stConfig.getStatementBuilder().bindParameters(args);
-
-        // SQL, parameters and their types
-        StringBuilder sql = new StringBuilder();
-        List<Object> parameters = new ArrayList<Object>();
-        List<Type> types = new ArrayList<Type>();
-
-        // Generate everything
-        fragment.generate(sql, parameters, types);
-
-        SessionSpi spi = sessions.get();
-        if (spi == null) {
-            throw new IllegalStateException("Open session first!");
-        }
-        Connection conn;
-        try {
-            conn = spi.getConnection();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            PreparedStatement st = conn.prepareStatement(sql.toString());
-            try {
-                // Map parameters and execute query
-                mapParameters(st, types, parameters);
-
-                Object result;
-                if (stConfig.isUpdate()) {
-                    result = st.executeUpdate();
-                } else {
-                    ResultSet rs = st.executeQuery();
-
-                    // If we have ResultCallback in parameters -- use it
-                    ResultCallback<Object> callback;
-                    if (stConfig.getCallbackIndex() != StatementConfig.RETURN_VALUE) {
-                        // This is OK, since we deduced result type exactly from
-                        // this parameter
-                        @SuppressWarnings("unchecked")
-                        ResultCallback<Object> temp = (ResultCallback<Object>) args[stConfig
-                                .getCallbackIndex()];
-                        callback = temp;
-                    } else {
-                        // Prepare result callback and process results
-                        ResultGetterSetter rgs = new ResultGetterSetter(stConfig.getResultType());
-                        ResultCallbackSource callbackSource = ResultCollectorUtil
-                                .createResultCallback(rgs, rgs, stConfig);
-
-                        callback = callbackSource.forInstance(request);
-                    }
-                    
-                    // Iterate through the result set
-                    ResultMap resultMapper = stConfig.getResultMapper();
-                    while (rs.next()) {
-                        resultMapper.processResultSet(request, rs, callback);
-                    }
-                    result = request.getResult();
-                }
-                return result;
-            } finally {
-                st.close();
-            }
-        } catch (SQLException e) {
-            throw new DataException("SQL exception occured while executing the query!", e);
-        } finally {
-            spi.releaseConnection(conn);
-        }
-    }
-
-    private void mapParameters(PreparedStatement statement, List<Type> types,
-            List<Object> params) throws SQLException {
-
-        TypeHandlerFactory factory = config.getTypeHandlerFactory();
-
-        for (int i = 0; i < params.size(); ++i) {
-            Object item = params.get(i);
-            Type type = types.get(i);
-            TypeHandler<?> typeHandler = factory.getTypeHandler(type);
-            typeHandler.setParameter(statement, i + 1, item);
-        }
-    }
-
-    private static class ResultGetterSetter implements Getter, Setter {
-    	
-    	private Type type;
-    	
-    	/**
-    	 * Constructor.
-    	 * @param type result map result type.
-    	 */
-    	public ResultGetterSetter(Type type) {
-    		this.type = type;
+	/**
+	 * {@inheritDoc}
+	 */
+	public Session openSession() {
+		if (sessionSpiConfig == null) {
+			throw new IllegalArgumentException("Session SPI is not configured!");
 		}
-    	
-        /**
-         * {@inheritDoc}
-         */
-        public Type getType() {
-            return type;
-        }
+		if (sessions.get() != null) {
+			throw new IllegalStateException(
+					"Session was already started for this thread!");
+		}
 
-        /**
-         * {@inheritDoc}
-         */
-        public Object getValue(Object instance) {
-            Request request = (Request) instance;
-            return request.getResult();
-        }
+		final SessionSpi spi = sessionSpiConfig.newSessionSpi();
+		sessions.set(spi);
+		return new TransactionImpl(spi);
+	}
 
-        /**
-         * {@inheritDoc}
-         */
-        public void setValue(Object instance, Object value) {
-            Request request = (Request) instance;
-            request.setResult(value);
-        }
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public Session openSession(Connection connection) {
+		if (connection == null) {
+			throw new IllegalArgumentException("Connection must not be null!");
+		}
+		if (sessions.get() != null) {
+			throw new IllegalStateException(
+					"Session was already started for this thread!");
+		}
 
-    // TODO: toString
+		final SessionSpi spi = new SingleConnSessionSpi(connection);
+		sessions.set(spi);
+		return new TransactionImpl(spi);
+	}
 
-    /**
-     * {@link Session} implementation.
-     */
-    private class TransactionImpl implements Session {
+	/**
+	 * {@inheritDoc}
+	 */
+	public Object query(StatementConfig stConfig, Object[] args) {
+		// Request-scoped data
+		Request request = new Request(this);
 
-        final private SessionSpi spi;
+		// Statement fragment
+		BoundFragment fragment = stConfig.getStatementBuilder().bindParameters(
+				args);
 
-        /**
-         * Constructor.
-         * @param spi {@link SessionSpi} implementation.
-         */
-        TransactionImpl(SessionSpi spi) {
-            this.spi = spi;
-        }
+		// SQL, parameters and their types
+		StringBuilder sql = new StringBuilder();
+		List<Object> parameters = new ArrayList<Object>();
+		List<Type> types = new ArrayList<Type>();
 
-        /**
-         * {@inheritDoc}
-         */
-        public void commit() {
-            checkThread();
-            spi.commit();
-        }
+		// Generate everything
+		fragment.generate(sql, parameters, types);
 
-        /**
-         * {@inheritDoc}
-         */
-        public void end() {
-            checkThread();
-            
-            // Remove from active sessions thread local
-            sessions.remove();
-            spi.end();
-        }
+		SessionSpi spi = sessions.get();
+		boolean isAuto = false;
+		if (spi == null) {
+			// Auto-create session for single request
+			// TODO: Check if autosession is enabled
+			isAuto = true;
+			spi = sessionSpiConfig.newSessionSpi();
+		}
+		// Close spi after this block if in auto mode
+		try {
+			Connection conn = spi.getConnection();
+			
+			// Close connection after this try
+			try {
+				PreparedStatement st = conn.prepareStatement(sql.toString());
+				try {
+					// Map parameters and execute query
+					mapParameters(st, types, parameters);
 
-        /**
-         * {@inheritDoc}
-         */
-        public void rollback() {
-            checkThread();
-            spi.rollback();
-        }
-        
-        private void checkThread() {
-            if (sessions.get() != spi) {
-                throw new IllegalStateException("This transaction is not bound to this thread!");
-            }
-        }
-    }
+					Object result;
+					if (stConfig.isUpdate()) {
+						result = st.executeUpdate();
+					} else {
+						ResultSet rs = st.executeQuery();
+
+						// If we have ResultCallback in parameters -- use it
+						ResultCallback<Object> callback;
+						if (stConfig.getCallbackIndex() != StatementConfig.RETURN_VALUE) {
+							// This is OK, since we deduced result type exactly
+							// from
+							// this parameter
+							@SuppressWarnings("unchecked")
+							ResultCallback<Object> temp = (ResultCallback<Object>) args[stConfig
+									.getCallbackIndex()];
+							callback = temp;
+						} else {
+							// Prepare result callback and process results
+							ResultGetterSetter rgs = new ResultGetterSetter(
+									stConfig.getResultType());
+							ResultCallbackSource callbackSource = ResultCollectorUtil
+									.createResultCallback(rgs, rgs, stConfig);
+
+							callback = callbackSource.forInstance(request);
+						}
+
+						// Iterate through the result set
+						ResultMap resultMapper = stConfig.getResultMapper();
+						while (rs.next()) {
+							resultMapper
+									.processResultSet(request, rs, callback);
+						}
+						callback.finish();
+						result = request.getResult();
+					}
+					return result;
+				} finally {
+					st.close();
+				}
+			} catch (SQLException e) {
+				throw new DataException(
+						"SQL exception occured while executing the query!", e);
+			} finally {
+				spi.releaseConnection(conn);
+			}
+		} finally {
+			if(isAuto) {
+				spi.end();
+			}
+		}
+	}
+
+	private void mapParameters(PreparedStatement statement, List<Type> types,
+			List<Object> params) throws SQLException {
+
+		TypeHandlerFactory factory = config.getTypeHandlerFactory();
+
+		for (int i = 0; i < params.size(); ++i) {
+			Object item = params.get(i);
+			Type type = types.get(i);
+			TypeHandler<?> typeHandler = factory.getTypeHandler(type);
+			typeHandler.setParameter(statement, i + 1, item);
+		}
+	}
+
+	private static class ResultGetterSetter implements Getter, Setter {
+
+		private Type type;
+
+		/**
+		 * Constructor.
+		 * 
+		 * @param type result map result type.
+		 */
+		public ResultGetterSetter(Type type) {
+			this.type = type;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public Type getType() {
+			return type;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public Object getValue(Object instance) {
+			Request request = (Request) instance;
+			return request.getResult();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void setValue(Object instance, Object value) {
+			Request request = (Request) instance;
+			request.setResult(value);
+		}
+	}
+
+	// TODO: toString
+
+	/**
+	 * {@link Session} implementation.
+	 */
+	private class TransactionImpl implements Session {
+
+		final private SessionSpi spi;
+
+		/**
+		 * Constructor.
+		 * 
+		 * @param spi {@link SessionSpi} implementation.
+		 */
+		TransactionImpl(SessionSpi spi) {
+			this.spi = spi;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void commit() {
+			checkThread();
+			spi.commit();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void end() {
+			checkThread();
+
+			// Remove from active sessions thread local
+			sessions.remove();
+			spi.end();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void rollback() {
+			checkThread();
+			spi.rollback();
+		}
+
+		private void checkThread() {
+			if (sessions.get() != spi) {
+				throw new IllegalStateException(
+						"This transaction is not bound to this thread!");
+			}
+		}
+	}
 }

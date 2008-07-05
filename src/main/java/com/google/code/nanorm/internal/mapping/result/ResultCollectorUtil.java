@@ -59,6 +59,7 @@ public class ResultCollectorUtil {
 	public static ResultCallbackSource createResultCallback(
 			Getter getter, Setter setter, Object mappingSource) {
 		Type type = getter.getType();
+		// TODO: Generic arrays!
 		if (type instanceof ParameterizedType) {
 			ParameterizedType pt = (ParameterizedType) type;
 			if (pt.getRawType() instanceof Class) {
@@ -68,6 +69,9 @@ public class ResultCollectorUtil {
 					return new ArrayListCallbackSource(getter, setter);
 				}
 			}
+		} else if(type instanceof Class<?> && ((Class<?>) type).isArray()) {
+			Class<?> arrClass = (Class<?>) type;
+			return new ArrayCallbackSource(getter, setter, arrClass.getComponentType());
 		} else {
 			return new SingleResultCallbackSource(setter, mappingSource);
 		}
@@ -103,6 +107,8 @@ public class ResultCollectorUtil {
 					}
 				}
 			}
+		} else if(resultType instanceof Class<?> && ((Class<?>) resultType).isArray()) {
+			resultClass = ((Class<?>) resultType).getComponentType();
 		} else if (resultType instanceof Class<?>) {
 			resultClass = (Class<?>) resultType;
 		}

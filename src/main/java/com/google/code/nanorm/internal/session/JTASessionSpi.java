@@ -19,8 +19,6 @@ package com.google.code.nanorm.internal.session;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
@@ -39,9 +37,9 @@ import com.google.code.nanorm.exceptions.SessionException;
  * @version 1.0 19.06.2008
  */
 public class JTASessionSpi implements SessionSpi {
-	final private DataSource dataSource;
+	private final DataSource dataSource;
 
-	final private UserTransaction userTransaction;
+	private final UserTransaction userTransaction;
 
 	private boolean commmitted = false;
 
@@ -51,7 +49,7 @@ public class JTASessionSpi implements SessionSpi {
 	 * Constructor.
 	 * 
 	 * @param dataSource {@link DataSource} to use for this session.
-	 * @param utName JTA {@link UserTransaction} JNDI name.
+	 * @param userTransaction {@link UserTransaction} instance
 	 * 
 	 */
 	public JTASessionSpi(DataSource dataSource, UserTransaction userTransaction) {

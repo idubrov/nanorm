@@ -137,6 +137,10 @@ public class SimpleResultMapTest extends MapperTestBase {
             public void handleResult(Car car) {
                 cars.add(car);
             }
+            
+            public void finish() {
+            	// Nothning...
+            }
         };
         mapper.listCars2(rc);
         Assert.assertEquals(2, cars.size());

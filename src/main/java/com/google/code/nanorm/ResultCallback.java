@@ -36,4 +36,9 @@ public interface ResultCallback<T> {
 	 * @param obj result
 	 */
 	void handleResult(T obj);
+
+	/**
+	 * No more data will be availabel, so flush the data to the destination.
+	 */
+	void finish();
 }

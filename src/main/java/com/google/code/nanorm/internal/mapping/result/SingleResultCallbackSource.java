@@ -59,6 +59,10 @@ public class SingleResultCallbackSource implements ResultCallbackSource {
                 setter.setValue(instance, obj);
                 set = true;
             }
+
+			public void finish() {
+				// Nothing to do, we set data when it came.
+			}
         };
     }
 }
