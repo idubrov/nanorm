@@ -18,10 +18,7 @@ package com.google.code.nanorm.config;
 
 import java.lang.reflect.Type;
 
-import javax.sql.DataSource;
-
 import com.google.code.nanorm.NanormFactory;
-import com.google.code.nanorm.SessionManagement;
 import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.internal.FactoryImpl;
 import com.google.code.nanorm.internal.config.InternalConfiguration;
