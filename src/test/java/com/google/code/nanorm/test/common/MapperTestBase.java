@@ -23,9 +23,9 @@ import java.sql.Statement;
 import org.junit.After;
 import org.junit.Before;
 
-import com.google.code.nanorm.NanormConfiguration;
 import com.google.code.nanorm.NanormFactory;
 import com.google.code.nanorm.Session;
+import com.google.code.nanorm.config.NanormConfiguration;
 
 /**
  *

@@ -24,7 +24,7 @@ import com.google.code.nanorm.internal.session.SessionSpi;
  * @author Ivan Dubrov
  * @version 1.0 25.06.2008
  */
-public interface SessionSpiConfig {
+public interface SessionConfig {
 
 	/**
 	 * Create new session SPI from this configuration.

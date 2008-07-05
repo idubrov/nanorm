@@ -27,7 +27,7 @@ import com.google.code.nanorm.NanormFactory;
 import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.Session;
 import com.google.code.nanorm.TypeHandlerFactory;
-import com.google.code.nanorm.config.SessionSpiConfig;
+import com.google.code.nanorm.config.SessionConfig;
 import com.google.code.nanorm.exceptions.DataException;
 import com.google.code.nanorm.internal.config.InternalConfiguration;
 import com.google.code.nanorm.internal.config.StatementConfig;
@@ -55,15 +55,15 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 
     private final InternalConfiguration config;
     
-    private final SessionSpiConfig sessionSpiConfig;
+    private final SessionConfig sessionSpiConfig;
 
     /**
      * Constructor.
      * @param internalConfig factory configuration
      */
-    public FactoryImpl(InternalConfiguration internalConfig) {
+    public FactoryImpl(InternalConfiguration internalConfig, SessionConfig sessionConfig) {
         this.config = internalConfig;
-        this.sessionSpiConfig = null;
+        this.sessionSpiConfig = sessionConfig;
     }
 
     /**

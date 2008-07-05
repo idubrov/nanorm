@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package com.google.code.nanorm;
+package com.google.code.nanorm.config;
 
 import java.lang.reflect.Type;
 
 import javax.sql.DataSource;
 
-import com.google.code.nanorm.config.SessionSpiConfig;
+import com.google.code.nanorm.NanormFactory;
+import com.google.code.nanorm.SessionManagement;
+import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.internal.FactoryImpl;
 import com.google.code.nanorm.internal.config.InternalConfiguration;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
@@ -42,7 +44,7 @@ public class NanormConfiguration {
 
 	private final InternalConfiguration config;
 	
-	private SessionSpiConfig sessionSpiConfig;
+	private SessionConfig sessionConfig;
 
 	/**
 	 * Constructor.
@@ -70,8 +72,8 @@ public class NanormConfiguration {
 	/**
 	 * Set session manager.
 	 */
-	public void setSessionManagement(SessionManagement sessionManagement, DataSource dataSource) {
-		
+	public void setSessionConfig(SessionConfig sessionConfig) {
+		this.sessionConfig = sessionConfig;
 	}
 
 	
@@ -80,6 +82,6 @@ public class NanormConfiguration {
 	 * @return factory.
 	 */
 	public NanormFactory buildFactory() {
-		return new FactoryImpl(config);
+		return new FactoryImpl(config, sessionConfig);
 	}
 }

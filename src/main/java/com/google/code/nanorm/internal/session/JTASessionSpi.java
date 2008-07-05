@@ -54,21 +54,11 @@ public class JTASessionSpi implements SessionSpi {
 	 * @param utName JTA {@link UserTransaction} JNDI name.
 	 * 
 	 */
-	public JTASessionSpi(DataSource dataSource, String utName) {
+	public JTASessionSpi(DataSource dataSource, UserTransaction userTransaction) {
 		this.dataSource = dataSource;
 
-		try {
-			InitialContext initCtx = new InitialContext();
-			this.userTransaction = (UserTransaction) initCtx.lookup(utName);
-		} catch (NamingException e) {
-			throw new SessionException("Failed to get JTA transaction!", e);
-		}
-
-		if (this.userTransaction == null) {
-			throw new IllegalArgumentException(
-					"JTA Transaction could not be found under name " + utName);
-		}
-
+		this.userTransaction = userTransaction;
+		
 		try {
 			newTransaction = (userTransaction.getStatus() == Status.STATUS_NO_TRANSACTION);
 		} catch (Exception e) {

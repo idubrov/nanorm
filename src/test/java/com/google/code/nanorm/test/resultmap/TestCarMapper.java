@@ -28,7 +28,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.code.nanorm.Block;
-import com.google.code.nanorm.NanormConfiguration;
 import com.google.code.nanorm.NanormFactory;
 import com.google.code.nanorm.SQLSource;
 import com.google.code.nanorm.Session;
@@ -38,6 +37,7 @@ import com.google.code.nanorm.annotations.ResultMapList;
 import com.google.code.nanorm.annotations.ResultMapRef;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.annotations.Source;
+import com.google.code.nanorm.config.NanormConfiguration;
 import com.google.code.nanorm.test.beans.Car;
 
 /**
