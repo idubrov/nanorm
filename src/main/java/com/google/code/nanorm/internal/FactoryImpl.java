@@ -144,6 +144,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 		// Close spi after this block if in auto mode
 		try {
 			Connection conn = spi.getConnection();
+			// TODO: Log connection being used
 			
 			// Close connection after this try
 			try {

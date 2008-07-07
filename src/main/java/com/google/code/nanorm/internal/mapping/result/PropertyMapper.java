@@ -71,6 +71,7 @@ public class PropertyMapper {
 			value = request.getQueryDelegate().query(config.getSubselect(),
 					new Object[] { value });
 		}
+		// TODO: Log property being mapped
 		setter.setValue(result, value);
 	}
 }
