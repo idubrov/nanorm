@@ -15,6 +15,8 @@
  */
 package com.google.code.nanorm.test.beans;
 
+import java.sql.Timestamp;
+
 /**
  *
  * @author Ivan Dubrov
@@ -57,6 +59,8 @@ public class PrimitiveTypesBean {
     private Double wrapDouble;
     
     private String string;
+    
+    private Timestamp timestamp;
     
     /** @return Returns the id. */
     public int getId() {
@@ -237,4 +241,14 @@ public class PrimitiveTypesBean {
     public void setString(String string) {
         this.string = string;
     }
+
+	/** @return the timestamp */
+	public Timestamp getTimestamp() {
+		return timestamp;
+	}
+
+	/** @param timestamp the timestamp to set */
+	public void setTimestamp(Timestamp timestamp) {
+		this.timestamp = timestamp;
+	}
 }

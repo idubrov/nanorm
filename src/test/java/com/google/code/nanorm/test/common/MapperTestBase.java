@@ -74,16 +74,18 @@ public class MapperTestBase {
             "primShort SMALLINT, wrapShort SMALLINT, primInt INT, wrapInt INT," +
             "primLong BIGINT, wrapLong BIGINT, primBoolean BOOL, wrapBoolean BOOL," +
             "primChar CHAR(1), wrapChar CHAR(1), primFloat REAL, wrapFloat REAL," +
-            "primDouble DOUBLE, wrapDouble DOUBLE, string VARCHAR(50))");
+            "primDouble DOUBLE, wrapDouble DOUBLE, string VARCHAR(50), " +
+            "timestamp TIMESTAMP)");
         
         execute(
             "INSERT INTO PRIMITIVE(id, primByte, wrapByte, primShort, wrapShort, " +
             "primInt, wrapInt, primLong, wrapLong, primBoolean, wrapBoolean, " +
-            "primChar, wrapChar, primFloat, wrapFloat, primDouble, wrapDouble, string) VALUES(" +
+            "primChar, wrapChar, primFloat, wrapFloat, primDouble, wrapDouble, string, timestamp) VALUES(" +
             "1, 37, -23, 8723, -6532, " +
             "824756237, -123809163, 282347987987234987, -23429879871239879, TRUE, FALSE," +
             "'a', 'H', 34.5, -25.25, " +
-            "44.5, -47.125, 'Hello, H2!')");
+            "44.5, -47.125, 'Hello, H2!', " +
+            "'2008-07-08 18:08:11')");
         
         // Create some owners
         execute(
@@ -104,7 +106,6 @@ public class MapperTestBase {
         
         factory = new NanormConfiguration().buildFactory();
         transaction = factory.openSession(conn);
-        
     }
     
     /**
@@ -127,9 +128,13 @@ public class MapperTestBase {
      */
     @After
     public void tearDown() throws SQLException {
-        transaction.rollback();
-        transaction.end();
-        conn.close();
+    	if(transaction != null) {
+    		transaction.rollback();
+    		transaction.end();
+    	}
+    	if(conn != null) {
+    		conn.close();
+    	}
     }
 
 }

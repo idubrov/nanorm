@@ -15,6 +15,9 @@
  */
 package com.google.code.nanorm.test.resultmap;
 
+import java.sql.Timestamp;
+import java.util.Calendar;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -59,5 +62,6 @@ public class PrimitiveTypesResultMapTest extends MapperTestBase {
         Assert.assertEquals(44.5, bean.getPrimDouble(), 0.01);
         Assert.assertEquals(-47.125, (double) bean.getWrapDouble(), 0.01);
         Assert.assertEquals("Hello, H2!", bean.getString());
+        Assert.assertEquals(new Timestamp(1215515291000L), bean.getTimestamp());
     }
 }
