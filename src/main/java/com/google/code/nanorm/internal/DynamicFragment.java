@@ -15,11 +15,13 @@
  */
 package com.google.code.nanorm.internal;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import com.google.code.nanorm.SQLSource;
+import com.google.code.nanorm.exceptions.DynamicSQLException;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 
 /**
@@ -51,20 +53,23 @@ public class DynamicFragment implements Fragment {
 	 * @see com.google.code.nanorm.internal.Fragment#bindParameters(java.lang.Object[])
 	 */
 	public BoundFragment bindParameters(Object[] parameters) {
-		try {
-			for (Method method : sqlSource.getMethods()) {
-				if (method.getName().equals(SQLSource.GENERATOR_METHOD)) {
+		for (Method method : sqlSource.getMethods()) {
+			if (method.getName().equals(SQLSource.GENERATOR_METHOD)) {
+				try {
 					SQLSource source = sqlSource.newInstance();
 					source.setIntrospectionFactory(introspectionFactory);
 					method.invoke(source, parameters);
 					return source;
+				} catch (Exception e) {
+					throw new DynamicSQLException("Failed to create SQL source and invoke generator method", e);
 				}
 			}
-			throw new RuntimeException("METHOD NOT FOUND");
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("DYNAMIC SQL ERROR");
 		}
+		throw new DynamicSQLException("Dynamic SQL generator method "
+				+ SQLSource.GENERATOR_METHOD
+				+ " not found in dynamic SQL source " + sqlSource
+				+ "(check you have public method named "
+				+ SQLSource.GENERATOR_METHOD + " in dynamic SQL source class)");
 	}
 
 	/**
@@ -72,7 +77,7 @@ public class DynamicFragment implements Fragment {
 	 */
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this).append("sqlSource",
-				sqlSource).toString();
+		return new ToStringBuilder(this).append("sqlSource", sqlSource)
+				.toString();
 	}
 }
