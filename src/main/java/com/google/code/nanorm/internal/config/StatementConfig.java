@@ -44,7 +44,7 @@ public class StatementConfig {
 
 	private boolean insert;
 
-	private Fragment statementBuilder;
+	private Fragment fragment;
 
 	private ResultMap resultMapper;
 
@@ -91,12 +91,12 @@ public class StatementConfig {
 
 	/** @return Returns the statementBuilder. */
 	public Fragment getStatementBuilder() {
-		return statementBuilder;
+		return fragment;
 	}
 
 	/** @param statementBuilder The statementBuilder to set. */
 	public void setStatementBuilder(Fragment statementBuilder) {
-		this.statementBuilder = statementBuilder;
+		this.fragment = statementBuilder;
 	}
 
 	/** @return Returns the resultMapper. */
@@ -193,7 +193,7 @@ public class StatementConfig {
 	public String toString() {
 		return new ToStringBuilder(this).append("id", id).append("update",
 				update).append("resultType", resultType).append("resultMapper",
-				resultMapper).append("statementBuilder", statementBuilder)
+				resultMapper).append("fragment", fragment)
 				.append("parameterTypes", parameterTypes).append("selectKey",
 						selectKey).append("selectKeyAfter", selectKeyAfter)
 				.toString();

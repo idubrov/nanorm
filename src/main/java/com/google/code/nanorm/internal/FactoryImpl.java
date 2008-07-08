@@ -119,8 +119,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 	 */
 	public Object query(StatementConfig stConfig, Object[] args) {
 		// TODO: Refactor!
-		
-		
+
 		// Request-scoped data
 		Request request = new Request(this);
 
@@ -132,80 +131,49 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 			isAuto = true;
 			spi = sessionSpiConfig.newSessionSpi();
 		}
-		// Close spi after this block if in auto mode
+		// Close session spi after this block if in auto mode
 		try {
 			Connection conn = spi.getConnection();
 			// TODO: Log connection being used
-			
+
 			// TODO: Could cause NPE if return type is primitive
-			Object generatedKey = null;
-			if(stConfig.isInsert() && 
-					stConfig.getSelectKey() != null && !stConfig.isSelectKeyAfter()) {
-				// TODO: Logging
-				generatedKey = query(stConfig.getSelectKey(), args);
-				if(stConfig.getKeySetter() != null) {
-					stConfig.getKeySetter().setValue(args, generatedKey);
-				}
-			}
-			
-			// Statement fragment
-			BoundFragment fragment = stConfig.getStatementBuilder().bindParameters(
-					args);
+			Object result = null;
+
+			// Generate key prior to mapping the parameters, so we
+			// have a chance to update arguments with generated key
+			result = selectKey(result, stConfig, false, args);
+
+			// Bind fragment to arguments
+			BoundFragment fragment = stConfig.getStatementBuilder()
+					.bindParameters(args);
 
 			// SQL, parameters and their types
 			StringBuilder sql = new StringBuilder();
 			List<Object> parameters = new ArrayList<Object>();
 			List<Type> types = new ArrayList<Type>();
 
-			// Generate everything
+			// Fill SQL string builder, parameter and types
 			fragment.generate(sql, parameters, types);
 
 			// Close connection after this try
 			try {
 				PreparedStatement st = conn.prepareStatement(sql.toString());
 				try {
-					// Map parameters and execute query
+					// Map parameters to the statement
 					mapParameters(st, types, parameters);
 
-					Object result;
 					if (stConfig.isInsert()) {
-						// TODO: Select key
 						st.executeUpdate();
-						
-						// TODO: Merge with previous!
-						if(stConfig.getSelectKey() != null && stConfig.isSelectKeyAfter()) {
-							// TODO: Logging
-							generatedKey = query(stConfig.getSelectKey(), args);
-							if(stConfig.getKeySetter() != null) {
-								stConfig.getKeySetter().setValue(args, generatedKey);
-							}
-						}
-						
-						result = generatedKey;
+
+						result = selectKey(result, stConfig, true, args);
 					} else if (stConfig.isUpdate()) {
 						result = st.executeUpdate();
 					} else {
 						ResultSet rs = st.executeQuery();
 
-						// If we have ResultCallback in parameters -- use it
-						ResultCallback<Object> callback;
-						if (stConfig.getCallbackIndex() != StatementConfig.RETURN_VALUE) {
-							// This is OK, since we deduced result type exactly
-							// from
-							// this parameter
-							@SuppressWarnings("unchecked")
-							ResultCallback<Object> temp = (ResultCallback<Object>) args[stConfig
-									.getCallbackIndex()];
-							callback = temp;
-						} else {
-							// Prepare result callback and process results
-							ResultGetterSetter rgs = new ResultGetterSetter(
-									stConfig.getResultType());
-							ResultCallbackSource callbackSource = ResultCollectorUtil
-									.createResultCallback(rgs, rgs, stConfig);
-
-							callback = callbackSource.forInstance(request);
-						}
+						// Create callback that will receive the mapped objects
+						ResultCallback<Object> callback = createResultCallback(
+								stConfig, args, request);
 
 						// Iterate through the result set
 						ResultMap resultMapper = stConfig.getResultMapper();
@@ -215,6 +183,10 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 						}
 						callback.finish();
 						result = request.getResult();
+					}
+
+					if (result == null) {
+						checkNotPrimitive(stConfig.getResultType());
 					}
 					return result;
 				} finally {
@@ -227,10 +199,59 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 				spi.releaseConnection(conn);
 			}
 		} finally {
-			if(isAuto) {
+			if (isAuto) {
 				spi.end();
 			}
 		}
+	}
+
+	private ResultCallback<Object> createResultCallback(
+			StatementConfig stConfig, Object[] args, Request request) {
+
+		// If we have ResultCallback in parameters -- use it,
+		// otherwise create callback which will set result to the
+		// request.
+		ResultCallback<Object> callback;
+		if (stConfig.getCallbackIndex() != StatementConfig.RETURN_VALUE) {
+			// This is OK, since we deduced result type exactly
+			// from this parameter
+			@SuppressWarnings("unchecked")
+			ResultCallback<Object> temp = (ResultCallback<Object>) args[stConfig
+					.getCallbackIndex()];
+			callback = temp;
+		} else {
+			// Prepare result callback and process results
+			ResultGetterSetter rgs = new ResultGetterSetter(stConfig
+					.getResultType());
+			ResultCallbackSource callbackSource = ResultCollectorUtil
+					.createResultCallback(rgs, rgs, stConfig);
+
+			callback = callbackSource.forInstance(request);
+		}
+		return callback;
+	}
+
+	private void checkNotPrimitive(Type type) {
+		if (type instanceof Class<?> && ((Class<?>) type).isPrimitive()
+				&& type != void.class) {
+			// TODO: Refer to the method/mapper class?
+			throw new DataException(
+					"Going to return null result, but return type is primitive ("
+							+ type + ")");
+		}
+	}
+
+	private Object selectKey(Object result, StatementConfig stConfig,
+			boolean after, Object[] args) {
+		if (stConfig.isInsert() && stConfig.getSelectKey() != null
+				&& after == stConfig.isSelectKeyAfter()) {
+			// TODO: Logging
+			result = query(stConfig.getSelectKey(), args);
+			if (stConfig.getKeySetter() != null) {
+				stConfig.getKeySetter().setValue(args, result);
+			}
+		}
+		return result;
 	}
 
 	private void mapParameters(PreparedStatement statement, List<Type> types,

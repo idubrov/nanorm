@@ -38,4 +38,14 @@ public class DataException extends GenericException {
 	public DataException(String message, Throwable cause) {
 		super(message, cause);
 	}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param message message
+	 */
+	public DataException(String message) {
+		super(message);
+	}
+
 }
