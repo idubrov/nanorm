@@ -87,6 +87,9 @@ public class MapperTestBase {
             "44.5, -47.125, 'Hello, H2!', " +
             "'2008-07-08 18:08:11')");
         
+        // Sequence for ids
+        execute("CREATE SEQUENCE ids START WITH 123 INCREMENT BY 1");
+        
         // Create some owners
         execute(
             "CREATE TABLE OWNERS(id INTEGER, car_id INTEGER, firstName VARCHAR(50), lastName VARCHAR(50))");

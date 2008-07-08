@@ -21,6 +21,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.internal.Fragment;
+import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.mapping.result.ResultMap;
 
 /**
@@ -41,6 +42,8 @@ public class StatementConfig {
 
 	private boolean update;
 
+	private boolean insert;
+
 	private Fragment statementBuilder;
 
 	private ResultMap resultMapper;
@@ -50,6 +53,12 @@ public class StatementConfig {
 	private Type[] parameterTypes;
 
 	private int callbackIndex = RETURN_VALUE;
+
+	private StatementConfig selectKey;
+
+	private boolean selectKeyAfter;
+	
+	private Setter keySetter;
 
 	/**
 	 * Constructor.
@@ -68,6 +77,16 @@ public class StatementConfig {
 	/** @param update The update to set. */
 	public void setUpdate(boolean update) {
 		this.update = update;
+	}
+
+	/** @return the insert */
+	public boolean isInsert() {
+		return insert;
+	}
+
+	/** @param insert the insert to set */
+	public void setInsert(boolean insert) {
+		this.insert = insert;
 	}
 
 	/** @return Returns the statementBuilder. */
@@ -110,14 +129,44 @@ public class StatementConfig {
 		this.parameterTypes = parameterTypes;
 	}
 
+	/** @return the selectKey */
+	public StatementConfig getSelectKey() {
+		return selectKey;
+	}
+
+	/** @param selectKey the selectKey to set */
+	public void setSelectKey(StatementConfig selectKey) {
+		this.selectKey = selectKey;
+	}
+	
+	/** @return the selectKeyAfter */
+	public boolean isSelectKeyAfter() {
+		return selectKeyAfter;
+	}
+
+	/** @param selectKeyAfter the selectKeyAfter to set */
+	public void setSelectKeyAfter(boolean selectKeyAfter) {
+		this.selectKeyAfter = selectKeyAfter;
+	}
+	
+	/** @return the keySetter */
+	public Setter getKeySetter() {
+		return keySetter;
+	}
+
+	/** @param keySetter the keySetter to set */
+	public void setKeySetter(Setter keySetter) {
+		this.keySetter = keySetter;
+	}
+
 	/** @return Returns the id. */
 	public String getId() {
 		return id;
 	}
 
 	/**
-	 * Get index of the parameter that is instance of {@link ResultCallback}, which
-	 * will be used for processing the results.
+	 * Get index of the parameter that is instance of {@link ResultCallback},
+	 * which will be used for processing the results.
 	 * 
 	 * @see #RETURN_VALUE
 	 * @return callback parameter index.
@@ -127,8 +176,8 @@ public class StatementConfig {
 	}
 
 	/**
-	 * Set index of the parameter that is instance of {@link ResultCallback}, which
-	 * will be used for processing the results.
+	 * Set index of the parameter that is instance of {@link ResultCallback},
+	 * which will be used for processing the results.
 	 * 
 	 * @see #RETURN_VALUE
 	 * @param callbackIndex callback parameter index.
@@ -145,6 +194,8 @@ public class StatementConfig {
 		return new ToStringBuilder(this).append("id", id).append("update",
 				update).append("resultType", resultType).append("resultMapper",
 				resultMapper).append("statementBuilder", statementBuilder)
-				.append("parameterTypes", parameterTypes).toString();
+				.append("parameterTypes", parameterTypes).append("selectKey",
+						selectKey).append("selectKeyAfter", selectKeyAfter)
+				.toString();
 	}
 }

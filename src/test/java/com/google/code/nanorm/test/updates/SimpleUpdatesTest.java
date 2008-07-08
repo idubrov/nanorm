@@ -15,11 +15,16 @@
  */
 package com.google.code.nanorm.test.updates;
 
+import java.sql.SQLException;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
 
+import com.google.code.nanorm.annotations.Insert;
 import com.google.code.nanorm.annotations.Select;
+import com.google.code.nanorm.annotations.SelectKey;
+import com.google.code.nanorm.annotations.SelectKeyType;
 import com.google.code.nanorm.annotations.Update;
 import com.google.code.nanorm.test.beans.Car;
 import com.google.code.nanorm.test.common.MapperTestBase;
@@ -36,11 +41,23 @@ public class SimpleUpdatesTest extends MapperTestBase {
         @Select("SELECT id, model, year FROM cars WHERE ID = ${1}")
         Car getCarById(int id);
 
-        @Update("INSERT INTO cars(id, model, year) VALUES (${1.id}, ${1.model}, ${1.year})")
+        @Insert("INSERT INTO cars(id, model, year) VALUES (${1.id}, ${1.model}, ${1.year})")
         void insertCar(Car car);
         
         @Update("INSERT INTO cars(id, model, year) VALUES (${1.id}, ${1.model}, ${1.year})")
         int insertCar2(Car car);
+        
+        @Insert("INSERT INTO cars(id, model, year) VALUES (next value for ids, ${1.model}, ${1.year})")
+        @SelectKey(value = "SELECT CURRVAL('ids')", type = SelectKeyType.AFTER)
+        int insertCar3(Car car);
+        
+        @Insert("INSERT INTO cars(id, model, year) VALUES (next value for ids, ${1.model}, ${1.year})")
+        @SelectKey(value = "SELECT CURRVAL('ids')", type = SelectKeyType.AFTER, property = "1.id")
+        int insertCar4(Car car);
+        
+        @Insert("INSERT INTO cars(id, model, year) VALUES (${1.id}, ${1.model}, ${1.year})")
+        @SelectKey(value = "SELECT NEXTVAL('ids')", type = SelectKeyType.BEFORE, property = "1.id")
+        int insertCar5(Car car);
     }
     
     @Test
@@ -78,6 +95,77 @@ public class SimpleUpdatesTest extends MapperTestBase {
         Assert.assertEquals(1, mapper.insertCar2(car1));
         
         Car car2 = mapper.getCarById(1002);
+        Assert.assertEquals(car1.getId(), car2.getId());
+        Assert.assertEquals(car1.getModel(), car2.getModel());
+        Assert.assertEquals(car1.getYear(), car2.getYear());
+    }
+    
+    @Test
+    /**
+     * Test automatic result mapping
+     */
+    public void testInsert3() throws SQLException {
+        Mapper1 mapper = factory.createMapper(Mapper1.class);
+
+        Car car1 = new Car();
+        car1.setId(456);
+        car1.setModel("Modello");
+        car1.setYear(2008);
+
+        execute("ALTER SEQUENCE ids RESTART WITH 1432"); 
+        int id = mapper.insertCar3(car1);
+        // TODO: Probably, the framework should set it.
+        car1.setId(id);
+        Assert.assertEquals(1432, id);
+        
+        Car car2 = mapper.getCarById(id);
+        Assert.assertEquals(car1.getId(), car2.getId());
+        Assert.assertEquals(car1.getModel(), car2.getModel());
+        Assert.assertEquals(car1.getYear(), car2.getYear());
+    }
+    
+    @Test
+    /**
+     * Test automatic result mapping
+     */
+    public void testInsert4() throws SQLException {
+        Mapper1 mapper = factory.createMapper(Mapper1.class);
+
+        Car car1 = new Car();
+        car1.setId(456);
+        car1.setModel("Modello");
+        car1.setYear(2008);
+
+        execute("ALTER SEQUENCE ids RESTART WITH 1437"); 
+        int id = mapper.insertCar4(car1);
+        // Now framework sets it
+        //car1.setId(id);
+        Assert.assertEquals(1437, id);
+        
+        Car car2 = mapper.getCarById(id);
+        Assert.assertEquals(car1.getId(), car2.getId());
+        Assert.assertEquals(car1.getModel(), car2.getModel());
+        Assert.assertEquals(car1.getYear(), car2.getYear());
+    }
+    
+    @Test
+    /**
+     * Test automatic result mapping
+     */
+    public void testInsert5() throws SQLException {
+        Mapper1 mapper = factory.createMapper(Mapper1.class);
+
+        Car car1 = new Car();
+        car1.setId(456);
+        car1.setModel("Modello");
+        car1.setYear(2008);
+
+        execute("ALTER SEQUENCE ids RESTART WITH 1565"); 
+        int id = mapper.insertCar5(car1);
+        Assert.assertEquals(1565, id);
+        Assert.assertEquals(1565, car1.getId());
+
+        Car car2 = mapper.getCarById(id);
         Assert.assertEquals(car1.getId(), car2.getId());
         Assert.assertEquals(car1.getModel(), car2.getModel());
         Assert.assertEquals(car1.getYear(), car2.getYear());

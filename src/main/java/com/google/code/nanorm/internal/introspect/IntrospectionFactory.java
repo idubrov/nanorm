@@ -61,6 +61,16 @@ public interface IntrospectionFactory {
 	 * @return getter instance
 	 */
 	Getter buildParameterGetter(Type[] types, String path);
+	
+	/**
+	 * Build parameter setter instance.
+	 * TODO: Write test on this!
+	 * 
+	 * @param types parameter types
+	 * @param path nested property path
+	 * @return setter instance
+	 */
+	Setter buildParameterSetter(Type[] types, String path);
 
 	/**
 	 * Get property type.

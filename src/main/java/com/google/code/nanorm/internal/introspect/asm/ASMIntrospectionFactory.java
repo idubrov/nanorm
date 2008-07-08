@@ -128,11 +128,31 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 			final String path) {
 		return buildGetterImpl(null, types, path);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
 	public Setter buildSetter(final Class<?> beanClass, final String path) {
+		return buildSetterImpl(beanClass, null, path);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public Setter buildParameterSetter(final Type[] types, final String path) {
+		return buildSetterImpl(null, types, path);
+	}
+
+	/**
+	 * Create regular setter or parameter getter instance.
+	 * 
+	 * @param beanClass bean class; should be null if types is not null
+	 * @param types parameter types; should be null if beanClass is not null
+	 * @param path property path
+	 * @return
+	 */
+	public Setter buildSetterImpl(final Class<?> beanClass,
+			final Type[] types, final String path) {
 		AccessorKey key = new AccessorKey(beanClass, path);
 		Setter instance = setters.get(key);
 		if (instance == null) {
@@ -142,8 +162,9 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 			AccessorBuilder builder = new AccessorBuilder(name, true);
 			Type[] finalType = new Type[1];
 
-			byte[] code = IntrospectUtils.visitPath(path, beanClass, builder,
-					finalType);
+			byte[] code = types == null ? IntrospectUtils.visitPath(path,
+					beanClass, builder, finalType) : IntrospectUtils.visitPath(
+					path, types, builder, finalType);
 
 			// Re-check we didn't created other instance while we were
 			// generating

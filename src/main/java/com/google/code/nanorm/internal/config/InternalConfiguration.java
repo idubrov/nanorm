@@ -28,11 +28,14 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.SQLSource;
 import com.google.code.nanorm.TypeHandlerFactory;
+import com.google.code.nanorm.annotations.Insert;
 import com.google.code.nanorm.annotations.Mapping;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapList;
 import com.google.code.nanorm.annotations.ResultMapRef;
 import com.google.code.nanorm.annotations.Select;
+import com.google.code.nanorm.annotations.SelectKey;
+import com.google.code.nanorm.annotations.SelectKeyType;
 import com.google.code.nanorm.annotations.Source;
 import com.google.code.nanorm.annotations.Update;
 import com.google.code.nanorm.exceptions.ConfigurationException;
@@ -40,7 +43,9 @@ import com.google.code.nanorm.internal.DynamicFragment;
 import com.google.code.nanorm.internal.Fragment;
 import com.google.code.nanorm.internal.TextFragment;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
+import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.mapping.result.ResultMapImpl;
+import com.google.code.nanorm.internal.mapping.result.SingleValueResultMap;
 
 /**
  * TODO: Merge processing and searching. Maybe, lazy loading (when referenced).
@@ -166,6 +171,7 @@ public class InternalConfiguration {
 			return;
 		}
 
+		// TODO: Invoke method.getGeneryParameters once!
 		StatementConfig stConfig = new StatementConfig(key);
 
 		ResultMapConfig config = getResultMapConfig(method);
@@ -173,12 +179,15 @@ public class InternalConfiguration {
 		// TODO: Check we have only one of those!
 		Select select = method.getAnnotation(Select.class);
 		Update update = method.getAnnotation(Update.class);
+		Insert insert = method.getAnnotation(Insert.class);
 		Source source = method.getAnnotation(Source.class);
 		String sql = null;
-		boolean isUpdate = true;
+		boolean isUpdate = (update != null);
+		boolean isInsert = (insert != null);
 		if (select != null) {
 			sql = select.value();
-			isUpdate = false;
+		} else if (insert != null) {
+			sql = insert.value();
 		} else if (update != null) {
 			sql = update.value();
 		} else if (source != null) {
@@ -197,8 +206,30 @@ public class InternalConfiguration {
 					.getGenericParameterTypes(), introspectionFactory);
 			stConfig.setStatementBuilder(builder);
 			stConfig.setUpdate(isUpdate);
+			stConfig.setInsert(isInsert);
 		}
 
+		// Configure select key statement
+		SelectKey selectKey = method.getAnnotation(SelectKey.class);
+		if(selectKey != null) {
+			StatementConfig selectKeySt = new StatementConfig(key + ":selectKey");
+			selectKeySt.setStatementBuilder(new TextFragment(selectKey.value(), method
+					.getGenericParameterTypes(), introspectionFactory));
+			selectKeySt.setParameterTypes(method.getGenericParameterTypes());
+			selectKeySt.setResultType(method.getReturnType());
+			selectKeySt.setResultMapper(new SingleValueResultMap());
+			
+			if(!selectKey.property().equals("")) {
+				Setter keySetter = 
+					introspectionFactory.buildParameterSetter(method.getGenericParameterTypes(), selectKey.property());
+				stConfig.setKeySetter(keySetter);
+			}
+			
+			stConfig.setSelectKeyAfter(selectKey.type() == SelectKeyType.AFTER);
+			
+			stConfig.setSelectKey(selectKeySt);
+		}
+		
 		// For update we always use method return value, but for select we try
 		// to find ResultCallback
 		// if return type is void

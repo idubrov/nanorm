@@ -103,7 +103,7 @@ public final class IntrospectUtils {
 			visitor.visitBegin(Object[].class, path);
 
 			// ...and indexing which returns Object instance
-			visitor.visitIndex(0, parameter, false, Object[].class);
+			visitor.visitIndex(0, parameter, path.length() == 0, Object[].class);
 		}
 
 		PropertyNavigator nav = new PropertyNavigator(path);

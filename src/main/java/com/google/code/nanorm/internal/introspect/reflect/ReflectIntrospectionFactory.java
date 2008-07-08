@@ -65,6 +65,11 @@ public class ReflectIntrospectionFactory extends AbstractIntrospectionFactory {
         return new ReflectParameterGetter(this, types, path);
     }
     
+	public Setter buildParameterSetter(Type[] types, String path) {
+		// TODO Implement!
+		return null;
+	}
+    
     /**
      * Lookup getter method for given bean property.
      * @param clazz bean class

@@ -118,20 +118,11 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 	 * {@inheritDoc}
 	 */
 	public Object query(StatementConfig stConfig, Object[] args) {
+		// TODO: Refactor!
+		
+		
 		// Request-scoped data
 		Request request = new Request(this);
-
-		// Statement fragment
-		BoundFragment fragment = stConfig.getStatementBuilder().bindParameters(
-				args);
-
-		// SQL, parameters and their types
-		StringBuilder sql = new StringBuilder();
-		List<Object> parameters = new ArrayList<Object>();
-		List<Type> types = new ArrayList<Type>();
-
-		// Generate everything
-		fragment.generate(sql, parameters, types);
 
 		SessionSpi spi = sessions.get();
 		boolean isAuto = false;
@@ -146,6 +137,29 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 			Connection conn = spi.getConnection();
 			// TODO: Log connection being used
 			
+			// TODO: Could cause NPE if return type is primitive
+			Object generatedKey = null;
+			if(stConfig.isInsert() && 
+					stConfig.getSelectKey() != null && !stConfig.isSelectKeyAfter()) {
+				// TODO: Logging
+				generatedKey = query(stConfig.getSelectKey(), args);
+				if(stConfig.getKeySetter() != null) {
+					stConfig.getKeySetter().setValue(args, generatedKey);
+				}
+			}
+			
+			// Statement fragment
+			BoundFragment fragment = stConfig.getStatementBuilder().bindParameters(
+					args);
+
+			// SQL, parameters and their types
+			StringBuilder sql = new StringBuilder();
+			List<Object> parameters = new ArrayList<Object>();
+			List<Type> types = new ArrayList<Type>();
+
+			// Generate everything
+			fragment.generate(sql, parameters, types);
+
 			// Close connection after this try
 			try {
 				PreparedStatement st = conn.prepareStatement(sql.toString());
@@ -154,7 +168,21 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 					mapParameters(st, types, parameters);
 
 					Object result;
-					if (stConfig.isUpdate()) {
+					if (stConfig.isInsert()) {
+						// TODO: Select key
+						st.executeUpdate();
+						
+						// TODO: Merge with previous!
+						if(stConfig.getSelectKey() != null && stConfig.isSelectKeyAfter()) {
+							// TODO: Logging
+							generatedKey = query(stConfig.getSelectKey(), args);
+							if(stConfig.getKeySetter() != null) {
+								stConfig.getKeySetter().setValue(args, generatedKey);
+							}
+						}
+						
+						result = generatedKey;
+					} else if (stConfig.isUpdate()) {
 						result = st.executeUpdate();
 					} else {
 						ResultSet rs = st.executeQuery();
