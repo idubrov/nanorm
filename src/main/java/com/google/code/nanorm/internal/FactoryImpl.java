@@ -157,7 +157,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 
 			// Close connection after this try
 			try {
-				System.err.println(sql);
+				// TODO: Log SQL
 				PreparedStatement st = conn.prepareStatement(sql.toString());
 				try {
 					// Map parameters to the statement
