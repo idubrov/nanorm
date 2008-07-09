@@ -17,6 +17,9 @@ package com.google.code.nanorm;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -167,6 +170,18 @@ public abstract class SQLSource implements BoundFragment {
 	 * @return join object which could be used to configure join parameters.
 	 */
 	public <T> Join join(ParamBlock<T> block, T... params) {
+		return join(block, Arrays.asList(params));
+	}
+	
+	/**
+	 * Iterate the parameters and apply block to each of them.
+	 * 
+	 * @param <T> parameters type
+	 * @param block block to apply to each parameter
+	 * @param params parameters
+	 * @return join object which could be used to configure join parameters.
+	 */
+	public <T> Join join(ParamBlock<T> block, Collection<T> params) {
 		Join join = new Join();
 
 		for (T param : params) {
