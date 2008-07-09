@@ -68,8 +68,8 @@ public class DynamicFragment implements Fragment {
 		throw new DynamicSQLException("Dynamic SQL generator method "
 				+ SQLSource.GENERATOR_METHOD
 				+ " not found in dynamic SQL source " + sqlSource
-				+ "(check you have public method named "
-				+ SQLSource.GENERATOR_METHOD + " in dynamic SQL source class)");
+				+ "(check you have public method named '"
+				+ SQLSource.GENERATOR_METHOD + "' in dynamic SQL source class)");
 	}
 
 	/**

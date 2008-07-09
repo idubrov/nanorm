@@ -255,12 +255,20 @@ public class InternalConfiguration {
 		} else {
 			returnType = method.getGenericReturnType();
 		}
-		stConfig.setResultMapper(new ResultMapImpl(returnType, config,
-				introspectionFactory, typeHandlerFactory));
+		stConfig.setResultMapper(createResultMap(returnType, config));
 		stConfig.setResultType(returnType);
 
 		stConfig.setParameterTypes(method.getGenericParameterTypes());
 		statementsConfig.put(key, stConfig);
+	}
+	
+	private com.google.code.nanorm.internal.mapping.result.ResultMap createResultMap(Type type, ResultMapConfig config) {
+		if(type instanceof Class<?> && ((Class<?>) type).isPrimitive()) {
+			return new SingleValueResultMap();
+		}
+		// TODO: If config is null, automap!
+		return new ResultMapImpl(type, config,
+				introspectionFactory, typeHandlerFactory);
 	}
 
 	/**
@@ -368,8 +376,10 @@ public class InternalConfiguration {
 				}
 				// TODO: Validate method present!
 				if (!"".equals(mapping.subselect())) {
-					if (mapping.subselect().contains("#")) {
-						resMapping.setSubselectKey(mapping.subselect());
+					// TODO: Map it?
+					if(mapping.subselectMapper() != Object.class) {
+						resMapping.setSubselectKey(mapping.subselectMapper().getName() + '#'
+								+ mapping.subselect());
 					} else {
 						resMapping.setSubselectKey(clazz.getName() + '#'
 								+ mapping.subselect());

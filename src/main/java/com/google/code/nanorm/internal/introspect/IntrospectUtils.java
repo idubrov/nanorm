@@ -97,6 +97,7 @@ public final class IntrospectUtils {
 			} else {
 				path = "";
 			}
+			// TODO: Bounds check!
 			beanClass = (Class<?>) types[parameter];
 
 			// Emulate parameters as Object[] as the instance type
@@ -177,6 +178,7 @@ public final class IntrospectUtils {
 				// Ignore.
 			}
 		}
+		// TODO: Refer to result map or something.
 		throw new IntrospectionException("Cannot find getter method for property " + property + 
 				" of bean class " + clazz);
 	}

@@ -54,5 +54,8 @@ public @interface Mapping {
     /**
      * Subselect query.
      */
-    String subselect() default ""; 
+    String subselect() default "";
+    
+    // TODO: Subselect Class!
+    Class<?> subselectMapper() default Object.class;
 }
