@@ -68,6 +68,10 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 		this.config = internalConfig;
 		this.sessionSpiConfig = sessionConfig;
 	}
+	
+	public InternalConfiguration getInternalConfiguration() {
+		return config;
+	}
 
 	/**
 	 * @see com.google.code.nanorm.NanormFactory#createMapper(java.lang.Class)

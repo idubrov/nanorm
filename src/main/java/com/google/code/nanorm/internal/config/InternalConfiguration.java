@@ -20,8 +20,10 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
@@ -56,6 +58,8 @@ import com.google.code.nanorm.internal.mapping.result.SingleValueResultMap;
  * @version 1.0 29.05.2008
  */
 public class InternalConfiguration {
+	
+	private final Set<Class<?>> mapped;
 
 	/**
 	 * Result map id is [package].[class]#id
@@ -82,6 +86,7 @@ public class InternalConfiguration {
 			IntrospectionFactory introspectionFactory) {
 		resultMapsConfig = new HashMap<String, ResultMapConfig>();
 		statementsConfig = new HashMap<String, StatementConfig>();
+		mapped = new HashSet<Class<?>>();
 		postProcessList = new ArrayList<ResultMappingConfig>();
 
 		// TODO: Should be configurable
@@ -114,7 +119,7 @@ public class InternalConfiguration {
 				+ method.getName();
 		return getStatementConfig(key);
 	}
-
+	
 	/**
 	 * Configure mapper.
 	 * 
@@ -124,12 +129,14 @@ public class InternalConfiguration {
 	 * @param mapper mapper interface 
 	 */
 	public synchronized void configure(Class<?> mapper) {
-		processResultMaps(mapper);
-		for (Method method : mapper.getMethods()) {
-			processMethod(method);
+		if(mapped.add(mapper)) {
+			processResultMaps(mapper);
+			for (Method method : mapper.getMethods()) {
+				processMethod(method);
+			}
+	
+			postProcess();
 		}
-
-		postProcess();
 		// TODO: Configure supeinterfaces
 	}
 
@@ -416,7 +423,7 @@ public class InternalConfiguration {
 	 * @param refId reference id
 	 * @return result map config
 	 */
-	private ResultMapConfig findResultMap(Class<?> clazz, String refId) {
+	public ResultMapConfig findResultMap(Class<?> clazz, String refId) {
 		String key = clazz.getName() + "#" + refId;
 
 		ResultMapConfig resultMapConfig = resultMapsConfig.get(key);

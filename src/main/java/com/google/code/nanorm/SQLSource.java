@@ -103,21 +103,23 @@ public abstract class SQLSource implements BoundFragment {
 		 */
 		public void generate(StringBuilder builder, List<Object> parameters,
 				List<Type> types) {
+			// TODO: Test on empty join
+			if(clauses.size() == 0) {
+				return;
+			}
 			if (open != null) {
 				builder.append(open);
 			}
 			boolean flag = false;
 			// Join elements in the clauses list
 			for (List<BoundFragment> items : clauses) {
-				if (items.size() > 0 && flag && with != null) {
+				if (flag && with != null) {
 					builder.append(with);
 				}
 				for (BoundFragment item : items) {
 					item.generate(builder, parameters, types);
 				}
-				if (items.size() > 0) {
-					flag = true;
-				}
+				flag = true;
 			}
 
 			if (close != null) {
@@ -160,6 +162,20 @@ public abstract class SQLSource implements BoundFragment {
 				.bindParameters(params);
 		last().add(f);
 	}
+	
+	/**
+	 * Append given SQL fragment with given parameter if parameter is not null.
+	 * 
+	 * @param fragment SQL fragment
+	 * @param param parameter
+	 */
+	public void appendNotNull(String fragment, Object param) {
+		if(param != null) {
+			BoundFragment f = new TextFragment(fragment, introspectionFactory)
+					.bindParameters(new Object[] { param });
+			last().add(f);
+		}
+	}
 
 	/**
 	 * Iterate the parameters and apply block to each of them.
@@ -184,15 +200,20 @@ public abstract class SQLSource implements BoundFragment {
 	public <T> Join join(ParamBlock<T> block, Collection<T> params) {
 		Join join = new Join();
 
+		List<BoundFragment> items = new ArrayList<BoundFragment>();
 		for (T param : params) {
-			List<BoundFragment> items = new ArrayList<BoundFragment>();
-			join.clauses.add(items);
+			if(items.size() > 0) {
+				items = new ArrayList<BoundFragment>();
+			}
 			stack.add(items);
 			try {
 				block.generate(param);
 			} finally {
 				assert last() == items;
 				stack.remove(stack.size() - 1);
+			}
+			if(items.size() > 0) {
+				join.clauses.add(items);
 			}
 		}
 		last().add(join);
@@ -208,15 +229,20 @@ public abstract class SQLSource implements BoundFragment {
 	public Join join(Block... blocks) {
 		Join join = new Join();
 
+		List<BoundFragment> items = new ArrayList<BoundFragment>();
 		for (Block block : blocks) {
-			List<BoundFragment> items = new ArrayList<BoundFragment>();
-			join.clauses.add(items);
+			if(items.size() > 0) {
+				items = new ArrayList<BoundFragment>();
+			}			
 			stack.add(items);
 			try {
 				block.generate();
 			} finally {
 				assert last() == items;
 				stack.remove(stack.size() - 1);
+			}
+			if(items.size() > 0) {
+				join.clauses.add(items);
 			}
 		}
 		last().add(join);

@@ -57,6 +57,10 @@ public class NanormConfiguration {
 				introspectionFactory);
 	}
 
+	public void configure(Class<?> mapperClass) {
+		config.configure(mapperClass);
+	}
+
 	/**
 	 * Register type handler.
 	 * @param type type for handler

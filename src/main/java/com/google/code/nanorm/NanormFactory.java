@@ -17,6 +17,8 @@ package com.google.code.nanorm;
 
 import java.sql.Connection;
 
+import com.google.code.nanorm.internal.config.InternalConfiguration;
+
 /**
  * Central interface of the Nanorm library. Used for creating the mappers and
  * opening the sessions.
@@ -58,4 +60,6 @@ public interface NanormFactory {
 	 * @return session
 	 */
 	Session openSession(Connection conn);
+	
+	InternalConfiguration getInternalConfiguration();
 }
