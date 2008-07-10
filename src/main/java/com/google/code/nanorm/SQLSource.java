@@ -186,7 +186,7 @@ public abstract class SQLSource implements BoundFragment {
 	 * @return join object which could be used to configure join parameters.
 	 */
 	public <T> Join join(ParamBlock<T> block, T... params) {
-		return join(block, Arrays.asList(params));
+		return join(block, params == null ? null : Arrays.asList(params));
 	}
 	
 	/**
@@ -194,29 +194,31 @@ public abstract class SQLSource implements BoundFragment {
 	 * 
 	 * @param <T> parameters type
 	 * @param block block to apply to each parameter
-	 * @param params parameters
+	 * @param params parameters, null collection is treated as empty one
 	 * @return join object which could be used to configure join parameters.
 	 */
 	public <T> Join join(ParamBlock<T> block, Collection<T> params) {
 		Join join = new Join();
-
-		List<BoundFragment> items = new ArrayList<BoundFragment>();
-		for (T param : params) {
-			if(items.size() > 0) {
-				items = new ArrayList<BoundFragment>();
+		
+		if(params != null) {
+			List<BoundFragment> items = new ArrayList<BoundFragment>();
+			for (T param : params) {
+				if(items.size() > 0) {
+					items = new ArrayList<BoundFragment>();
+				}
+				stack.add(items);
+				try {
+					block.generate(param);
+				} finally {
+					assert last() == items;
+					stack.remove(stack.size() - 1);
+				}
+				if(items.size() > 0) {
+					join.clauses.add(items);
+				}
 			}
-			stack.add(items);
-			try {
-				block.generate(param);
-			} finally {
-				assert last() == items;
-				stack.remove(stack.size() - 1);
-			}
-			if(items.size() > 0) {
-				join.clauses.add(items);
-			}
+			last().add(join);
 		}
-		last().add(join);
 		return join;
 	}
 
