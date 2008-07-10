@@ -21,6 +21,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -177,10 +178,13 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 
 			// Close connection after this try
 			try {
-				// TODO: Log SQL
 				if(LOGGER_SQL.isDebugEnabled()) {
 					LOGGER_SQL.debug(sql.toString());
+					if(LOGGER_SQL.isTraceEnabled()) {
+						LOGGER_SQL.trace("Parameters: " + parameters.toString());
+					}
 				}
+				
 				PreparedStatement st = conn.prepareStatement(sql.toString());
 				try {
 					// Map parameters to the statement
