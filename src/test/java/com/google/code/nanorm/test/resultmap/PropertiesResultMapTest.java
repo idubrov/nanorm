@@ -32,7 +32,7 @@ public class PropertiesResultMapTest extends MapperTestBase {
     public static class TestBean {
         private int id;
         
-        private String moDeL;
+        private String subJeCT;
 
         /** @return Returns the id. */
         public int getId() {
@@ -44,19 +44,19 @@ public class PropertiesResultMapTest extends MapperTestBase {
             this.id = id;
         }
 
-        /** @return Returns the moDeL. */
-        public String getMoDeL() {
-            return moDeL;
+        /** @return Returns the subJeCT. */
+        public String getSubJeCT() {
+            return subJeCT;
         }
 
-        /** @param moDeL The moDeL to set. */
-        public void setMoDeL(String moDeL) {
-            this.moDeL = moDeL;
+        /** @param subJeCT The subJeCT to set. */
+        public void setSubJeCT(String moDeL) {
+            this.subJeCT = moDeL;
         }
     }
     
     public interface Mapper {
-        @Select("SELECT id, model FROM cars WHERE ID = ${1}")
+        @Select("SELECT id, subject FROM articles WHERE ID = ${1}")
         TestBean getTestBean(int id);
     }
     
@@ -65,7 +65,7 @@ public class PropertiesResultMapTest extends MapperTestBase {
         Mapper mapper = factory.createMapper(Mapper.class);
         TestBean testBean = mapper.getTestBean(1);
         Assert.assertEquals(1, testBean.getId());
-        Assert.assertEquals("Toyota Vista", testBean.getMoDeL());
+        Assert.assertEquals("World Domination", testBean.getSubJeCT());
     }
     
 }

@@ -15,17 +15,24 @@
  */
 package com.google.code.nanorm.test.beans;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- *
+ * Car with multiple articles.
  * @author Ivan Dubrov
- * @version 1.0 06.06.2008
+ * @version 1.0 27.05.2008
  */
-public class Crash {
-    
+public class Category {
+
     private int id;
     
-    private int year;
+    private String title;
     
+    private List<Article> articles = new ArrayList<Article>();
+    
+    private int year;
+
     /** @return Returns the id. */
     public int getId() {
         return id;
@@ -34,6 +41,16 @@ public class Crash {
     /** @param id The id to set. */
     public void setId(int id) {
         this.id = id;
+    }
+
+    /** @return Returns the title. */
+    public String getTitle() {
+        return title;
+    }
+
+    /** @param title The title to set. */
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     /** @return Returns the year. */
@@ -45,4 +62,16 @@ public class Crash {
     public void setYear(int year) {
         this.year = year;
     }
+
+    /** @return Returns the articles. */
+    public List<Article> getArticles() {
+        return articles;
+    }
+
+	/**
+	 * @param articles the articles to set
+	 */
+	public void setArticles(List<Article> articles) {
+		this.articles = articles;
+	}
 }

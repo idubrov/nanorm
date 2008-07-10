@@ -25,7 +25,7 @@ import com.google.code.nanorm.annotations.ResultMapList;
 import com.google.code.nanorm.annotations.ResultMapRef;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.exceptions.ConfigurationException;
-import com.google.code.nanorm.test.beans.Car;
+import com.google.code.nanorm.test.beans.Publication;
 import com.google.code.nanorm.test.common.MapperTestBase;
 
 /**
@@ -35,67 +35,73 @@ import com.google.code.nanorm.test.common.MapperTestBase;
  */
 @SuppressWarnings("all")
 public class ResultMapRefTest extends MapperTestBase {
-    @ResultMapList( {
-        @ResultMap(id = "car0", mappings = {
-            @Mapping(property = "owner.firstName", column = "owner") }),
-        @ResultMap(id = "car1", auto = true, mappings = {
-            @Mapping(property = "owner.firstName", column = "owner") }) })
-    @ResultMap(id = "car2", auto = true, mappings = {
-            @Mapping(property = "owner.firstName", column = "owner") })
+    @ResultMapList({
+        @ResultMap(id = "pub0", mappings = {
+            @Mapping(property = "article.subject", column = "subject"),
+            @Mapping(property = "article.body", column = "body")
+        }),
+        @ResultMap(id = "pub1", auto = true, mappings = {
+            @Mapping(property = "article.subject", column = "subject"),
+            @Mapping(property = "article.body", column = "body")
+        }) 
+    })
+    @ResultMap(id = "pub2", auto = true, mappings = {
+        @Mapping(property = "article.subject", column = "subject"),
+        @Mapping(property = "article.body", column = "body")
+    })
     public interface Mapper1 {
 
         // Reference to the item in the list on the interface
-        @ResultMapRef("car1")
-        @Select("SELECT id, model, owner, year FROM cars WHERE ID = ${1}")
-        Car getCarByIdRef1(int id);
+        @ResultMapRef("pub1")
+        @Select("SELECT id, subject, body, year FROM articles WHERE ID = ${1}")
+        Publication getPublicationByIdRef1(int id);
 
-        // Refernce to the item on the interface
-        @ResultMapRef("car2")
-        @Select("SELECT id, model, owner, year FROM cars WHERE ID = ${1}")
-        Car getCarByIdRef2(int id);
+        // Reference to the item on the interface
+        @ResultMapRef("pub2")
+        @Select("SELECT id, subject, body, year FROM articles WHERE ID = ${1}")
+        Publication getPublicationByIdRef2(int id);
     }
 
     public interface Mapper2 {
         // Missing reference
-        @ResultMapRef("car3")
-        @Select("SELECT id, model, owner, year FROM cars WHERE ID = ${1}")
-        Car getCarByIdRef3(int id);
+        @ResultMapRef("pub3")
+        @Select("SELECT id, subject, body, year FROM articles WHERE ID = ${1}")
+        Publication getPublicationByIdRef3(int id);
     }
 
     public interface Mapper3 extends Mapper1 {
         // Reference to the item in the list on the superinterface
-        @ResultMapRef("car1")
-        @Select("SELECT id, model, owner, year FROM cars WHERE ID = ${1}")
-        Car getCarByIdRef4(int id);
+        @ResultMapRef("pub1")
+        @Select("SELECT id, subject, body, year FROM articles WHERE ID = ${1}")
+        Publication getPublicationByIdRef4(int id);
 
         // Refernce to the item on the superinterface
-        @ResultMapRef("car2")
-        @Select("SELECT id, model, owner, year FROM cars WHERE ID = ${1}")
-        Car getCarByIdRef5(int id);
+        @ResultMapRef("pub2")
+        @Select("SELECT id, subject, body, year FROM articles WHERE ID = ${1}")
+        Publication getPublicationByIdRef5(int id);
     }
 
     // Test default result map reference
-    @ResultMap(mappings = {
-            @Mapping(property = "owner.firstName", column = "owner") })
+    @ResultMap(mappings = {@Mapping(property = "article.subject", column = "subject") })
     public interface Mapper4 {
 
         // Using the default map
-        @Select("SELECT id, owner FROM cars WHERE ID = ${1}")
-        Car getCarByIdRef6(int id);
+        @Select("SELECT id, subject FROM articles WHERE ID = ${1}")
+        Publication getPublicationByIdRef6(int id);
     }
     
     @Test
     public void testResultMapRef1() {
         Mapper1 mapper = factory.createMapper(Mapper1.class);
-        Car car = mapper.getCarByIdRef1(1);
-        Assert.assertEquals(1, car.getId());
+        Publication pub = mapper.getPublicationByIdRef1(1);
+        Assert.assertEquals(1, pub.getId());
     }
 
     @Test
     public void testResultMapRef2() {
         Mapper1 mapper = factory.createMapper(Mapper1.class);
-        Car car = mapper.getCarByIdRef2(1);
-        Assert.assertEquals(1, car.getId());
+        Publication pub = mapper.getPublicationByIdRef2(1);
+        Assert.assertEquals(1, pub.getId());
     }
 
     @Test
@@ -105,7 +111,7 @@ public class ResultMapRefTest extends MapperTestBase {
     public void testResultMapRef3() {
         try {
             Mapper2 mapper = factory.createMapper(Mapper2.class);
-            mapper.getCarByIdRef3(1);
+            mapper.getPublicationByIdRef3(1);
             Assert.fail();
         } catch (ConfigurationException e) {
             // That's ok, result map reference is missing
@@ -115,15 +121,15 @@ public class ResultMapRefTest extends MapperTestBase {
     @Test
     public void testResultMapRef4() {
         Mapper3 mapper = factory.createMapper(Mapper3.class);
-        Car car = mapper.getCarByIdRef4(1);
-        Assert.assertEquals(1, car.getId());
+        Publication pub = mapper.getPublicationByIdRef4(1);
+        Assert.assertEquals(1, pub.getId());
     }
 
     @Test
     public void testResultMapRef5() {
         Mapper3 mapper = factory.createMapper(Mapper3.class);
-        Car car = mapper.getCarByIdRef5(1);
-        Assert.assertEquals(1, car.getId());
+        Publication pub = mapper.getPublicationByIdRef5(1);
+        Assert.assertEquals(1, pub.getId());
     }
     
     @Test
@@ -132,12 +138,11 @@ public class ResultMapRefTest extends MapperTestBase {
      */
     public void testResultMap6() {
         Mapper4 mapper = factory.createMapper(Mapper4.class);
-        Car car = mapper.getCarByIdRef6(2);
-        Assert.assertEquals(0, car.getId());
-        Assert.assertEquals(null, car.getModel());
-        Assert.assertEquals(0, car.getYear());
-        Assert.assertEquals("John", car.getOwner().getFirstName());
-        Assert.assertEquals(null, car.getOwner().getLastName());
+        Publication pub = mapper.getPublicationByIdRef6(2);
+        Assert.assertEquals(0, pub.getId());
+        Assert.assertEquals(0, pub.getYear());
+        Assert.assertEquals("Saving the Earth", pub.getArticle().getSubject());
+        Assert.assertEquals(null, pub.getArticle().getBody());
     }
 
 }

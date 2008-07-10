@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.code.nanorm.test;
+package com.google.code.nanorm.test.introspect;
 
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.reflect.ReflectIntrospectionFactory;

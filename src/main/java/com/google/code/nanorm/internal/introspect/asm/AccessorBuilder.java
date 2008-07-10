@@ -289,7 +289,7 @@ public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 		accessormg.loadLocal(npeLocal);
 		accessormg.invokeVirtual(STRING_TYPE, SUBSTRING);
 		accessormg.push(" property is null for " + initialBeanClass.getName()
-				+ " instance (full path is owner.firstName).");
+				+ " instance (full path is " + fullPath + ").");
 		accessormg.invokeVirtual(STRING_TYPE, CONCAT);
 
 		// Now we have ex, ex, msg on stack

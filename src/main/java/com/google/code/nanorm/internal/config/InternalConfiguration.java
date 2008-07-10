@@ -377,6 +377,7 @@ public class InternalConfiguration {
 					ResultMapConfig nestedMapConfig = findResultMap(clazz,
 							mapping.resultMap().value());
 					if (nestedMapConfig == null) {
+						// TODO: Name and location!
 						throw new RuntimeException("Nested map not found!");
 					}
 					resMapping.setResultMapConfig(nestedMapConfig);

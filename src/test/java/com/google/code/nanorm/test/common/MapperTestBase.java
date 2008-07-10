@@ -57,17 +57,7 @@ public class MapperTestBase {
     public void setUp() throws Exception {
         Class.forName("org.h2.Driver");
         conn = DriverManager.getConnection("jdbc:h2:mem:", "sa", "");
-        
-        // Create some cars
-        execute(
-            "CREATE TABLE CARS(id INTEGER, owner VARCHAR(50), model VARCHAR(50), year INTEGER)");
-        
-        execute(
-            "INSERT INTO CARS(id, owner, model, year) VALUES (1, 'Rocky', 'Toyota Vista', 2006)");
-        
-        execute(
-            "INSERT INTO CARS(id, owner, model, year) VALUES (2, 'John', 'Ford Focus', 2004)");
-        
+         
         // Tables for primitive values
         execute(
             "CREATE TABLE PRIMITIVE(id INTEGER, primByte TINYINT, wrapByte TINYINT, " +
@@ -87,23 +77,40 @@ public class MapperTestBase {
             "44.5, -47.125, 'Hello, H2!', " +
             "'2008-07-08 18:08:11')");
         
+        // Create some categories
+        execute(
+            "CREATE TABLE CATEGORIES(id INTEGER, title VARCHAR(50), year INTEGER)");
+        
+        execute(
+            "INSERT INTO CATEGORIES(id, title, year) VALUES (1, 'World', 2006)");
+        
+        execute(
+            "INSERT INTO CATEGORIES(id, title, year) VALUES (2, 'Science', 2004)");
+        
+        // Create some articles
+        execute(
+            "CREATE TABLE ARTICLES(id INTEGER, category_id INTEGER, subject VARCHAR(50), body VARCHAR(200), year INTEGER)");
+        
+        execute(
+            "INSERT INTO ARTICLES(id, category_id, subject, body, year) VALUES (1, 1, 'World Domination', 'Everybody thinks of world domination.', 2007)");
+        
+        execute(
+            "INSERT INTO ARTICLES(id, category_id, subject, body, year) VALUES (2, 1, 'Saving the Earth', 'To save the earth you need...', 2008)");
+
+        // Create some publications
+        execute(
+            "CREATE TABLE PUBLICATIONS(id INTEGER, article_id INTEGER, title VARCHAR(50), year INTEGER)");
+        
+        execute(
+            "INSERT INTO PUBLICATIONS(id, article_id, title, year) VALUES (543, 1, 'Best Way to World Dominate!', 2008)");
+        
+        // Create some comments
+        execute("CREATE TABLE COMMENTS(id INTEGER, article_id INTEGER, comment VARCHAR(200), year INTEGER)");
+        execute("INSERT INTO COMMENTS(id, article_id, comment, year) VALUES (101, 1, 'Great!', 2006)");
+        execute("INSERT INTO COMMENTS(id, article_id, comment, year) VALUES (102, 1, 'Always wanted to world-dominate!', 2007)");
+        
         // Sequence for ids
         execute("CREATE SEQUENCE ids START WITH 123 INCREMENT BY 1");
-        
-        // Create some owners
-        execute(
-            "CREATE TABLE OWNERS(id INTEGER, car_id INTEGER, firstName VARCHAR(50), lastName VARCHAR(50))");
-        
-        execute(
-            "INSERT INTO OWNERS(id, car_id, firstName, lastName) VALUES (1, 1, 'Bobby', 'Brown')");
-        
-        execute(
-            "INSERT INTO OWNERS(id, car_id, firstName, lastName) VALUES (2, 1, 'Jimmy', 'Green')");
-        
-        // Create some crashes
-        execute("CREATE TABLE CRASHES(id INTEGER, owner_id INTEGER, year INTEGER)");
-        execute("INSERT INTO CRASHES(id, owner_id, year) VALUES (101, 1, 2006)");
-        execute("INSERT INTO CRASHES(id, owner_id, year) VALUES (102, 1, 2007)");
         
         conn.commit();
         

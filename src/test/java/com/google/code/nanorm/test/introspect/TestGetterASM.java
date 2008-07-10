@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.code.nanorm.test;
+package com.google.code.nanorm.test.introspect;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,7 +23,7 @@ import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.introspect.asm.ASMIntrospectionFactory;
-import com.google.code.nanorm.test.beans.Car;
+import com.google.code.nanorm.test.beans.Publication;
 
 /**
  * ASM introspection factory test. Extends base class which contains all tests
@@ -47,16 +47,16 @@ public class TestGetterASM extends TestGetterBase {
      */
     @Test
     public void testGetterNPE() {
-        Car car = new Car();
-        car.setOwner(null);
-        Getter getter = factory.buildGetter(Car.class, "owner.firstName");
+        Publication pub = new Publication();
+        pub.setArticle(null);
+        Getter getter = factory.buildGetter(Publication.class, "article.subject");
 
         try {
-            getter.getValue(car);
+            getter.getValue(pub);
         } catch (NullPointerException e) {
-            Assert.assertEquals("owner property is null for "
-                    + "com.google.code.nanorm.test.beans.Car "
-                    + "instance (full path is owner.firstName).", e.getMessage());
+            Assert.assertEquals("article property is null for "
+                    + "com.google.code.nanorm.test.beans.Publication "
+                    + "instance (full path is article.subject).", e.getMessage());
         }
     }
 
@@ -65,16 +65,16 @@ public class TestGetterASM extends TestGetterBase {
      */
     @Test
     public void testSetterNPE() {
-        Car car = new Car();
-        car.setOwner(null);
-        Setter setter = factory.buildSetter(Car.class, "owner.firstName");
+        Publication pub = new Publication();
+        pub.setArticle(null);
+        Setter setter = factory.buildSetter(Publication.class, "article.subject");
 
         try {
-            setter.setValue(car, "Ivan");
+            setter.setValue(pub, "World Domination");
         } catch (NullPointerException e) {
-            Assert.assertEquals("owner property is null for "
-                    + "com.google.code.nanorm.test.beans.Car "
-                    + "instance (full path is owner.firstName).", e.getMessage());
+            Assert.assertEquals("article property is null for "
+                    + "com.google.code.nanorm.test.beans.Publication "
+                    + "instance (full path is article.subject).", e.getMessage());
         }
     }
 }

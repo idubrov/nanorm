@@ -200,6 +200,7 @@ public final class IntrospectUtils {
 				return m;
 			}
 		}
+		// TODO: Describe the context!
 		throw new IntrospectionException("Cannot find getter method for property " + property + 
 				" of bean class " + clazz);
 	}

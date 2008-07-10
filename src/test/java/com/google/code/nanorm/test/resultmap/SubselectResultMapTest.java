@@ -23,9 +23,9 @@ import org.junit.Test;
 import com.google.code.nanorm.annotations.Mapping;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.Select;
-import com.google.code.nanorm.test.beans.Car;
-import com.google.code.nanorm.test.beans.Car2;
-import com.google.code.nanorm.test.beans.Owner;
+import com.google.code.nanorm.test.beans.Publication;
+import com.google.code.nanorm.test.beans.Category;
+import com.google.code.nanorm.test.beans.Article;
 import com.google.code.nanorm.test.common.MapperTestBase;
 
 /**
@@ -38,62 +38,60 @@ public class SubselectResultMapTest extends MapperTestBase {
     public interface Mapper {
         
         @ResultMap(mappings = {
-            @Mapping(property = "firstName", column = "owner")
+            @Mapping(property = "subject", column = "subject")
         })
-        @Select("SELECT id, owner FROM cars WHERE id = ${1}")
-        Owner getOwnerByCarId(int carId);
+        @Select("SELECT id, subject FROM articles WHERE id = ${1}")
+        Article getArticle(int id);
         
         @ResultMap(auto = true)
-        @Select("SELECT id, firstName, lastName FROM owners WHERE car_id = ${1}")
-        List<Owner> getOwnersByCarId(int carId);
+        @Select("SELECT id, subject, body FROM articles WHERE category_id = ${1}")
+        List<Article> getArticlesByCategoryId(int id);
         
         // Test 1-1 mapping with nested result map
         @ResultMap(mappings = {
             @Mapping(property = "id"),
-            @Mapping(property = "model"),
+            @Mapping(property = "title"),
             @Mapping(property = "year"),
-            @Mapping(property = "owner", column = "id", subselect = "getOwnerByCarId") 
+            @Mapping(property = "article", column = "article_id", subselect = "getArticle") 
         })
-        @Select("SELECT id, model, year FROM cars WHERE id = ${1}")
-        Car getCarById(int id);
+        @Select("SELECT id, title, year, article_id FROM publications WHERE id = ${1}")
+        Publication getPublicationById(int id);
         
         // Test 1-N mapping with nested result map, the property type is List
         @ResultMap(groupBy = "id", mappings = {
             @Mapping(property = "id"),
-            @Mapping(property = "model"),
+            @Mapping(property = "title"),
             @Mapping(property = "year"),
-            @Mapping(property = "owners", column = "id", subselect = "getOwnersByCarId") 
+            @Mapping(property = "articles", column = "id", subselect = "getArticlesByCategoryId") 
         })
-        @Select("SELECT id, model, year FROM cars WHERE id = ${1}")
-        Car2 getCarById3(int id);
+        @Select("SELECT id, title, year FROM categories WHERE id = ${1}")
+        Category getCategoryById3(int id);
     }
 
    @Test
-    public void testNestedOneToOne() {
+    public void testSubselectOneToOne() {
         Mapper mapper = factory.createMapper(Mapper.class);
-        Car car = mapper.getCarById(1);
-        Assert.assertEquals(1, car.getId());
-        Assert.assertEquals("Rocky", car.getOwner().getFirstName());
-        Assert.assertEquals("Toyota Vista", car.getModel());
-        Assert.assertEquals(2006, car.getYear());
+        Publication pub = mapper.getPublicationById(543);
+        Assert.assertEquals(543, pub.getId());
+        Assert.assertEquals("Best Way to World Dominate!", pub.getTitle());
+        Assert.assertEquals("World Domination", pub.getArticle().getSubject());
+        Assert.assertEquals(2008, pub.getYear());
     }
    
     @Test
     public void testNestedOneToMany() {
         Mapper mapper = factory.createMapper(Mapper.class);
-        Car2 car = mapper.getCarById3(1);
+        Category car = mapper.getCategoryById3(1);
         Assert.assertEquals(1, car.getId());
         Assert.assertEquals(2006, car.getYear());
-        Assert.assertEquals(2, car.getOwners().size());
+        Assert.assertEquals(2, car.getArticles().size());
         
-        Assert.assertEquals(1, car.getOwners().get(0).getId());
-        Assert.assertEquals("Bobby", car.getOwners().get(0).getFirstName());
-        Assert.assertEquals("Brown", car.getOwners().get(0).getLastName());
+        Assert.assertEquals(1, car.getArticles().get(0).getId());
+        Assert.assertEquals("World Domination", car.getArticles().get(0).getSubject());
+        Assert.assertEquals("Everybody thinks of world domination.", car.getArticles().get(0).getBody());
         
-        Assert.assertEquals(2, car.getOwners().get(1).getId());
-        Assert.assertEquals("Jimmy", car.getOwners().get(1).getFirstName());
-        Assert.assertEquals("Green", car.getOwners().get(1).getLastName());
-        
-        
+        Assert.assertEquals(2, car.getArticles().get(1).getId());
+        Assert.assertEquals("Saving the Earth", car.getArticles().get(1).getSubject());
+        Assert.assertEquals("To save the earth you need...", car.getArticles().get(1).getBody());
     }
 }

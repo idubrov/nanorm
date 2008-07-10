@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.code.nanorm.test;
+package com.google.code.nanorm.test.introspect;
 
 import static com.google.code.nanorm.internal.introspect.PropertyNavigator.INDEX;
 import static com.google.code.nanorm.internal.introspect.PropertyNavigator.PROPERTY;
