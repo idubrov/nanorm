@@ -23,6 +23,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.code.nanorm.NanormFactory;
 import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.Session;
@@ -56,7 +59,17 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 	private final InternalConfiguration config;
 
 	private final SessionConfig sessionSpiConfig;
+	
+	/**
+	 * Logger for logging the SQL statements.
+	 */
+	private final static Logger LOGGER_SQL = LoggerFactory.getLogger(FactoryImpl.class.getPackage().getName() + ".SQL");
 
+	/**
+	 * Logger for logging all other events.
+	 */
+	private final static Logger LOGGER = LoggerFactory.getLogger(FactoryImpl.class.getName());
+	
 	/**
 	 * Constructor.
 	 * 
@@ -165,6 +178,9 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 			// Close connection after this try
 			try {
 				// TODO: Log SQL
+				if(LOGGER_SQL.isDebugEnabled()) {
+					LOGGER_SQL.debug(sql.toString());
+				}
 				PreparedStatement st = conn.prepareStatement(sql.toString());
 				try {
 					// Map parameters to the statement
