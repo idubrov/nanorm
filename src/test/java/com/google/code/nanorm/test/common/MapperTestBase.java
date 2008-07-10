@@ -28,123 +28,122 @@ import com.google.code.nanorm.Session;
 import com.google.code.nanorm.config.NanormConfiguration;
 
 /**
- *
+ * 
  * @author Ivan Dubrov
  * @version 1.0 29.05.2008
  */
 public class MapperTestBase {
-    
+
 	/**
 	 * Connection.
 	 */
-    protected Connection conn;
-    
-    /**
-     * Nanorm factory.
-     */
-    protected NanormFactory factory;
-    
-    /**
-     * Current transaction.
-     */
-    protected Session transaction;
-    
-    /**
-     * Loads the test data.
-     * @throws Exception any error
-     */
-    @Before
-    public void setUp() throws Exception {
-        Class.forName("org.h2.Driver");
-        conn = DriverManager.getConnection("jdbc:h2:mem:", "sa", "");
-         
-        // Tables for primitive values
-        execute(
-            "CREATE TABLE PRIMITIVE(id INTEGER, primByte TINYINT, wrapByte TINYINT, " +
-            "primShort SMALLINT, wrapShort SMALLINT, primInt INT, wrapInt INT," +
-            "primLong BIGINT, wrapLong BIGINT, primBoolean BOOL, wrapBoolean BOOL," +
-            "primChar CHAR(1), wrapChar CHAR(1), primFloat REAL, wrapFloat REAL," +
-            "primDouble DOUBLE, wrapDouble DOUBLE, string VARCHAR(50), " +
-            "timestamp TIMESTAMP)");
-        
-        execute(
-            "INSERT INTO PRIMITIVE(id, primByte, wrapByte, primShort, wrapShort, " +
-            "primInt, wrapInt, primLong, wrapLong, primBoolean, wrapBoolean, " +
-            "primChar, wrapChar, primFloat, wrapFloat, primDouble, wrapDouble, string, timestamp) VALUES(" +
-            "1, 37, -23, 8723, -6532, " +
-            "824756237, -123809163, 282347987987234987, -23429879871239879, TRUE, FALSE," +
-            "'a', 'H', 34.5, -25.25, " +
-            "44.5, -47.125, 'Hello, H2!', " +
-            "'2008-07-08 18:08:11')");
-        
-        // Create some categories
-        execute(
-            "CREATE TABLE CATEGORIES(id INTEGER, title VARCHAR(50), year INTEGER)");
-        
-        execute(
-            "INSERT INTO CATEGORIES(id, title, year) VALUES (1, 'World', 2006)");
-        
-        execute(
-            "INSERT INTO CATEGORIES(id, title, year) VALUES (2, 'Science', 2004)");
-        
-        // Create some articles
-        execute(
-            "CREATE TABLE ARTICLES(id INTEGER, category_id INTEGER, subject VARCHAR(50), body VARCHAR(200), year INTEGER)");
-        
-        execute(
-            "INSERT INTO ARTICLES(id, category_id, subject, body, year) VALUES (1, 1, 'World Domination', 'Everybody thinks of world domination.', 2007)");
-        
-        execute(
-            "INSERT INTO ARTICLES(id, category_id, subject, body, year) VALUES (2, 1, 'Saving the Earth', 'To save the earth you need...', 2008)");
+	protected Connection conn;
 
-        // Create some publications
-        execute(
-            "CREATE TABLE PUBLICATIONS(id INTEGER, article_id INTEGER, title VARCHAR(50), year INTEGER)");
-        
-        execute(
-            "INSERT INTO PUBLICATIONS(id, article_id, title, year) VALUES (543, 1, 'Best Way to World Dominate!', 2008)");
-        
-        // Create some comments
-        execute("CREATE TABLE COMMENTS(id INTEGER, article_id INTEGER, comment VARCHAR(200), year INTEGER)");
-        execute("INSERT INTO COMMENTS(id, article_id, comment, year) VALUES (101, 1, 'Great!', 2006)");
-        execute("INSERT INTO COMMENTS(id, article_id, comment, year) VALUES (102, 1, 'Always wanted to world-dominate!', 2007)");
-        
-        // Sequence for ids
-        execute("CREATE SEQUENCE ids START WITH 123 INCREMENT BY 1");
-        
-        conn.commit();
-        
-        factory = new NanormConfiguration().buildFactory();
-        transaction = factory.openSession(conn);
-    }
-    
-    /**
-     * Execute the statement.
-     * @param sql sql statement to execute
-     * @throws SQLException any SQL error
-     */
-    protected void execute(String sql) throws SQLException {
-        Statement st = conn.createStatement();
-        try {
-            st.execute(sql);
-        } finally {
-            st.close();
-        }
-    }
-    
-    /**
-     * Rollback the transaction and close the connection.
-     * @throws SQLException any SQL exception 
-     */
-    @After
-    public void tearDown() throws SQLException {
-    	if(transaction != null) {
-    		transaction.rollback();
-    		transaction.end();
-    	}
-    	if(conn != null) {
-    		conn.close();
-    	}
-    }
+	/**
+	 * Nanorm factory.
+	 */
+	protected NanormFactory factory;
+
+	/**
+	 * Current transaction.
+	 */
+	protected Session transaction;
+
+	/**
+	 * Loads the test data.
+	 * 
+	 * @throws Exception any error
+	 */
+	@Before
+	public void setUp() throws Exception {
+		Class.forName("org.h2.Driver");
+		conn = DriverManager.getConnection("jdbc:h2:mem:", "sa", "");
+
+		// Tables for primitive values
+		execute("CREATE TABLE PRIMITIVE(id INTEGER, primByte TINYINT, wrapByte TINYINT, "
+				+ "primShort SMALLINT, wrapShort SMALLINT, primInt INT, wrapInt INT,"
+				+ "primLong BIGINT, wrapLong BIGINT, primBoolean BOOL, wrapBoolean BOOL,"
+				+ "primChar CHAR(1), wrapChar CHAR(1), primFloat REAL, wrapFloat REAL,"
+				+ "primDouble DOUBLE, wrapDouble DOUBLE, string VARCHAR(50), "
+				+ "timestamp TIMESTAMP)");
+
+		execute("INSERT INTO PRIMITIVE(id, primByte, wrapByte, primShort, wrapShort, "
+				+ "primInt, wrapInt, primLong, wrapLong, primBoolean, wrapBoolean, "
+				+ "primChar, wrapChar, primFloat, wrapFloat, primDouble, wrapDouble, string, timestamp) VALUES("
+				+ "1, 37, -23, 8723, -6532, "
+				+ "824756237, -123809163, 282347987987234987, -23429879871239879, TRUE, FALSE,"
+				+ "'a', 'H', 34.5, -25.25, "
+				+ "44.5, -47.125, 'Hello, H2!', "
+				+ "'2008-07-08 18:08:11')");
+
+		// Create some categories
+		execute("CREATE TABLE CATEGORIES(id INTEGER, title VARCHAR(50), year INTEGER)");
+
+		execute("INSERT INTO CATEGORIES(id, title, year) VALUES (1, 'World', 2006)");
+
+		execute("INSERT INTO CATEGORIES(id, title, year) VALUES (2, 'Science', 2004)");
+
+		// Create some articles
+		execute("CREATE TABLE ARTICLES(id INTEGER, category_id INTEGER, subject VARCHAR(50), body VARCHAR(200), year INTEGER)");
+
+		execute("INSERT INTO ARTICLES(id, category_id, subject, body, year) VALUES (1, 1, 'World Domination', 'Everybody thinks of world domination.', 2007)");
+
+		execute("INSERT INTO ARTICLES(id, category_id, subject, body, year) VALUES (2, 1, 'Saving the Earth', 'To save the earth you need...', 2008)");
+
+		// Create some publications
+		execute("CREATE TABLE PUBLICATIONS(id INTEGER, article_id INTEGER, title VARCHAR(50), year INTEGER)");
+
+		execute("INSERT INTO PUBLICATIONS(id, article_id, title, year) VALUES (543, 1, 'Best Way to World Dominate!', 2008)");
+
+		// Create some labels
+		execute("CREATE TABLE LABELS(id INTEGER, article_id INTEGER, label VARCHAR(50))");
+
+		execute("INSERT INTO LABELS(id, article_id, label) VALUES (1231, 1, 'World')");
+		execute("INSERT INTO LABELS(id, article_id, label) VALUES (1232, 1, 'Dominate')");
+
+		// Create some comments
+		execute("CREATE TABLE COMMENTS(id INTEGER, article_id INTEGER, comment VARCHAR(200), year INTEGER)");
+		execute("INSERT INTO COMMENTS(id, article_id, comment, year) VALUES (101, 1, 'Great!', 2006)");
+		execute("INSERT INTO COMMENTS(id, article_id, comment, year) VALUES (102, 1, 'Always wanted to world-dominate!', 2007)");
+
+		// Sequence for ids
+		execute("CREATE SEQUENCE ids START WITH 123 INCREMENT BY 1");
+
+		conn.commit();
+
+		factory = new NanormConfiguration().buildFactory();
+		transaction = factory.openSession(conn);
+	}
+
+	/**
+	 * Execute the statement.
+	 * 
+	 * @param sql sql statement to execute
+	 * @throws SQLException any SQL error
+	 */
+	protected void execute(String sql) throws SQLException {
+		Statement st = conn.createStatement();
+		try {
+			st.execute(sql);
+		} finally {
+			st.close();
+		}
+	}
+
+	/**
+	 * Rollback the transaction and close the connection.
+	 * 
+	 * @throws SQLException any SQL exception
+	 */
+	@After
+	public void tearDown() throws SQLException {
+		if (transaction != null) {
+			transaction.rollback();
+			transaction.end();
+		}
+		if (conn != null) {
+			conn.close();
+		}
+	}
 
 }

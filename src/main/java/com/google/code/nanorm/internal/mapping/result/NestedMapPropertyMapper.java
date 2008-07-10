@@ -64,9 +64,9 @@ public class NestedMapPropertyMapper {
 	public final void mapResult(Request request, final Object result,
 			ResultSet rs) throws SQLException {
 		
-		// TODO: Not optimal to create and finish right now!
-		// This will force array recreation!
-		// TODO: Cache whem in request instead and finish on request end.
+		// TODO: Not optimal to create callback and finish after that!
+		// This will force array recreation (if ArrayCallbackSource is used)!
+		// TODO: Cache them in request instead and finish on request end.
 		ResultCallback<Object> callback = callbackSource.forInstance(result);
 		resultMap.processResultSet(request, rs, callback);
 		callback.finish();

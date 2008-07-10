@@ -23,9 +23,10 @@ import org.junit.Test;
 import com.google.code.nanorm.annotations.Mapping;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.Select;
-import com.google.code.nanorm.test.beans.Publication;
-import com.google.code.nanorm.test.beans.Category;
 import com.google.code.nanorm.test.beans.Article;
+import com.google.code.nanorm.test.beans.Category;
+import com.google.code.nanorm.test.beans.Label;
+import com.google.code.nanorm.test.beans.Publication;
 import com.google.code.nanorm.test.common.MapperTestBase;
 
 /**
@@ -47,6 +48,10 @@ public class SubselectResultMapTest extends MapperTestBase {
         @Select("SELECT id, subject, body FROM articles WHERE category_id = ${1}")
         List<Article> getArticlesByCategoryId(int id);
         
+        @ResultMap(auto = true)
+        @Select("SELECT id, label FROM labels WHERE article_id = ${1}")
+        Label[] getLabelsByArticleId(int id);
+        
         // Test 1-1 mapping with nested result map
         @ResultMap(mappings = {
             @Mapping(property = "id"),
@@ -66,6 +71,17 @@ public class SubselectResultMapTest extends MapperTestBase {
         })
         @Select("SELECT id, title, year FROM categories WHERE id = ${1}")
         Category getCategoryById3(int id);
+        
+        // Test 1-N mapping with nested result map, the property type is Array
+        @ResultMap(groupBy = "id", mappings = {
+            @Mapping(property = "id"),
+            @Mapping(property = "subject"),
+            @Mapping(property = "body"),
+            @Mapping(property = "year"),
+            @Mapping(property = "labels", column = "id", subselect = "getLabelsByArticleId") 
+        })
+        @Select("SELECT id, subject, body, year FROM articles WHERE id = ${1}")
+        Article getArticleById4(int id);
     }
 
    @Test
@@ -79,19 +95,34 @@ public class SubselectResultMapTest extends MapperTestBase {
     }
    
     @Test
-    public void testNestedOneToMany() {
+    public void testSubselectOneToMany() {
         Mapper mapper = factory.createMapper(Mapper.class);
-        Category car = mapper.getCategoryById3(1);
-        Assert.assertEquals(1, car.getId());
-        Assert.assertEquals(2006, car.getYear());
-        Assert.assertEquals(2, car.getArticles().size());
+        Category cat = mapper.getCategoryById3(1);
+        Assert.assertEquals(1, cat.getId());
+        Assert.assertEquals(2006, cat.getYear());
+        Assert.assertEquals(2, cat.getArticles().size());
         
-        Assert.assertEquals(1, car.getArticles().get(0).getId());
-        Assert.assertEquals("World Domination", car.getArticles().get(0).getSubject());
-        Assert.assertEquals("Everybody thinks of world domination.", car.getArticles().get(0).getBody());
+        Assert.assertEquals(1, cat.getArticles().get(0).getId());
+        Assert.assertEquals("World Domination", cat.getArticles().get(0).getSubject());
+        Assert.assertEquals("Everybody thinks of world domination.", cat.getArticles().get(0).getBody());
         
-        Assert.assertEquals(2, car.getArticles().get(1).getId());
-        Assert.assertEquals("Saving the Earth", car.getArticles().get(1).getSubject());
-        Assert.assertEquals("To save the earth you need...", car.getArticles().get(1).getBody());
+        Assert.assertEquals(2, cat.getArticles().get(1).getId());
+        Assert.assertEquals("Saving the Earth", cat.getArticles().get(1).getSubject());
+        Assert.assertEquals("To save the earth you need...", cat.getArticles().get(1).getBody());
+    }
+    
+    @Test
+    public void testSubselectOneToMany2() {
+        Mapper mapper = factory.createMapper(Mapper.class);
+        Article ar = mapper.getArticleById4(1);
+        Assert.assertEquals(1, ar.getId());
+        Assert.assertEquals(2007, ar.getYear());
+        Assert.assertEquals(2, ar.getLabels().length);
+        
+        Assert.assertEquals(1231, ar.getLabels()[0].getId());
+        Assert.assertEquals("World", ar.getLabels()[0].getLabel());
+        
+        Assert.assertEquals(1232, ar.getLabels()[1].getId());
+        Assert.assertEquals("Dominate", ar.getLabels()[1].getLabel());
     }
 }
