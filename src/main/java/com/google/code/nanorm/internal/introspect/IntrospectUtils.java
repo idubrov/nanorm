@@ -98,13 +98,15 @@ public final class IntrospectUtils {
 				path = "";
 			}
 			// TODO: Bounds check!
-			beanClass = (Class<?>) types[parameter];
+			
 
 			// Emulate parameters as Object[] as the instance type
 			visitor.visitBegin(Object[].class, path);
 
 			// ...and indexing which returns Object instance
-			visitor.visitIndex(0, parameter, path.length() == 0, Object[].class);
+			Class<?> res = visitor.visitIndex(0, parameter, path.length() == 0, Object[].class);
+			
+			beanClass = (res != null) ? res : (Class<?>) types[parameter];
 		}
 
 		PropertyNavigator nav = new PropertyNavigator(path);
@@ -123,24 +125,31 @@ public final class IntrospectUtils {
 									+ "(full property is " + path
 									+ "). Actual type was " + beanClass);
 				}
-				Class<?> propClass = beanClass.getComponentType();
-				visitor.visitIndex(pos, nav.getIndex(), nav.hasNext(),
+				Class<?> propClass = visitor.visitIndex(pos, nav.getIndex(), nav.hasNext(),
 						beanClass);
 
+				if(propClass == null) {
+					propClass = beanClass.getComponentType();
+				}
+				
 				beanClass = propClass;
 				type = beanClass;
 			} else if (token == PropertyNavigator.PROPERTY) {
 				java.lang.reflect.Method getter = findGetter(beanClass, nav
 						.getProperty());
 
-				// Resolve the return type using the current context
-				type = TypeOracle.resolve(getter.getGenericReturnType(), type);
-
-				visitor.visitProperty(pos, nav.getProperty(), getter, nav
+				Class<?> propClass = visitor.visitProperty(pos, nav.getProperty(), getter, nav
 						.hasNext(), beanClass);
 				
-				// Find out concrete Class instance behind the generics
-				Class<?> propClass = TypeOracle.resolveClass(type);
+				if(propClass == null) {
+					// Resolve the return type using the current context
+					type = TypeOracle.resolve(getter.getGenericReturnType(), type);
+					
+					// Find out concrete Class instance behind the generics
+					propClass = TypeOracle.resolveClass(type);
+				} else {
+					type = propClass;
+				}
 
 				beanClass = propClass;
 			} else {
