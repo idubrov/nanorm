@@ -42,12 +42,13 @@ import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.type.TypeHandler;
 
 /**
- * Implementation of the result map.
+ * Implementation of the {@link RowMapper} that uses collection of property
+ * mapping configurations to map the result set row into the result object.
  * 
  * @author Ivan Dubrov
  * @version 1.0 28.05.2008
  */
-public class ResultMapImpl implements ResultMap {
+public class DefaultRowMapper implements RowMapper {
 
 	private final Class<?> elementClass;
 
@@ -63,12 +64,13 @@ public class ResultMapImpl implements ResultMap {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param resultType result type (could be generic collection)
 	 * @param config configuration
 	 * @param introspectionFactory introspection factory
 	 * @param typeHandlerFactory type handler factory
 	 */
-	public ResultMapImpl(Type resultType, ResultMapConfig config,
+	public DefaultRowMapper(Type resultType, ResultMapConfig config,
 			IntrospectionFactory introspectionFactory,
 			TypeHandlerFactory typeHandlerFactory) {
 		this.config = config;
@@ -159,6 +161,7 @@ public class ResultMapImpl implements ResultMap {
 
 	/**
 	 * Generate a key that identifies current result row.
+	 * 
 	 * @param dc dynamic configuration
 	 * @param rs result set
 	 * @return key that identifies current result row.
@@ -250,7 +253,7 @@ public class ResultMapImpl implements ResultMap {
 		List<PropertyMapper> mappers = new ArrayList<PropertyMapper>();
 		List<NestedMapPropertyMapper> nestedMappers = new ArrayList<NestedMapPropertyMapper>();
 		List<ValueGetter> keyGenerators = new ArrayList<ValueGetter>();
-		
+
 		// TODO: Check we haven't mapped one property twice!
 		for (ResultMappingConfig mappingConfig : configs) {
 			Type propertyType = introspectionFactory.getPropertyType(
@@ -297,7 +300,7 @@ public class ResultMapImpl implements ResultMap {
 				Getter getter = introspectionFactory.buildGetter(elementClass,
 						mappingConfig.getProperty());
 
-				ResultMap nestedMap = new ResultMapImpl(propertyType,
+				RowMapper nestedMap = new DefaultRowMapper(propertyType,
 						mappingConfig.getResultMapConfig(),
 						introspectionFactory, typeHandlerFactory);
 				nestedMappers.add(new NestedMapPropertyMapper(getter, setter,
@@ -341,7 +344,7 @@ public class ResultMapImpl implements ResultMap {
 		public ValueGetter[] valueGetters;
 
 		public NestedMapPropertyMapper[] nestedMappers;
-		
+
 		DynamicConfig() {
 			// Nothing...
 		}
@@ -357,7 +360,7 @@ public class ResultMapImpl implements ResultMap {
 		public TypeHandler<?> typeHandler;
 
 		public ResultMappingConfig config;
-		
+
 		// Constructor;
 		public ValueGetter() {
 			// Nothing..

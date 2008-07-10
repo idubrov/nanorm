@@ -57,6 +57,11 @@ public class NanormConfiguration {
 				introspectionFactory);
 	}
 
+	/**
+	 * Add given mapper interface to the configuration.
+	 * 
+	 * @param mapperClass mapper class
+	 */
 	public void configure(Class<?> mapperClass) {
 		config.configure(mapperClass);
 	}

@@ -35,7 +35,7 @@ import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.mapping.result.ResultCallbackSource;
 import com.google.code.nanorm.internal.mapping.result.ResultCollectorUtil;
-import com.google.code.nanorm.internal.mapping.result.ResultMap;
+import com.google.code.nanorm.internal.mapping.result.RowMapper;
 import com.google.code.nanorm.internal.session.SessionSpi;
 import com.google.code.nanorm.internal.session.SingleConnSessionSpi;
 import com.google.code.nanorm.internal.type.TypeHandler;
@@ -69,6 +69,9 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 		this.sessionSpiConfig = sessionConfig;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public InternalConfiguration getInternalConfiguration() {
 		return config;
 	}
@@ -181,7 +184,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 								stConfig, args, request);
 
 						// Iterate through the result set
-						ResultMap resultMapper = stConfig.getResultMapper();
+						RowMapper resultMapper = stConfig.getResultMapper();
 						while (rs.next()) {
 							resultMapper
 									.processResultSet(request, rs, callback);

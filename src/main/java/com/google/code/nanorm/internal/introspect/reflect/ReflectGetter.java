@@ -15,13 +15,12 @@
  */
 package com.google.code.nanorm.internal.introspect.reflect;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-import com.google.code.nanorm.exceptions.IntrospectionException;
 import com.google.code.nanorm.internal.introspect.Getter;
-import com.google.code.nanorm.internal.introspect.PropertyNavigator;
+import com.google.code.nanorm.internal.introspect.IntrospectUtils;
+import com.google.code.nanorm.internal.introspect.PropertyVisitor;
+import com.google.code.nanorm.internal.introspect.VoidPropertyVisitor;
 
 /**
  * Reflection-based nested property getter.
@@ -30,24 +29,28 @@ import com.google.code.nanorm.internal.introspect.PropertyNavigator;
  * @version 1.0 27.05.2008
  */
 public class ReflectGetter implements Getter {
-
+	
 	private final String path;
 
-	private final Class<?> clazz;
-
+	private final Class<?> beanClass;
+	
+	private final Type[] types;
+	
 	private final ReflectIntrospectionFactory factory;
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param factory factory
-	 * @param clazz bean class
+	 * @param beanClass bean class (for regular getter)
+	 * @param types palameter types (for parameter getter)
 	 * @param path property path
 	 */
-	public ReflectGetter(ReflectIntrospectionFactory factory, Class<?> clazz,
+	public ReflectGetter(ReflectIntrospectionFactory factory, Class<?> beanClass, Type[] types,
 			String path) {
 		this.factory = factory;
-		this.clazz = clazz;
+		this.beanClass = beanClass;
+		this.types = types;
 		this.path = path;
 	}
 
@@ -55,38 +58,23 @@ public class ReflectGetter implements Getter {
 	 * {@inheritDoc}
 	 */
 	public Object getValue(final Object instance) {
-		PropertyNavigator nav = new PropertyNavigator(path);
-
-		Object current = instance;
-		while (!nav.hasNext()) {
-			int pos = nav.getPosition();
-
-			int token = nav.next();
-			if (token == PropertyNavigator.INDEX) {
-				current = Array.get(current, nav.getIndex());
-			} else if (token == PropertyNavigator.PROPERTY) {
-				Method getter = factory.lookupGetter(current.getClass(), nav
-						.getProperty());
-
-				try {
-					current = getter.invoke(current);
-				} catch (Exception e) {
-					throw new IntrospectionException("Failed to get property "
-							+ path.substring(0, pos) + " of property path "
-							+ path, e);
-				}
-			} else {
-				throw new IllegalStateException("Unexpected token type "
-						+ token + " while following property path " + path);
-			}
+		PropertyVisitor<Object> visitor = new ReflectPropertyVisitor(factory, instance);
+		if(types != null) {
+			return IntrospectUtils.visitPath(path, types, visitor, null);
 		}
-		return current;
+		return IntrospectUtils.visitPath(path, beanClass, visitor, null);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public Type getType() {
-		return factory.getPropertyType(clazz, path);
+		Type[] type = new Type[1];
+		if(types != null) {
+			IntrospectUtils.visitPath(path, types, VoidPropertyVisitor.INSTANCE, type);
+		} else {
+			IntrospectUtils.visitPath(path, beanClass, VoidPropertyVisitor.INSTANCE, type);
+		}
+		return type[0];
 	}
 }

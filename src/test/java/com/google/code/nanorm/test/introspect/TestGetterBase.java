@@ -26,8 +26,6 @@ import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.test.beans.Article;
-import com.google.code.nanorm.test.beans.Publication;
-import com.google.code.nanorm.test.beans.Comment;
 import com.google.code.nanorm.test.beans.Label;
 import com.google.code.nanorm.test.beans.Publication;
 

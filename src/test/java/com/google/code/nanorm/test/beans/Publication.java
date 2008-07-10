@@ -16,6 +16,10 @@
 
 package com.google.code.nanorm.test.beans;
 
+/**
+ * 
+ * @author Ivan Dubrov
+ */
 public class Publication {
 	
 	private int id;

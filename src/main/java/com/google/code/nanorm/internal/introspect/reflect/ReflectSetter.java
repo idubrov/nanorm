@@ -15,11 +15,10 @@
  */
 package com.google.code.nanorm.internal.introspect.reflect;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 
-import com.google.code.nanorm.exceptions.IntrospectionException;
-import com.google.code.nanorm.internal.introspect.PropertyNavigator;
+import com.google.code.nanorm.internal.introspect.IntrospectUtils;
+import com.google.code.nanorm.internal.introspect.PropertyVisitor;
 import com.google.code.nanorm.internal.introspect.Setter;
 
 /**
@@ -30,60 +29,39 @@ import com.google.code.nanorm.internal.introspect.Setter;
  */
 public class ReflectSetter implements Setter {
     
-    final private String path;
-    
-    final private ReflectIntrospectionFactory factory;
+	private final String path;
 
-    /**
-     * Constructor.
-     * @param factory introspection factory
-     * @param path property path
-     */
-    public ReflectSetter(ReflectIntrospectionFactory factory, String path) {
-        this.path = path;
-        this.factory = factory;
-    }
+	private final Class<?> beanClass;
+	
+	private final Type[] types;
+	
+	private final ReflectIntrospectionFactory factory;
 
-    /**
-     * {@inheritDoc}
-     */
-    public void setValue(final Object instance, Object toSet) {
-        PropertyNavigator nav = new PropertyNavigator(path);
+	/**
+	 * Constructor.
+	 * 
+	 * @param factory factory
+	 * @param beanClass bean class (for regular setter)
+	 * @param types parameter types (for parameters setter)
+	 * @param path property path
+	 */
+	public ReflectSetter(ReflectIntrospectionFactory factory, Class<?> beanClass, Type[] types,
+			String path) {
+		this.factory = factory;
+		this.beanClass = beanClass;
+		this.types = types;
+		this.path = path;
+	}
 
-        Object current = instance;
-        while (!nav.hasNext()) {
-            int pos = nav.getPosition();
-            
-            int token = nav.next();
-            if (token == PropertyNavigator.INDEX) {
-                if(nav.hasNext()) {
-                    Array.set(current, nav.getIndex(), toSet);
-                } else {
-                    current = Array.get(current, nav.getIndex());
-                }
-            } else if (token == PropertyNavigator.PROPERTY) {
-                if(nav.hasNext()) {
-                    Method setter = factory.lookupSetter(current.getClass(), nav.getProperty());
-                    try {
-                        setter.invoke(current, toSet);
-                    } catch (Exception e) {
-                        throw new IntrospectionException("Failed to set property "
-                                + path.substring(0, pos) + " of property path " + path, e);
-                    }
-                } else {
-                    Method getter = factory.lookupGetter(current.getClass(), nav.getProperty());
-                    
-                    try {
-                        current = getter.invoke(current);
-                    } catch (Exception e) {
-                        throw new IntrospectionException("Failed to get property "
-                                + path.substring(0, pos) + " of property path " + path, e);
-                    }
-                }
-            } else {
-                throw new IllegalStateException("Unexpected token type " + token
-                        + " while following property path " + path);
-            }
-        }
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setValue(Object instance, Object value) {
+		PropertyVisitor<Object> visitor = new ReflectPropertyVisitor(factory, instance, value);
+		if(types != null) {
+			IntrospectUtils.visitPath(path, types, visitor, null);
+		} else {
+			IntrospectUtils.visitPath(path, beanClass, visitor, null);
+		}
+	}
 }

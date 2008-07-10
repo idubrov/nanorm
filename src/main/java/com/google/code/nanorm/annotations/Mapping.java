@@ -28,34 +28,37 @@ import java.lang.annotation.Target;
  * @author Ivan Dubrov
  * @version 1.0 28.05.2008
  */
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target( { ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Mapping {
 	/**
 	 * Property name.
 	 */
-    String property();
-    
-    /**
-     * Column name.
-     */
-    String column() default "";
+	String property();
 
-    /**
-     * Column index.
-     */
-    int columnIndex() default 0;
+	/**
+	 * Column name.
+	 */
+	String column() default "";
 
-    /**
-     * Nested result map reference.
-     */
-    ResultMapRef resultMap() default @ResultMapRef();
-    
-    /**
-     * Subselect query.
-     */
-    String subselect() default "";
-    
-    // TODO: Subselect Class!
-    Class<?> subselectMapper() default Object.class;
+	/**
+	 * Column index.
+	 */
+	int columnIndex() default 0;
+
+	/**
+	 * Nested result map reference.
+	 */
+	ResultMapRef resultMap() default @ResultMapRef();
+
+	/**
+	 * Subselect query.
+	 */
+	String subselect() default "";
+
+	/**
+	 * Subselect query mapper. By default, assume that subselect query is in the
+	 * same mapper interface.
+	 */
+	Class<?> subselectMapper() default Object.class;
 }

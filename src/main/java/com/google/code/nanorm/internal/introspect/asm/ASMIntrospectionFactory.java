@@ -149,7 +149,7 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 	 * @param beanClass bean class; should be null if types is not null
 	 * @param types parameter types; should be null if beanClass is not null
 	 * @param path property path
-	 * @return
+	 * @return setter instance
 	 */
 	public Setter buildSetterImpl(final Class<?> beanClass,
 			final Type[] types, final String path) {

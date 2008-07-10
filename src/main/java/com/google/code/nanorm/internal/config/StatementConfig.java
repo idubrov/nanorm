@@ -22,7 +22,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.internal.Fragment;
 import com.google.code.nanorm.internal.introspect.Setter;
-import com.google.code.nanorm.internal.mapping.result.ResultMap;
+import com.google.code.nanorm.internal.mapping.result.RowMapper;
 
 /**
  * Statement confniguration.
@@ -46,7 +46,7 @@ public class StatementConfig {
 
 	private Fragment fragment;
 
-	private ResultMap resultMapper;
+	private RowMapper resultMapper;
 
 	private Type resultType;
 
@@ -100,12 +100,12 @@ public class StatementConfig {
 	}
 
 	/** @return Returns the resultMapper. */
-	public ResultMap getResultMapper() {
+	public RowMapper getResultMapper() {
 		return resultMapper;
 	}
 
 	/** @param resultMapper The resultMapper to set. */
-	public void setResultMapper(ResultMap resultMapper) {
+	public void setResultMapper(RowMapper resultMapper) {
 		this.resultMapper = resultMapper;
 	}
 

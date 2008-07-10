@@ -52,8 +52,8 @@ public class Comment {
 	/**
 	 * @param year the year to set
 	 */
-	public void setYear(int timestamp) {
-		this.year = timestamp;
+	public void setYear(int year) {
+		this.year = year;
 	}
 
 	/**

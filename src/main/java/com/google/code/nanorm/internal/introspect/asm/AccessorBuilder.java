@@ -177,7 +177,7 @@ public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visitIndex(int pos, int index, boolean isLast,
+	public Class<?> visitIndex(int pos, int index, boolean isLast,
 			Class<?> beanClass) {
 		checkNull(pos);
 
@@ -211,12 +211,13 @@ public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 			// Remember type on top of the stack
 			actualClass = beanClass.getComponentType();
 		}
+		return null;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visitProperty(int pos, String property,
+	public Class<?> visitProperty(int pos, String property,
 			java.lang.reflect.Method getter, boolean isLast, Class<?> beanClass) {
 		checkNull(pos);
 
@@ -254,6 +255,7 @@ public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 			// Remember type in the stack
 			actualClass = getter.getReturnType();
 		}
+		return null;
 	}
 
 	/**

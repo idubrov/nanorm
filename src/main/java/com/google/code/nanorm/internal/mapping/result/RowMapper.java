@@ -13,23 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.google.code.nanorm.internal.mapping.result;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.google.code.nanorm.ResultCallback;
+import com.google.code.nanorm.internal.FactoryImpl;
 import com.google.code.nanorm.internal.Request;
 
-public class SingleValueResultMap implements ResultMap {
+/**
+ * Primary interface used for mapping the row into the Java object.
+ * 
+ * @see FactoryImpl
+ * @see DefaultRowMapper
+ * @author Ivan Dubrov
+ * @version 1.0 28.05.2008
+ */
+public interface RowMapper {
 
-	public void processResultSet(Request request, ResultSet rs,
-			ResultCallback<Object> callback) throws SQLException {
-		
-		// TODO: Check we have single column!
-		
-		callback.handleResult(rs.getObject(1));
-	}
-
+	/**
+	 * Process the result set row.
+	 * 
+	 * @param request request variables
+	 * @param rs result set
+	 * @param callback callback used for pushing the result object
+	 * @throws SQLException any exception from the result set
+	 */
+	void processResultSet(Request request, ResultSet rs,
+			ResultCallback<Object> callback) throws SQLException;
 }

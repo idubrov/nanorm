@@ -21,21 +21,34 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * TODO: Javadoc
- * TODO: Add property value
+ * TODO: Javadoc TODO: Add property value
+ * 
  * @author Ivan Dubrov
  */
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target( { ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SelectKey {
 
-	String value() default "";
-	
-	SelectKeyType type() default SelectKeyType.AFTER;
-	
 	/**
-	 * Parameter property to set key to.
-	 * TODO: Check this is provided for BEFORE type! 
+	 * SQL query for selecting the key (either key to be used for row insertion
+	 * or key generated after insertion).
+	 */
+	String value() default "";
+
+	/**
+	 * Type of the select key statement. By default assume that query selects
+	 * generated key and therefore should be executed after the insert
+	 * operation.
+	 */
+	SelectKeyType type() default SelectKeyType.AFTER;
+
+	/**
+	 * Path to the key property. The generated/pre-generated key is set to this property.
+	 * 
+	 * <b>Note</b>: Mandatory for the {@link SelectKeyType#BEFORE} select key type, since this is
+	 * the only way to pass the pre-generated key to the insert statement.  
+	 * 
+	 * TODO: Check this is provided for BEFORE type!
 	 */
 	String property() default "";
 }

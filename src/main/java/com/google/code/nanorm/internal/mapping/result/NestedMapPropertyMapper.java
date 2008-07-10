@@ -32,7 +32,7 @@ import com.google.code.nanorm.internal.introspect.Setter;
  */
 public class NestedMapPropertyMapper {
 
-	private final ResultMap resultMap;
+	private final RowMapper resultMap;
 
 	private final ResultCallbackSource callbackSource;
 
@@ -46,7 +46,7 @@ public class NestedMapPropertyMapper {
 	 *            messages generation.
 	 */
 	public NestedMapPropertyMapper(Getter getter, Setter setter,
-			ResultMap resultMap, Object source) {
+			RowMapper resultMap, Object source) {
 		this.resultMap = resultMap;
 		this.callbackSource = ResultCollectorUtil.createResultCallback(getter,
 				setter, source);

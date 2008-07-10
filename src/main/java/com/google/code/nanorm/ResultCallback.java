@@ -16,10 +16,10 @@
 package com.google.code.nanorm;
 
 import com.google.code.nanorm.internal.mapping.result.ResultCallbackSource;
-import com.google.code.nanorm.internal.mapping.result.ResultMap;
+import com.google.code.nanorm.internal.mapping.result.RowMapper;
 
 /**
- * Interface for processing the {@link ResultMap} result values.
+ * Interface for processing the {@link RowMapper} result values.
  * 
  * Instances are not thread-safe.
  * 

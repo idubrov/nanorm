@@ -46,8 +46,8 @@ import com.google.code.nanorm.internal.Fragment;
 import com.google.code.nanorm.internal.TextFragment;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Setter;
-import com.google.code.nanorm.internal.mapping.result.ResultMapImpl;
-import com.google.code.nanorm.internal.mapping.result.SingleValueResultMap;
+import com.google.code.nanorm.internal.mapping.result.DefaultRowMapper;
+import com.google.code.nanorm.internal.mapping.result.ScalarRowMapper;
 
 /**
  * TODO: Merge processing and searching. Maybe, lazy loading (when referenced).
@@ -223,8 +223,8 @@ public class InternalConfiguration {
 			selectKeySt.setStatementBuilder(new TextFragment(selectKey.value(), method
 					.getGenericParameterTypes(), introspectionFactory));
 			selectKeySt.setParameterTypes(method.getGenericParameterTypes());
-			selectKeySt.setResultType(method.getReturnType());
-			selectKeySt.setResultMapper(new SingleValueResultMap());
+			selectKeySt.setResultType(method.getGenericReturnType());
+			selectKeySt.setResultMapper(new ScalarRowMapper(method.getGenericReturnType(), typeHandlerFactory));
 			
 			if(!selectKey.property().equals("")) {
 				Setter keySetter = 
@@ -269,12 +269,12 @@ public class InternalConfiguration {
 		statementsConfig.put(key, stConfig);
 	}
 	
-	private com.google.code.nanorm.internal.mapping.result.ResultMap createResultMap(Type type, ResultMapConfig config) {
+	private com.google.code.nanorm.internal.mapping.result.RowMapper createResultMap(Type type, ResultMapConfig config) {
 		if(type instanceof Class<?> && ((Class<?>) type).isPrimitive()) {
-			return new SingleValueResultMap();
+			return new ScalarRowMapper(type, typeHandlerFactory);
 		}
 		// TODO: If config is null, automap!
-		return new ResultMapImpl(type, config,
+		return new DefaultRowMapper(type, config,
 				introspectionFactory, typeHandlerFactory);
 	}
 
@@ -347,7 +347,7 @@ public class InternalConfiguration {
 	}
 
 	/**
-	 * Create {@link ResultMapConfig} instance from {@link ResultMap}
+	 * Create {@link ResultMapConfig} instance from {@link RowMapper}
 	 * annotation.
 	 * 
 	 * TODO: Validate we don't have nested map with "select" property at the

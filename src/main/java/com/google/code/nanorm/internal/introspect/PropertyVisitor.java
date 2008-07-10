@@ -44,8 +44,9 @@ public interface PropertyVisitor<T> {
 	 * @param getter property getter
 	 * @param isLast is that last element in the property path
 	 * @param beanClass instance type
+	 * @return type of the visited property. Could be null (no information is available).
 	 */
-	void visitProperty(int pos, String property, Method getter, boolean isLast,
+	Class<?> visitProperty(int pos, String property, Method getter, boolean isLast,
 			Class<?> beanClass);
 
 	/**
@@ -55,8 +56,9 @@ public interface PropertyVisitor<T> {
 	 * @param index position in the array
 	 * @param isLast is that last element in the property path
 	 * @param beanClass instance type
+	 * @return type of the visited array element. Could be null (no information is available).
 	 */
-	void visitIndex(int pos, int index, boolean isLast, Class<?> beanClass);
+	Class<?> visitIndex(int pos, int index, boolean isLast, Class<?> beanClass);
 
 	/**
 	 * Finish the property path visiting and return the result.

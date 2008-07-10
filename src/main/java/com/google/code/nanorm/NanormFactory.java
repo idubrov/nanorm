@@ -60,6 +60,11 @@ public interface NanormFactory {
 	 * @return session
 	 */
 	Session openSession(Connection conn);
-	
+
+	/**
+	 * Get internal factory configuration.
+	 * 
+	 * @return internal factory configuration.
+	 */
 	InternalConfiguration getInternalConfiguration();
 }

@@ -22,7 +22,7 @@ import java.lang.reflect.Type;
 import com.google.code.nanorm.exceptions.IntrospectionException;
 
 /**
- * TODO: Setter/getter validation.
+ * TODO: Setter/getter caching.
  * 
  * @author Ivan Dubrov
  * @version 1.0 22.06.2008
@@ -136,11 +136,12 @@ public final class IntrospectUtils {
 				// Resolve the return type using the current context
 				type = TypeOracle.resolve(getter.getGenericReturnType(), type);
 
+				visitor.visitProperty(pos, nav.getProperty(), getter, nav
+						.hasNext(), beanClass);
+				
 				// Find out concrete Class instance behind the generics
 				Class<?> propClass = TypeOracle.resolveClass(type);
 
-				visitor.visitProperty(pos, nav.getProperty(), getter, nav
-						.hasNext(), beanClass);
 				beanClass = propClass;
 			} else {
 				throw new IllegalStateException("Unexpected token type "
