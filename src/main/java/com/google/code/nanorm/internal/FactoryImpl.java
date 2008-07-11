@@ -21,7 +21,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -60,17 +59,19 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 	private final InternalConfiguration config;
 
 	private final SessionConfig sessionSpiConfig;
-	
+
 	/**
 	 * Logger for logging the SQL statements.
 	 */
-	private final static Logger LOGGER_SQL = LoggerFactory.getLogger(FactoryImpl.class.getPackage().getName() + ".SQL");
+	private final static Logger LOGGER_SQL = LoggerFactory
+			.getLogger(FactoryImpl.class.getPackage().getName() + ".SQL");
 
 	/**
 	 * Logger for logging all other events.
 	 */
-	private final static Logger LOGGER = LoggerFactory.getLogger(FactoryImpl.class.getName());
-	
+	private final static Logger LOGGER = LoggerFactory
+			.getLogger(FactoryImpl.class.getName());
+
 	/**
 	 * Constructor.
 	 * 
@@ -82,7 +83,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 		this.config = internalConfig;
 		this.sessionSpiConfig = sessionConfig;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -139,8 +140,9 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 	 * {@inheritDoc}
 	 */
 	public Object query(StatementConfig stConfig, Object[] args) {
-		// TODO: Refactor!
-
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Executing the query " + stConfig.getId());
+		}
 		// Request-scoped data
 		Request request = new Request(this);
 
@@ -152,17 +154,17 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 			isAuto = true;
 			spi = sessionSpiConfig.newSessionSpi();
 		}
+
 		// Close session spi after this block if in auto mode
 		try {
 			Connection conn = spi.getConnection();
-			// TODO: Log connection being used
-
-			// TODO: Could cause NPE if return type is primitive
-			Object result = null;
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Using the connection " + conn);
+			}
 
 			// Generate key prior to mapping the parameters, so we
 			// have a chance to update arguments with generated key
-			result = selectKey(result, stConfig, false, args);
+			selectKey(request, stConfig, false, args);
 
 			// Bind fragment to arguments
 			BoundFragment fragment = stConfig.getStatementBuilder()
@@ -178,13 +180,14 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 
 			// Close connection after this try
 			try {
-				if(LOGGER_SQL.isDebugEnabled()) {
+				if (LOGGER_SQL.isDebugEnabled()) {
 					LOGGER_SQL.debug(sql.toString());
-					if(LOGGER_SQL.isTraceEnabled()) {
-						LOGGER_SQL.trace("Parameters: " + parameters.toString());
+					if (LOGGER_SQL.isTraceEnabled()) {
+						LOGGER_SQL
+								.trace("Parameters: " + parameters.toString());
 					}
 				}
-				
+
 				PreparedStatement st = conn.prepareStatement(sql.toString());
 				try {
 					// Map parameters to the statement
@@ -193,9 +196,9 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 					if (stConfig.isInsert()) {
 						st.executeUpdate();
 
-						result = selectKey(result, stConfig, true, args);
+						selectKey(request, stConfig, true, args);
 					} else if (stConfig.isUpdate()) {
-						result = st.executeUpdate();
+						request.setResult(st.executeUpdate());
 					} else {
 						ResultSet rs = st.executeQuery();
 
@@ -204,19 +207,13 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 								stConfig, args, request);
 
 						// Iterate through the result set
-						RowMapper resultMapper = stConfig.getResultMapper();
+						RowMapper rowMapper = stConfig.getResultMapper();
 						while (rs.next()) {
-							resultMapper
-									.processResultSet(request, rs, callback);
+							rowMapper.processResultSet(request, rs, callback);
 						}
 						callback.finish();
-						result = request.getResult();
 					}
 
-					if (result == null) {
-						checkNotPrimitive(stConfig.getResultType());
-					}
-					return result;
 				} finally {
 					st.close();
 				}
@@ -224,6 +221,9 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 				throw new DataException(
 						"SQL exception occured while executing the query!", e);
 			} finally {
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Releasing the connection " + conn);
+				}
 				spi.releaseConnection(conn);
 			}
 		} finally {
@@ -231,14 +231,20 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 				spi.end();
 			}
 		}
+		if (request.getResult() == null) {
+			checkNotPrimitive(stConfig.getResultType());
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Query result is " + request.getResult());
+		}
+		return request.getResult();
 	}
 
 	private ResultCallback<Object> createResultCallback(
 			StatementConfig stConfig, Object[] args, Request request) {
 
-		// If we have ResultCallback in parameters -- use it,
-		// otherwise create callback which will set result to the
-		// request.
+		// If we have ResultCallback in mapper method parameters -- use it,
+		// otherwise create callback which will set result to the request.
 		ResultCallback<Object> callback;
 		if (stConfig.getCallbackIndex() != StatementConfig.RETURN_VALUE) {
 			// This is OK, since we deduced result type exactly
@@ -269,17 +275,25 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 		}
 	}
 
-	private Object selectKey(Object result, StatementConfig stConfig,
+	private void selectKey(Request request, StatementConfig stConfig,
 			boolean after, Object[] args) {
 		if (stConfig.isInsert() && stConfig.getSelectKey() != null
 				&& after == stConfig.isSelectKeyAfter()) {
-			// TODO: Logging
-			result = query(stConfig.getSelectKey(), args);
+			
+			if(LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Generating the key for statement " + stConfig.getId());
+			}
+			Object result = query(stConfig.getSelectKey(), args);
+			
+			if(LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Generated key is " + result);
+			}
 			if (stConfig.getKeySetter() != null) {
 				stConfig.getKeySetter().setValue(args, result);
 			}
+
+			request.setResult(result);
 		}
-		return result;
 	}
 
 	private void mapParameters(PreparedStatement statement, List<Type> types,
