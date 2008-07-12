@@ -33,7 +33,7 @@ public class ResultMappingConfig {
     
     private ResultMapConfig resultMapConfig;
     
-    private String subselectKey;
+    private StatementKey subselectKey;
     
     private StatementConfig subselect;
     
@@ -78,12 +78,12 @@ public class ResultMappingConfig {
     }
     
     /** @return Returns the select. */
-    protected String getSubselectKey() {
+    protected StatementKey getSubselectKey() {
         return subselectKey;
     }
     
     /** @param select The select to set. */
-    protected void setSubselectKey(String select) {
+    protected void setSubselectKey(StatementKey select) {
         this.subselectKey = select;
     }
     

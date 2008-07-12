@@ -85,6 +85,8 @@
             <exclude>target/**</exclude>
             <exclude>.clover/**</exclude>
             <exclude>LICENSE.txt</exclude>
+            <exclude>**/log4j.properties</exclude>
+            <exclude>**/MANIFEST.MF</exclude>
           </excludes>
         </configuration>
       </plugin>

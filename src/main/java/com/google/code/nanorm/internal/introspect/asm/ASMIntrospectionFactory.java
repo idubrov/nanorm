@@ -59,7 +59,8 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 	/**
 	 * Constructor.
 	 * 
-	 * @param parentLoader parent classloader for classloader which will load generated clasess
+	 * @param parentLoader parent classloader for classloader which will load
+	 *            generated clasess
 	 */
 	public ASMIntrospectionFactory(ClassLoader parentLoader) {
 		classLoader = new ASMClassLoader(parentLoader);
@@ -128,14 +129,14 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 			final String path) {
 		return buildGetterImpl(null, types, path);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public Setter buildSetter(final Class<?> beanClass, final String path) {
 		return buildSetterImpl(beanClass, null, path);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -151,8 +152,8 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 	 * @param path property path
 	 * @return setter instance
 	 */
-	public Setter buildSetterImpl(final Class<?> beanClass,
-			final Type[] types, final String path) {
+	public Setter buildSetterImpl(final Class<?> beanClass, final Type[] types,
+			final String path) {
 		AccessorKey key = new AccessorKey(beanClass, path);
 		Setter instance = setters.get(key);
 		if (instance == null) {
@@ -196,8 +197,9 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 		// TODO: Cache!
 		List<MethodConfig> methods = new ArrayList<MethodConfig>();
 		List<StatementConfig> configs = new ArrayList<StatementConfig>();
-		for (java.lang.reflect.Method m : interfaze.getDeclaredMethods()) {
-			StatementConfig stConfig = config.getStatementConfig(m);
+		for (java.lang.reflect.Method m : interfaze.getMethods()) {
+			StatementConfig stConfig = config.getStatementConfig(interfaze, m
+					.getName(), m.getGenericParameterTypes());
 			if (stConfig != null) {
 				MethodConfig cfg = new MethodConfig();
 				cfg.method = m;

@@ -113,7 +113,7 @@ public class ReflectIntrospectionFactory extends AbstractIntrospectionFactory {
 			QueryDelegate delegate) {
 		return interfaze.cast(Proxy.newProxyInstance(getClass()
 				.getClassLoader(), new Class<?>[] { interfaze },
-				new MapperInvocationHandler(config, delegate)));
+				new MapperInvocationHandler(interfaze, config, delegate)));
 	}
 
 	/**
@@ -127,14 +127,18 @@ public class ReflectIntrospectionFactory extends AbstractIntrospectionFactory {
 
 		private final QueryDelegate delegate;
 
+		private final Class<?> mapper;
+
 		/**
 		 * Constructor.
 		 * 
+		 * @param mapper mapper interface
 		 * @param config internal configuration
 		 * @param delegate query delegate
 		 */
-		public MapperInvocationHandler(InternalConfiguration config,
-				QueryDelegate delegate) {
+		public MapperInvocationHandler(Class<?> mapper,
+				InternalConfiguration config, QueryDelegate delegate) {
+			this.mapper = mapper;
 			this.config = config;
 			this.delegate = delegate;
 		}
@@ -145,10 +149,10 @@ public class ReflectIntrospectionFactory extends AbstractIntrospectionFactory {
 		 */
 		public Object invoke(Object proxy, Method method, Object[] args)
 				throws Throwable {
-			StatementConfig stConfig = config.getStatementConfig(method);
+			StatementConfig stConfig = config.getStatementConfig(mapper, method
+					.getName(), method.getGenericParameterTypes());
 			return delegate.query(stConfig, args);
 		}
 	}
 
-	
 }

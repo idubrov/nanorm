@@ -46,6 +46,7 @@ public class PrimitiveTypesResultMapTest extends MapperTestBase {
         Mapper mapper = factory.createMapper(Mapper.class);
         PrimitiveTypesBean bean = mapper.getPrimitiveTypes(1);
         
+        // TODO: Test parameter setting as well...
         Assert.assertEquals(37, bean.getPrimByte());
         Assert.assertEquals(-23, (byte) bean.getWrapByte());
         Assert.assertEquals(8723, bean.getPrimShort());

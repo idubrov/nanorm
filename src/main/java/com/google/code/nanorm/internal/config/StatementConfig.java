@@ -38,7 +38,7 @@ public class StatementConfig {
 	 */
 	public static final int RETURN_VALUE = -1;
 
-	private final String id;
+	private final StatementKey id;
 
 	private boolean update;
 
@@ -65,7 +65,7 @@ public class StatementConfig {
 	 * 
 	 * @param id id
 	 */
-	public StatementConfig(String id) {
+	public StatementConfig(StatementKey id) {
 		this.id = id;
 	}
 
@@ -160,7 +160,7 @@ public class StatementConfig {
 	}
 
 	/** @return Returns the id. */
-	public String getId() {
+	public StatementKey getId() {
 		return id;
 	}
 
