@@ -16,6 +16,9 @@
 package com.google.code.nanorm.internal.type;
 
 import java.lang.reflect.Type;
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,6 +66,12 @@ public final class TypeHandlerFactoryImpl implements TypeHandlerFactory {
         register(Double.class, new DoubleTypeHandler());
         
         register(String.class, new StringTypeHandler());
+        
+        register(java.util.Date.class, new DateTypeHandler());
+        
+        register(Date.class, new SqlDateTypeHandler());
+        register(Time.class, new SqlTimeTypeHandler());
+        register(Timestamp.class, new SqlTimestampTypeHandler());
     }
 
     /**

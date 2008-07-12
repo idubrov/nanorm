@@ -15,7 +15,9 @@
  */
 package com.google.code.nanorm.test.beans;
 
+import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  *
@@ -60,7 +62,13 @@ public class PrimitiveTypesBean {
     
     private String string;
     
-    private Timestamp timestamp;
+    private Date sqlDate;
+    
+    private Time sqlTime;
+    
+    private Timestamp sqlTimestamp;
+    
+    private java.util.Date date;
     
     /** @return Returns the id. */
     public int getId() {
@@ -242,13 +250,43 @@ public class PrimitiveTypesBean {
         this.string = string;
     }
 
-	/** @return the timestamp */
-	public Timestamp getTimestamp() {
-		return timestamp;
+	/** @return the sqlDate */
+	public Date getSqlDate() {
+		return sqlDate;
 	}
 
-	/** @param timestamp the timestamp to set */
-	public void setTimestamp(Timestamp timestamp) {
-		this.timestamp = timestamp;
+	/** @param sqlDate the sqlDate to set */
+	public void setSqlDate(Date sqlDate) {
+		this.sqlDate = sqlDate;
+	}
+
+	/** @return the sqlTime */
+	public Time getSqlTime() {
+		return sqlTime;
+	}
+
+	/** @param sqlTime the sqlTime to set */
+	public void setSqlTime(Time sqlTime) {
+		this.sqlTime = sqlTime;
+	}
+
+	/** @return the sqlTimestamp */
+	public Timestamp getSqlTimestamp() {
+		return sqlTimestamp;
+	}
+
+	/** @param sqlTimestamp the sqlTimestamp to set */
+	public void setSqlTimestamp(Timestamp sqlTimestamp) {
+		this.sqlTimestamp = sqlTimestamp;
+	}
+
+	/** @return the date */
+	public java.util.Date getDate() {
+		return date;
+	}
+
+	/** @param date the date to set */
+	public void setDate(java.util.Date date) {
+		this.date = date;
 	}
 }

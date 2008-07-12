@@ -25,6 +25,8 @@ import com.google.code.nanorm.internal.type.TypeHandler;
  * data from {@link ResultSet} to Java objects and from Java objects to
  * {@PreparedStatement} parameters.
  * 
+ * TODO: Support for JDBC types!
+ * 
  * @see TypeHandler
  * @author Ivan Dubrov
  * @version 1.0 31.05.2008
