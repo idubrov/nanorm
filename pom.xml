@@ -3,7 +3,7 @@
   <groupId>com.google.code.nanorm</groupId>
   <artifactId>nanorm</artifactId>
   <name>nanorm</name>
-  <version>0.1.0</version>
+  <version>0.2.0-SNAPSHOT</version>
   <prerequisites>
     <maven>2.0.9</maven>
   </prerequisites>
@@ -32,9 +32,9 @@
     </license>
   </licenses>
   <scm>
-    <connection>scm:svn:http://nanorm.googlecode.com/svn/tags/nanorm-0.1.0</connection>
-    <developerConnection>scm:svn:https://nanorm.googlecode.com/svn/tags/nanorm-0.1.0</developerConnection>
-    <url>http://nanorm.googlecode.com/svn/tags/nanorm-0.1.0</url>
+    <connection>scm:svn:http://nanorm.googlecode.com/svn/trunk</connection>
+    <developerConnection>scm:svn:https://nanorm.googlecode.com/svn/trunk</developerConnection>
+    <url>http://nanorm.googlecode.com/svn/trunk</url>
   </scm>
   <build>
     <extensions>
