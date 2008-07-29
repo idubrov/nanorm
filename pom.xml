@@ -139,6 +139,63 @@
           <locales>en</locales>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.docbook</groupId>
+                  <artifactId>docbook-xsl</artifactId>
+                  <version>1.72.0</version>
+                  <type>jar</type>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${project.build.directory}/docbook-xsl</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.1</version>
+        <executions>
+          <execution>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <includeProjectDependencies>false</includeProjectDependencies>
+          <includePluginDependencies>true</includePluginDependencies>
+          <mainClass>org.apache.fop.cli.Main</mainClass>
+          <arguments>
+            <argument>-xml</argument>
+            <argument>${basedir}/src/docs/Guide.xml</argument>
+            <argument>-xsl</argument>
+            <argument>${project.build.directory}/docbook-xsl/fo/docbook.xsl</argument>
+            <argument>-pdf</argument>
+            <argument>${project.build.directory}/Guide.pdf</argument>
+         </arguments>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>fop</artifactId>
+            <version>0.95beta-1</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      
     </plugins>
   </build>
   <dependencies>
