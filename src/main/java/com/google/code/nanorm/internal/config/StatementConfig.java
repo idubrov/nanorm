@@ -17,12 +17,11 @@ package com.google.code.nanorm.internal.config;
 
 import java.lang.reflect.Type;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.internal.Fragment;
 import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.mapping.result.RowMapper;
+import com.google.code.nanorm.internal.util.ToStringBuilder;
 
 /**
  * Statement confniguration.

@@ -15,7 +15,7 @@
  */
 package com.google.code.nanorm.internal.config;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import com.google.code.nanorm.internal.util.ToStringBuilder;
 
 /**
  * 

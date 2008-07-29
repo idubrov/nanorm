@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.SQLSource;
 import com.google.code.nanorm.TypeHandlerFactory;
@@ -49,6 +47,7 @@ import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.mapping.result.DefaultRowMapper;
 import com.google.code.nanorm.internal.mapping.result.RowMapper;
 import com.google.code.nanorm.internal.mapping.result.ScalarRowMapper;
+import com.google.code.nanorm.internal.util.ToStringBuilder;
 
 /**
  * TODO: Merge processing and searching. Maybe, lazy loading (when referenced).

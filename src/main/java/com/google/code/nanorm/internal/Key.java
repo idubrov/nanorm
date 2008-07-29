@@ -17,7 +17,7 @@ package com.google.code.nanorm.internal;
 
 import java.sql.ResultSet;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import com.google.code.nanorm.internal.util.ToStringBuilder;
 
 /**
  * Result object key. Used for grouping several rows of {@link ResultSet} into

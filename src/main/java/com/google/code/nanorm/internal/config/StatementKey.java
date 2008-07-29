@@ -18,7 +18,7 @@ package com.google.code.nanorm.internal.config;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import com.google.code.nanorm.internal.util.ToStringBuilder;
 
 /**
  * SQL statement key.

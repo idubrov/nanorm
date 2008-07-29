@@ -18,7 +18,7 @@ package com.google.code.nanorm.internal;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import com.google.code.nanorm.internal.util.ToStringBuilder;
 
 /**
  * Storage for request-scoped data.

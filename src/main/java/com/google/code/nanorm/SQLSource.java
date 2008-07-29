@@ -21,11 +21,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 import com.google.code.nanorm.internal.BoundFragment;
 import com.google.code.nanorm.internal.TextFragment;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
+import com.google.code.nanorm.internal.util.ToStringBuilder;
 
 /**
  * Base class for dynamic SQL generators.
