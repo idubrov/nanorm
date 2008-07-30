@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" 
-  "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN" 
+  "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
 <book>
   <bookinfo>
     <title>Nanorm</title>
@@ -49,43 +49,34 @@
         like the following:
         <orderedlist>
           <listitem>
-            The application prepares the array of query parameters
-            (which could include Java Beans, primitive types or
-            primitive wrappers).
+            <simpara>The application prepares the array of query
+              parameters (which could include Java Beans, primitive
+              types or primitive wrappers).</simpara>
           </listitem>
           <listitem>
-            The application invokes a method on the mapper interface,
-            passing the parameters.
+            <simpara>The application invokes a method on the mapper
+              interface, passing the parameters.</simpara>
           </listitem>
           <listitem>
-            Nanorm on its side maps method parameters to the JDBC
-            PreparedStatement instance and executes the query
+            <simpara>Nanorm on its side maps method parameters to
+              the JDBC PreparedStatement instance and executes the
+              query.</simpara>
           </listitem>
           <listitem>
-            The query result (either JDBC
-            <classname>ResultSet</classname>
-            or integer representing the number of rows affected) is
-            mapped to the declared method return value (which could be
-            primitive type, Java Bean, collection or primitive wrapper).
+            <simpara>The query result (either JDBC
+              <classname>ResultSet</classname>
+              or integer representing the number of rows affected) is
+              mapped to the declared method return value (which could be
+              primitive type, Java Bean, collection or primitive
+              wrapper).</simpara>
           </listitem>
         </orderedlist>
       </para>
     </section>
     <section>
       <title>Installation</title>
-      <para>To install the Nanorm you simply need to put certain JAR files to the application classpath.
-        
-      Installing the iBATIS Data Mapper framework is simply a matter of placing the appropriate JAR files on
-the classpath. This can either be the classpath specified at JVM startup time (java -cp argument), or it could
-be the /WEB-INF/lib directory of a web application. A full discussion of the Java classpath is beyond the
-scope of this document. If you’re new to Java and/or the classpath, please refer to the following resources:
-          http://java.sun.com/j2se/1.4/docs/tooldocs/win32/classpath.html
-          http://java.sun.com/j2se/1.4.2/docs/api/java/lang/ClassLoader.html
-          http://java.sun.com/j2se/1.4.2/docs/
-iBATIS is delivered in a single JAR file. The file name is in this form:
-          ibatis-version.build.jar
-For example, ibatis-2.3.0.677.jar.
-      
+      <para>To install the Nanorm you simply need to put certain JAR
+        files to the application classpath. 
       </para>
     </section>
   </chapter>
