@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN" 
-  "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
-<book>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" 
+  "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<book status="draft">
   <bookinfo>
+    <abstract>
+      Some
+    </abstract>
     <title>Nanorm</title>
     <subtitle>Developer Guide</subtitle>
     <author>
@@ -63,20 +66,37 @@
               query.</simpara>
           </listitem>
           <listitem>
-            <simpara>The query result (either JDBC
+            <simpara>
+              The query result (either JDBC
               <classname>ResultSet</classname>
               or integer representing the number of rows affected) is
               mapped to the declared method return value (which could be
               primitive type, Java Bean, collection or primitive
-              wrapper).</simpara>
+              wrapper).
+            </simpara>
           </listitem>
         </orderedlist>
       </para>
     </section>
     <section>
       <title>Installation</title>
-      <para>To install the Nanorm you simply need to put certain JAR
-        files to the application classpath. 
+      <para>
+        To install the Nanorm you need to put certain JAR files to the
+        application classpath. This can be the classpath specefied to
+        the java binary (java -classpath argument) or in case of web
+        application this will be the /WEB-INF/lib/ directory of the
+        webapp. Refer to the following resources for details:
+        <itemizedlist>
+          <listitem>
+            <para>
+              <ulink url="http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/classpath.html"/>
+              <ulink url="http://java.sun.com/docs/books/tutorial/java/package/managingfiles.html"/>
+            </para>
+          </listitem>
+        </itemizedlist>
+        <segmentedlist>
+          <seglistitem></seglistitem>
+        </segmentedlist>
       </para>
     </section>
   </chapter>
@@ -94,7 +114,7 @@
   </chapter>
   <appendix id="maven.sample">
     <title id="maven.sample.title">Maven2 pom.xml example</title>
-    <programlisting language="xml"><![CDATA[<project>
+    <programlisting><![CDATA[<project>
   ...
   <repositories>
     ...
