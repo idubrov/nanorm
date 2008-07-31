@@ -3,9 +3,6 @@
   "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <book status="draft">
   <bookinfo>
-    <abstract>
-      Some
-    </abstract>
     <title>Nanorm</title>
     <subtitle>Developer Guide</subtitle>
     <author>
@@ -89,14 +86,52 @@
         <itemizedlist>
           <listitem>
             <para>
-              <ulink url="http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/classpath.html"/>
-              <ulink url="http://java.sun.com/docs/books/tutorial/java/package/managingfiles.html"/>
+              <ulink
+                url="http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/classpath.html" />
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <ulink
+                url="http://java.sun.com/docs/books/tutorial/java/package/managingfiles.html" />
             </para>
           </listitem>
         </itemizedlist>
-        <segmentedlist>
-          <seglistitem></seglistitem>
-        </segmentedlist>
+        The following table summarizes the dependencies of the library:
+        <table floatstyle="[h!]">
+          <tgroup cols="3">
+            <colspec colwidth="1*"/>
+            <colspec colwidth="1*"/>
+            <colspec colwidth="4*"/>
+            <thead>
+              <row>
+                <entry>Dependency</entry>
+                <entry>Required?</entry>
+                <entry>Description</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry>nanorm.jar</entry>
+                <entry>Yes</entry>
+                <entry>Core Nanorm JAR library</entry>
+              </row>
+              <row>
+                <entry>slf4j-api.jar</entry>
+                <entry>Yes</entry>
+                <entry>SLF4J Logging library API, used for logging.</entry>
+              </row>
+              <row>
+                <entry>asm.jar</entry>
+                <entry>No</entry>
+                <entry>ASM byte-code manipulation library. Used for
+                  generating bytecode for properties access. If not
+                  provided, Nanorm uses reflection for accessing the
+                  properties (which is slower).</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
       </para>
     </section>
   </chapter>
