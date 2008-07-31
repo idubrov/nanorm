@@ -11,6 +11,7 @@ OPTS="$OPTS -P latex.hyperparam=linktocpage,colorlinks,citecolor=blue,pdfstartvi
 OPTS="$OPTS -P table.default.position=[hp]"
 OPTS="$OPTS -P table.in.float=0"
 OPTS="$OPTS -P table.title.top=1"
+OPTS="$OPTS -P doc.lot.show="
 
 #export XML_CATALOG_FILES="file:///usr/share/sgml/docbook/xml-dtd-4.5/catalog.xml"
 #export  XML_DEBUG_CATALOG=1

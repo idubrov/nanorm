@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" 
-  "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+  "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+  <!ENTITY nanorm-version "0.1.0">
+  <!ENTITY asm-version "3.1">
+  <!ENTITY slf4j-version "1.5.2">
+]>
 <book status="draft">
   <bookinfo>
-    <title>Nanorm</title>
-    <subtitle>Developer Guide</subtitle>
+    <title>Nanorm Developer’s Guide</title>
     <author>
       <firstname>Ivan</firstname>
       <surname>Dubrov</surname>
@@ -98,11 +101,12 @@
           </listitem>
         </itemizedlist>
         The following table summarizes the dependencies of the library:
-        <table floatstyle="[h!]">
+        <table>
+          <title>nanorm dependencies</title>
           <tgroup cols="3">
-            <colspec colwidth="1*"/>
-            <colspec colwidth="1*"/>
-            <colspec colwidth="4*"/>
+            <colspec colwidth="2*" />
+            <colspec colwidth="1*" />
+            <colspec colwidth="8*" />
             <thead>
               <row>
                 <entry>Dependency</entry>
@@ -112,40 +116,124 @@
             </thead>
             <tbody>
               <row>
-                <entry>nanorm.jar</entry>
+                <entry>nanorm-&nanorm-version;.jar 
+                </entry>
                 <entry>Yes</entry>
-                <entry>Core Nanorm JAR library</entry>
+                <entry>
+                  <para>Core Nanorm JAR library</para>
+                  <para>
+                    Homepage:
+                    <ulink url="http://nanorm.googlecode.com/" />
+                  </para>
+                </entry>
               </row>
               <row>
-                <entry>slf4j-api.jar</entry>
+                <entry>slf4j-api-&slf4j-version;.jar 
+                </entry>
                 <entry>Yes</entry>
-                <entry>SLF4J Logging library API, used for logging.</entry>
+                <entry>
+                  <para>SLF4J Logging library API, used for
+                    logging.</para>
+                  <para>
+                    Homepage:
+                    <ulink url="http://slf4j.org" />
+                  </para>
+                </entry>
               </row>
               <row>
-                <entry>asm.jar</entry>
+                <entry>asm-all-&asm-version;.jar 
+                </entry>
                 <entry>No</entry>
-                <entry>ASM byte-code manipulation library. Used for
-                  generating bytecode for properties access. If not
-                  provided, Nanorm uses reflection for accessing the
-                  properties (which is slower).</entry>
+                <entry>
+                  <para>ASM byte-code manipulation library. Used for
+                    generating bytecode for properties access. If not
+                    provided, Nanorm uses reflection for accessing the
+                    properties (which is slower).</para>
+                  <para>
+                    Homepage:
+                    <ulink url="http://asm.objectweb.org/" />
+                  </para>
+                </entry>
               </row>
             </tbody>
           </tgroup>
         </table>
+        If you use Maven2 as a build system, you need only to add
+        certain dependency and repository definition to your pom.xml.
+        See
+        <link linkend="maven.sample" endterm="maven.sample.title" />
+        for sample configuration snippet.
       </para>
     </section>
   </chapter>
   <chapter>
-    <title>Installing</title>
-    <para>
-      See
-      <link linkend="maven.sample" endterm="maven.sample.title" />
-      for configuring the Maven2-based build.
-    </para>
+    <title>Using Nanorm</title>
+    <section>
+      <title>Getting started</title>
+      <para>      
+        Let’s start with a simple one-table “Librarian” application. We
+        start with a model bean describing the primary entity of our
+        application, a book. First, we describe the book entity using the
+        Java Bean with four properties: id, name, author and published
+        (see <link linkend="book.bean">code snippet</link>). Then we declare
+        a mapper interface with <acronym>CRUD</acronym> methods and this is
+        there Nanorm comes to scene.</para>
+        <programlisting language="java"><![CDATA[package sample;
+  
+  import java.util.List;
+  
+  import com.google.code.nanorm.annotations.ResultMap;
+  import com.google.code.nanorm.annotations.Insert;
+  import com.google.code.nanorm.annotations.Update;
+  import com.google.code.nanorm.annotations.Select;
+  
+  @ResultMap(id = "book", auto = "true")
+  public interface BookMapper {
+      @Insert("INSERT INTO books(id, name, author, published) " +
+        "VALUES(${1.id}, ${1.name}, ${1.author}, ${1.published})")
+      void insertBook(Book book);
+      
+      @ResultMapRef("book")
+      @Select("SELECT id, name, author, published FROM books")
+      List<Book> selectBooks();
+      
+      @Update("UPDATE books SET name = ${1.name}, author = ${1.author}, " + 
+        "published = ${1.published} WHERE id = ${1.id}")
+      int updateBook(Book book);
+      
+      @Update("DELETE FROM books WHERE id = ${1}")
+      int deleteBook(int id);
+  }]]></programlisting>
+      <para>
+        The listing is almost self-describing. First, we declare a result map
+        which we will use for the <methodname>selectBooks</methodname> method.
+        The <code>auto=true</code> tells the Nanorm that the mapping should
+        be generated automatically, based on the method return value and
+        <classname>ResultSet</classname> metadata. In fact, we can completely
+        omit the result mapping in that case and Nanorm will generate it
+        automatically after the first query, based on the <classname>ResultSet</classname>
+        metadata.
+      </para>
+      <para>
+        The <methodname>insertBook</methodname> method is annotated with <code>@Insert</code>
+        which defines the SQL statement to execute when this method is called. The SQL
+        can contain references to the method parameters. The reference has the syntax
+        <code>${&lt;property&gt;</code>, where <code>&lt;property&gt;</code> is property
+        path. First part of the property path identifies the parameter, which could be a number,
+        like <literal>1</literal> or <literal>value</literal>. The number identifies parameter
+        by its position (the parameters are numbered starting from the 1) and <literal>value</literal>
+        is the first parameter. The rest part of the property path is property names or indexing operators
+        separated by <literal>.</literal>(dot). See <link linkend="property.path" endterm="property.path.title"/>
+        for more details.
+      </para>
+    </section>
   </chapter>
   <chapter>
-    <title>Title2</title>
-    <para>Chapter2</para>
+    <title>Reference</title>
+    <section id="property.path">
+      <title id="property.path.title">Property Paths</title>
+      TBD
+    </section>
   </chapter>
   <appendix id="maven.sample">
     <title id="maven.sample.title">Maven2 pom.xml example</title>
@@ -174,5 +262,48 @@
   ...
 </project>]]>
     </programlisting>
+  </appendix>
+  <appendix>
+    <title>Code Samples</title>
+    <section id="book.bean">
+      <title id="book.bean.title">Book Java Bean</title>
+      <programlisting language="java"><![CDATA[package sample;
+
+import java.sql.Date;
+
+public class Book {
+    private int id;
+    
+    private String name;
+    
+    private String author;
+    
+    private Date published;
+    
+    public int getId() {
+        return id;
+    }
+    
+    public void setId(int id) {
+        this.id = id;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public void setId(String name) {
+        this.name = name;
+    }
+    
+    public String getAuthor() {
+        return author;
+    }
+    
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+}]]></programlisting>
+    </section>
   </appendix>
 </book>
