@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" 
-  "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+  "ahttp://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
   <!ENTITY nanorm-version "0.1.0">
   <!ENTITY asm-version "3.1">
   <!ENTITY slf4j-version "1.5.2">
@@ -158,8 +158,8 @@
             </tbody>
           </tgroup>
         </table>
-        If you use Maven2 as a build system, you need only to add
-        certain dependency and repository definition to your pom.xml.
+        If you use Maven2 as a build system, you only need to add
+        Nanorm dependency and repository definition to your pom.xml.
         See
         <link linkend="maven.sample" endterm="maven.sample.title" />
         for sample configuration snippet.
@@ -177,7 +177,8 @@
         Java Bean with four properties: id, name, author and published
         (see <link linkend="book.bean">code snippet</link>). Then we declare
         a mapper interface with <acronym>CRUD</acronym> methods and this is
-        there Nanorm comes to scene.</para>
+        there Nanorm comes to scene. The interface implementation will
+        be provided by the Nanorm.</para>
         <programlisting language="java"><![CDATA[package sample;
   
   import java.util.List;
@@ -221,10 +222,25 @@
         <code>${&lt;property&gt;</code>, where <code>&lt;property&gt;</code> is property
         path. First part of the property path identifies the parameter, which could be a number,
         like <literal>1</literal> or <literal>value</literal>. The number identifies parameter
-        by its position (the parameters are numbered starting from the 1) and <literal>value</literal>
+        by its position (the parameters are numbered from 1) and <literal>value</literal>
         is the first parameter. The rest part of the property path is property names or indexing operators
         separated by <literal>.</literal>(dot). See <link linkend="property.path" endterm="property.path.title"/>
-        for more details.
+        for more details about property paths.
+      </para>
+      <para>
+        When <methodname>insertBook</methodname> method is invoked, the Nanorm creates the
+        prepared statement using the provided SQL, with all references replaced by positional
+        parameters <literal>?</literal>, and binds these parameters to values retrieved from
+        the method parameters using property paths provided.
+      </para>
+      <para>
+        The <methodname>updateBook</methodname> and <methodName>deleteBook</methodName> methods
+        work the same way as <methodname>insertMethod</methodname>, but with one small difference.
+        Since the returnvalue of the methods are declared as <type>int</type>, the methods implementations
+        will return amount of rows updated/deleted.
+        <note><type>int</type> type for the methods marked by <code>@Insert</code> annotation has
+        the different meaning. Refer to the <link linkend="generated.keys" endterm="generated.keys.title"/>
+        for more details.</note> 
       </para>
     </section>
   </chapter>
@@ -232,6 +248,10 @@
     <title>Reference</title>
     <section id="property.path">
       <title id="property.path.title">Property Paths</title>
+      TBD
+    </section>
+    <section id="generated.keys">
+      <title id="generated.keys.title">Generated Keys Support</title>
       TBD
     </section>
   </chapter>
