@@ -30,6 +30,9 @@ import com.google.code.nanorm.internal.type.TypeHandlerFactoryImpl;
 /**
  * Public configuration class for nanorm factory creation.
  * 
+ * Configuration instances are not thread-safe. You should not invoke methods on
+ * it from different threads.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 19.06.2008
  */
@@ -40,7 +43,7 @@ public class NanormConfiguration {
 	private final IntrospectionFactory introspectionFactory;
 
 	private final InternalConfiguration config;
-	
+
 	private SessionConfig sessionConfig;
 
 	/**
@@ -53,8 +56,7 @@ public class NanormConfiguration {
 		ClassLoader cl = Thread.currentThread().getContextClassLoader();
 		introspectionFactory = new ASMIntrospectionFactory(cl);
 
-		config = new InternalConfiguration(typeHandlerFactory,
-				introspectionFactory);
+		config = new InternalConfiguration(typeHandlerFactory, introspectionFactory);
 	}
 
 	/**
@@ -68,6 +70,7 @@ public class NanormConfiguration {
 
 	/**
 	 * Register type handler.
+	 * 
 	 * @param type type for handler
 	 * @param handler type handler
 	 */
@@ -77,15 +80,16 @@ public class NanormConfiguration {
 
 	/**
 	 * Set session/transaction management configuration.
+	 * 
 	 * @param sessionConfig session/transaction management configuration.
 	 */
 	public void setSessionConfig(SessionConfig sessionConfig) {
 		this.sessionConfig = sessionConfig;
 	}
 
-	
 	/**
 	 * Build factory.
+	 * 
 	 * @return factory.
 	 */
 	public NanormFactory buildFactory() {

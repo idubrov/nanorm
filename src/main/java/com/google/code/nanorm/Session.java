@@ -18,6 +18,9 @@ package com.google.code.nanorm;
 /**
  * Interface for controlling the session/transaction.
  * 
+ * Session instances are not thread-safe. The session is opened for the current
+ * thread only.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 27.05.2008
  */
@@ -26,15 +29,15 @@ public interface Session {
 	/**
 	 * Commit transaction.
 	 */
-    void commit();
-    
-    /**
-     * Rollback transaction.
-     */
-    void rollback();
-    
-    /**
-     * End session.
-     */
-    void end();
+	void commit();
+
+	/**
+	 * Rollback transaction.
+	 */
+	void rollback();
+
+	/**
+	 * End session.
+	 */
+	void end();
 }

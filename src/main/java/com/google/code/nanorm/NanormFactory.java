@@ -23,6 +23,16 @@ import com.google.code.nanorm.internal.config.InternalConfiguration;
  * Central interface of the Nanorm library. Used for creating the mappers and
  * opening the sessions.
  * 
+ * Factory instances are thread-safe, you can invoke any methods from any
+ * thread. However, the session opened by <code>openSession</code> is bound to
+ * the current thread only.
+ * 
+ * Mapper instances are also thread-safe, however, their methods are executed in
+ * the context of session for the current thread. Before invoking any method on
+ * mapper instance, you should open the session for current thread using the
+ * factory the mapper is bound to. Mapper instances are intrinsically bound to
+ * the factory that created them.
+ * 
  * @author Ivan Dubrov
  */
 public interface NanormFactory {
@@ -62,7 +72,11 @@ public interface NanormFactory {
 	Session openSession(Connection conn);
 
 	/**
-	 * Get internal factory configuration.
+	 * Get internal factory configuration. Internal method that should not be
+	 * used by clients.
+	 * 
+	 * TODO: Remove it. Provide other way to get the mapping data from the
+	 * Nanorm.
 	 * 
 	 * @return internal factory configuration.
 	 */
