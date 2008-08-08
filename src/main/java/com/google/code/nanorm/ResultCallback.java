@@ -15,15 +15,13 @@
  */
 package com.google.code.nanorm;
 
-import com.google.code.nanorm.internal.mapping.result.ResultCallbackSource;
-import com.google.code.nanorm.internal.mapping.result.RowMapper;
 
 /**
- * Interface for processing the {@link RowMapper} result values.
+ * Interface for processing the {@link com.google.code.nanorm.internal.mapping.result.RowMapper} result values.
  * 
  * Instances are not thread-safe.
  * 
- * @see ResultCallbackSource
+ * @see com.google.code.nanorm.internal.mapping.result.ResultCallbackSource
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
  * @param <T> type of values this callback expects
@@ -38,7 +36,7 @@ public interface ResultCallback<T> {
 	void handleResult(T obj);
 
 	/**
-	 * No more data will be availabel, so flush the data to the destination.
+	 * No more data will be available, so flush the data to the destination.
 	 */
 	void finish();
 }

@@ -76,23 +76,29 @@ public class AccessorKey {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		final AccessorKey other = (AccessorKey) obj;
 		if (beanClass != other.beanClass) {
 			return false;
 		}
 		if (path == null) {
-			if (other.path != null)
+			if (other.path != null) {
 				return false;
-		} else if (!path.equals(other.path))
+			}
+		} else if (!path.equals(other.path)) {
 			return false;
-		if (!Arrays.equals(types, other.types))
+		}
+		if (!Arrays.equals(types, other.types)) {
 			return false;
+		}
 		return true;
 	}
 }

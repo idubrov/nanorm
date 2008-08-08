@@ -15,12 +15,10 @@
  */
 package com.google.code.nanorm.internal;
 
-import java.sql.ResultSet;
-
 import com.google.code.nanorm.internal.util.ToStringBuilder;
 
 /**
- * Result object key. Used for grouping several rows of {@link ResultSet} into
+ * Result object key. Used for grouping several rows of {@link java.sql.ResultSet} into
  * single object.
  * 
  * @author Ivan Dubrov

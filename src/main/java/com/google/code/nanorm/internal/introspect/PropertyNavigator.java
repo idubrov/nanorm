@@ -69,7 +69,7 @@ public final class PropertyNavigator {
 	 * Index value (for indexing access)
 	 * @return index value
 	 */
-	public final int getIndex() {
+	public int getIndex() {
 		return index;
 	}
 
@@ -77,7 +77,7 @@ public final class PropertyNavigator {
 	 * Property name (for property access)
 	 * @return property name
 	 */
-	public final String getProperty() {
+	public String getProperty() {
 		return property;
 	}
 
@@ -85,7 +85,7 @@ public final class PropertyNavigator {
 	 * Get position in the property path.
 	 * @return position in the property path.
 	 */
-	public final int getPosition() {
+	public int getPosition() {
 		return pos;
 	}
 
@@ -93,7 +93,7 @@ public final class PropertyNavigator {
 	 * Get type of last parsed property path element.
 	 * @return type of last parsed property path element.
 	 */
-	public final int getElementType() {
+	public int getElementType() {
 		return elementType;
 	}
 
@@ -102,7 +102,7 @@ public final class PropertyNavigator {
 	 * FIXME: Invert condition!!!
 	 * @return if property path has next property path element.
 	 */
-	public final boolean hasNext() {
+	public boolean hasNext() {
 		return pos < path.length();
 	}
 
@@ -110,7 +110,7 @@ public final class PropertyNavigator {
 	 * Get property path.
 	 * @return property path
 	 */
-	public final String getPath() {
+	public String getPath() {
 		return path;
 	}
 
@@ -118,7 +118,7 @@ public final class PropertyNavigator {
 	 * Parse next property path element.
 	 * @return element type
 	 */
-	public final int next() {
+	public int next() {
 		// TODO: Check end
 		// Skip '.' after property access
 		if (elementType == PROPERTY && path.charAt(pos) == '.') {

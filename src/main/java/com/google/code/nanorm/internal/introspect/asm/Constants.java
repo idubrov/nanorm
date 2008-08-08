@@ -21,8 +21,6 @@ import org.objectweb.asm.commons.Method;
 
 import com.google.code.nanorm.internal.QueryDelegate;
 import com.google.code.nanorm.internal.config.StatementConfig;
-import com.google.code.nanorm.internal.introspect.Getter;
-import com.google.code.nanorm.internal.introspect.Setter;
 
 /**
  * Internal constants for ASM-based code.
@@ -45,13 +43,13 @@ public class Constants {
 			.getMethod("void <init>(java.lang.reflect.Type)");
 
 	/**
-	 * {@link Getter#getValue} method.
+	 * {@link com.google.code.nanorm.internal.introspect.Getter#getValue} method.
 	 */
 	static final Method GET_VALUE = Method
 			.getMethod("java.lang.Object getValue(java.lang.Object)");
 
 	/**
-	 * {@link Setter#setValue(Object, Object)} method.
+	 * {@link com.google.code.nanorm.internal.introspect.Setter#setValue(Object, Object)} method.
 	 */
 	static final Method SET_VALUE = Method
 			.getMethod("void setValue(java.lang.Object, java.lang.Object)");

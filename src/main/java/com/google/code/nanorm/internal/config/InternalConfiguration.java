@@ -150,17 +150,16 @@ public class InternalConfiguration {
 			StatementKey key = rmc.getSubselectKey();
 			if (key != null) {				
 				StatementConfig stConfig = statementsConfig.get(key);
-				if (stConfig == null) {
-					if(key.getParameters() == null) {
-						// Parameters types are not known, let's use any statement with 
-						// matching mapper and statement name
-						for(Map.Entry<StatementKey, StatementConfig> entry : statementsConfig.entrySet()) {
-							StatementKey key2 = entry.getKey();
-							if(key.getMapper() == key2.getMapper() &&
-									key.getName().equals(key2.getName())) {
-								stConfig = entry.getValue();
-								break;
-							}
+				// TODO: Better implementation, probably nested hash maps
+				if (stConfig == null && key.getParameters() == null) {
+					// Parameters types are not known, let's use any statement with 
+					// matching mapper and statement name
+					for(Map.Entry<StatementKey, StatementConfig> entry : statementsConfig.entrySet()) {
+						StatementKey key2 = entry.getKey();
+						if(key.getMapper() == key2.getMapper() &&
+								key.getName().equals(key2.getName())) {
+							stConfig = entry.getValue();
+							break;
 						}
 					}
 				}
@@ -288,7 +287,7 @@ public class InternalConfiguration {
 		statementsConfig.put(key, stConfig);
 	}
 
-	private com.google.code.nanorm.internal.mapping.result.RowMapper createResultMap(Type type,
+	private RowMapper createResultMap(Type type,
 			ResultMapConfig config) {
 		if (type instanceof Class<?> && ((Class<?>) type).isPrimitive()) {
 			return new ScalarRowMapper(type, typeHandlerFactory);

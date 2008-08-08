@@ -35,7 +35,6 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectUtils;
 import com.google.code.nanorm.internal.introspect.PropertyVisitor;
 
@@ -133,7 +132,7 @@ public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 	}
 
 	/**
-	 * Generate {@link Getter#getType()} method.
+	 * Generate {@link com.google.code.nanorm.internal.introspect.Getter#getType()} method.
 	 * 
 	 * @param owner type representing the class being generated
 	 */

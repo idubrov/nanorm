@@ -95,7 +95,7 @@ public final class TypeHandlerFactoryImpl implements TypeHandlerFactory {
     /**
      * {@inheritDoc}
      */
-    public final void register(Type type, TypeHandler<?> handler) {
+    public void register(Type type, TypeHandler<?> handler) {
         typeHandlers.put(type, handler);
     }
 }

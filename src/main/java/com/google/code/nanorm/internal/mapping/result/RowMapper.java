@@ -19,13 +19,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.google.code.nanorm.ResultCallback;
-import com.google.code.nanorm.internal.FactoryImpl;
 import com.google.code.nanorm.internal.Request;
 
 /**
  * Primary interface used for mapping the row into the Java object.
  * 
- * @see FactoryImpl
+ * @see com.google.code.nanorm.internal.FactoryImpl
  * @see DefaultRowMapper
  * @author Ivan Dubrov
  * @version 1.0 28.05.2008

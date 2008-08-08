@@ -23,14 +23,11 @@ import org.junit.Test;
 
 import com.google.code.nanorm.Block;
 import com.google.code.nanorm.SQLSource;
-import com.google.code.nanorm.annotations.Mapping;
 import com.google.code.nanorm.annotations.ResultMap;
-import com.google.code.nanorm.annotations.ResultMapList;
 import com.google.code.nanorm.annotations.ResultMapRef;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.annotations.Source;
 import com.google.code.nanorm.test.beans.Article;
-import com.google.code.nanorm.test.beans.Publication;
 import com.google.code.nanorm.test.common.MapperTestBase;
 
 /**

@@ -128,8 +128,6 @@ public class DefaultRowMapper implements RowMapper {
 					request.getKey2Objects().put(this, map);
 				}
 				map.put(key, result);
-			} else {
-				// TODO: ????
 			}
 		} else {
 			// We don't have a groupBy, create new result object

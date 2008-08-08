@@ -78,25 +78,33 @@ public class StatementKey {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {			
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		StatementKey other = (StatementKey) obj;
 		if (mapper == null) {
-			if (other.mapper != null)
+			if (other.mapper != null) {
 				return false;
-		} else if (!mapper.equals(other.mapper))
+			}
+		} else if (!mapper.equals(other.mapper)) {
 			return false;
+		}
 		if (name == null) {
-			if (other.name != null)
+			if (other.name != null) {
 				return false;
-		} else if (!name.equals(other.name))
+			}
+		} else if (!name.equals(other.name)) {
 			return false;
-		if (!Arrays.equals(parameters, other.parameters))
+		}
+		if (!Arrays.equals(parameters, other.parameters)) {
 			return false;
+		}
 		return true;
 	}
 

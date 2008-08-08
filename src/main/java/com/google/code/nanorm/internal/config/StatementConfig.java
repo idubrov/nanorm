@@ -17,7 +17,6 @@ package com.google.code.nanorm.internal.config;
 
 import java.lang.reflect.Type;
 
-import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.internal.Fragment;
 import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.mapping.result.RowMapper;
@@ -164,7 +163,7 @@ public class StatementConfig {
 	}
 
 	/**
-	 * Get index of the parameter that is instance of {@link ResultCallback},
+	 * Get index of the parameter that is instance of {@link com.google.code.nanorm.ResultCallback},
 	 * which will be used for processing the results.
 	 * 
 	 * @see #RETURN_VALUE
@@ -175,7 +174,7 @@ public class StatementConfig {
 	}
 
 	/**
-	 * Set index of the parameter that is instance of {@link ResultCallback},
+	 * Set index of the parameter that is instance of {@link com.google.code.nanorm.ResultCallback},
 	 * which will be used for processing the results.
 	 * 
 	 * @see #RETURN_VALUE

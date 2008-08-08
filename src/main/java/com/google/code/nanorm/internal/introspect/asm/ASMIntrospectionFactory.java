@@ -31,13 +31,13 @@ import com.google.code.nanorm.internal.config.StatementConfig;
 import com.google.code.nanorm.internal.introspect.AbstractIntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectUtils;
-import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.introspect.asm.MapperBuilder.MethodConfig;
 
 /**
- * ASM based {@link IntrospectionFactory} implementation. Uses runtime code
- * generation to create getters and setters.
+ * ASM based
+ * {@link com.google.code.nanorm.internal.introspect.IntrospectionFactory}
+ * implementation. Uses runtime code generation to create getters and setters.
  * 
  * TODO: Debugging.
  * 
@@ -83,21 +83,18 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 	 * @param path property path
 	 * @return
 	 */
-	private Getter buildGetterImpl(final Class<?> beanClass,
-			final Type[] types, final String path) {
-		AccessorKey key = types == null ? new AccessorKey(beanClass, path)
-				: new AccessorKey(types, path);
+	private Getter buildGetterImpl(final Class<?> beanClass, final Type[] types, final String path) {
+		AccessorKey key = types == null ? new AccessorKey(beanClass, path) : new AccessorKey(types,
+				path);
 		Getter instance = getters.get(key);
 		if (instance == null) {
-			String name = "com/google/code/nanorm/generated/Getter"
-					+ counter.incrementAndGet();
+			String name = "com/google/code/nanorm/generated/Getter" + counter.incrementAndGet();
 
 			AccessorBuilder builder = new AccessorBuilder(name, false);
 			Type[] finalType = new Type[1];
 
-			byte[] code = types == null ? IntrospectUtils.visitPath(path,
-					beanClass, builder, finalType) : IntrospectUtils.visitPath(
-					path, types, builder, finalType);
+			byte[] code = types == null ? IntrospectUtils.visitPath(path, beanClass, builder,
+					finalType) : IntrospectUtils.visitPath(path, types, builder, finalType);
 
 			// Re-check we didn't created other instance while we were
 			// generating
@@ -105,15 +102,12 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 				instance = getters.get(key);
 
 				if (instance == null) {
-					Class<?> clazz = classLoader.defineClass(name.replace('/',
-							'.'), code);
+					Class<?> clazz = classLoader.defineClass(name.replace('/', '.'), code);
 					try {
-						Constructor<?> ct = clazz
-								.getConstructor(java.lang.reflect.Type.class);
+						Constructor<?> ct = clazz.getConstructor(java.lang.reflect.Type.class);
 						instance = (Getter) ct.newInstance(finalType[0]);
 					} catch (Exception e) {
-						throw new IntrospectionException(
-								"Failed to create getter instance!", e);
+						throw new IntrospectionException("Failed to create getter instance!", e);
 					}
 					getters.put(key, instance);
 				}
@@ -125,8 +119,7 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Getter buildParameterGetter(final java.lang.reflect.Type[] types,
-			final String path) {
+	public Getter buildParameterGetter(final java.lang.reflect.Type[] types, final String path) {
 		return buildGetterImpl(null, types, path);
 	}
 
@@ -152,20 +145,17 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 	 * @param path property path
 	 * @return setter instance
 	 */
-	public Setter buildSetterImpl(final Class<?> beanClass, final Type[] types,
-			final String path) {
+	public Setter buildSetterImpl(final Class<?> beanClass, final Type[] types, final String path) {
 		AccessorKey key = new AccessorKey(beanClass, path);
 		Setter instance = setters.get(key);
 		if (instance == null) {
-			String name = "com/google/code/nanorm/generated/Setter"
-					+ counter.incrementAndGet();
+			String name = "com/google/code/nanorm/generated/Setter" + counter.incrementAndGet();
 
 			AccessorBuilder builder = new AccessorBuilder(name, true);
 			Type[] finalType = new Type[1];
 
-			byte[] code = types == null ? IntrospectUtils.visitPath(path,
-					beanClass, builder, finalType) : IntrospectUtils.visitPath(
-					path, types, builder, finalType);
+			byte[] code = types == null ? IntrospectUtils.visitPath(path, beanClass, builder,
+					finalType) : IntrospectUtils.visitPath(path, types, builder, finalType);
 
 			// Re-check we didn't created other instance while we were
 			// generating
@@ -173,13 +163,11 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 				instance = setters.get(key);
 
 				if (instance == null) {
-					Class<?> clazz = classLoader.defineClass(name.replace('/',
-							'.'), code);
+					Class<?> clazz = classLoader.defineClass(name.replace('/', '.'), code);
 					try {
 						instance = (Setter) clazz.newInstance();
 					} catch (Exception e) {
-						throw new IntrospectionException(
-								"Failed to create setter instance!", e);
+						throw new IntrospectionException("Failed to create setter instance!", e);
 					}
 					setters.put(key, instance);
 				}
@@ -198,8 +186,8 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 		List<MethodConfig> methods = new ArrayList<MethodConfig>();
 		List<StatementConfig> configs = new ArrayList<StatementConfig>();
 		for (java.lang.reflect.Method m : interfaze.getMethods()) {
-			StatementConfig stConfig = config.getStatementConfig(interfaze, m
-					.getName(), m.getGenericParameterTypes());
+			StatementConfig stConfig = config.getStatementConfig(interfaze, m.getName(), m
+					.getGenericParameterTypes());
 			if (stConfig != null) {
 				MethodConfig cfg = new MethodConfig();
 				cfg.method = m;
@@ -210,21 +198,19 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 			}
 		}
 
-		String name = "com/google/code/nanorm/generated/Mapper"
-				+ counter.incrementAndGet();
+		String name = "com/google/code/nanorm/generated/Mapper" + counter.incrementAndGet();
 		byte[] code = MapperBuilder.buildMapper(name, interfaze, methods
 				.toArray(new MethodConfig[methods.size()]));
 
 		Class<?> clazz = classLoader.defineClass(name.replace('/', '.'), code);
 		Object instance;
 		try {
-			Constructor<?> ctor = clazz.getConstructor(QueryDelegate.class,
-					StatementConfig[].class);
-			instance = ctor.newInstance(delegate, configs
-					.toArray(new StatementConfig[configs.size()]));
+			Constructor<?> ctor = clazz
+					.getConstructor(QueryDelegate.class, StatementConfig[].class);
+			instance = ctor.newInstance(delegate, configs.toArray(new StatementConfig[configs
+					.size()]));
 		} catch (Exception e) {
-			throw new IntrospectionException(
-					"Failed to create mapper instance!", e);
+			throw new IntrospectionException("Failed to create mapper instance!", e);
 		}
 		return interfaze.cast(instance);
 	}

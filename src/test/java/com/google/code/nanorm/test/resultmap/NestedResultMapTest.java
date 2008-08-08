@@ -23,7 +23,6 @@ import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapList;
 import com.google.code.nanorm.annotations.ResultMapRef;
 import com.google.code.nanorm.annotations.Select;
-import com.google.code.nanorm.test.beans.Article;
 import com.google.code.nanorm.test.beans.Category;
 import com.google.code.nanorm.test.beans.Publication;
 import com.google.code.nanorm.test.common.MapperTestBase;
