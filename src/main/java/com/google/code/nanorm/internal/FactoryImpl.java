@@ -311,7 +311,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 
 	private static class ResultGetterSetter implements Getter, Setter {
 
-		private Type type;
+		private final Type type;
 
 		/**
 		 * Constructor.

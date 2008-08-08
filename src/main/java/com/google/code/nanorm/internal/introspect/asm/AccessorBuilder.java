@@ -51,7 +51,7 @@ import com.google.code.nanorm.internal.introspect.PropertyVisitor;
  */
 public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 
-	private ClassWriter cw;
+	private final ClassWriter cw;
 
 	private String fullPath;
 
@@ -64,7 +64,7 @@ public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 
 	private GeneratorAdapter accessormg;
 
-	private Label npeLabel = new Label();
+	private final Label npeLabel = new Label();
 
 	private int npeLocal = -1;
 

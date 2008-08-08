@@ -58,7 +58,7 @@ public class ArrayCallbackSource implements ResultCallbackSource {
 	@SuppressWarnings("unchecked")
 	public ResultCallback forInstance(final Object instance) {
 		return new ResultCallback() {
-			private List<Object> list = new ArrayList<Object>();
+			private final List<Object> list = new ArrayList<Object>();
 			{
 				// Populate from property
 				Object[] data = (Object[]) getter.getValue(instance);

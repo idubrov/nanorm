@@ -27,11 +27,11 @@ import com.google.code.nanorm.internal.util.ToStringBuilder;
  */
 public class StatementKey {
 
-	private Class<?> mapper;
+	private final Class<?> mapper;
 
-	private String name;
+	private final String name;
 
-	private Type[] parameters;
+	private final Type[] parameters;
 
 	/**
 	 * Constructor.

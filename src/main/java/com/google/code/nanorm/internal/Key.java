@@ -27,7 +27,7 @@ import com.google.code.nanorm.internal.util.ToStringBuilder;
  * @version 1.0 05.06.2008
  */
 public final class Key {
-	private Object[] tuple;
+	private final Object[] tuple;
 
 	/**
 	 * Constructor.
@@ -68,13 +68,12 @@ public final class Key {
 			return false;
 		}
 		for (int i = 0; i < tuple.length; ++i) {
-			if (tuple[i] != other.tuple[i]) {
-				if (tuple[i] == null) {
-					return false;
-				}
+			if(tuple[i] != null) {
 				if (!tuple[i].equals(other.tuple[i])) {
 					return false;
 				}
+			} else if(other.tuple[i] != null) {
+				return false;
 			}
 		}
 		return true;

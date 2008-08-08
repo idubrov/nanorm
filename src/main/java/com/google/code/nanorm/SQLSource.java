@@ -45,7 +45,7 @@ public abstract class SQLSource implements BoundFragment {
 	 * Stack of list of bound fragments. Each basic "append" operation adds
 	 * bound fragment to the list on stack top.
 	 */
-	private List<List<BoundFragment>> stack = new ArrayList<List<BoundFragment>>();
+	private final List<List<BoundFragment>> stack = new ArrayList<List<BoundFragment>>();
 
 	private IntrospectionFactory introspectionFactory;
 
@@ -61,7 +61,7 @@ public abstract class SQLSource implements BoundFragment {
 
 		private String with;
 
-		private List<List<BoundFragment>> clauses = new ArrayList<List<BoundFragment>>();
+		private final List<List<BoundFragment>> clauses = new ArrayList<List<BoundFragment>>();
 
 		/**
 		 * Set prepending fragment of join (prepended to the join body).

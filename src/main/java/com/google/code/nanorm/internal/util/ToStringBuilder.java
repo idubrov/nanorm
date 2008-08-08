@@ -25,11 +25,11 @@ import java.util.Set;
  * @author Ivan Dubrov
  */
 public class ToStringBuilder {
-	private Object object;
+	private final Object object;
 
-	private StringBuilder builder;
+	private final StringBuilder builder;
 
-	private Set<Object> visited;
+	private final Set<Object> visited;
 	
 	private boolean first;
 

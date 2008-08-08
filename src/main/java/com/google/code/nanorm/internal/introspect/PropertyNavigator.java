@@ -16,7 +16,6 @@
 
 package com.google.code.nanorm.internal.introspect;
 
-import java.util.Iterator;
 
 /**
  * Property path parser.
@@ -42,7 +41,7 @@ public final class PropertyNavigator {
 
 	private int pos;
 
-	private String path;
+	private final String path;
 
 	private int elementType;
 

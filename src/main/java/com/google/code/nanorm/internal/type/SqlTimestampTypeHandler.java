@@ -21,7 +21,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 
 /**
- * Type handler for {@link Timetsamp}
+ * Type handler for {@link java.sql.Timestamp}
  * @author Ivan Dubrov
  */
 public class SqlTimestampTypeHandler implements TypeHandler<Timestamp> {
