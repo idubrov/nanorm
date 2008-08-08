@@ -104,7 +104,12 @@ public class InternalConfiguration {
 	private StatementConfig getStatementConfig(StatementKey key) {
 		StatementConfig statementConfig = statementsConfig.get(key);
 		if (statementConfig == null) {
-			throw new ConfigurationException("Missing configuration for method '" + key + "'"); // $NON-NLS-1$
+			throw new ConfigurationException("Missing configuration for method '" + key + "'"); // $NON
+			// -
+			// NLS
+			// -
+			// 1
+			// $
 		}
 		return statementConfig;
 	}
@@ -123,19 +128,18 @@ public class InternalConfiguration {
 	}
 
 	/**
-	 * Configure mapper.
-	 * TODO: Elaborate Javadoc!
+	 * Configure mapper. TODO: Elaborate Javadoc!
 	 * 
 	 * @param mapper mapper interface
 	 */
 	public void configure(Class<?> mapper) {
-		synchronized(this) {
+		synchronized (this) {
 			if (mapped.add(mapper)) {
 				processResultMaps(mapper);
 				for (Method method : mapper.getMethods()) {
 					processMethod(mapper, method);
 				}
-	
+
 				postProcess();
 			}
 		}
@@ -148,25 +152,27 @@ public class InternalConfiguration {
 		// TODO: Check statement return type matches the property type
 		for (ResultMappingConfig rmc : postProcessList) {
 			StatementKey key = rmc.getSubselectKey();
-			if (key != null) {				
+			if (key != null) {
 				StatementConfig stConfig = statementsConfig.get(key);
 				// TODO: Better implementation, probably nested hash maps
 				if (stConfig == null && key.getParameters() == null) {
-					// Parameters types are not known, let's use any statement with 
+					// Parameters types are not known, let's use any statement
+					// with
 					// matching mapper and statement name
-					for(Map.Entry<StatementKey, StatementConfig> entry : statementsConfig.entrySet()) {
+					for (Map.Entry<StatementKey, StatementConfig> entry : statementsConfig
+							.entrySet()) {
 						StatementKey key2 = entry.getKey();
-						if(key.getMapper() == key2.getMapper() &&
-								key.getName().equals(key2.getName())) {
+						if (key.getMapper() == key2.getMapper()
+								&& key.getName().equals(key2.getName())) {
 							stConfig = entry.getValue();
 							break;
 						}
 					}
 				}
-				if(stConfig == null) {
-					// TODO: Add result map id into message!
-					throw new ConfigurationException("Invalid subselect " + rmc.getSubselectKey() // $NON-NLS-1$
-							+ " on result mapping " + rmc); // $NON-NLS-1$
+				if (stConfig == null) {
+					throw new ConfigurationException("Invalid subselect " + rmc.getSubselectKey()
+							+ " on result mapping " + rmc + " (result map id is "
+							+ rmc.getResultMapConfig().getId() + ')');
 				}
 				rmc.setSubselect(stConfig);
 			}
@@ -240,7 +246,7 @@ public class InternalConfiguration {
 					.getGenericParameterTypes(), introspectionFactory));
 			selectKeySt.setParameterTypes(method.getGenericParameterTypes());
 			selectKeySt.setResultType(method.getGenericReturnType());
-			selectKeySt.setResultMapper(new ScalarRowMapper(method.getGenericReturnType(),
+			selectKeySt.setRowMapper(new ScalarRowMapper(method.getGenericReturnType(),
 					typeHandlerFactory));
 
 			if (!selectKey.property().equals("")) {
@@ -279,7 +285,7 @@ public class InternalConfiguration {
 		} else {
 			returnType = method.getGenericReturnType();
 		}
-		stConfig.setResultMapper(createResultMap(returnType, config));
+		stConfig.setRowMapper(createRowMapper(returnType, config));
 		stConfig.setResultType(returnType);
 
 		stConfig.setParameterTypes(method.getGenericParameterTypes());
@@ -287,12 +293,18 @@ public class InternalConfiguration {
 		statementsConfig.put(key, stConfig);
 	}
 
-	private RowMapper createResultMap(Type type,
-			ResultMapConfig config) {
+	/**
+	 * 
+	 * @param type result type to map result set row to
+	 * @param config result map configuration
+	 * @return
+	 */
+	private RowMapper createRowMapper(Type type, ResultMapConfig config) {
+		// For primitive types we simply return the mapped value of first column
 		if (type instanceof Class<?> && ((Class<?>) type).isPrimitive()) {
 			return new ScalarRowMapper(type, typeHandlerFactory);
 		}
-		// TODO: If config is null, automap!
+		// TODO: If config is null, automap it?
 		return new DefaultRowMapper(type, config, introspectionFactory, typeHandlerFactory);
 	}
 
@@ -327,9 +339,8 @@ public class InternalConfiguration {
 	 * @param resultMap result map annotation
 	 */
 	private void processResultMap(Class<?> clazz, ResultMap resultMap) {
-		// TODO: Check id!
-		String key = clazz.getName() + "#" + resultMap.id();
-		resultMapsConfig.put(key, createResultMapConfig(clazz, resultMap));
+		ResultMapConfig cfg = createResultMapConfig(clazz, resultMap);
+		resultMapsConfig.put(cfg.getId(), cfg);
 	}
 
 	/**
@@ -402,7 +413,7 @@ public class InternalConfiguration {
 
 					// null parameters mean that parameters are not known.
 					// in that case, any matching method will be used
-					// FIXME: Derive parameters!
+					// FIXME: Derive parameters from the property type!
 					resMapping.setSubselectKey(new StatementKey(mapper, mapping.subselect(), null));
 
 					postProcessList.add(resMapping);

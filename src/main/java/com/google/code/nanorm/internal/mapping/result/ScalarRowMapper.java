@@ -50,7 +50,7 @@ public class ScalarRowMapper implements RowMapper {
 	 */
 	public void processResultSet(Request request, ResultSet rs,
 			ResultCallback<Object> callback) throws SQLException {
+		// TODO: Check we have only one column?
 		callback.handleResult(typeHandler.getValue(rs, 1));
 	}
-
 }

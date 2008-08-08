@@ -98,7 +98,6 @@ public final class IntrospectUtils {
 				path = "";
 			}
 			// TODO: Bounds check!
-			
 
 			// Emulate parameters as Object[] as the instance type
 			visitor.visitBegin(Object[].class, path);

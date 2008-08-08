@@ -44,7 +44,7 @@ public class StatementConfig {
 
 	private Fragment fragment;
 
-	private RowMapper resultMapper;
+	private RowMapper rowMapper;
 
 	private Type resultType;
 
@@ -97,14 +97,14 @@ public class StatementConfig {
 		this.fragment = statementBuilder;
 	}
 
-	/** @return Returns the resultMapper. */
-	public RowMapper getResultMapper() {
-		return resultMapper;
+	/** @return Returns the rowMapper. */
+	public RowMapper getRowMapper() {
+		return rowMapper;
 	}
 
-	/** @param resultMapper The resultMapper to set. */
-	public void setResultMapper(RowMapper resultMapper) {
-		this.resultMapper = resultMapper;
+	/** @param rowMapper The rowMapper to set. */
+	public void setRowMapper(RowMapper rowMapper) {
+		this.rowMapper = rowMapper;
 	}
 
 	/** @return Returns the resultType. */
@@ -190,8 +190,8 @@ public class StatementConfig {
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this).append("id", id).append("update",
-				update).append("resultType", resultType).append("resultMapper",
-				resultMapper).append("fragment", fragment)
+				update).append("resultType", resultType).append("rowMapper",
+				rowMapper).append("fragment", fragment)
 				.append("parameterTypes", parameterTypes).append("selectKey",
 						selectKey).append("selectKeyAfter", selectKeyAfter)
 				.toString();

@@ -31,6 +31,7 @@ import java.util.Set;
 import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.exceptions.ConfigurationException;
+import com.google.code.nanorm.exceptions.GenericException;
 import com.google.code.nanorm.internal.Key;
 import com.google.code.nanorm.internal.Request;
 import com.google.code.nanorm.internal.config.ResultMapConfig;
@@ -147,8 +148,7 @@ public class DefaultRowMapper implements RowMapper {
 		try {
 			result = elementClass.newInstance();
 		} catch (Exception e) {
-			// TODO: !!!!!!!
-			throw new RuntimeException(e);
+			throw new GenericException("Failed to create result instance of class " + elementClass, e);
 		}
 
 		// TODO: We, probably, can bulk set those...

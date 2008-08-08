@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * TODO: Javadoc TODO: Add property value
+ * TODO: Javadoc 
  * 
  * @author Ivan Dubrov
  */

@@ -207,7 +207,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 								stConfig, args, request);
 
 						// Iterate through the result set
-						RowMapper rowMapper = stConfig.getResultMapper();
+						RowMapper rowMapper = stConfig.getRowMapper();
 						while (rs.next()) {
 							rowMapper.processResultSet(request, rs, callback);
 						}

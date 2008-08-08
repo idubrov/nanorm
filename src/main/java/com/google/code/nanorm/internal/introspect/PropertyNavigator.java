@@ -16,6 +16,8 @@
 
 package com.google.code.nanorm.internal.introspect;
 
+import java.util.NoSuchElementException;
+
 
 /**
  * Property path parser.
@@ -99,7 +101,6 @@ public final class PropertyNavigator {
 
 	/**
 	 * Check if property path has next property path element.
-	 * FIXME: Invert condition!!!
 	 * @return if property path has next property path element.
 	 */
 	public boolean hasNext() {
@@ -119,7 +120,10 @@ public final class PropertyNavigator {
 	 * @return element type
 	 */
 	public int next() {
-		// TODO: Check end
+		if(pos >= path.length()) {
+			throw new NoSuchElementException("Property path " + path + " has no more elements!");
+		}
+		
 		// Skip '.' after property access
 		if (elementType == PROPERTY && path.charAt(pos) == '.') {
 			pos++;

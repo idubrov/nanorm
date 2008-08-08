@@ -43,7 +43,7 @@ import com.google.code.nanorm.internal.introspect.PropertyVisitor;
  * Code generation is implemented with ASM library. The result is array of bytes
  * with Java class definition.
  * 
- * TODO: Support for classcast exception!
+ * TODO: Support for classcast exception (exception should contain position in the property path)!
  * 
  * @author Ivan Dubrov
  * @version 1.0 22.06.2008

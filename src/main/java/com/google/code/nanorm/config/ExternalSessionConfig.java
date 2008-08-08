@@ -22,7 +22,7 @@ import com.google.code.nanorm.internal.session.SessionSpi;
 
 /**
  * Configuration for external session/transaction management.
- * TODO: Elaborate
+ * TODO: Elaborate javadoc
  * 
  * @author Ivan Dubrov
  */
