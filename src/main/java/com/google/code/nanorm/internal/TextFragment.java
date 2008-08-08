@@ -32,7 +32,7 @@ import com.google.code.nanorm.internal.util.ToStringBuilder;
  * @version 1.0 19.06.2008
  */
 public class TextFragment implements Fragment {
-	private final static Pattern pattern = Pattern
+	private static final Pattern pattern = Pattern
 			.compile("([^#$]*)([$#]\\{[^}]+\\})");
 
 	/**
@@ -141,8 +141,9 @@ public class TextFragment implements Fragment {
 			}
 			if (count > 1) {
 				String prop = matcher.group(2);
-				if (prop.startsWith("$")) {
-					builder.append("?");
+				if (prop.charAt(0) == '$') {
+					// TODO: Add support for lists, which should expand into something like (?, ?, ?, ?)
+					builder.append('?');
 					prop = prop.substring(2, prop.length() - 1);
 					getters.add(introspectionFactory.buildParameterGetter(
 							types, prop));

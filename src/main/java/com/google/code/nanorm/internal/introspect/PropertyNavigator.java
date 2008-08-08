@@ -28,12 +28,12 @@ public final class PropertyNavigator {
 	/**
 	 * Property path element type. Indexing operation.
 	 */
-	public final static int INDEX = 1;
+	public static final int INDEX = 1;
 
 	/**
 	 * Property path element type. Path access operation.
 	 */
-	public final static int PROPERTY = 2;
+	public static final int PROPERTY = 2;
 
 	private int index = -1;
 

@@ -35,9 +35,9 @@ import com.google.code.nanorm.exceptions.SessionException;
  * @version 1.0 19.06.2008
  */
 public class SingleConnSessionSpi implements SessionSpi {
-    final private Connection connection;
+    private final Connection connection;
 
-    final private boolean isAllowMultiple;
+    private final boolean isAllowMultiple;
 
     /**
      * Constructor.

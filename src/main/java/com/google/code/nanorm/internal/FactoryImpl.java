@@ -63,13 +63,13 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 	/**
 	 * Logger for logging the SQL statements.
 	 */
-	private final static Logger LOGGER_SQL = LoggerFactory
+	private static final Logger LOGGER_SQL = LoggerFactory
 			.getLogger(FactoryImpl.class.getPackage().getName() + ".SQL");
 
 	/**
 	 * Logger for logging all other events.
 	 */
-	private final static Logger LOGGER = LoggerFactory
+	private static final Logger LOGGER = LoggerFactory
 			.getLogger(FactoryImpl.class.getName());
 
 	/**
@@ -353,7 +353,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 	 */
 	private class TransactionImpl implements Session {
 
-		final private SessionSpi spi;
+		private final SessionSpi spi;
 
 		/**
 		 * Constructor.

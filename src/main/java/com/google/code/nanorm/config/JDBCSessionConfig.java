@@ -30,7 +30,7 @@ public class JDBCSessionConfig implements SessionConfig {
 	
 	private final DataSource dataSource;
 	
-	private final boolean allowMultiple = true;
+	private final boolean allowMultiple;
 	
 	/**
 	 * Constructor.
@@ -38,6 +38,7 @@ public class JDBCSessionConfig implements SessionConfig {
 	 */
 	public JDBCSessionConfig(DataSource dataSource) {
 		this.dataSource = dataSource;
+		this.allowMultiple = true;
 	}
 	
 	/**

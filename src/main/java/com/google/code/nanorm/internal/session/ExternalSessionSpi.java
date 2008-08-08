@@ -34,7 +34,7 @@ import com.google.code.nanorm.exceptions.DataException;
  * @version 1.0 19.06.2008
  */
 public class ExternalSessionSpi implements SessionSpi {
-    final private DataSource dataSource;
+    private final DataSource dataSource;
 
     /**
      * Constructor.

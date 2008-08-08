@@ -104,7 +104,7 @@ public class InternalConfiguration {
 	private StatementConfig getStatementConfig(StatementKey key) {
 		StatementConfig statementConfig = statementsConfig.get(key);
 		if (statementConfig == null) {
-			throw new ConfigurationException("Missing configuration for method '" + key + "'");
+			throw new ConfigurationException("Missing configuration for method '" + key + "'"); // $NON-NLS-1$
 		}
 		return statementConfig;
 	}
@@ -124,22 +124,21 @@ public class InternalConfiguration {
 
 	/**
 	 * Configure mapper.
-	 * 
-	 * TODO: Should it be synchronized? TODO: Check we already configured given
-	 * mapper
+	 * TODO: Elaborate Javadoc!
 	 * 
 	 * @param mapper mapper interface
 	 */
-	public synchronized void configure(Class<?> mapper) {
-		if (mapped.add(mapper)) {
-			processResultMaps(mapper);
-			for (Method method : mapper.getMethods()) {
-				processMethod(mapper, method);
+	public void configure(Class<?> mapper) {
+		synchronized(this) {
+			if (mapped.add(mapper)) {
+				processResultMaps(mapper);
+				for (Method method : mapper.getMethods()) {
+					processMethod(mapper, method);
+				}
+	
+				postProcess();
 			}
-
-			postProcess();
 		}
-		// TODO: Configure supeinterfaces
 	}
 
 	/**
@@ -167,8 +166,8 @@ public class InternalConfiguration {
 				}
 				if(stConfig == null) {
 					// TODO: Add result map id into message!
-					throw new ConfigurationException("Invalid subselect " + rmc.getSubselectKey()
-							+ " on result mapping " + rmc);
+					throw new ConfigurationException("Invalid subselect " + rmc.getSubselectKey() // $NON-NLS-1$
+							+ " on result mapping " + rmc); // $NON-NLS-1$
 				}
 				rmc.setSubselect(stConfig);
 			}

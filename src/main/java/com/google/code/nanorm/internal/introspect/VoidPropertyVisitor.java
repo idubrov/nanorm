@@ -29,7 +29,7 @@ public final class VoidPropertyVisitor implements PropertyVisitor<Void> {
 	/**
 	 * Empty visitor instance. Does nothing.
 	 */
-    public final static VoidPropertyVisitor INSTANCE = new VoidPropertyVisitor();
+    public static final VoidPropertyVisitor INSTANCE = new VoidPropertyVisitor();
     
     private VoidPropertyVisitor() {
         // Nothing.

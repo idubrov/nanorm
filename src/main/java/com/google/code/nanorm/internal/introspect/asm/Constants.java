@@ -34,90 +34,90 @@ public class Constants {
 	/**
 	 * Mapper constructor.
 	 */
-	final static Method MAPPER_CTOR = Method
+	static final Method MAPPER_CTOR = Method
 			.getMethod("void <init>(com.google.code.nanorm.internal.QueryDelegate, "
 					+ "com.google.code.nanorm.internal.config.StatementConfig[])");
 
 	/**
 	 * Getter constructor.
 	 */
-	final static Method GETTER_CTOR = Method
+	static final Method GETTER_CTOR = Method
 			.getMethod("void <init>(java.lang.reflect.Type)");
 
 	/**
 	 * {@link Getter#getValue} method.
 	 */
-	final static Method GET_VALUE = Method
+	static final Method GET_VALUE = Method
 			.getMethod("java.lang.Object getValue(java.lang.Object)");
 
 	/**
 	 * {@link Setter#setValue(Object, Object)} method.
 	 */
-	final static Method SET_VALUE = Method
+	static final Method SET_VALUE = Method
 			.getMethod("void setValue(java.lang.Object, java.lang.Object)");
 
 	/**
 	 * Parameterless constructor.
 	 */
-	final static Method CTOR = Method.getMethod("void <init>()");
+	static final Method CTOR = Method.getMethod("void <init>()");
 
 	/**
 	 * {@link java.lang.reflect.Type}
 	 */
-	final static Type JL_REFLECT_TYPE_TYPE = Type
+	static final Type JL_REFLECT_TYPE_TYPE = Type
 			.getType(java.lang.reflect.Type.class);
 
 	/**
 	 * {@link Object}
 	 */
-	final static Type OBJECT_TYPE = Type.getType(Object.class);
+	static final Type OBJECT_TYPE = Type.getType(Object.class);
 
 	/**
 	 * Array of {@link Object}
 	 */
-	final static Type OBJECT_ARR_TYPE = Type.getType(Object[].class);
+	static final Type OBJECT_ARR_TYPE = Type.getType(Object[].class);
 
 	/**
 	 * {@link NullPointerException}
 	 */
-	final static Type NPE_TYPE = Type.getType(NullPointerException.class);
+	static final Type NPE_TYPE = Type.getType(NullPointerException.class);
 
 	/**
 	 * {@link NullPointerException} constructor.
 	 */
-	final static Method NPE_CTOR = Method
+	static final Method NPE_CTOR = Method
 			.getMethod("void <init>(java.lang.String)");
 
 	/**
 	 * {@link String#substring(int, int)}
 	 */
-	final static Method SUBSTRING = Method
+	static final Method SUBSTRING = Method
 			.getMethod("String substring(int, int)");
 
 	/**
 	 * {@link String#concat(String)}
 	 */
-	final static Method CONCAT = Method.getMethod("String concat(String)");
+	static final Method CONCAT = Method.getMethod("String concat(String)");
 
 	/**
 	 * {@link String}
 	 */
-	final static Type STRING_TYPE = Type.getType(String.class);
+	static final Type STRING_TYPE = Type.getType(String.class);
 
 	/**
 	 * {@link QueryDelegate}
 	 */
-	final static Type QUERY_DELEGATE_TYPE = Type.getType(QueryDelegate.class);
+	static final Type QUERY_DELEGATE_TYPE = Type.getType(QueryDelegate.class);
 
 	/**
 	 * {@link QueryDelegate#query(StatementConfig, Object[])} method.
 	 */
-	final static Method QUERY_METHOD = Method
+	static final Method QUERY_METHOD = Method
 			.getMethod("Object query(com.google.code.nanorm.internal.config.StatementConfig, Object[])");
 
 	/**
 	 * Array of {@link StatementConfig}. 
 	 */
-	final static Type STATEMENT_CONFIGS_ARR_TYPE = Type
+	static final Type STATEMENT_CONFIGS_ARR_TYPE = Type
 			.getType(StatementConfig[].class);
 }

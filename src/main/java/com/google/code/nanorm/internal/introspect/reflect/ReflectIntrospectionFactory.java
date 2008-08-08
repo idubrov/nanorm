@@ -147,8 +147,7 @@ public class ReflectIntrospectionFactory extends AbstractIntrospectionFactory {
 		 * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object,
 		 *      java.lang.reflect.Method, java.lang.Object[])
 		 */
-		public Object invoke(Object proxy, Method method, Object[] args)
-				throws Throwable {
+		public Object invoke(Object proxy, Method method, Object[] args) {
 			StatementConfig stConfig = config.getStatementConfig(mapper, method
 					.getName(), method.getGenericParameterTypes());
 			return delegate.query(stConfig, args);

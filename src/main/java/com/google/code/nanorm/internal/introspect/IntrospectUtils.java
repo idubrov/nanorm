@@ -180,9 +180,9 @@ public final class IntrospectUtils {
 			name = "is" + Character.toUpperCase(property.charAt(0))
 					+ property.substring(1);
 			try {
-				Method m = clazz.getMethod(name);
-				if (m.getReturnType() == boolean.class) {
-					return m;
+				Method method = clazz.getMethod(name);
+				if (method.getReturnType() == boolean.class) {
+					return method;
 				}
 			} catch (NoSuchMethodException e2) {
 				// Ignore.

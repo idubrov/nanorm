@@ -31,11 +31,11 @@ import com.google.code.nanorm.internal.type.TypeHandler;
  */
 public class PropertyMapper {
 
-	final private ResultMappingConfig config;
+	private final ResultMappingConfig config;
 
-	final private Setter setter;
+	private final Setter setter;
 
-	final private TypeHandler<?> typeHandler;
+	private final TypeHandler<?> typeHandler;
 
 	/**
 	 * Constructor.

@@ -39,7 +39,7 @@ public abstract class SQLSource implements BoundFragment {
 	 * The parameters of the method should exactly match the parameters of the
 	 * query method this SQL source is applied to.
 	 */
-	public final static String GENERATOR_METHOD = "sql";
+	public static final String GENERATOR_METHOD = "sql";
 
 	/**
 	 * Stack of list of bound fragments. Each basic "append" operation adds
