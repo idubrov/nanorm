@@ -60,23 +60,14 @@ public class ResultCollectorUtil {
 			Getter getter, Setter setter, Object mappingSource) {
 		Type type = getter.getType();
 		// TODO: Generic arrays!
-		if (type instanceof ParameterizedType) {
-			ParameterizedType pt = (ParameterizedType) type;
-			if (pt.getRawType() instanceof Class) {
-				Class<?> rawClass = (Class<?>) pt.getRawType();
-				if (rawClass == Collection.class || rawClass == List.class
-						|| rawClass == ArrayList.class) {
-					return new ArrayListCallbackSource(getter, setter);
-				}
-			}
+		if(isGenericCollection(type)) {
+			return new ArrayListCallbackSource(getter, setter);
 		} else if(type instanceof Class<?> && ((Class<?>) type).isArray()) {
 			Class<?> arrClass = (Class<?>) type;
 			return new ArrayCallbackSource(getter, setter, arrClass.getComponentType());
 		} else {
 			return new SingleResultCallbackSource(setter, mappingSource);
 		}
-		throw new IntrospectionException("Unexpected result type for mapping "
-				+ mappingSource);
 	}
 
 	/**
@@ -91,21 +82,15 @@ public class ResultCollectorUtil {
 	 */
 	public static Class<?> resultClass(Type resultType) {
 		Class<?> resultClass = null;
-		if (resultType instanceof ParameterizedType) {
+		if (isGenericCollection(resultType)) {
 			ParameterizedType pt = (ParameterizedType) resultType;
-			if (pt.getRawType() instanceof Class) {
-				Class<?> rawClass = (Class<?>) pt.getRawType();
-				if (rawClass == List.class || rawClass == Collection.class
-						|| rawClass == ArrayList.class) {
-					Type beanType = pt.getActualTypeArguments()[0];
-					if (beanType instanceof Class<?>) {
-						resultClass = (Class<?>) beanType;
-					} else {
-						throw new IntrospectionException(
-								"Parameter for result generic must be concrete class! Result generic type is "
-										+ resultType);
-					}
-				}
+			Type beanType = pt.getActualTypeArguments()[0];
+			if (beanType instanceof Class<?>) {
+				resultClass = (Class<?>) beanType;
+			} else {
+				throw new IntrospectionException(
+						"Parameter for result generic must be concrete class! Result generic type is "
+								+ resultType);
 			}
 		} else if(resultType instanceof Class<?> && ((Class<?>) resultType).isArray()) {
 			resultClass = ((Class<?>) resultType).getComponentType();
@@ -117,5 +102,19 @@ public class ResultCollectorUtil {
 					+ resultType);
 		}
 		return resultClass;
+	}
+	
+	private static boolean isGenericCollection(Type type) {
+		if (type instanceof ParameterizedType) {
+			ParameterizedType pt = (ParameterizedType) type;
+			if (pt.getRawType() instanceof Class) {
+				Class<?> rawClass = (Class<?>) pt.getRawType();
+				if (rawClass == Collection.class || rawClass == List.class
+						|| rawClass == ArrayList.class) {
+					return true;
+				}
+			}	
+		}
+		return false;
 	}
 }
