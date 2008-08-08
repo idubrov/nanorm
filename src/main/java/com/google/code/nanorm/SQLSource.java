@@ -138,7 +138,7 @@ public abstract class SQLSource implements BoundFragment {
 	/**
 	 * Constructor.
 	 */
-	public SQLSource() {
+	protected SQLSource() {
 		stack.add(new ArrayList<BoundFragment>());
 	}
 
