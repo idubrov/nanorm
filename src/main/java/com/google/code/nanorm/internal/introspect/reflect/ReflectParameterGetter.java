@@ -73,7 +73,7 @@ public class ReflectParameterGetter implements Getter {
 		Object current = Array.get(instance, parameter);
 
 		PropertyNavigator nav = new PropertyNavigator(path, pos + 1);
-		while (!nav.hasNext()) {
+		while (nav.hasNext()) {
 			pos = nav.getPosition();
 
 			int token = nav.next();

@@ -235,7 +235,7 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 	 * @author Ivan Dubrov
 	 * @version 1.0 21.06.2008
 	 */
-	private class ASMClassLoader extends ClassLoader {
+	private static class ASMClassLoader extends ClassLoader {
 		/**
 		 * Constructor.
 		 * 

@@ -1,10 +1,3 @@
-package com.google.code.nanorm.internal.type;
-
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-
 /**
  * Copyright (C) 2008 Ivan S. Dubrov
  * 
@@ -19,6 +12,17 @@ import java.sql.Timestamp;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ */
+package com.google.code.nanorm.internal.type;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+
+/**
+ * Type handler for {@link Timetsamp}
+ * @author Ivan Dubrov
  */
 public class SqlTimestampTypeHandler implements TypeHandler<Timestamp> {
 

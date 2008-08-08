@@ -40,7 +40,7 @@ public class TestGenerics {
     private static IntrospectionFactory factory;
     
     @BeforeClass
-    public static void setUp() {
+    public static void prepareFactory() {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         factory = new ASMIntrospectionFactory(loader);
     }

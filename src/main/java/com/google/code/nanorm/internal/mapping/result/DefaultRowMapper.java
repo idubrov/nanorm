@@ -149,6 +149,7 @@ public class DefaultRowMapper implements RowMapper {
 		try {
 			result = elementClass.newInstance();
 		} catch (Exception e) {
+			// TODO: !!!!!!!
 			throw new RuntimeException(e);
 		}
 

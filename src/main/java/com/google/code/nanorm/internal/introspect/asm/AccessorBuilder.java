@@ -177,7 +177,7 @@ public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Class<?> visitIndex(int pos, int index, boolean isLast,
+	public Class<?> visitIndex(int pos, int index, boolean hasNext,
 			Class<?> beanClass) {
 		checkNull(pos);
 
@@ -186,7 +186,7 @@ public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 			accessormg.checkCast(Type.getType(beanClass));
 		}
 
-		if (isLast && isSetter) {
+		if (!hasNext && isSetter) {
 			// Push array index
 			accessormg.push(index);
 
@@ -204,7 +204,7 @@ public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 			accessormg.arrayLoad(t);
 
 			// If last element in the path -- box the type
-			if (isLast) {
+			if (!hasNext) {
 				accessormg.box(t);
 			}
 
@@ -218,7 +218,7 @@ public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 	 * {@inheritDoc}
 	 */
 	public Class<?> visitProperty(int pos, String property,
-			java.lang.reflect.Method getter, boolean isLast, Class<?> beanClass) {
+			java.lang.reflect.Method getter, boolean hasNext, Class<?> beanClass) {
 		checkNull(pos);
 
 		// If expected class is not equal to the actual class in the stack, do
@@ -227,7 +227,7 @@ public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 			accessormg.checkCast(Type.getType(beanClass));
 		}
 
-		if (isLast && isSetter) {
+		if (!hasNext && isSetter) {
 			java.lang.reflect.Method setter = IntrospectUtils.findSetter(
 					beanClass, property);
 			Class<?> paramType = setter.getParameterTypes()[0];
@@ -248,7 +248,7 @@ public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 
 			accessormg.invokeVirtual(Type.getType(beanClass), method);
 
-			if (isLast) {
+			if (!hasNext) {
 				accessormg.box(t);
 			}
 

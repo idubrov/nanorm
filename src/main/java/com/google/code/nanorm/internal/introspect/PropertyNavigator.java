@@ -16,6 +16,8 @@
 
 package com.google.code.nanorm.internal.introspect;
 
+import java.util.Iterator;
+
 /**
  * Property path parser.
  * 
@@ -98,10 +100,11 @@ public final class PropertyNavigator {
 
 	/**
 	 * Check if property path has next property path element.
+	 * FIXME: Invert condition!!!
 	 * @return if property path has next property path element.
 	 */
 	public final boolean hasNext() {
-		return pos >= path.length();
+		return pos < path.length();
 	}
 
 	/**

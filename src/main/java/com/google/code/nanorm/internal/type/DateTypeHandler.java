@@ -1,12 +1,3 @@
-package com.google.code.nanorm.internal.type;
-
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.util.Date;
-
 /**
  * Copyright (C) 2008 Ivan S. Dubrov
  * 
@@ -21,6 +12,20 @@ import java.util.Date;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ */
+package com.google.code.nanorm.internal.type;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.Date;
+
+/**
+ * Type handler for {@link java.util.Date}
+ * 
+ * @author Ivan Dubrov
  */
 public class DateTypeHandler implements TypeHandler<Date> {
 

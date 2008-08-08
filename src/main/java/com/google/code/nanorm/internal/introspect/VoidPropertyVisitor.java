@@ -52,14 +52,14 @@ public final class VoidPropertyVisitor implements PropertyVisitor<Void> {
     /**
      * {@inheritDoc}
      */
-    public Class<?> visitIndex(int pos, int index, boolean isLast, Class<?> beanClass) {
+    public Class<?> visitIndex(int pos, int index, boolean hasNext, Class<?> beanClass) {
     	return null;
     }
 
     /**
      * {@inheritDoc}
      */
-    public Class<?> visitProperty(int pos, String property, Method getter, boolean isLast,
+    public Class<?> visitProperty(int pos, String property, Method getter, boolean hasNext,
             Class<?> beanClass) {
         return null;
     }

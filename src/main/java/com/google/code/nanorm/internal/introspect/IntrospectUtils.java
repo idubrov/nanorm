@@ -104,7 +104,7 @@ public final class IntrospectUtils {
 			visitor.visitBegin(Object[].class, path);
 
 			// ...and indexing which returns Object instance
-			Class<?> res = visitor.visitIndex(0, parameter, path.length() == 0, Object[].class);
+			Class<?> res = visitor.visitIndex(0, parameter, path.length() > 0, Object[].class);
 			
 			beanClass = (res != null) ? res : (Class<?>) types[parameter];
 		}
@@ -112,7 +112,7 @@ public final class IntrospectUtils {
 		PropertyNavigator nav = new PropertyNavigator(path);
 
 		Type type = beanClass;
-		while (!nav.hasNext()) {
+		while (nav.hasNext()) {
 			int pos = nav.getPosition();
 
 			int token = nav.next();

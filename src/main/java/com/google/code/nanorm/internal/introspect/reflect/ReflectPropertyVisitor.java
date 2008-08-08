@@ -85,9 +85,9 @@ class ReflectPropertyVisitor implements PropertyVisitor<Object> {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Class<?> visitIndex(int pos, int index, boolean isLast,
+	public Class<?> visitIndex(int pos, int index, boolean hasNext,
 			Class<?> beanClass) {
-		if (isSetter && isLast) {
+		if (!hasNext && isSetter) {
 			Array.set(instance, index, value);
 		} else {
 			instance = Array.get(instance, index);
@@ -99,8 +99,8 @@ class ReflectPropertyVisitor implements PropertyVisitor<Object> {
 	 * {@inheritDoc}
 	 */
 	public Class<?> visitProperty(int pos, String property, Method getter,
-			boolean isLast, Class<?> beanClass) {
-		if (isSetter && isLast) {
+			boolean hasNext, Class<?> beanClass) {
+		if (!hasNext && isSetter) {
 			Method setter = factory.lookupSetter(instance.getClass(), property);
 			try {
 				setter.invoke(instance, value);

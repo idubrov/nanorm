@@ -122,7 +122,7 @@ public class ReflectIntrospectionFactory extends AbstractIntrospectionFactory {
 	 * @author Ivan Dubrov
 	 * @version 1.0 19.06.2008
 	 */
-	private class MapperInvocationHandler implements InvocationHandler {
+	private static class MapperInvocationHandler implements InvocationHandler {
 		private final InternalConfiguration config;
 
 		private final QueryDelegate delegate;
