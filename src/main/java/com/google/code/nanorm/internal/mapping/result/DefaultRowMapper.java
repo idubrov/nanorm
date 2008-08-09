@@ -262,16 +262,14 @@ public class DefaultRowMapper implements RowMapper {
 					mappingConfig.getProperty());
 
 			// TODO: Check all groupBy's are found!
-			if (groupBy != null && search(groupBy, mappingConfig.getProperty())) {
+			if (groupBy != null && contains(groupBy, mappingConfig.getProperty())) {
 				if (mappingConfig.getResultMapConfig() != null) {
-					throw new RuntimeException(
-							"Group by does not work for nested maps");
+					throw new ConfigurationException(
+							"'groupBy' property must not be a property with nested map defined!");
 				}
 
-				ValueGetter keyGen = new ValueGetter();
-				keyGen.typeHandler = typeHandlerFactory
-						.getTypeHandler(propertyType);
-				keyGen.config = mappingConfig;
+				ValueGetter keyGen = new ValueGetter(typeHandlerFactory
+						.getTypeHandler(propertyType), mappingConfig);
 				keyGenerators.add(keyGen);
 			}
 
@@ -322,7 +320,7 @@ public class DefaultRowMapper implements RowMapper {
 		return dc;
 	}
 
-	private boolean search(String[] array, String value) {
+	private boolean contains(String[] array, String value) {
 		for (String str : array) {
 			if (str.equals(value)) {
 				return true;
@@ -356,13 +354,14 @@ public class DefaultRowMapper implements RowMapper {
 	 * @author Ivan Dubrov
 	 */
 	private static class ValueGetter {
-		public TypeHandler<?> typeHandler;
+		private TypeHandler<?> typeHandler;
 
-		public ResultMappingConfig config;
+		private ResultMappingConfig config;
 
 		// Constructor;
-		public ValueGetter() {
-			// Nothing..
+		private ValueGetter(TypeHandler<?> typeHandler, ResultMappingConfig config) {
+			this.typeHandler = typeHandler;
+			this.config = config;
 		}
 
 		public Object getValue(ResultSet rs) throws SQLException {

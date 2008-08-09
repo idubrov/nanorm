@@ -224,7 +224,11 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("Releasing the connection " + conn);
 				}
-				spi.releaseConnection(conn);
+				try {
+					spi.releaseConnection(conn);
+				} catch(DataException e) {
+					LOGGER.error("Failed to release the connection.", e);
+				}
 			}
 		} finally {
 			if (isAuto) {
@@ -318,7 +322,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 		 * 
 		 * @param type result map result type.
 		 */
-		public ResultGetterSetter(Type type) {
+		private ResultGetterSetter(Type type) {
 			this.type = type;
 		}
 

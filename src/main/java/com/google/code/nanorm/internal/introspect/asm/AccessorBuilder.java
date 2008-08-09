@@ -57,9 +57,9 @@ public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 	private Class<?> initialBeanClass;
 
 	/**
-	 * Actual type in the stack.
+	 * Declared type on top of the stack.
 	 */
-	private Class<?> actualClass;
+	private Class<?> declaredClass;
 
 	private GeneratorAdapter accessormg;
 
@@ -104,12 +104,12 @@ public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 	 * Generate code for setter constructor.
 	 */
 	private void visitSetterConstructor() {
-		Method m = Method.getMethod("void <init>()");
+		Method ctor = Method.getMethod("void <init>()");
 
-		GeneratorAdapter mg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, m, null,
+		GeneratorAdapter mg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, ctor, null,
 				null, cw);
 		mg.loadThis();
-		mg.invokeConstructor(Type.getType(Object.class), m);
+		mg.invokeConstructor(Type.getType(Object.class), ctor);
 		mg.returnValue();
 		mg.endMethod();
 	}
@@ -168,9 +168,10 @@ public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 		npeLocal = accessormg.newLocal(Type.INT_TYPE);
 		accessormg.visitCode();
 
-		// Load argument and remember type on the stack
+		// Load argument and remember type on the stack (which is Object),
+		// see instance parameter of Getter#getValue/Setter#setValue
 		accessormg.loadArg(0);
-		actualClass = Object.class;
+		declaredClass = Object.class;
 	}
 
 	/**
@@ -181,7 +182,7 @@ public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 		checkNull(pos);
 
 		// Do cast if class on top of the stack does not match the type expected
-		if (actualClass != beanClass) {
+		if (declaredClass != beanClass) {
 			accessormg.checkCast(Type.getType(beanClass));
 		}
 
@@ -190,25 +191,26 @@ public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 			accessormg.push(index);
 
 			// Cast parameter to required type
-			Type t = Type.getType(beanClass.getComponentType());
+			Type type = Type.getType(beanClass.getComponentType());
 			accessormg.loadArg(1);
-			accessormg.unbox(t);
+			accessormg.unbox(type);
 
 			// Store to array
-			accessormg.arrayStore(t);
+			accessormg.arrayStore(type);
 		} else {
 			// Load from array
 			accessormg.push(index);
-			Type t = Type.getType(beanClass.getComponentType());
-			accessormg.arrayLoad(t);
+			Type type = Type.getType(beanClass.getComponentType());
+			accessormg.arrayLoad(type);
 
-			// If last element in the path -- box the type
+			// If this is last property in the path, box the result to match
+			// Getter#getValue return value
 			if (!hasNext) {
-				accessormg.box(t);
+				accessormg.box(type);
 			}
 
 			// Remember type on top of the stack
-			actualClass = beanClass.getComponentType();
+			declaredClass = beanClass.getComponentType();
 		}
 		return null;
 	}
@@ -220,39 +222,39 @@ public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 			java.lang.reflect.Method getter, boolean hasNext, Class<?> beanClass) {
 		checkNull(pos);
 
-		// If expected class is not equal to the actual class in the stack, do
-		// cast
-		if (actualClass != beanClass) {
+		// If expected class is not equal to the type on top of the stack, do
+		// the cast
+		if (declaredClass != beanClass) {
 			accessormg.checkCast(Type.getType(beanClass));
 		}
 
 		if (!hasNext && isSetter) {
 			java.lang.reflect.Method setter = IntrospectUtils.findSetter(
 					beanClass, property);
-			Class<?> paramType = setter.getParameterTypes()[0];
-
-			Type t = Type.getType(paramType);
+			Type type = Type.getType(setter.getParameterTypes()[0]);
 
 			// Cast parameter to required type
 			accessormg.loadArg(1);
-			accessormg.unbox(t);
+			accessormg.unbox(type);
 
 			Method method = new Method(setter.getName(), Type.VOID_TYPE,
-					new Type[] { t });
+					new Type[] { type });
 			accessormg.invokeVirtual(Type.getType(beanClass), method);
 		} else {
 
-			Type t = Type.getType(getter.getReturnType());
-			Method method = new Method(getter.getName(), t, new Type[0]);
+			Type type = Type.getType(getter.getReturnType());
+			Method method = new Method(getter.getName(), type, new Type[0]);
 
 			accessormg.invokeVirtual(Type.getType(beanClass), method);
 
+			// If this is last property in the path, box the result to match
+			// Getter#getValue return value
 			if (!hasNext) {
-				accessormg.box(t);
+				accessormg.box(type);
 			}
 
-			// Remember type in the stack
-			actualClass = getter.getReturnType();
+			// Remember type on top of the stack
+			declaredClass = getter.getReturnType();
 		}
 		return null;
 	}

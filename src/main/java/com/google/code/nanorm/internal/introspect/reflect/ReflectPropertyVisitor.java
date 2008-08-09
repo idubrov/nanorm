@@ -27,7 +27,7 @@ import com.google.code.nanorm.internal.introspect.PropertyVisitor;
  * 
  * @author Ivan Dubrov
  */
-class ReflectPropertyVisitor implements PropertyVisitor<Object> {
+public class ReflectPropertyVisitor implements PropertyVisitor<Object> {
 
 	private final ReflectIntrospectionFactory factory;
 

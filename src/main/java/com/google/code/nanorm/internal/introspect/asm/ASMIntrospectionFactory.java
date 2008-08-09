@@ -227,7 +227,7 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 		 * 
 		 * @param parent parent classloader
 		 */
-		public ASMClassLoader(ClassLoader parent) {
+		private ASMClassLoader(ClassLoader parent) {
 			super(parent);
 		}
 

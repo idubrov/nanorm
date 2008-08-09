@@ -54,7 +54,7 @@ public class SingleResultCallbackSource implements ResultCallbackSource {
              */
             public void handleResult(Object obj) {
                 if(set) {
-                    throw new RuntimeException("Single result expected for " + sourceName);
+                    throw new IllegalStateException("Single result expected for " + sourceName);
                 }
                 setter.setValue(instance, obj);
                 set = true;

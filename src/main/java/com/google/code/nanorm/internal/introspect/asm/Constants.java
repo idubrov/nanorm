@@ -28,7 +28,7 @@ import com.google.code.nanorm.internal.config.StatementConfig;
  * @author Ivan Dubrov
  * @version 1.0 22.06.2008
  */
-public class Constants {
+public interface Constants {
 	/**
 	 * Mapper constructor.
 	 */

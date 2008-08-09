@@ -32,7 +32,7 @@ import com.google.code.nanorm.internal.util.ToStringBuilder;
  * @version 1.0 19.06.2008
  */
 public class TextFragment implements Fragment {
-	private static final Pattern pattern = Pattern
+	private static final Pattern PATTERN = Pattern
 			.compile("([^#$]*)([$#]\\{[^}]+\\})");
 
 	/**
@@ -132,7 +132,7 @@ public class TextFragment implements Fragment {
 	 */
 	private void configureTypes(Type[] types, StringBuilder builder,
 			List<Getter> getters) {
-		Matcher matcher = pattern.matcher(sql);
+		Matcher matcher = PATTERN.matcher(sql);
 		int end = 0;
 		while (matcher.find()) {
 			int count = matcher.groupCount();

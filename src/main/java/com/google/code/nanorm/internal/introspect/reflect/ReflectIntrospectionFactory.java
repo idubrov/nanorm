@@ -81,12 +81,12 @@ public class ReflectIntrospectionFactory extends AbstractIntrospectionFactory {
 	 */
 	Method lookupGetter(Class<?> clazz, String property) {
 		AccessorKey key = new AccessorKey(clazz, property);
-		Method m = getters.get(key);
-		if (m == null) {
-			m = IntrospectUtils.findGetter(clazz, property);
-			getters.put(key, m);
+		Method getter = getters.get(key);
+		if (getter == null) {
+			getter = IntrospectUtils.findGetter(clazz, property);
+			getters.put(key, getter);
 		}
-		return m;
+		return getter;
 	}
 
 	/**
@@ -98,12 +98,12 @@ public class ReflectIntrospectionFactory extends AbstractIntrospectionFactory {
 	 */
 	Method lookupSetter(Class<?> clazz, String property) {
 		AccessorKey key = new AccessorKey(clazz, property);
-		Method m = setters.get(key);
-		if (m == null) {
-			m = IntrospectUtils.findSetter(clazz, property);
-			setters.put(key, m);
+		Method setter = setters.get(key);
+		if (setter == null) {
+			setter = IntrospectUtils.findSetter(clazz, property);
+			setters.put(key, setter);
 		}
-		return m;
+		return setter;
 	}
 
 	/**
@@ -136,7 +136,7 @@ public class ReflectIntrospectionFactory extends AbstractIntrospectionFactory {
 		 * @param config internal configuration
 		 * @param delegate query delegate
 		 */
-		public MapperInvocationHandler(Class<?> mapper,
+		private MapperInvocationHandler(Class<?> mapper,
 				InternalConfiguration config, QueryDelegate delegate) {
 			this.mapper = mapper;
 			this.config = config;

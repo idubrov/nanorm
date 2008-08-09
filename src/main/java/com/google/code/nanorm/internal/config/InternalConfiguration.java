@@ -104,12 +104,7 @@ public class InternalConfiguration {
 	private StatementConfig getStatementConfig(StatementKey key) {
 		StatementConfig statementConfig = statementsConfig.get(key);
 		if (statementConfig == null) {
-			throw new ConfigurationException("Missing configuration for method '" + key + "'"); // $NON
-			// -
-			// NLS
-			// -
-			// 1
-			// $
+			throw new ConfigurationException("Missing configuration for method '" + key + "'");
 		}
 		return statementConfig;
 	}
@@ -353,7 +348,7 @@ public class InternalConfiguration {
 		ResultMap resultMap = method.getAnnotation(ResultMap.class);
 		ResultMapRef ref = method.getAnnotation(ResultMapRef.class);
 		if (resultMap == null) {
-			// Try to find the map with id = "" (default map)
+			// Try to find the map with id = "" (default map)for 
 			ResultMapConfig resultMapConfig = findResultMap(method.getDeclaringClass(),
 					ref != null ? ref.value() : "");
 			if (resultMapConfig == null) {
@@ -401,7 +396,9 @@ public class InternalConfiguration {
 							.value());
 					if (nestedMapConfig == null) {
 						// TODO: Name and location!
-						throw new RuntimeException("Nested map not found!");
+						throw new ConfigurationException("Nested map " + mapping.resultMap() 
+								+ "not found in class " + clazz + " (referenced by mapping for property " 
+								+ mapping.property() + " in class " + clazz + ")!");
 					}
 					resMapping.setResultMapConfig(nestedMapConfig);
 				}

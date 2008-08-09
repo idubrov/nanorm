@@ -123,14 +123,14 @@ public class MapperBuilder {
 	 */
 	private static void visitMethod(Type owner, ClassWriter cw,
 			MethodConfig config) {
-		java.lang.reflect.Method m = config.method;
-		Type returnType = Type.getType(m.getReturnType());
-		Type[] args = new Type[m.getParameterTypes().length];
+		java.lang.reflect.Method ifaceMethod = config.method;
+		Type returnType = Type.getType(ifaceMethod.getReturnType());
+		Type[] args = new Type[ifaceMethod.getParameterTypes().length];
 		for (int i = 0; i < args.length; ++i) {
-			args[i] = Type.getType(m.getParameterTypes()[i]);
+			args[i] = Type.getType(ifaceMethod.getParameterTypes()[i]);
 		}
 
-		Method method = new Method(m.getName(), returnType, args);
+		Method method = new Method(ifaceMethod.getName(), returnType, args);
 
 		GeneratorAdapter mg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, method,
 				null, null, cw);

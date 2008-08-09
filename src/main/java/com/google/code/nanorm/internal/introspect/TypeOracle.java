@@ -23,6 +23,8 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 
+import com.google.code.nanorm.exceptions.IntrospectionException;
+
 /**
  * Utilities to resolve generic types using the reflection. Used for resolving
  * concrete types while generating the property accessors for nested properties.
@@ -192,7 +194,7 @@ public class TypeOracle {
             Type resolvedComponent = resolveImpl(array.getGenericComponentType(), context);
             return new GenericArrayTypeImpl(resolvedComponent);
         } else {
-            throw new RuntimeException("Not supported!");
+            throw new IllegalArgumentException("Type " + type + " is not supported!");
         }
     }
 
@@ -212,12 +214,12 @@ public class TypeOracle {
         for (int i = 0; i < params.length; ++i) {
             if (params[i].equals(tv)) {
                 Type argument = context.getActualTypeArguments()[i];
-                // TODO: This could be TypeVariable, in that case we probably
-                // need to get
-                // information from bounds.
+                // TODO: This probably could be TypeVariable, in that case we
+                // need to get information from bounds.
                 return argument;
             }
         }
-        throw new RuntimeException("Could not resolve!");
+        throw new IntrospectionException("Could not resolve type variable " + tv 
+        		+ " in context " + context + '!');
     }
 }

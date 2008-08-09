@@ -48,7 +48,7 @@ public class CharTypeHandler implements TypeHandler<Character> {
         if(str.length() == 1) {
             return str.charAt(0);
         }
-        throw new RuntimeException("INVALID CHARACTER!!!");
+        throw new IllegalArgumentException("String '" + str + "' is too long to be converted to single character!");
     }
     
     /**

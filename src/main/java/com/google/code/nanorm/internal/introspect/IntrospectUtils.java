@@ -19,6 +19,9 @@ package com.google.code.nanorm.internal.introspect;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.code.nanorm.exceptions.IntrospectionException;
 
 /**
@@ -28,6 +31,12 @@ import com.google.code.nanorm.exceptions.IntrospectionException;
  * @version 1.0 22.06.2008
  */
 public final class IntrospectUtils {
+	
+	/**
+	 * Logger for logging all other events.
+	 */
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(IntrospectUtils.class);
 
 	private IntrospectUtils() {
 		// Nothing.
@@ -184,7 +193,8 @@ public final class IntrospectUtils {
 					return method;
 				}
 			} catch (NoSuchMethodException e2) {
-				// Ignore.
+				// Ignore, handled later.
+				LOGGER.debug("Getter for property " + property + " not found in class " + clazz);
 			}
 		}
 		// TODO: Refer to result map or something.

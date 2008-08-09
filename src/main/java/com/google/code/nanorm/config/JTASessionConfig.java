@@ -45,12 +45,12 @@ public class JTASessionConfig implements SessionConfig {
 			InitialContext initCtx = new InitialContext();
 			this.userTransaction = (UserTransaction) initCtx.lookup(utName);
 		} catch (NamingException e) {
-			throw new SessionException("Failed to get JTA transaction!", e); // $NON-NLS-1$
+			throw new SessionException("Failed to get JTA transaction!", e);
 		}
 
 		if (this.userTransaction == null) {
 			throw new IllegalArgumentException(
-					"JTA Transaction could not be found under name " + utName); // $NON-NLS-1$
+					"JTA Transaction could not be found under name " + utName);
 		}
 
 	}
