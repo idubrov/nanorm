@@ -60,7 +60,7 @@ public class NestedResultMapTest extends MapperTestBase {
             @Mapping(property = "id", column = "article_id"),
             @Mapping(property = "subject"),
             @Mapping(property = "body"),
-            @Mapping(property = "comments", resultMap = @ResultMapRef("comment2"))
+            @Mapping(property = "comments", nestedMap = @ResultMapRef("comment2"))
         })        
     })
     public interface Mapper {
@@ -70,7 +70,7 @@ public class NestedResultMapTest extends MapperTestBase {
             @Mapping(property = "id"),
             @Mapping(property = "title"),
             @Mapping(property = "year"),
-            @Mapping(property = "article", resultMap = @ResultMapRef("article")) 
+            @Mapping(property = "article", nestedMap = @ResultMapRef("article")) 
         })
         @Select("SELECT id, subject as title, subject, body, year FROM articles WHERE ID = ${1}")
         Publication getPublicationById(int id);
@@ -80,7 +80,7 @@ public class NestedResultMapTest extends MapperTestBase {
             @Mapping(property = "id"),
             @Mapping(property = "title"),
             @Mapping(property = "year"),
-            @Mapping(property = "articles", resultMap = @ResultMapRef("article")) 
+            @Mapping(property = "articles", nestedMap = @ResultMapRef("article")) 
         })
         @Select("SELECT id, title, year, 'Dummy Subject' as subject, 'Dummy Body' as body " +
         		"FROM categories WHERE ID = ${1}")
@@ -91,7 +91,7 @@ public class NestedResultMapTest extends MapperTestBase {
             @Mapping(property = "id"),
             @Mapping(property = "title"),
             @Mapping(property = "year"),
-            @Mapping(property = "articles", resultMap = @ResultMapRef("article2")) 
+            @Mapping(property = "articles", nestedMap = @ResultMapRef("article2")) 
         })
         @Select("SELECT c.id, c.title, c.year, " +
         		"a.id as article_id, a.subject, a.body " +
@@ -105,7 +105,7 @@ public class NestedResultMapTest extends MapperTestBase {
             @Mapping(property = "id"),
             @Mapping(property = "title"),
             @Mapping(property = "year"),
-            @Mapping(property = "articles", resultMap = @ResultMapRef("article3")) 
+            @Mapping(property = "articles", nestedMap = @ResultMapRef("article3")) 
         })
         @Select("SELECT c.id, c.title, c.year, " +
                 "a.id as article_id, a.subject, a.body, " +
@@ -130,7 +130,7 @@ public class NestedResultMapTest extends MapperTestBase {
             @Mapping(property = "id"),
             @Mapping(property = "title"),
             @Mapping(property = "year"),
-            @Mapping(property = "article", resultMap = @ResultMapRef(value = "article", declaringClass = Mapper.class)) 
+            @Mapping(property = "article", nestedMap = @ResultMapRef(value = "article", declaringClass = Mapper.class)) 
         })
         @Select("SELECT id, subject as title, subject, body, year FROM articles WHERE ID = ${1}")
         Publication getPublicationById(int id);

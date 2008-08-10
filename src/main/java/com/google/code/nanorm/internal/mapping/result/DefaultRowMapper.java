@@ -35,7 +35,7 @@ import com.google.code.nanorm.exceptions.GenericException;
 import com.google.code.nanorm.internal.Key;
 import com.google.code.nanorm.internal.Request;
 import com.google.code.nanorm.internal.config.ResultMapConfig;
-import com.google.code.nanorm.internal.config.ResultMappingConfig;
+import com.google.code.nanorm.internal.config.PropertyMappingConfig;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectUtils;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
@@ -80,7 +80,7 @@ public class DefaultRowMapper implements RowMapper {
 		this.elementClass = ResultCollectorUtil.resultClass(resultType);
 
 		if (!config.isAuto()) {
-			List<ResultMappingConfig> list = Arrays
+			List<PropertyMappingConfig> list = Arrays
 					.asList(config.getMappings());
 			finDynamicConfig = generatePropertyMappers(list);
 		} else {
@@ -97,7 +97,7 @@ public class DefaultRowMapper implements RowMapper {
 		if (config.isAuto()) {
 			synchronized (this) {
 				if (dynamicConfig == null) {
-					List<ResultMappingConfig> configs = generateAutoConfig(rs
+					List<PropertyMappingConfig> configs = generateAutoConfig(rs
 							.getMetaData());
 					dynamicConfig = generatePropertyMappers(configs);
 				}
@@ -186,15 +186,15 @@ public class DefaultRowMapper implements RowMapper {
 	 * @return collection of result mapping configurations
 	 * @throws SQLException
 	 */
-	private List<ResultMappingConfig> generateAutoConfig(ResultSetMetaData meta)
+	private List<PropertyMappingConfig> generateAutoConfig(ResultSetMetaData meta)
 			throws SQLException {
-		List<ResultMappingConfig> configs = new ArrayList<ResultMappingConfig>();
+		List<PropertyMappingConfig> configs = new ArrayList<PropertyMappingConfig>();
 
 		configs.addAll(Arrays.asList(config.getMappings()));
 
 		Set<String> usedColumns = config.isAuto() ? new HashSet<String>()
 				: null;
-		for (ResultMappingConfig mappingConfig : config.getMappings()) {
+		for (PropertyMappingConfig mappingConfig : config.getMappings()) {
 			if (mappingConfig.getColumnIndex() != 0) {
 				usedColumns.add(meta.getColumnName(
 						mappingConfig.getColumnIndex()).toLowerCase());
@@ -207,7 +207,7 @@ public class DefaultRowMapper implements RowMapper {
 
 			// If column is not in the mapping config, try to automap it
 			if (!usedColumns.contains(column)) {
-				ResultMappingConfig mappingConfig = new ResultMappingConfig();
+				PropertyMappingConfig mappingConfig = new PropertyMappingConfig();
 				mappingConfig.setColumn(column);
 
 				// Find property with case-insensitive search
@@ -245,7 +245,7 @@ public class DefaultRowMapper implements RowMapper {
 	 * @return dynamic configuration
 	 */
 	private DynamicConfig generatePropertyMappers(
-			List<ResultMappingConfig> configs) {
+			List<PropertyMappingConfig> configs) {
 
 		String[] groupBy = config.getGroupBy();
 
@@ -254,7 +254,7 @@ public class DefaultRowMapper implements RowMapper {
 		List<ValueGetter> keyGenerators = new ArrayList<ValueGetter>();
 
 		// TODO: Check we haven't mapped one property twice!
-		for (ResultMappingConfig mappingConfig : configs) {
+		for (PropertyMappingConfig mappingConfig : configs) {
 			Type propertyType = introspectionFactory.getPropertyType(
 					elementClass, mappingConfig.getProperty());
 
@@ -263,7 +263,7 @@ public class DefaultRowMapper implements RowMapper {
 
 			// TODO: Check all groupBy's are found!
 			if (groupBy != null && contains(groupBy, mappingConfig.getProperty())) {
-				if (mappingConfig.getResultMapConfig() != null) {
+				if (mappingConfig.getNestedMapConfig() != null) {
 					throw new ConfigurationException(
 							"'groupBy' property must not be a property with nested map defined!");
 				}
@@ -292,13 +292,13 @@ public class DefaultRowMapper implements RowMapper {
 						.getTypeHandler(parameterTypes[0]);
 				mappers.add(new PropertyMapper(mappingConfig, setter,
 						typeHandler));
-			} else if (mappingConfig.getResultMapConfig() != null) {
+			} else if (mappingConfig.getNestedMapConfig() != null) {
 				// TODO: Hacky? Why?
 				Getter getter = introspectionFactory.buildGetter(elementClass,
 						mappingConfig.getProperty());
 
 				RowMapper nestedMap = new DefaultRowMapper(propertyType,
-						mappingConfig.getResultMapConfig(),
+						mappingConfig.getNestedMapConfig(),
 						introspectionFactory, typeHandlerFactory);
 				nestedMappers.add(new NestedMapPropertyMapper(getter, setter,
 						nestedMap, mappingConfig));
@@ -356,10 +356,10 @@ public class DefaultRowMapper implements RowMapper {
 	private static class ValueGetter {
 		private TypeHandler<?> typeHandler;
 
-		private ResultMappingConfig config;
+		private PropertyMappingConfig config;
 
 		// Constructor;
-		private ValueGetter(TypeHandler<?> typeHandler, ResultMappingConfig config) {
+		private ValueGetter(TypeHandler<?> typeHandler, PropertyMappingConfig config) {
 			this.typeHandler = typeHandler;
 			this.config = config;
 		}

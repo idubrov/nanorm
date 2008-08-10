@@ -19,7 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.google.code.nanorm.internal.Request;
-import com.google.code.nanorm.internal.config.ResultMappingConfig;
+import com.google.code.nanorm.internal.config.PropertyMappingConfig;
 import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.type.TypeHandler;
 
@@ -31,7 +31,7 @@ import com.google.code.nanorm.internal.type.TypeHandler;
  */
 public class PropertyMapper {
 
-	private final ResultMappingConfig config;
+	private final PropertyMappingConfig config;
 
 	private final Setter setter;
 
@@ -44,7 +44,7 @@ public class PropertyMapper {
 	 * @param setter property setter
 	 * @param typeHandler type handler for property
 	 */
-	public PropertyMapper(ResultMappingConfig config, Setter setter,
+	public PropertyMapper(PropertyMappingConfig config, Setter setter,
 			TypeHandler<?> typeHandler) {
 		this.config = config;
 		this.setter = setter;

@@ -26,7 +26,7 @@ public class ResultMapConfig {
 
 	private final String id;
 
-	private ResultMappingConfig[] mappings;
+	private PropertyMappingConfig[] mappings;
 
 	private boolean auto;
 
@@ -42,12 +42,12 @@ public class ResultMapConfig {
 	}
 
 	/** @return Returns the resultMappingsConfigs. */
-	public ResultMappingConfig[] getMappings() {
+	public PropertyMappingConfig[] getMappings() {
 		return mappings;
 	}
 
 	/** @param resultMappingsConfigs The resultMappingsConfigs to set. */
-	public void setMappings(ResultMappingConfig[] resultMappingsConfigs) {
+	public void setMappings(PropertyMappingConfig[] resultMappingsConfigs) {
 		this.mappings = resultMappingsConfigs;
 	}
 

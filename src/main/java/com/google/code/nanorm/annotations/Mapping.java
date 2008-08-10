@@ -49,7 +49,7 @@ public @interface Mapping {
 	/**
 	 * Nested result map reference.
 	 */
-	ResultMapRef resultMap() default @ResultMapRef();
+	ResultMapRef nestedMap() default @ResultMapRef();
 
 	/**
 	 * Subselect query.

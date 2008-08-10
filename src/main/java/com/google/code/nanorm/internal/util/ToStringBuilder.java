@@ -62,6 +62,7 @@ public class ToStringBuilder {
 				&& !(value instanceof Number || value instanceof String || value instanceof Boolean || value instanceof Character)) {
 			builder.append(System.identityHashCode(value));
 		} else if (value == null) {
+			appendField(field);
 			builder.append("<null>");
 		} else {
 			visited.add(value);
@@ -82,8 +83,10 @@ public class ToStringBuilder {
 		builder.append('{');
 		boolean oldfirst = first;
 		first = true;
-		for(Object item : arr) {
-			append(null, item);
+		if(arr != null) {
+			for(Object item : arr) {
+				append(null, item);
+			}
 		}
 		first = oldfirst;
 		builder.append('}');

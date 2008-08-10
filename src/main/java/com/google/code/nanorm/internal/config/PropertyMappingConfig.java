@@ -18,12 +18,12 @@ package com.google.code.nanorm.internal.config;
 import com.google.code.nanorm.internal.util.ToStringBuilder;
 
 /**
- * Result mapping configuration.
+ * Property mapping configuration.
  * 
  * @author Ivan Dubrov
  * @version 1.0 28.05.2008
  */
-public class ResultMappingConfig {
+public class PropertyMappingConfig {
     
     private String property;
     
@@ -31,9 +31,7 @@ public class ResultMappingConfig {
     
     private int columnIndex;
     
-    private ResultMapConfig resultMapConfig;
-    
-    private StatementKey subselectKey;
+    private ResultMapConfig nestedMapConfig;
     
     private StatementConfig subselect;
     
@@ -67,24 +65,14 @@ public class ResultMappingConfig {
         this.columnIndex = columnIndex;
     }
 
-    /** @return Returns the resultMapConfig. */
-    public ResultMapConfig getResultMapConfig() {
-        return resultMapConfig;
+    /** @return Returns the nestedMapConfig. */
+    public ResultMapConfig getNestedMapConfig() {
+        return nestedMapConfig;
     }
 
-    /** @param resultMapConfig The resultMapConfig to set. */
-    public void setResultMapConfig(ResultMapConfig resultMapConfig) {
-        this.resultMapConfig = resultMapConfig;
-    }
-    
-    /** @return Returns the select. */
-    protected StatementKey getSubselectKey() {
-        return subselectKey;
-    }
-    
-    /** @param select The select to set. */
-    protected void setSubselectKey(StatementKey select) {
-        this.subselectKey = select;
+    /** @param nestedMapConfig The nestedMapConfig to set. */
+    public void setNestedMapConfig(ResultMapConfig nestedMapConfig) {
+        this.nestedMapConfig = nestedMapConfig;
     }
     
     /** @return Returns the subselect. */
@@ -106,8 +94,7 @@ public class ResultMappingConfig {
             append("property", property).
             append("column", column).
             append("columnIndex", columnIndex).
-            append("resultMapConfig", resultMapConfig).
-            append("subselectKey", subselectKey).
+            append("nestedMapConfig", nestedMapConfig).
             append("subselect", subselect).
             toString();
     }
