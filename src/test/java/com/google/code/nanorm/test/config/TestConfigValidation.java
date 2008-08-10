@@ -270,7 +270,6 @@ public class TestConfigValidation {
 			new NanormConfiguration().configure(Mapper13.class);
 			Assert.fail();
 		} catch (ConfigurationException e) {
-			e.printStackTrace();
 			assertContains(e, "both");
 			assertContains(e, "Mapper13");
 			assertContains(e, "dummy");
