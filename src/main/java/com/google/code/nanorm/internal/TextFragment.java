@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.code.nanorm.exceptions.ConfigurationException;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.util.ToStringBuilder;
@@ -145,8 +146,15 @@ public class TextFragment implements Fragment {
 					// TODO: Add support for lists, which should expand into something like (?, ?, ?, ?)
 					builder.append('?');
 					prop = prop.substring(2, prop.length() - 1);
-					getters.add(introspectionFactory.buildParameterGetter(
+					try {
+						getters.add(introspectionFactory.buildParameterGetter(
 							types, prop));
+					} catch(IllegalArgumentException e) {
+						throw new ConfigurationException("Failed to create parameter getter for "
+								+ " (failed property marked by $[]): "
+								+ sql.substring(0, matcher.start(2)) + "$["
+								+ prop + ']' + sql.substring(matcher.end(2)), e);
+					}
 				}
 			}
 			end = matcher.end(0);

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" 
-  "ahttp://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+  "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
   <!ENTITY nanorm-version "0.1.0">
   <!ENTITY asm-version "3.1">
   <!ENTITY slf4j-version "1.5.2">
@@ -181,30 +181,31 @@
         be provided by the Nanorm.</para>
         <programlisting language="java"><![CDATA[package sample;
   
-  import java.util.List;
+import java.util.List;
   
-  import com.google.code.nanorm.annotations.ResultMap;
-  import com.google.code.nanorm.annotations.Insert;
-  import com.google.code.nanorm.annotations.Update;
-  import com.google.code.nanorm.annotations.Select;
-  
-  @ResultMap(id = "book", auto = "true")
-  public interface BookMapper {
-      @Insert("INSERT INTO books(id, name, author, published) " +
-        "VALUES(${1.id}, ${1.name}, ${1.author}, ${1.published})")
-      void insertBook(Book book);
-      
-      @ResultMapRef("book")
-      @Select("SELECT id, name, author, published FROM books WHERE id = ${1.id}")
-      Book selectBook(int id book);
-      
-      @Update("UPDATE books SET name = ${1.name}, author = ${1.author}, " + 
-        "published = ${1.published} WHERE id = ${1.id}")
-      int updateBook(Book book);
-      
-      @Update("DELETE FROM books WHERE id = ${1}")
-      int deleteBook(int id);
-  }]]></programlisting>
+import com.google.code.nanorm.annotations.Insert;
+import com.google.code.nanorm.annotations.ResultMap;
+import com.google.code.nanorm.annotations.ResultMapRef;
+import com.google.code.nanorm.annotations.Select;
+import com.google.code.nanorm.annotations.Update;
+
+@ResultMap(id = "book", auto = true)
+public interface BookMapper {
+    @Insert("INSERT INTO books(id, name, author, published) " +
+      "VALUES(${1.id}, ${1.name}, ${1.author}, ${1.published})")
+    void insertBook(Book book);
+    
+    @ResultMapRef("book")
+    @Select("SELECT id, name, author, published FROM books WHERE id = ${1}")
+    Book selectBook(int id);
+    
+    @Update("UPDATE books SET name = ${1.name}, author = ${1.author}, " + 
+      "published = ${1.published} WHERE id = ${1.id}")
+    int updateBook(Book book);
+    
+    @Update("DELETE FROM books WHERE id = ${1}")
+    int deleteBook(int id);
+}]]></programlisting>
       <para>
         The listing is almost self-describing. First, we declare a result map
         which we will use for the <methodname>selectBook</methodname> method.
@@ -264,11 +265,32 @@
         Nanorm for external transaction management and for this we need to provide it a JDBC connection.
         External transaction management means that Nanorm will take no actions on JDBC connection besides
         the queries themselves and the application should commit/rollback the transaction itself. 
-        In the example below the connection is made to the H2 anonymous database:
+        In the example below the connection is made to the <ulink url="http://www.h2database.com/">H2</ulink>
+        anonymous database:
         <programlisting language="java">Class.forName("org.h2.Driver");
 Connection conn = DriverManager.getConnection("jdbc:h2:mem:", "sa", "");
 Session session = factory.openSession(conn);</programlisting>
-        <note>Note the simple rules regarding the instances thread-safety.
+        Before running the actual queries, database structure should be set up. The following snipped in
+        SQL describes the sample database structure:
+        <programlisting language="sql">CREATE TABLE BOOKS(id INTEGER PRIMARY KEY, name VARCHAR(100),
+    author VARCHAR(100), published DATE)</programlisting>
+        Now we can invoke mapper methods to perform database operations:
+        <programlisting language="java">Book book = new Book();
+book.setId(1);
+book.setAuthor("Brain");
+book.setName("World Domination.");
+book.setPublished(new java.sql.Date(788922000)); // January 1, 1995
+
+mapper.insertBook(book); // Insert into the database
+
+book.setName("World Domination. Second Edition.");
+mapper.updateBook(book); // Update the book
+
+Book book2 = mapper.selectBook(1); // Select the book into other bean by id
+mapper.deleteBook(book2.getId()); // Delete the book record from the database</programlisting>
+        Before moving to more advanced examples, remember the following notes regarding the
+        thread-safety:
+        <note>rules about the instances thread-safety.
         <itemizedlist>
           <listitem>
             <simpara>Configuration instances are not thread-safe. You should not invoke methods on it
@@ -291,20 +313,34 @@ Session session = factory.openSession(conn);</programlisting>
           </listitem>
         </itemizedlist> 
         </note>
-        Now we can invoke mapper methods to perform database operations:
-        <programlisting language="java">Book book = new Book();
-book.setId(1);
-book.setAuthor("Brain");
-book.setName("World Domination.");
-book.setPublished(new java.sql.Date(788922000)); // January 1, 1995
-
-mapper.insertBook(book); // Insert into the database
-
-book.setName("World Domination. Second Edition.");
-mapper.updateBook(book); // Update the book
-
-Book book2 = mapper.selectBook(1); // Select the book into other bean by id
-mapper.deleteBook(book2.getId()); // Delete the book record from the database</programlisting>
+      </para>
+    </section>
+    <section>
+      <title>Autogenerated keys</title>
+      <para>
+        Next step is to setup autogenerated keys. Nanorm supports two kinds of generated keys: before-generated
+        keys and after-generated keys. Before-generated keys are keys that are generated explicitly before
+        invoking the actual query. After-generated keys are keys that are either selected using the specified query
+        after invoking the primary query or retrieved using the JDBC support for generated keys.
+      </para>
+      <para>
+        For our sample application we will use the second approach, after-generated keys. For that to work, we
+        need a source for generated keys first. In case of H2 this will be the sequence:
+        <programlisting language="sql">CREATE SEQUENCE SEQ START WITH 100 INCREMENT BY 1</programlisting>
+        Then we need to change our insert method to return generated keys:
+        <programlisting language="java">@Insert("INSERT INTO books(id, name, author, published) " +
+"VALUES(NEXT VALUE FOR SEQ, ${1.name}, ${1.author}, ${1.published})")
+@SelectKey
+int insertBook(Book book);</programlisting>
+        Note the changes: first, we added a <code language="java">@SelectKey</code> to our method to indicate
+        that it should return the generated key (note that the after-generated key is default), secondly,
+        the SQL statement was changed, so value for id now is <code language="sql">NEXT VALUE FOR SEQ</code>
+        and finally the return type of insert
+        method was changed to <code language="java">int</code>.
+      </para>
+      <para>
+        If your database JDBC driver does not support generated keys, you can explicitly specify the statement
+        to select the key in the annotation, like <code language="java">@SelectKey("SELECT CURRVAL('SEQ')")</code>.
       </para>
     </section>
     <!-- TODO: collections, generating the keys -->
@@ -334,7 +370,7 @@ mapper.deleteBook(book2.getId()); // Delete the book record from the database</p
     </repository>
     ...
   </repositories>
-  ...
+  ...Id
   <dependencies>
     ...
     <dependency>
@@ -377,7 +413,7 @@ public class Book {
         return name;
     }
     
-    public void setId(String name) {
+    public void setName(String name) {
         this.name = name;
     }
     
@@ -387,6 +423,14 @@ public class Book {
     
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    public Date getPublished() {
+        return published;
+    }
+    
+    public void setPublished(Date published) {
+        this.published = published;
     }
 }]]></programlisting>
     </section>

@@ -229,54 +229,51 @@ public class InternalConfiguration {
 			stConfig.setUpdate(isUpdate);
 			stConfig.setInsert(isInsert);
 		}
+		// TODO: Check sql is not empty!
 
 		// Configure select key statement
 		SelectKey selectKey = method.getAnnotation(SelectKey.class);
 		if (selectKey != null) {
+			// TODO: Check that for 'before' key we have a SQL to execute!
 			StatementKey selectKeyKey = new StatementKey(mapper, method.getName() + ":key", method
 					.getGenericParameterTypes());
 
 			StatementConfig selectKeySt = new StatementConfig(selectKeyKey);
-			selectKeySt.setStatementBuilder(new TextFragment(selectKey.value(), method
+			if(selectKey.value().length() > 0) {
+				selectKeySt.setStatementBuilder(new TextFragment(selectKey.value(), method
 					.getGenericParameterTypes(), introspectionFactory));
+			}
 			selectKeySt.setParameterTypes(method.getGenericParameterTypes());
 			selectKeySt.setResultType(method.getGenericReturnType());
 			selectKeySt.setRowMapper(new ScalarRowMapper(method.getGenericReturnType(),
 					typeHandlerFactory));
-
+			
 			if (!selectKey.property().equals("")) {
 				Setter keySetter = introspectionFactory.buildParameterSetter(method
 						.getGenericParameterTypes(), selectKey.property());
 				stConfig.setKeySetter(keySetter);
 			}
 
-			stConfig.setSelectKeyAfter(selectKey.type() == SelectKeyType.AFTER);
-
+			stConfig.setSelectKeyType(selectKey.type());
 			stConfig.setSelectKey(selectKeySt);
 		}
 
 		// For update we always use method return value, but for select we try
-		// to find ResultCallback
-		// if return type is void
+		// to find ResultCallback if return type is void
+		// TODO: Should this work for generated keys as well?
 		Type returnType = null;
 		if (select != null && method.getReturnType() == void.class) {
-			// Try to find ResultCallback
-			Type[] types = method.getGenericParameterTypes();
-			for (int i = 0; i < types.length; ++i) {
-				if (types[i] instanceof ParameterizedType) {
-					ParameterizedType pt = (ParameterizedType) types[i];
-					if (pt.getRawType() == ResultCallback.class) {
-						// Return the only type argument of ResultCallback class
-						returnType = pt.getActualTypeArguments()[0];
-						stConfig.setCallbackIndex(i);
-						break;
-					}
-				}
-			}
-			if (returnType == null) {
+			int pos = searchResultCallback(method);
+			if (pos == -1) {
 				throw new ConfigurationException("Cannot deduce return type for query method "
 						+ method);
 			}
+			
+			stConfig.setCallbackIndex(pos);
+			
+			ParameterizedType pt = (ParameterizedType) method.getGenericParameterTypes()[pos];
+			returnType = pt.getActualTypeArguments()[0];
+			
 		} else {
 			returnType = method.getGenericReturnType();
 		}
@@ -286,6 +283,21 @@ public class InternalConfiguration {
 		stConfig.setParameterTypes(method.getGenericParameterTypes());
 
 		statementsConfig.put(key, stConfig);
+	}
+
+	// TODO: Move to separate helper class
+	private int searchResultCallback(Method method) {
+		// Try to find ResultCallback
+		Type[] types = method.getGenericParameterTypes();
+		for (int i = 0; i < types.length; ++i) {
+			if (types[i] instanceof ParameterizedType) {
+				ParameterizedType pt = (ParameterizedType) types[i];
+				if (pt.getRawType() == ResultCallback.class) {
+					return i;
+				}
+			}
+		}
+		return -1;
 	}
 
 	/**

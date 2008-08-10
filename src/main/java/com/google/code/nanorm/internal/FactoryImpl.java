@@ -20,6 +20,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,7 @@ import com.google.code.nanorm.NanormFactory;
 import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.Session;
 import com.google.code.nanorm.TypeHandlerFactory;
+import com.google.code.nanorm.annotations.SelectKeyType;
 import com.google.code.nanorm.config.SessionConfig;
 import com.google.code.nanorm.exceptions.DataException;
 import com.google.code.nanorm.internal.config.InternalConfiguration;
@@ -187,8 +189,15 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 								.trace("Parameters: " + parameters.toString());
 					}
 				}
+				
+				// Should we get key using JDBC getGeneratedKeys
+				boolean isJDBCKey = stConfig.getSelectKeyType() == SelectKeyType.AFTER &&
+						stConfig.getSelectKey().getStatementBuilder() == null;
 
-				PreparedStatement st = conn.prepareStatement(sql.toString());
+				// Prepare the statement
+				PreparedStatement st = isJDBCKey ? 
+						conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS) :
+						conn.prepareStatement(sql.toString());
 				try {
 					// Map parameters to the statement
 					mapParameters(st, types, parameters);
@@ -196,22 +205,16 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 					if (stConfig.isInsert()) {
 						st.executeUpdate();
 
-						selectKey(request, stConfig, true, args);
+						
+						if(isJDBCKey) {
+							processResultSet(stConfig, args, request, st.getGeneratedKeys());
+						} else {
+							selectKey(request, stConfig, true, args);
+						}
 					} else if (stConfig.isUpdate()) {
 						request.setResult(st.executeUpdate());
 					} else {
-						ResultSet rs = st.executeQuery();
-
-						// Create callback that will receive the mapped objects
-						ResultCallback<Object> callback = createResultCallback(
-								stConfig, args, request);
-
-						// Iterate through the result set
-						RowMapper rowMapper = stConfig.getRowMapper();
-						while (rs.next()) {
-							rowMapper.processResultSet(request, rs, callback);
-						}
-						callback.finish();
+						processResultSet(stConfig, args, request, st.executeQuery());
 					}
 
 				} finally {
@@ -244,6 +247,29 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 		return request.getResult();
 	}
 
+	private void processResultSet(StatementConfig stConfig, Object[] args, Request request,
+			ResultSet rs) throws SQLException {
+		
+		try {
+			// Create callback that will receive the mapped objects
+			ResultCallback<Object> callback = createResultCallback(
+					stConfig, args, request);
+	
+			// Iterate through the result set
+			RowMapper rowMapper = stConfig.getRowMapper();
+			while (rs.next()) {
+				rowMapper.processResultSet(request, rs, callback);
+			}
+			callback.finish();
+		} finally {
+			try {
+				rs.close();
+			} catch(SQLException e) {
+				LOGGER.error("Failed to close ResultSet", e);
+			}
+		}
+	}
+	
 	private ResultCallback<Object> createResultCallback(
 			StatementConfig stConfig, Object[] args, Request request) {
 
@@ -281,8 +307,10 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 
 	private void selectKey(Request request, StatementConfig stConfig,
 			boolean after, Object[] args) {
+		boolean isKeyAfter = stConfig.getSelectKeyType() == SelectKeyType.AFTER;
+		
 		if (stConfig.isInsert() && stConfig.getSelectKey() != null
-				&& after == stConfig.isSelectKeyAfter()) {
+				&& after == isKeyAfter) {
 			
 			if(LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Generating the key for statement " + stConfig.getId());

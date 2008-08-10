@@ -17,6 +17,7 @@ package com.google.code.nanorm.internal.config;
 
 import java.lang.reflect.Type;
 
+import com.google.code.nanorm.annotations.SelectKeyType;
 import com.google.code.nanorm.internal.Fragment;
 import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.mapping.result.RowMapper;
@@ -54,7 +55,7 @@ public class StatementConfig {
 
 	private StatementConfig selectKey;
 
-	private boolean selectKeyAfter;
+	private SelectKeyType selectKeyType;
 	
 	private Setter keySetter;
 
@@ -137,14 +138,14 @@ public class StatementConfig {
 		this.selectKey = selectKey;
 	}
 	
-	/** @return the selectKeyAfter */
-	public boolean isSelectKeyAfter() {
-		return selectKeyAfter;
+	/** @return the selectKeyType */
+	public SelectKeyType getSelectKeyType() {
+		return selectKeyType;
 	}
 
-	/** @param selectKeyAfter the selectKeyAfter to set */
-	public void setSelectKeyAfter(boolean selectKeyAfter) {
-		this.selectKeyAfter = selectKeyAfter;
+	/** @param selectKeyType the selectKeyType to set */
+	public void setSelectKeyType(SelectKeyType selectKeyType) {
+		this.selectKeyType = selectKeyType;
 	}
 	
 	/** @return the keySetter */
@@ -193,7 +194,7 @@ public class StatementConfig {
 				update).append("resultType", resultType).append("rowMapper",
 				rowMapper).append("fragment", fragment)
 				.append("parameterTypes", parameterTypes).append("selectKey",
-						selectKey).append("selectKeyAfter", selectKeyAfter)
+						selectKey).append("selectKeyType", selectKeyType)
 				.toString();
 	}
 }

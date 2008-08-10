@@ -83,8 +83,9 @@ public final class IntrospectUtils {
 	 * @param propertyType property type
 	 * @return result of visit
 	 */
-	private static <T> T visitPath(String path, Class<?> beanClass,
-			Type[] types, PropertyVisitor<T> visitor, Type[] propertyType) {
+	private static <T> T visitPath(String path, final Class<?> origClass,
+			final Type[] types, PropertyVisitor<T> visitor, Type[] propertyType) {
+		Class<?> beanClass = origClass;
 		if (types == null) {
 			visitor.visitBegin(beanClass, path);
 		} else {
@@ -131,8 +132,8 @@ public final class IntrospectUtils {
 					throw new IllegalArgumentException(
 							"Array expected at property "
 									+ path.substring(0, pos)
-									+ "(full property is " + path
-									+ "). Actual type was " + beanClass);
+									+ "(full property is '" + path
+									+ "'). Actual type was '" + beanClass + '\'');
 				}
 				Class<?> propClass = visitor.visitIndex(pos, nav.getIndex(), nav.hasNext(),
 						beanClass);
@@ -144,6 +145,12 @@ public final class IntrospectUtils {
 				beanClass = propClass;
 				type = beanClass;
 			} else if (token == PropertyNavigator.PROPERTY) {
+				if(beanClass.isPrimitive()) {
+					throw new IllegalArgumentException("Primitive type " + beanClass 
+							+ " found at property '" + path.substring(0, pos)
+							+ "' (full property is '" + path + "'), starting from type "
+							+ beanClass);
+				}
 				java.lang.reflect.Method getter = findGetter(beanClass, nav
 						.getProperty());
 
