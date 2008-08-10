@@ -47,8 +47,6 @@ public @interface SelectKey {
 	 * 
 	 * <b>Note</b>: Mandatory for the {@link SelectKeyType#BEFORE} select key type, since this is
 	 * the only way to pass the pre-generated key to the insert statement.  
-	 * 
-	 * TODO: Check this is provided for BEFORE type!
 	 */
 	String property() default "";
 }

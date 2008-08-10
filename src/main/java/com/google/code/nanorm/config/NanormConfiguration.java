@@ -62,10 +62,12 @@ public class NanormConfiguration {
 	/**
 	 * Add given mapper interface to the configuration.
 	 * 
-	 * @param mapperClass mapper class
+	 * @param mapperClasses mapper classes
 	 */
-	public void configure(Class<?> mapperClass) {
-		config.configure(mapperClass);
+	public void configure(Class<?>... mapperClasses) {
+		for(Class<?> mapperClass : mapperClasses) {
+			config.configure(mapperClass);
+		}
 	}
 
 	/**

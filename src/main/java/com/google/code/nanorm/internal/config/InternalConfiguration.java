@@ -47,6 +47,7 @@ import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.mapping.result.DefaultRowMapper;
 import com.google.code.nanorm.internal.mapping.result.RowMapper;
 import com.google.code.nanorm.internal.mapping.result.ScalarRowMapper;
+import com.google.code.nanorm.internal.util.Messages;
 import com.google.code.nanorm.internal.util.ToStringBuilder;
 
 /**
@@ -130,6 +131,12 @@ public class InternalConfiguration {
 	public void configure(Class<?> mapper) {
 		synchronized (this) {
 			if (mapped.add(mapper)) {
+				// Configure super mappers first
+				for (Class<?> superMapper : mapper.getInterfaces()) {
+					configure(superMapper);
+				}
+				
+				// Configure mapper itself
 				processResultMaps(mapper);
 				for (Method method : mapper.getMethods()) {
 					processMethod(mapper, method);
@@ -234,20 +241,21 @@ public class InternalConfiguration {
 		// Configure select key statement
 		SelectKey selectKey = method.getAnnotation(SelectKey.class);
 		if (selectKey != null) {
-			// TODO: Check that for 'before' key we have a SQL to execute!
+			validateSelectKey(selectKey, mapper, method);
+
 			StatementKey selectKeyKey = new StatementKey(mapper, method.getName() + ":key", method
 					.getGenericParameterTypes());
 
 			StatementConfig selectKeySt = new StatementConfig(selectKeyKey);
-			if(selectKey.value().length() > 0) {
+			if (selectKey.value().length() > 0) {
 				selectKeySt.setStatementBuilder(new TextFragment(selectKey.value(), method
-					.getGenericParameterTypes(), introspectionFactory));
+						.getGenericParameterTypes(), introspectionFactory));
 			}
 			selectKeySt.setParameterTypes(method.getGenericParameterTypes());
 			selectKeySt.setResultType(method.getGenericReturnType());
 			selectKeySt.setRowMapper(new ScalarRowMapper(method.getGenericReturnType(),
 					typeHandlerFactory));
-			
+
 			if (!selectKey.property().equals("")) {
 				Setter keySetter = introspectionFactory.buildParameterSetter(method
 						.getGenericParameterTypes(), selectKey.property());
@@ -268,12 +276,12 @@ public class InternalConfiguration {
 				throw new ConfigurationException("Cannot deduce return type for query method "
 						+ method);
 			}
-			
+
 			stConfig.setCallbackIndex(pos);
-			
+
 			ParameterizedType pt = (ParameterizedType) method.getGenericParameterTypes()[pos];
 			returnType = pt.getActualTypeArguments()[0];
-			
+
 		} else {
 			returnType = method.getGenericReturnType();
 		}
@@ -346,7 +354,7 @@ public class InternalConfiguration {
 	 * @param resultMap result map annotation
 	 */
 	private void processResultMap(Class<?> clazz, ResultMap resultMap) {
-		ResultMapConfig cfg = createResultMapConfig(clazz, resultMap);
+		ResultMapConfig cfg = createResultMapConfig(clazz, null, resultMap);
 		resultMapsConfig.put(cfg.getId(), cfg);
 	}
 
@@ -360,14 +368,14 @@ public class InternalConfiguration {
 		ResultMap resultMap = method.getAnnotation(ResultMap.class);
 		ResultMapRef ref = method.getAnnotation(ResultMapRef.class);
 		if (resultMap == null) {
-			// Try to find the map with id = "" (default map)for 
+			// Try to find the map with id = "" (default map)for
 			ResultMapConfig resultMapConfig = findResultMap(method.getDeclaringClass(),
 					ref != null ? ref.value() : "");
 			if (resultMapConfig == null) {
 				// We tried to find default map and no one was found -- use
 				// automapping
 				if (ref == null) {
-					return createResultMapConfig(method.getDeclaringClass(), null);
+					return createResultMapConfig(method.getDeclaringClass(), method, null);
 				}
 				throw new ConfigurationException("Missing result map reference '" + ref.value()
 						+ "', referenced from '" + method.getDeclaringClass().getName() + "#"
@@ -375,7 +383,7 @@ public class InternalConfiguration {
 			}
 			return resultMapConfig;
 		}
-		return createResultMapConfig(method.getDeclaringClass(), resultMap);
+		return createResultMapConfig(method.getDeclaringClass(), method, resultMap);
 	}
 
 	/**
@@ -389,7 +397,8 @@ public class InternalConfiguration {
 	 * @param resultMap
 	 * @return
 	 */
-	private ResultMapConfig createResultMapConfig(Class<?> clazz, ResultMap resultMap) {
+	private ResultMapConfig createResultMapConfig(Class<?> mapper, Method method,
+			ResultMap resultMap) {
 		List<ResultMappingConfig> mappings = new ArrayList<ResultMappingConfig>();
 		boolean auto = true;
 		if (resultMap != null) {
@@ -404,26 +413,33 @@ public class InternalConfiguration {
 					resMapping.setColumn(resMapping.getProperty());
 				}
 				if (!"".equals(mapping.resultMap().value())) {
+					Class<?> clazz = mapping.resultMap().declaringClass();
+					if(clazz == Object.class) {
+						clazz = mapper;
+					}
 					ResultMapConfig nestedMapConfig = findResultMap(clazz, mapping.resultMap()
 							.value());
+
 					if (nestedMapConfig == null) {
+
 						// TODO: Name and location!
-						throw new ConfigurationException("Nested map " + mapping.resultMap() 
-								+ "not found in class " + clazz + " (referenced by mapping for property " 
-								+ mapping.property() + " in class " + clazz + ")!");
+						throw new ConfigurationException(Messages.nestedMapNotFound(mapper,
+								method, resultMap, mapping));
 					}
+
 					resMapping.setResultMapConfig(nestedMapConfig);
 				}
 				// TODO: Validate method present!
 				if (!"".equals(mapping.subselect())) {
 					// TODO: Map it?
-					Class<?> mapper = mapping.subselectMapper() != Object.class ? mapping
-							.subselectMapper() : clazz;
+					Class<?> subselectMapper = mapping.subselectMapper() != Object.class ? mapping
+							.subselectMapper() : mapper;
 
 					// null parameters mean that parameters are not known.
 					// in that case, any matching method will be used
 					// FIXME: Derive parameters from the property type!
-					resMapping.setSubselectKey(new StatementKey(mapper, mapping.subselect(), null));
+					resMapping.setSubselectKey(new StatementKey(subselectMapper, mapping
+							.subselect(), null));
 
 					postProcessList.add(resMapping);
 				}
@@ -434,10 +450,10 @@ public class InternalConfiguration {
 
 		String id;
 		if (resultMap != null) {
-			id = clazz.getName() + "#" + resultMap.id();
+			id = mapper.getName() + "#" + resultMap.id();
 		} else {
 			// TODO: Generated!
-			id = clazz.getName() + "#(auto)";
+			id = mapper.getName() + "#(auto)";
 		}
 
 		ResultMapConfig config = new ResultMapConfig(id);
@@ -458,12 +474,18 @@ public class InternalConfiguration {
 	 */
 	public ResultMapConfig findResultMap(Class<?> clazz, String refId) {
 		String key = clazz.getName() + "#" + refId;
+		
+		if(!mapped.contains(clazz)) {
+			throw new ConfigurationException(Messages.notMapped(clazz, refId));
+		}
 
 		ResultMapConfig resultMapConfig = resultMapsConfig.get(key);
-		if (resultMapConfig == null) {
-			for (Class<?> interfaze : clazz.getInterfaces()) {
-				resultMapConfig = findResultMap(interfaze, refId);
-				if (resultMapConfig != null) {
+		
+		// Search in superinterfaces
+		if(resultMapConfig == null) {
+			for(Class<?> superMapper : clazz.getInterfaces()) {
+				resultMapConfig = findResultMap(superMapper, refId);
+				if(resultMapConfig != null) {
 					break;
 				}
 			}
@@ -479,6 +501,26 @@ public class InternalConfiguration {
 	/** @return Returns the introspectionFactory. */
 	public IntrospectionFactory getIntrospectionFactory() {
 		return introspectionFactory;
+	}
+
+	/**
+	 * Validate usage of {@link SelectKey} annotation.
+	 * 
+	 * @param selectKey
+	 * @param mapper
+	 * @param method
+	 */
+	private void validateSelectKey(SelectKey selectKey, Class<?> mapper, Method method) {
+		if (selectKey != null && selectKey.type() == SelectKeyType.BEFORE) {
+			if (selectKey.value().length() == 0) {
+				throw new ConfigurationException(Messages.beforeKeyWithoutSQL(mapper, method));
+			}
+
+			if (selectKey.property().length() == 0) {
+				throw new ConfigurationException(Messages
+						.beforeKeyWithoutProperty(mapper, method));
+			}
+		}
 	}
 
 	/**

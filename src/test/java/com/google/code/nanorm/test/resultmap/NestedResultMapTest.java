@@ -119,10 +119,36 @@ public class NestedResultMapTest extends MapperTestBase {
         
         // TODO: More nested mappings
     }
+    
+    /**
+     * Refer to nested map from different class.
+     * @author Ivan Dubrov
+     */
+    public interface Mapper2 {
+    	// Test 1-1 mapping with nested result map
+        @ResultMap(mappings = {
+            @Mapping(property = "id"),
+            @Mapping(property = "title"),
+            @Mapping(property = "year"),
+            @Mapping(property = "article", resultMap = @ResultMapRef(value = "article", declaringClass = Mapper.class)) 
+        })
+        @Select("SELECT id, subject as title, subject, body, year FROM articles WHERE ID = ${1}")
+        Publication getPublicationById(int id);
+    }
 
     @Test
     public void testNestedOneToOne() {
         Mapper mapper = factory.createMapper(Mapper.class);
+        Publication publication = mapper.getPublicationById(1);
+        Assert.assertEquals(1, publication.getId());
+        Assert.assertEquals("World Domination", publication.getArticle().getSubject());
+        Assert.assertEquals(2007, publication.getYear());
+    }
+    
+    @Test
+    public void testNestedOneToOneExternal() {
+    	factory.createMapper(Mapper.class); // Force it to be configured
+        Mapper2 mapper = factory.createMapper(Mapper2.class);
         Publication publication = mapper.getPublicationById(1);
         Assert.assertEquals(1, publication.getId());
         Assert.assertEquals("World Domination", publication.getArticle().getSubject());
