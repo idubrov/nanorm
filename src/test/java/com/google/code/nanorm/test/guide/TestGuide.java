@@ -29,6 +29,7 @@ import com.google.code.nanorm.NanormFactory;
 import com.google.code.nanorm.Session;
 import com.google.code.nanorm.config.NanormConfiguration;
 
+@SuppressWarnings("all")
 public class TestGuide {
 	
 	@Test

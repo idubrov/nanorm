@@ -32,6 +32,13 @@ public class SubselectConfig {
 	
 	private ResultMap resultMap;
 	
+	/**
+	 * Constructor.
+	 * @param subselectKey subselect statement key
+	 * @param propertyMapping property mapping that uses the subselect
+	 * @param mapper mapper declaring the result map
+	 * @param resultMap result map declaring the property mapping
+	 */
 	public SubselectConfig(StatementKey subselectKey, PropertyMappingConfig propertyMapping, Class<?> mapper, ResultMap resultMap) {
 		this.subselectKey = subselectKey;
 		this.propertyMapping = propertyMapping;

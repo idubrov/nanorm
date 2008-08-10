@@ -21,9 +21,9 @@ import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapRef;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.annotations.SelectKey;
-import com.google.code.nanorm.annotations.SelectKeyType;
 import com.google.code.nanorm.annotations.Update;
 
+@SuppressWarnings("all")
 @ResultMap(id = "book", auto = true)
 public interface BookMapper {
     @Insert("INSERT INTO books(id, name, author, published) " +

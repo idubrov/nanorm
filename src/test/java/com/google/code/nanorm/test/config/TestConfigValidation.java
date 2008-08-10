@@ -30,6 +30,10 @@ import com.google.code.nanorm.annotations.SelectKeyType;
 import com.google.code.nanorm.config.NanormConfiguration;
 import com.google.code.nanorm.exceptions.ConfigurationException;
 
+/**
+ * Test configuration validation messages.
+ * @author Ivan Dubrov
+ */
 public class TestConfigValidation {
 
 	private interface Mapper1 {
