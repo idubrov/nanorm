@@ -40,24 +40,6 @@ import com.google.code.nanorm.internal.config.StatementConfig;
 public class MapperBuilder {
 
 	/**
-	 * Methods configuration.
-	 * 
-	 * @author Ivan Dubrov
-	 */
-	public static class MethodConfig {
-		/**
-		 * Index in the array of statement configurations (passed to the mapper
-		 * constructor).
-		 */
-		public int index;
-
-		/**
-		 * Mapper method.
-		 */
-		public java.lang.reflect.Method method;
-	}
-
-	/**
 	 * Build mapper.
 	 * 
 	 * @param name class name
@@ -89,8 +71,7 @@ public class MapperBuilder {
 
 		cw.visitEnd();
 
-		byte[] code = cw.toByteArray();
-		return code;
+		return cw.toByteArray();
 	}
 
 	/**
@@ -123,7 +104,7 @@ public class MapperBuilder {
 	 */
 	private static void visitMethod(Type owner, ClassWriter cw,
 			MethodConfig config) {
-		java.lang.reflect.Method ifaceMethod = config.method;
+		java.lang.reflect.Method ifaceMethod = config.getMethod();
 		Type returnType = Type.getType(ifaceMethod.getReturnType());
 		Type[] args = new Type[ifaceMethod.getParameterTypes().length];
 		for (int i = 0; i < args.length; ++i) {
@@ -142,7 +123,7 @@ public class MapperBuilder {
 		// Statement config
 		mg.loadThis();
 		mg.getField(owner, "configs", STATEMENT_CONFIGS_ARR_TYPE);
-		mg.push(config.index);
+		mg.push(config.getIndex());
 		mg.arrayLoad(Type.getType(StatementConfig.class));
 
 		// Arguments

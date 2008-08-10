@@ -18,6 +18,8 @@ package com.google.code.nanorm.internal.introspect.asm;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +34,6 @@ import com.google.code.nanorm.internal.introspect.AbstractIntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectUtils;
 import com.google.code.nanorm.internal.introspect.Setter;
-import com.google.code.nanorm.internal.introspect.asm.MapperBuilder.MethodConfig;
 
 /**
  * ASM based
@@ -62,8 +63,12 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 	 * @param parentLoader parent classloader for classloader which will load
 	 *            generated clasess
 	 */
-	public ASMIntrospectionFactory(ClassLoader parentLoader) {
-		classLoader = new ASMClassLoader(parentLoader);
+	public ASMIntrospectionFactory(final ClassLoader parentLoader) {
+		classLoader = AccessController.doPrivileged(new PrivilegedAction<ASMClassLoader>() {
+			public ASMClassLoader run() {
+				return new ASMClassLoader(parentLoader);
+			}
+		});
 		getters = new ConcurrentHashMap<AccessorKey, Getter>();
 		setters = new ConcurrentHashMap<AccessorKey, Setter>();
 	}
@@ -189,10 +194,7 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 			StatementConfig stConfig = config.getStatementConfig(interfaze, m.getName(), m
 					.getGenericParameterTypes());
 			if (stConfig != null) {
-				MethodConfig cfg = new MethodConfig();
-				cfg.method = m;
-				cfg.index = methods.size();
-
+				MethodConfig cfg = new MethodConfig(m, methods.size());
 				methods.add(cfg);
 				configs.add(stConfig);
 			}
@@ -227,7 +229,7 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 		 * 
 		 * @param parent parent classloader
 		 */
-		private ASMClassLoader(ClassLoader parent) {
+		ASMClassLoader(ClassLoader parent) {
 			super(parent);
 		}
 

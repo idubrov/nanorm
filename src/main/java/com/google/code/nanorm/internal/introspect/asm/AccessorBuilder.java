@@ -310,7 +310,6 @@ public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 		accessormg.endMethod();
 		cw.visitEnd();
 
-		byte[] code = cw.toByteArray();
-		return code;
+		return cw.toByteArray();
 	}
 }

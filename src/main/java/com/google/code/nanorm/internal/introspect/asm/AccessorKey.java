@@ -53,7 +53,7 @@ public class AccessorKey {
 	 */
 	public AccessorKey(Type[] types, String path) {
 		this.beanClass = null;
-		this.types = types;
+		this.types = types.clone();
 		this.path = path;
 	}
 

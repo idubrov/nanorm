@@ -112,7 +112,8 @@ public final class IntrospectUtils {
 			visitor.visitBegin(Object[].class, path);
 
 			// ...and indexing which returns Object instance
-			Class<?> res = visitor.visitIndex(0, parameter, path.length() > 0, Object[].class);
+			boolean hasNext = path.length() > 0;
+			Class<?> res = visitor.visitIndex(0, parameter, hasNext, Object[].class);
 			
 			beanClass = (res != null) ? res : (Class<?>) types[parameter];
 		}
