@@ -20,64 +20,21 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import com.google.code.nanorm.annotations.Insert;
 import com.google.code.nanorm.annotations.Mapping;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapRef;
 import com.google.code.nanorm.annotations.Select;
-import com.google.code.nanorm.annotations.SelectKey;
-import com.google.code.nanorm.annotations.SelectKeyType;
 import com.google.code.nanorm.config.NanormConfiguration;
 import com.google.code.nanorm.exceptions.ConfigurationException;
 
 /**
- * Test configuration validation messages.
+ * Base class for tests for the config validation.
+ * 
  * @author Ivan Dubrov
  */
-public class TestConfigValidation {
+public class TestConfigValidationBase {
 
-	private interface Mapper1 {
-		@Insert("INSERT INTO table(id) VALUES ${1}")
-		@SelectKey(type = SelectKeyType.BEFORE, property = "dummy")
-		void insertSome(int id);
-	}
-
-	/**
-	 * Test SQL is specified for BEFORE generated key.
-	 */
-	@Test
-	public void testGeneratedKeyValidation1() {
-		try {
-			new NanormConfiguration().configure(Mapper1.class);
-			Assert.fail();
-		} catch (ConfigurationException e) {
-			assertContains(e, "SQL");
-			assertContains(e, "insertSome");
-			assertContains(e, "Mapper1");
-		}
-	}
-
-	private interface Mapper2 {
-		@Insert("INSERT INTO table(id) VALUES ${1}")
-		@SelectKey(type = SelectKeyType.BEFORE, value = "SELECT 1")
-		void insertSome(int id);
-	}
-
-	/**
-	 * Test property name is specified for BEFORE generated key.
-	 */
-	@Test
-	public void testGeneratedKeyValidation2() {
-		try {
-			new NanormConfiguration().configure(Mapper2.class);
-			Assert.fail();
-		} catch (ConfigurationException e) {
-			assertContains(e, "insertSome");
-			assertContains(e, "Mapper2");
-			assertContains(e, "property");
-		}
-	}
-
+	
 	private interface Mapper3 {
 		@Select("SELECT 1")
 		@ResultMap(mappings = { @Mapping(property = "dummy", nestedMap = @ResultMapRef("notexist")) })
@@ -283,7 +240,7 @@ public class TestConfigValidation {
 		}
 	}
 
-	private void assertContains(Exception e, String str) {
+	protected void assertContains(Exception e, String str) {
 		Assert.assertTrue(e.getMessage().toLowerCase().contains(str.toLowerCase()));
 	}
 }
