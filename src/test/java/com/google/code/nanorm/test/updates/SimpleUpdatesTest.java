@@ -15,8 +15,6 @@
  */
 package com.google.code.nanorm.test.updates;
 
-import java.sql.SQLException;
-
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -72,7 +70,7 @@ public class SimpleUpdatesTest extends MapperTestBase {
     /**
      * Test automatic result mapping
      */
-    public void testInsert() {
+    public void testInsert() throws Exception {
         Mapper1 mapper = factory.createMapper(Mapper1.class);
 
         Article article1 = new Article();
@@ -92,7 +90,7 @@ public class SimpleUpdatesTest extends MapperTestBase {
     /**
      * Test automatic result mapping
      */
-    public void testInsert2() {
+    public void testInsert2() throws Exception {
         Mapper1 mapper = factory.createMapper(Mapper1.class);
 
         Article article1 = new Article();
@@ -112,7 +110,7 @@ public class SimpleUpdatesTest extends MapperTestBase {
     /**
      * Test automatic result mapping
      */
-    public void testInsert3() throws SQLException {
+    public void testInsert3() throws Exception {
         Mapper1 mapper = factory.createMapper(Mapper1.class);
 
         Article article1 = new Article();
@@ -137,7 +135,7 @@ public class SimpleUpdatesTest extends MapperTestBase {
     /**
      * Test automatic result mapping
      */
-    public void testInsert4() throws SQLException {
+    public void testInsert4() throws Exception {
         Mapper1 mapper = factory.createMapper(Mapper1.class);
 
         Article article1 = new Article();
@@ -161,7 +159,7 @@ public class SimpleUpdatesTest extends MapperTestBase {
     /**
      * Test automatic result mapping
      */
-    public void testInsert5() throws SQLException {
+    public void testInsert5() throws Exception {
         Mapper1 mapper = factory.createMapper(Mapper1.class);
 
         Article article1 = new Article();
@@ -186,7 +184,7 @@ public class SimpleUpdatesTest extends MapperTestBase {
     /**
      * Test automatic result mapping
      */
-    public void testInsert6() throws SQLException {
+    public void testInsert6() throws Exception {
         Mapper1 mapper = factory.createMapper(Mapper1.class);
 
         Article article1 = new Article();

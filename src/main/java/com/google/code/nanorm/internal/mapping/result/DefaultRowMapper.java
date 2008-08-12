@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.TypeHandlerFactory;
-import com.google.code.nanorm.exceptions.ConfigurationException;
 import com.google.code.nanorm.exceptions.GenericException;
 import com.google.code.nanorm.internal.Key;
 import com.google.code.nanorm.internal.Request;

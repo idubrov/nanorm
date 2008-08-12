@@ -79,7 +79,7 @@ public class TestDynamicSQL extends MapperTestBase {
      * Test selecting the car by id.
      */
     @Test
-    public void testSelectById() {
+    public void testSelectById() throws Exception {
         PublicationMapper mapper = factory.createMapper(PublicationMapper.class);
         
         Article pub = mapper.getArticleById(2);
@@ -92,7 +92,7 @@ public class TestDynamicSQL extends MapperTestBase {
      * Test selecting list of cars.
      */
     @Test
-    public void testSelectList() {
+    public void testSelectList() throws Exception {
         PublicationMapper mapper = factory.createMapper(PublicationMapper.class);
 
         List<Article> cars = mapper.listArticles();
@@ -113,7 +113,7 @@ public class TestDynamicSQL extends MapperTestBase {
      * Test listing by model.
      */
     @Test
-    public void testListByModelYear() {
+    public void testListByModelYear() throws Exception {
         PublicationMapper mapper = factory.createMapper(PublicationMapper.class);
         
         List<Article> cars = mapper.listBySubjectYear("Saving the Earth", 0);
@@ -127,7 +127,7 @@ public class TestDynamicSQL extends MapperTestBase {
      * Test listing by year.
      */
     @Test
-    public void testListByModelYear2() {
+    public void testListByModelYear2() throws Exception {
         PublicationMapper mapper = factory.createMapper(PublicationMapper.class);
         
         List<Article> ars = mapper.listBySubjectYear(null, 2007);
@@ -141,7 +141,7 @@ public class TestDynamicSQL extends MapperTestBase {
      * Test listing both by model and year.
      */
     @Test
-    public void testListByModelYear3() {
+    public void testListByModelYear3() throws Exception {
         PublicationMapper mapper = factory.createMapper(PublicationMapper.class);
         
         List<Article> cars = mapper.listBySubjectYear("Ford Focus", 2006);

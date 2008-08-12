@@ -110,7 +110,7 @@ public class InternalConfiguration {
 	private StatementConfig getStatementConfig(StatementKey key) {
 		StatementConfig statementConfig = statementsConfig.get(key);
 		if (statementConfig == null) {
-			throw new ConfigurationException("Missing configuration for method '" + key + "'");
+			throw new IllegalArgumentException("Missing configuration for method '" + key + "'");
 		}
 		return statementConfig;
 	}
@@ -129,11 +129,14 @@ public class InternalConfiguration {
 	}
 
 	/**
-	 * Configure mapper. TODO: Elaborate Javadoc!
+	 * Configure mapper. 
+	 * 
+	 * TODO: Elaborate Javadoc!
 	 * 
 	 * @param mapper mapper interface
+	 * @throws ConfigurationException configuration is invalid
 	 */
-	public void configure(Class<?> mapper) {
+	public void configure(Class<?> mapper) throws ConfigurationException {
 		synchronized (this) {
 			if (mapped.add(mapper)) {
 				// Configure super mappers first
@@ -157,7 +160,7 @@ public class InternalConfiguration {
 	/**
 	 * Post process the configuration, resolving the references of subselects.
 	 */
-	private void postProcess() {
+	private void postProcess() throws ConfigurationException {
 		// TODO: Check statement return type matches the property type
 		for (SubselectConfig subselectInfo : postProcessList) {
 			StatementKey key = subselectInfo.getSubselectKey();
@@ -202,7 +205,7 @@ public class InternalConfiguration {
 	 * 
 	 * @param method method to gather configuration from
 	 */
-	private void processMethod(Class<?> mapper, Method method) {
+	private void processMethod(Class<?> mapper, Method method) throws ConfigurationException {
 		StatementKey key = new StatementKey(mapper, method.getName(), method
 				.getGenericParameterTypes());
 
@@ -340,7 +343,7 @@ public class InternalConfiguration {
 	 * 
 	 * @param clazz class to gather result maps from
 	 */
-	private void processResultMaps(Class<?> clazz) {
+	private void processResultMaps(Class<?> clazz) throws ConfigurationException {
 		ResultMap classResultMap = clazz.getAnnotation(ResultMap.class);
 
 		if (classResultMap != null) {
@@ -361,7 +364,7 @@ public class InternalConfiguration {
 	 * @param clazz declaring class
 	 * @param resultMap result map annotation
 	 */
-	private void processResultMap(Class<?> clazz, ResultMap resultMap) {
+	private void processResultMap(Class<?> clazz, ResultMap resultMap) throws ConfigurationException {
 		ResultMapConfig cfg = createResultMapConfig(clazz, null, resultMap);
 		resultMapsConfig.put(cfg.getId(), cfg);
 	}
@@ -372,7 +375,7 @@ public class InternalConfiguration {
 	 * @param method method
 	 * @return
 	 */
-	private ResultMapConfig getResultMapConfig(Method method) {
+	private ResultMapConfig getResultMapConfig(Method method) throws ConfigurationException {
 		ResultMap resultMap = method.getAnnotation(ResultMap.class);
 		ResultMapRef ref = method.getAnnotation(ResultMapRef.class);
 		if (resultMap == null) {
@@ -406,7 +409,7 @@ public class InternalConfiguration {
 	 * @return
 	 */
 	private ResultMapConfig createResultMapConfig(Class<?> mapper, Method method,
-			ResultMap resultMap) {
+			ResultMap resultMap) throws ConfigurationException {
 		List<PropertyMappingConfig> mappings = new ArrayList<PropertyMappingConfig>();
 		boolean auto = true;
 		if (resultMap != null) {
@@ -448,7 +451,7 @@ public class InternalConfiguration {
 	}
 
 	private PropertyMappingConfig createPropertyMappingConfig(Class<?> mapper, Method method,
-			ResultMap resultMap, Mapping mapping) {
+			ResultMap resultMap, Mapping mapping) throws ConfigurationException {
 		PropertyMappingConfig propMapping = new PropertyMappingConfig();
 
 		validatePropertyMapping(mapping, mapper, resultMap);
@@ -499,7 +502,7 @@ public class InternalConfiguration {
 	 * @param refId reference id
 	 * @return result map config
 	 */
-	public ResultMapConfig findResultMap(Class<?> clazz, String refId) {
+	private ResultMapConfig findResultMap(Class<?> clazz, String refId) throws ConfigurationException {
 		String key = clazz.getName() + "#" + refId;
 		
 		if(!mapped.contains(clazz)) {
@@ -538,7 +541,9 @@ public class InternalConfiguration {
 	 * @param resultMap result map
 	 * @param propnames configured property names
 	 */
-	private void validateGroupBy(Class<?> mapper, Method method, ResultMap resultMap, Set<String> propnames) {
+	private void validateGroupBy(Class<?> mapper, Method method, ResultMap resultMap, Set<String> propnames) 
+		throws ConfigurationException {
+		
 		for(String prop : resultMap.groupBy()) {
 			if(!propnames.contains(prop)) {
 				throw new ConfigurationException(Messages.groupByPropertyMissing(prop, mapper, resultMap));
@@ -553,7 +558,7 @@ public class InternalConfiguration {
 	 * @param mapper
 	 * @param method
 	 */
-	private void validateSelectKey(SelectKey selectKey, Class<?> mapper, Method method) {
+	private void validateSelectKey(SelectKey selectKey, Class<?> mapper, Method method) throws ConfigurationException {
 		if (selectKey != null && selectKey.type() == SelectKeyType.BEFORE) {
 			if (selectKey.value().length() == 0) {
 				throw new ConfigurationException(Messages.beforeKeyWithoutSQL(mapper, method));
@@ -572,7 +577,7 @@ public class InternalConfiguration {
 	 * @param mapper
 	 * @param resultMap
 	 */
-	private void validatePropertyMapping(Mapping mapping, Class<?> mapper, ResultMap resultMap) {
+	private void validatePropertyMapping(Mapping mapping, Class<?> mapper, ResultMap resultMap) throws ConfigurationException {
 		if(mapping.columnIndex() != 0 && mapping.column().length() > 0) {
 			throw new ConfigurationException(Messages.multipleColumn(mapping, mapper, resultMap));
 		}

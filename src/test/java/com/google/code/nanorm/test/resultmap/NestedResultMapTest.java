@@ -137,7 +137,7 @@ public class NestedResultMapTest extends MapperTestBase {
     }
 
     @Test
-    public void testNestedOneToOne() {
+    public void testNestedOneToOne() throws Exception {
         Mapper mapper = factory.createMapper(Mapper.class);
         Publication publication = mapper.getPublicationById(1);
         Assert.assertEquals(1, publication.getId());
@@ -146,7 +146,7 @@ public class NestedResultMapTest extends MapperTestBase {
     }
     
     @Test
-    public void testNestedOneToOneExternal() {
+    public void testNestedOneToOneExternal() throws Exception {
     	factory.createMapper(Mapper.class); // Force it to be configured
         Mapper2 mapper = factory.createMapper(Mapper2.class);
         Publication publication = mapper.getPublicationById(1);
@@ -156,7 +156,7 @@ public class NestedResultMapTest extends MapperTestBase {
     }
     
     @Test
-    public void testNestedOneToOne2() {
+    public void testNestedOneToOne2() throws Exception {
         Mapper mapper = factory.createMapper(Mapper.class);
         Category car = mapper.getCategoryById2(1);
         Assert.assertEquals(1, car.getId());
@@ -168,7 +168,7 @@ public class NestedResultMapTest extends MapperTestBase {
     }
     
     @Test
-    public void testNestedOneToMany() {
+    public void testNestedOneToMany() throws Exception {
         Mapper mapper = factory.createMapper(Mapper.class);
         Category cat = mapper.getPublicationById3(1);
         Assert.assertEquals(1, cat.getId());
@@ -187,7 +187,7 @@ public class NestedResultMapTest extends MapperTestBase {
     }
     
     @Test
-    public void testNestedOneToMany2() {
+    public void testNestedOneToMany2() throws Exception {
         Mapper mapper = factory.createMapper(Mapper.class);
         Category cat = mapper.getCategoriesById4(1);
         Assert.assertEquals(1, cat.getId());

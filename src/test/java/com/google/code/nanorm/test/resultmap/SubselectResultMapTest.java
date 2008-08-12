@@ -85,7 +85,7 @@ public class SubselectResultMapTest extends MapperTestBase {
     }
 
    @Test
-    public void testSubselectOneToOne() {
+    public void testSubselectOneToOne() throws Exception {
         Mapper mapper = factory.createMapper(Mapper.class);
         Publication pub = mapper.getPublicationById(543);
         Assert.assertEquals(543, pub.getId());
@@ -95,7 +95,7 @@ public class SubselectResultMapTest extends MapperTestBase {
     }
    
     @Test
-    public void testSubselectOneToMany() {
+    public void testSubselectOneToMany() throws Exception {
         Mapper mapper = factory.createMapper(Mapper.class);
         Category cat = mapper.getCategoryById3(1);
         Assert.assertEquals(1, cat.getId());
@@ -112,7 +112,7 @@ public class SubselectResultMapTest extends MapperTestBase {
     }
     
     @Test
-    public void testSubselectOneToMany2() {
+    public void testSubselectOneToMany2() throws Exception {
         Mapper mapper = factory.createMapper(Mapper.class);
         Article ar = mapper.getArticleById4(1);
         Assert.assertEquals(1, ar.getId());

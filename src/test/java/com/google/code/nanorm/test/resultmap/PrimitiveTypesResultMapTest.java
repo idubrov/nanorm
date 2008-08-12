@@ -42,7 +42,7 @@ public class PrimitiveTypesResultMapTest extends MapperTestBase {
     /**
      * Test primitive types mapping
      */
-    public void testPrimitiveTypes() {
+    public void testPrimitiveTypes() throws Exception {
         Mapper mapper = factory.createMapper(Mapper.class);
         PrimitiveTypesBean bean = mapper.getPrimitiveTypes(1);
         

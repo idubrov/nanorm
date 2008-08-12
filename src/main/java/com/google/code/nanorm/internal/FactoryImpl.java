@@ -33,6 +33,7 @@ import com.google.code.nanorm.Session;
 import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.annotations.SelectKeyType;
 import com.google.code.nanorm.config.SessionConfig;
+import com.google.code.nanorm.exceptions.ConfigurationException;
 import com.google.code.nanorm.exceptions.DataException;
 import com.google.code.nanorm.internal.config.InternalConfiguration;
 import com.google.code.nanorm.internal.config.StatementConfig;
@@ -96,7 +97,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 	/**
 	 * @see com.google.code.nanorm.NanormFactory#createMapper(java.lang.Class)
 	 */
-	public <T> T createMapper(Class<T> mapperClass) {
+	public <T> T createMapper(Class<T> mapperClass) throws ConfigurationException {
 		config.configure(mapperClass);
 
 		// TODO: Check we mapped this class!

@@ -91,14 +91,14 @@ public class ResultMapRefTest extends MapperTestBase {
     }
     
     @Test
-    public void testResultMapRef1() {
+    public void testResultMapRef1() throws Exception {
         Mapper1 mapper = factory.createMapper(Mapper1.class);
         Publication pub = mapper.getPublicationByIdRef1(1);
         Assert.assertEquals(1, pub.getId());
     }
 
     @Test
-    public void testResultMapRef2() {
+    public void testResultMapRef2() throws Exception {
         Mapper1 mapper = factory.createMapper(Mapper1.class);
         Publication pub = mapper.getPublicationByIdRef2(1);
         Assert.assertEquals(1, pub.getId());
@@ -119,14 +119,14 @@ public class ResultMapRefTest extends MapperTestBase {
     }
     
     @Test
-    public void testResultMapRef4() {
+    public void testResultMapRef4() throws Exception {
         Mapper3 mapper = factory.createMapper(Mapper3.class);
         Publication pub = mapper.getPublicationByIdRef4(1);
         Assert.assertEquals(1, pub.getId());
     }
 
     @Test
-    public void testResultMapRef5() {
+    public void testResultMapRef5() throws Exception {
         Mapper3 mapper = factory.createMapper(Mapper3.class);
         Publication pub = mapper.getPublicationByIdRef5(1);
         Assert.assertEquals(1, pub.getId());
@@ -136,7 +136,7 @@ public class ResultMapRefTest extends MapperTestBase {
     /**
      * Test no automatic result mapping by default
      */
-    public void testResultMap6() {
+    public void testResultMap6() throws Exception {
         Mapper4 mapper = factory.createMapper(Mapper4.class);
         Publication pub = mapper.getPublicationByIdRef6(2);
         Assert.assertEquals(0, pub.getId());

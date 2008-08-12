@@ -70,7 +70,7 @@ public class SimpleResultMapTest extends MapperTestBase {
     /**
      * Test automatic result mapping
      */
-    public void testResultMap1() {
+    public void testResultMap1() throws Exception {
         Mapper1 mapper = factory.createMapper(Mapper1.class);
         Publication pub = mapper.getPublicationById1(2);
         Assert.assertEquals(2, pub.getId());
@@ -83,7 +83,7 @@ public class SimpleResultMapTest extends MapperTestBase {
     /**
      * Test no automatic result mapping by default
      */
-    public void testResultMap2() {
+    public void testResultMap2() throws Exception {
         Mapper1 mapper = factory.createMapper(Mapper1.class);
         Publication pub = mapper.getPublicationById2(2);
         Assert.assertEquals(0, pub.getId());
@@ -96,7 +96,7 @@ public class SimpleResultMapTest extends MapperTestBase {
     /**
      * Test automatic result mapping
      */
-    public void testResultMap3() {
+    public void testResultMap3() throws Exception {
         Mapper1 mapper = factory.createMapper(Mapper1.class);
         Publication pub = mapper.getPublicationById3(2);
         Assert.assertEquals(2, pub.getId());
@@ -107,7 +107,7 @@ public class SimpleResultMapTest extends MapperTestBase {
     }
     
     @Test
-    public void testSelectList() {
+    public void testSelectList() throws Exception {
         Mapper1 mapper = factory.createMapper(Mapper1.class);
 
         List<Publication> articles = mapper.listPublications();
@@ -125,7 +125,7 @@ public class SimpleResultMapTest extends MapperTestBase {
     }
     
     @Test
-    public void testSelectList2() {
+    public void testSelectList2() throws Exception {
         Mapper1 mapper = factory.createMapper(Mapper1.class);
 
         final List<Publication> articles = new ArrayList<Publication>();

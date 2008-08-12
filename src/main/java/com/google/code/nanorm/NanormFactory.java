@@ -17,6 +17,7 @@ package com.google.code.nanorm;
 
 import java.sql.Connection;
 
+import com.google.code.nanorm.exceptions.ConfigurationException;
 import com.google.code.nanorm.internal.config.InternalConfiguration;
 
 /**
@@ -51,8 +52,9 @@ public interface NanormFactory {
 	 * @param <T> mapper type
 	 * @param iface iface with mapper configuration
 	 * @return mapper
+	 * @throws ConfigurationException mapper configuration is invalid
 	 */
-	<T> T createMapper(Class<T> iface);
+	<T> T createMapper(Class<T> iface) throws ConfigurationException;
 
 	/**
 	 * Open session on current thread.

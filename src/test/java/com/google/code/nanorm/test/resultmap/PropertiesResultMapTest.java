@@ -61,7 +61,7 @@ public class PropertiesResultMapTest extends MapperTestBase {
     }
     
     @Test
-    public void testAutoMappingCase() {
+    public void testAutoMappingCase() throws Exception {
         Mapper mapper = factory.createMapper(Mapper.class);
         TestBean testBean = mapper.getTestBean(1);
         Assert.assertEquals(1, testBean.getId());

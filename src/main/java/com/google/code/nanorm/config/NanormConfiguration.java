@@ -20,6 +20,7 @@ import java.lang.reflect.Type;
 
 import com.google.code.nanorm.NanormFactory;
 import com.google.code.nanorm.TypeHandlerFactory;
+import com.google.code.nanorm.exceptions.ConfigurationException;
 import com.google.code.nanorm.internal.FactoryImpl;
 import com.google.code.nanorm.internal.config.InternalConfiguration;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
@@ -63,8 +64,9 @@ public class NanormConfiguration {
 	 * Add given mapper interface to the configuration.
 	 * 
 	 * @param mapperClasses mapper classes
+	 * @throws ConfigurationException configuration is invalid
 	 */
-	public void configure(Class<?>... mapperClasses) {
+	public void configure(Class<?>... mapperClasses) throws ConfigurationException {
 		for(Class<?> mapperClass : mapperClasses) {
 			config.configure(mapperClass);
 		}

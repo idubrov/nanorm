@@ -185,7 +185,7 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 	 * {@inheritDoc}
 	 */
 	public <T> T createMapper(Class<T> interfaze, InternalConfiguration config,
-			QueryDelegate delegate) {
+			QueryDelegate delegate){
 
 		// TODO: Cache!
 		List<MethodConfig> methods = new ArrayList<MethodConfig>();
