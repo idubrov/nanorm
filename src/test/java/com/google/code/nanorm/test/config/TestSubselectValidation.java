@@ -58,7 +58,6 @@ public class TestSubselectValidation extends TestConfigValidationBase {
 			new NanormConfiguration().configure(Mapper9.class, Mapper10.class);
 			Assert.fail();
 		} catch (ConfigurationException e) {
-			e.printStackTrace();
 			assertContains(e, "not found");
 			assertContains(e, "Mapper9");
 			assertContains(e, "Mapper10");
