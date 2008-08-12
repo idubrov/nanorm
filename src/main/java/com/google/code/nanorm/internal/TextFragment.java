@@ -150,7 +150,7 @@ public class TextFragment implements Fragment {
 						getters.add(introspectionFactory.buildParameterGetter(
 							types, prop));
 					} catch(IllegalArgumentException e) {
-						throw new ConfigurationException("Failed to create parameter getter for "
+						throw new IllegalArgumentException("Failed to create parameter getter for "
 								+ " (failed property marked by $[]): "
 								+ sql.substring(0, matcher.start(2)) + "$["
 								+ prop + ']' + sql.substring(matcher.end(2)), e);
