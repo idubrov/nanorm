@@ -26,11 +26,13 @@ import junit.framework.Assert;
 public class TestConfigValidationBase {
 
 	/**
-	 * Check that exception message contains given keyword.
+	 * Check that exception message contains given keywords.
 	 * @param e exception
-	 * @param str keyword
+	 * @param keywords keywords
 	 */
-	protected void assertContains(Exception e, String str) {
-		Assert.assertTrue(e.getMessage().toLowerCase().contains(str.toLowerCase()));
+	protected void assertContains(Exception e, String... keywords) {
+		for(String keyword : keywords) {
+			Assert.assertTrue(e.getMessage().toLowerCase().contains(keyword.toLowerCase()));
+		}
 	}
 }

@@ -152,6 +152,41 @@ public class Messages {
 						mapping.nestedMap().value(), mapper(mapping.nestedMap().declaringClass(), mapper).getName(),
 						mapping.property(), resultMap.id(), mapper.getName());
 	}
+	
+	/**
+	 * Generate error message for case when both nested map is specified for the property and
+	 * property itself is in the groupBy list.
+	 * 
+	 * @param mapping mapping annotation
+	 * @param mapper mapper interface
+	 * @param resultMap result map
+	 * @return message
+	 */
+	public static String bothNestedGroupBy(Mapping mapping, Class<?> mapper, ResultMap resultMap) {
+		return MessageFormat
+				.format(
+						"Property ''{0}'' has nested map (''{1}'' of mapper ''{2}'') and is in the ''groupBy'' list "
+						+ "of the result map ''{3}'' of mapper ''{4}'' at the same time.",
+						mapping.property(), mapping.nestedMap().value(), 
+						mapper(mapping.nestedMap().declaringClass(), mapper).getName(),
+						resultMap.id(), mapper.getName());
+	}
+	
+	/**
+	 * Generate error message for case when property in groupBy list is not explicitly configured.
+	 * 
+	 * @param mapper mapper interface
+	 * @param resultMap result map
+	 * @param prop property
+	 * @return message
+	 */
+	public static String groupByPropertyMissing(String prop, Class<?> mapper, ResultMap resultMap) {
+		return MessageFormat
+				.format(
+						"Property ''{0}'' was specified in the ''groupBy'' list of the the "
+						+ "result map ''{1}'' of mapper ''{2}'', but is not explicitly configured.",
+						prop, resultMap.id(), mapper.getName());
+	}
 
 	private static Class<?> mapper(Class<?> override, Class<?> mapper) {
 		return override != Object.class ? override : mapper;

@@ -136,7 +136,7 @@ public class DefaultRowMapper implements RowMapper {
 			callback.handleResult(result);
 		}
 
-		// Always map nested maps
+		// Always apply nested maps
 		for (NestedMapPropertyMapper mapper : dc.nestedMappers) {
 			mapper.mapResult(request, result, rs);
 		}
@@ -263,10 +263,10 @@ public class DefaultRowMapper implements RowMapper {
 
 			// TODO: Check all groupBy's are found!
 			if (groupBy != null && contains(groupBy, mappingConfig.getProperty())) {
-				if (mappingConfig.getNestedMapConfig() != null) {
+				/*if (mappingConfig.getNestedMapConfig() != null) {
 					throw new ConfigurationException(
 							"'groupBy' property must not be a property with nested map defined!");
-				}
+				}*/
 
 				ValueGetter keyGen = new ValueGetter(typeHandlerFactory
 						.getTypeHandler(propertyType), mappingConfig);

@@ -405,51 +405,23 @@ public class InternalConfiguration {
 		List<PropertyMappingConfig> mappings = new ArrayList<PropertyMappingConfig>();
 		boolean auto = true;
 		if (resultMap != null) {
-			for (Mapping mapping : resultMap.mappings()) {
-				PropertyMappingConfig propMapping = new PropertyMappingConfig();
-
-				validatePropertyMapping(mapping, mapper, resultMap);
-				
-				propMapping.setProperty(mapping.property());
-				propMapping.setColumn(mapping.column());
-				propMapping.setColumnIndex(mapping.columnIndex());
-				if (propMapping.getColumnIndex() == 0
-						&& (propMapping.getColumn() == null || "".equals(propMapping.getColumn()))) {
-					propMapping.setColumn(propMapping.getProperty());
-				}
-				if (!"".equals(mapping.nestedMap().value())) {
-					Class<?> clazz = mapping.nestedMap().declaringClass();
-					if(clazz == Object.class) {
-						clazz = mapper;
-					}
-					ResultMapConfig nestedMapConfig = findResultMap(clazz, mapping.nestedMap()
-							.value());
-
-					if (nestedMapConfig == null) {
-
-						// TODO: Name and location!
-						throw new ConfigurationException(Messages.nestedMapNotFound(mapper,
-								method, resultMap, mapping));
-					}
-
-					propMapping.setNestedMapConfig(nestedMapConfig);
-				}
-				// TODO: Validate method present!
-				if (!"".equals(mapping.subselect())) {
-					// TODO: Map it?
-					Class<?> subselectMapper = mapping.subselectMapper() != Object.class ? mapping
-							.subselectMapper() : mapper;
-
-					// null parameters mean that parameters are not known.
-					// in that case, any matching method will be used
-					// FIXME: Derive parameters from the property type!
-					StatementKey subselectKey = new StatementKey(subselectMapper, mapping
-							.subselect(), null);
-
-					postProcessList.add(new SubselectConfig(subselectKey, propMapping, mapper, resultMap));
-				}
-				mappings.add(propMapping);
+			
+			// Set of all properties, for groupBy list validation
+			Set<String> propnames = null;
+			if(resultMap.groupBy().length > 0) {
+				propnames = new HashSet<String>();
 			}
+			for (Mapping mapping : resultMap.mappings()) {
+				PropertyMappingConfig propMapping = createPropertyMappingConfig(mapper, method,
+						resultMap, mapping);
+				mappings.add(propMapping);
+				
+				if(propnames != null) {
+					propnames.add(propMapping.getProperty());
+				}
+			}
+			
+			validateGroupBy(mapper, method, resultMap, propnames);
 			auto = resultMap.auto();
 		}
 
@@ -468,6 +440,51 @@ public class InternalConfiguration {
 			config.setGroupBy(resultMap.groupBy());
 		}
 		return config;
+	}
+
+	private PropertyMappingConfig createPropertyMappingConfig(Class<?> mapper, Method method,
+			ResultMap resultMap, Mapping mapping) {
+		PropertyMappingConfig propMapping = new PropertyMappingConfig();
+
+		validatePropertyMapping(mapping, mapper, resultMap);
+		
+		propMapping.setProperty(mapping.property());
+		propMapping.setColumn(mapping.column());
+		propMapping.setColumnIndex(mapping.columnIndex());
+		if (propMapping.getColumnIndex() == 0
+				&& (propMapping.getColumn() == null || "".equals(propMapping.getColumn()))) {
+			propMapping.setColumn(propMapping.getProperty());
+		}
+		if (!"".equals(mapping.nestedMap().value())) {
+			Class<?> clazz = mapping.nestedMap().declaringClass();
+			if(clazz == Object.class) {
+				clazz = mapper;
+			}
+			ResultMapConfig nestedMapConfig = findResultMap(clazz, mapping.nestedMap()
+					.value());
+
+			if (nestedMapConfig == null) {
+				throw new ConfigurationException(Messages.nestedMapNotFound(mapper,
+						method, resultMap, mapping));
+			}
+
+			propMapping.setNestedMapConfig(nestedMapConfig);
+		}
+		// TODO: Validate method present!
+		if (!"".equals(mapping.subselect())) {
+			// TODO: Map it?
+			Class<?> subselectMapper = mapping.subselectMapper() != Object.class ? mapping
+					.subselectMapper() : mapper;
+
+			// null parameters mean that parameters are not known.
+			// in that case, any matching method will be used
+			// FIXME: Derive parameters from the property type!
+			StatementKey subselectKey = new StatementKey(subselectMapper, mapping
+					.subselect(), null);
+
+			postProcessList.add(new SubselectConfig(subselectKey, propMapping, mapper, resultMap));
+		}
+		return propMapping;
 	}
 
 	/**
@@ -507,6 +524,22 @@ public class InternalConfiguration {
 	public IntrospectionFactory getIntrospectionFactory() {
 		return introspectionFactory;
 	}
+	
+	/**
+	 * Validate that every property mentioned in the groupBy is explicitly configured.
+	 * 
+	 * @param mapper mapper
+	 * @param method mapper method result map is applied to
+	 * @param resultMap result map
+	 * @param propnames configured property names
+	 */
+	private void validateGroupBy(Class<?> mapper, Method method, ResultMap resultMap, Set<String> propnames) {
+		for(String prop : resultMap.groupBy()) {
+			if(!propnames.contains(prop)) {
+				throw new ConfigurationException(Messages.groupByPropertyMissing(prop, mapper, resultMap));
+			}
+		}
+	}
 
 	/**
 	 * Validate usage of {@link SelectKey} annotation.
@@ -543,8 +576,16 @@ public class InternalConfiguration {
 			throw new ConfigurationException(Messages.emptyProperty(mapping, mapper, resultMap));
 		}
 		
-		if(mapping.subselect().length() > 0 && mapping.nestedMap().value().length() > 0) {
-			throw new ConfigurationException(Messages.bothSubselectNested(mapping, mapper, resultMap));
+		if(mapping.nestedMap().value().length() > 0) {
+			if(mapping.subselect().length() > 0) {
+				throw new ConfigurationException(Messages.bothSubselectNested(mapping, mapper, resultMap));
+			}
+			
+			for(String prop : resultMap.groupBy()) {
+				if(mapping.property().equals(prop)) {
+					throw new ConfigurationException(Messages.bothNestedGroupBy(mapping, mapper, resultMap));
+				}				
+			}
 		}
 	}
 	
