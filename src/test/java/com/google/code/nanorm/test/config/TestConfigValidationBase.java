@@ -18,15 +18,6 @@ package com.google.code.nanorm.test.config;
 
 import junit.framework.Assert;
 
-import org.junit.Test;
-
-import com.google.code.nanorm.annotations.Mapping;
-import com.google.code.nanorm.annotations.ResultMap;
-import com.google.code.nanorm.annotations.ResultMapRef;
-import com.google.code.nanorm.annotations.Select;
-import com.google.code.nanorm.config.NanormConfiguration;
-import com.google.code.nanorm.exceptions.ConfigurationException;
-
 /**
  * Base class for tests for the config validation.
  * 
@@ -34,6 +25,11 @@ import com.google.code.nanorm.exceptions.ConfigurationException;
  */
 public class TestConfigValidationBase {
 
+	/**
+	 * Check that exception message contains given keyword.
+	 * @param e exception
+	 * @param str keyword
+	 */
 	protected void assertContains(Exception e, String str) {
 		Assert.assertTrue(e.getMessage().toLowerCase().contains(str.toLowerCase()));
 	}
