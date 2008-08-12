@@ -58,6 +58,8 @@ import com.google.code.nanorm.internal.util.ToStringBuilder;
  * 
  * TODO: Thread safety?
  * 
+ * TODO: Validate: one map on method, no map + ref at the same time, no maps with same id
+ * 
  * @author Ivan Dubrov
  * @version 1.0 29.05.2008
  */
@@ -218,7 +220,7 @@ public class InternalConfiguration {
 		// TODO: Invoke method.getGeneryParameters once!
 		StatementConfig stConfig = new StatementConfig(key);
 
-		ResultMapConfig config = getResultMapConfig(method);
+		ResultMapConfig config = createResultMapConfig(method);
 
 		// TODO: Check we have only one of those!
 		Select select = method.getAnnotation(Select.class);
@@ -271,7 +273,7 @@ public class InternalConfiguration {
 			selectKeySt.setRowMapper(new ScalarRowMapper(method.getGenericReturnType(),
 					typeHandlerFactory));
 
-			if (!selectKey.property().equals("")) {
+			if (selectKey.property().length() > 0) {
 				Setter keySetter = introspectionFactory.buildParameterSetter(method
 						.getGenericParameterTypes(), selectKey.property());
 				stConfig.setKeySetter(keySetter);
@@ -288,8 +290,7 @@ public class InternalConfiguration {
 		if (select != null && method.getReturnType() == void.class) {
 			int pos = searchResultCallback(method);
 			if (pos == -1) {
-				throw new ConfigurationException("Cannot deduce return type for query method "
-						+ method);
+				throw new ConfigurationException(Messages.invalidReturnType(method));
 			}
 
 			stConfig.setCallbackIndex(pos);
@@ -375,26 +376,36 @@ public class InternalConfiguration {
 	 * @param method method
 	 * @return
 	 */
-	private ResultMapConfig getResultMapConfig(Method method) throws ConfigurationException {
+	private ResultMapConfig createResultMapConfig(Method method) throws ConfigurationException {
 		ResultMap resultMap = method.getAnnotation(ResultMap.class);
 		ResultMapRef ref = method.getAnnotation(ResultMapRef.class);
-		if (resultMap == null) {
-			// Try to find the map with id = "" (default map)for
-			ResultMapConfig resultMapConfig = findResultMap(method.getDeclaringClass(),
-					ref != null ? ref.value() : "");
-			if (resultMapConfig == null) {
-				// We tried to find default map and no one was found -- use
-				// automapping
-				if (ref == null) {
-					return createResultMapConfig(method.getDeclaringClass(), method, null);
-				}
-				throw new ConfigurationException("Missing result map reference '" + ref.value()
-						+ "', referenced from '" + method.getDeclaringClass().getName() + "#"
-						+ method.getName() + "'");
-			}
-			return resultMapConfig;
+		Class<?> mapper = method.getDeclaringClass();
+		if (resultMap != null) {
+			return createResultMapConfig(method.getDeclaringClass(), method, resultMap);
 		}
-		return createResultMapConfig(method.getDeclaringClass(), method, resultMap);
+		
+		// No explicit map on method is defined -- try to find reference or default map
+		ResultMapConfig resultMapConfig;
+		if(ref != null) {
+			// Resolve reference
+			Class<?> refMapper = ref.declaringClass();
+			if(ref.declaringClass() == Object.class) {
+				refMapper = mapper;
+			}
+			resultMapConfig = findResultMap(refMapper, ref.value());
+			if(resultMapConfig == null) {
+				throw new ConfigurationException(Messages.resultMapNotFound(mapper, method, ref));
+			}
+		} else {
+			// Search for default map for the mapper (with empty id)
+			// FIXME: Remove this feature?
+			resultMapConfig = findResultMap(method.getDeclaringClass(), "");
+			if (resultMapConfig == null) {
+				// Return automap if no map is defined
+				return createResultMapConfig(method.getDeclaringClass(), method, null);
+			}
+		}
+		return resultMapConfig;
 	}
 
 	/**

@@ -78,6 +78,20 @@ public class Messages {
 	}
 
 	/**
+	 * Generate error message for case when referenced result map is not found.
+	 * 
+	 * @param mapper mapper declaring the result map
+	 * @param method method result map is applied to
+	 * @param ref result map reference
+	 * @return message
+	 */
+	public static String resultMapNotFound(Class<?> mapper, Method method, ResultMapRef ref) {
+		return MessageFormat.format("Result map ''{0}'' used in {1} not found in mapper ''{2}''",
+				ref.value(), location(mapper, method), mapper(ref.declaringClass(), mapper)
+						.getName());
+	}
+
+	/**
 	 * Generate error message for case when mapper is not configured yet when
 	 * result map is referenced from it.
 	 * 
@@ -205,6 +219,18 @@ public class Messages {
 						"Property ''{0}'' was specified in the ''groupBy'' list of the the "
 								+ "result map ''{1}'' of mapper ''{2}'', but is not explicitly configured.",
 						prop, resultMap.id(), mapper.getName());
+	}
+
+	/**
+	 * Generate error message for case when method result type could not be
+	 * deduced.
+	 * 
+	 * @param method query method
+	 * @return message
+	 */
+	public static String invalidReturnType(Method method) {
+		return "Cannot deduce return type for " + location(method.getDeclaringClass(), method)
+				+ " (return type is void and no ResultCallback is provided in parameters)";
 	}
 
 	private static Class<?> mapper(Class<?> override, Class<?> mapper) {

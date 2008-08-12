@@ -30,7 +30,7 @@ import com.google.code.nanorm.exceptions.ConfigurationException;
  * Test properties mappings validation.
  * @author Ivan Dubrov
  */
-public class TestPropertyNavigation extends TestConfigValidationBase {
+public class TestPropertyValidation extends TestConfigValidationBase {
 
 	
 	private interface Mapper1 {
@@ -53,7 +53,6 @@ public class TestPropertyNavigation extends TestConfigValidationBase {
 			new NanormConfiguration().configure(Mapper1.class, Mapper11.class);
 			Assert.fail();
 		} catch (ConfigurationException e) {
-			e.printStackTrace();
 			assertContains(e, "23");
 			assertContains(e, "testcolumn");
 			assertContains(e, "testmap");
@@ -76,7 +75,6 @@ public class TestPropertyNavigation extends TestConfigValidationBase {
 			new NanormConfiguration().configure(Mapper1.class, Mapper12.class);
 			Assert.fail();
 		} catch (ConfigurationException e) {
-			e.printStackTrace();
 			assertContains(e, "empty");
 			assertContains(e, "property");
 			assertContains(e, "testmap");
