@@ -82,4 +82,27 @@ public class TestSubselectValidation extends TestConfigValidationBase {
 			assertContains(e, "selectById");
 		}
 	}
+	
+	private interface Mapper11 {
+		@Select("SELECT 1")
+		int selectSome(int id, int id2);
+		
+		@Select("SELECT 1")
+		@ResultMap(id = "testmap", mappings = { @Mapping(property = "dummy", subselect = "selectSome") })
+		int selectOther(int id);
+	}
+	
+	/**
+	 * Test that subselect statement has exactly 1 parameter.
+	 */
+	@Test
+	public void testSubselectParameters1() {
+		try {
+			new NanormConfiguration().configure(Mapper11.class);
+			Assert.fail();
+		} catch (ConfigurationException e) {
+			e.printStackTrace();
+			assertContains(e, "subselect", "exactly one", "Mapper11", "selectSome");
+		}
+	}
 }

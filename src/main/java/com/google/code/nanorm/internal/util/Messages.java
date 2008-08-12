@@ -107,6 +107,22 @@ public class Messages {
 	}
 
 	/**
+	 * Generate error message for case when subselect query statement does not
+	 * have exactly one parameter.
+	 * 
+	 * @param cfg subselect config
+	 * @return message
+	 */
+	public static String subselectParameterCount(SubselectConfig cfg) {
+		StatementKey key = cfg.getSubselectKey();
+		return MessageFormat.format(
+				"Subselect query method ''{0}'' in mapper ''{1}'' does not have exactly one parameter, used in "
+						+ "property ''{2}'' in result map ''{3}'' of mapper ''{4}''.", key
+						.getName(), key.getMapper().getName(), cfg.getPropertyMapping()
+						.getProperty(), cfg.getResultMap().id(), cfg.getMapper().getName());
+	}
+
+	/**
 	 * Generate error message for case when both column and columnIndex are
 	 * specified.
 	 * 
@@ -137,7 +153,9 @@ public class Messages {
 	}
 
 	/**
-	 * Generate error message for case when both nested map and subselect map are selected.
+	 * Generate error message for case when both nested map and subselect map
+	 * are selected.
+	 * 
 	 * @param mapping mapping annotation
 	 * @param mapper mapper interface
 	 * @param resultMap result map
@@ -149,13 +167,14 @@ public class Messages {
 						"Both subselect (''{0}'' of mapper ''{1}'') and nested map (''{2}'' of mapper ''{3}'') are specified for "
 								+ "property ''{4}'' in result map ''{5}'' of mapper ''{6}''",
 						mapping.subselect(), mapper(mapping.subselectMapper(), mapper).getName(),
-						mapping.nestedMap().value(), mapper(mapping.nestedMap().declaringClass(), mapper).getName(),
-						mapping.property(), resultMap.id(), mapper.getName());
+						mapping.nestedMap().value(), mapper(mapping.nestedMap().declaringClass(),
+								mapper).getName(), mapping.property(), resultMap.id(), mapper
+								.getName());
 	}
-	
+
 	/**
-	 * Generate error message for case when both nested map is specified for the property and
-	 * property itself is in the groupBy list.
+	 * Generate error message for case when both nested map is specified for the
+	 * property and property itself is in the groupBy list.
 	 * 
 	 * @param mapping mapping annotation
 	 * @param mapper mapper interface
@@ -163,17 +182,17 @@ public class Messages {
 	 * @return message
 	 */
 	public static String bothNestedGroupBy(Mapping mapping, Class<?> mapper, ResultMap resultMap) {
-		return MessageFormat
-				.format(
-						"Property ''{0}'' has nested map (''{1}'' of mapper ''{2}'') and is in the ''groupBy'' list "
-						+ "of the result map ''{3}'' of mapper ''{4}'' at the same time.",
-						mapping.property(), mapping.nestedMap().value(), 
-						mapper(mapping.nestedMap().declaringClass(), mapper).getName(),
-						resultMap.id(), mapper.getName());
+		return MessageFormat.format(
+				"Property ''{0}'' has nested map (''{1}'' of mapper ''{2}'') and is in the ''groupBy'' list "
+						+ "of the result map ''{3}'' of mapper ''{4}'' at the same time.", mapping
+						.property(), mapping.nestedMap().value(), mapper(
+						mapping.nestedMap().declaringClass(), mapper).getName(), resultMap.id(),
+				mapper.getName());
 	}
-	
+
 	/**
-	 * Generate error message for case when property in groupBy list is not explicitly configured.
+	 * Generate error message for case when property in groupBy list is not
+	 * explicitly configured.
 	 * 
 	 * @param mapper mapper interface
 	 * @param resultMap result map
@@ -184,7 +203,7 @@ public class Messages {
 		return MessageFormat
 				.format(
 						"Property ''{0}'' was specified in the ''groupBy'' list of the the "
-						+ "result map ''{1}'' of mapper ''{2}'', but is not explicitly configured.",
+								+ "result map ''{1}'' of mapper ''{2}'', but is not explicitly configured.",
 						prop, resultMap.id(), mapper.getName());
 	}
 

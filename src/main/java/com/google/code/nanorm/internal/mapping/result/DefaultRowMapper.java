@@ -263,31 +263,16 @@ public class DefaultRowMapper implements RowMapper {
 
 			// TODO: Check all groupBy's are found!
 			if (groupBy != null && contains(groupBy, mappingConfig.getProperty())) {
-				/*if (mappingConfig.getNestedMapConfig() != null) {
-					throw new ConfigurationException(
-							"'groupBy' property must not be a property with nested map defined!");
-				}*/
-
 				ValueGetter keyGen = new ValueGetter(typeHandlerFactory
 						.getTypeHandler(propertyType), mappingConfig);
 				keyGenerators.add(keyGen);
 			}
 
 			if (mappingConfig.getSubselect() != null) {
+				// Validated during configuration time
 				Type[] parameterTypes = mappingConfig.getSubselect()
 						.getParameterTypes();
-				if (parameterTypes == null || parameterTypes.length != 1) {
-					throw new ConfigurationException(
-							"Invalid subselect statement "
-									+ "for property "
-									+ mappingConfig.getProperty()
-									+ " of "
-									+ "result map "
-									+ config.getId()
-									+ " with id "
-									+ mappingConfig.getSubselect().getId()
-									+ ", subselect statement must have exactly one parameter");
-				}
+				
 				TypeHandler<?> typeHandler = typeHandlerFactory
 						.getTypeHandler(parameterTypes[0]);
 				mappers.add(new PropertyMapper(mappingConfig, setter,

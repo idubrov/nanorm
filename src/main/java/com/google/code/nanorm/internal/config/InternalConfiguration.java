@@ -183,6 +183,11 @@ public class InternalConfiguration {
 				if (stConfig == null) {
 					throw new ConfigurationException(Messages.subselectNotFound(subselectInfo));
 				}
+				
+				if(stConfig.getParameterTypes().length != 1) {
+					throw new ConfigurationException(Messages.subselectParameterCount(subselectInfo));
+				}
+		
 				subselectInfo.getPropertyMapping().setSubselect(stConfig);
 			}
 		}
