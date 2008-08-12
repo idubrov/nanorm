@@ -101,8 +101,7 @@ public class TestSubselectValidation extends TestConfigValidationBase {
 			new NanormConfiguration().configure(Mapper11.class);
 			Assert.fail();
 		} catch (ConfigurationException e) {
-			e.printStackTrace();
-			assertContains(e, "subselect", "exactly one", "Mapper11", "selectSome");
+			assertContains(e, "subselect", "exactly one", "Mapper11", "selectSome", "dummy");
 		}
 	}
 }

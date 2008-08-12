@@ -28,14 +28,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.exceptions.ConfigurationException;
 import com.google.code.nanorm.exceptions.GenericException;
 import com.google.code.nanorm.internal.Key;
 import com.google.code.nanorm.internal.Request;
-import com.google.code.nanorm.internal.config.ResultMapConfig;
 import com.google.code.nanorm.internal.config.PropertyMappingConfig;
+import com.google.code.nanorm.internal.config.ResultMapConfig;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectUtils;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
@@ -50,6 +53,8 @@ import com.google.code.nanorm.internal.type.TypeHandler;
  * @version 1.0 28.05.2008
  */
 public class DefaultRowMapper implements RowMapper {
+	
+	private Logger LOGGER = LoggerFactory.getLogger(DefaultRowMapper.class);
 
 	private final Class<?> elementClass;
 
@@ -225,11 +230,9 @@ public class DefaultRowMapper implements RowMapper {
 					mappingConfig.setProperty(prop);
 				}
 				if (mappingConfig.getProperty() == null) {
-					// FIXME: Just skip it?
-					throw new ConfigurationException(
-							"No matching property for column '" + column
-									+ "' was found when auto-mapping the bean "
-									+ elementClass);
+					LOGGER.info("No matching property for column '" + column
+							+ "' was found when auto-mapping the bean "
+							+ elementClass);
 				}
 				configs.add(mappingConfig);
 			}
