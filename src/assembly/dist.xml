@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/assembly-1.1.0-SNAPSHOT.xsd">
+  <id>dist</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <files>
+    <file>
+      <source>src/docs/Guide.pdf</source>
+      <outputDirectory>doc</outputDirectory>
+    </file>
+  </files>
+  <fileSets>
+    <fileSet>
+      <directory>target</directory>
+      <includes>
+        <include>*.jar</include>
+      </includes>
+      <outputDirectory>lib</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>target/classes/META-INF</directory>
+      <includes>
+        <include>LICENSE</include>
+        <include>NOTICE</include>
+      </includes>
+      <outputDirectory></outputDirectory>
+    </fileSet>
+  </fileSets>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>libs</outputDirectory>
+      <includes>
+        <include>asm:asm-all</include>
+        <include>org.slf4j:slf4j-api</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
+</assembly>
