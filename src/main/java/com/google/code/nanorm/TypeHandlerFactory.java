@@ -22,7 +22,7 @@ import com.google.code.nanorm.internal.type.TypeHandler;
 /**
  * Factory for creating type handlers. Type handlers are responsible for mapping
  * data from {@link java.sql.ResultSet} to Java objects and from Java objects to
- * {@PreparedStatement} parameters.
+ * {@link PreparedStatement} parameters.
  * 
  * TODO: Support for JDBC types!
  * 

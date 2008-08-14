@@ -21,7 +21,7 @@ import java.sql.SQLException;
 
 /**
  * Performs mapping data from {@link ResultSet} to Java objects and from Java
- * objects to {@PreparedStatement} parameters.
+ * objects to {@link PreparedStatement} parameters.
  * 
  * TODO: Move to public package!
  * 
