@@ -18,6 +18,9 @@ package com.google.code.nanorm.config;
 
 import java.lang.reflect.Type;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.code.nanorm.NanormFactory;
 import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.exceptions.ConfigurationException;
@@ -25,6 +28,7 @@ import com.google.code.nanorm.internal.FactoryImpl;
 import com.google.code.nanorm.internal.config.InternalConfiguration;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.asm.ASMIntrospectionFactory;
+import com.google.code.nanorm.internal.introspect.reflect.ReflectIntrospectionFactory;
 import com.google.code.nanorm.internal.type.TypeHandler;
 import com.google.code.nanorm.internal.type.TypeHandlerFactoryImpl;
 
@@ -38,6 +42,8 @@ import com.google.code.nanorm.internal.type.TypeHandlerFactoryImpl;
  * @version 1.0 19.06.2008
  */
 public class NanormConfiguration {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(NanormConfiguration.class);
 
 	private final TypeHandlerFactory typeHandlerFactory;
 
@@ -52,14 +58,10 @@ public class NanormConfiguration {
 	 */
 	public NanormConfiguration() {
 		typeHandlerFactory = new TypeHandlerFactoryImpl();
-		// introspectionFactory = new ReflectIntrospectionFactory();
-
-		ClassLoader cl = Thread.currentThread().getContextClassLoader();
-		introspectionFactory = new ASMIntrospectionFactory(cl);
-
+		introspectionFactory = detectFactory();
 		config = new InternalConfiguration(typeHandlerFactory, introspectionFactory);
 	}
-
+	
 	/**
 	 * Add given mapper interface to the configuration.
 	 * 
@@ -98,5 +100,18 @@ public class NanormConfiguration {
 	 */
 	public NanormFactory buildFactory() {
 		return new FactoryImpl(config, sessionConfig);
+	}
+	
+	private IntrospectionFactory detectFactory() {
+		try {
+			// Trying to detect the ASM library
+			Class.forName("org.objectweb.asm.ClassVisitor");
+			
+			ClassLoader cl = Thread.currentThread().getContextClassLoader();
+			return new ASMIntrospectionFactory(cl);
+		} catch(ClassNotFoundException e) {
+			LOGGER.info("ASM library not found in classpath, using reflection (slower).");
+			return new ReflectIntrospectionFactory();
+		}
 	}
 }
