@@ -23,7 +23,7 @@ import junit.framework.Assert;
  * 
  * @author Ivan Dubrov
  */
-public class TestConfigValidationBase {
+public abstract class TestConfigValidationBase {
 
 	/**
 	 * Check that exception message contains given keywords.
