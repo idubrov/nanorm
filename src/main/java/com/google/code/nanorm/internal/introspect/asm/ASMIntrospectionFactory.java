@@ -107,7 +107,7 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 				instance = getters.get(key);
 
 				if (instance == null) {
-					Class<?> clazz = classLoader.defineClass(name.replace('/', '.'), code);
+					Class<?> clazz = defineClass(name.replace('/', '.'), code);
 					try {
 						Constructor<?> ct = clazz.getConstructor(java.lang.reflect.Type.class);
 						instance = (Getter) ct.newInstance(finalType[0]);
@@ -168,7 +168,7 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 				instance = setters.get(key);
 
 				if (instance == null) {
-					Class<?> clazz = classLoader.defineClass(name.replace('/', '.'), code);
+					Class<?> clazz = defineClass(name.replace('/', '.'), code);
 					try {
 						instance = (Setter) clazz.newInstance();
 					} catch (Exception e) {
@@ -204,7 +204,7 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 		byte[] code = MapperBuilder.buildMapper(name, interfaze, methods
 				.toArray(new MethodConfig[methods.size()]));
 
-		Class<?> clazz = classLoader.defineClass(name.replace('/', '.'), code);
+		Class<?> clazz = defineClass(name.replace('/', '.'), code);
 		Object instance;
 		try {
 			Constructor<?> ctor = clazz
@@ -215,6 +215,20 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 			throw new IntrospectionException("Failed to create mapper instance!", e);
 		}
 		return interfaze.cast(instance);
+	}
+	
+	/**
+	 * Define class in the classloader.
+	 * @param name
+	 * @param b
+	 * @return
+	 */
+	private Class<?> defineClass(final String name, final byte[] b) {
+		return AccessController.doPrivileged(new PrivilegedAction<Class<?>>() {
+			public Class<?> run() {
+				return classLoader.defineClassInternal(name, b);
+			}
+		});
 	}
 
 	/**
@@ -240,7 +254,7 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 		 * @param b code
 		 * @return {@link Class} instance.
 		 */
-		public Class<?> defineClass(String name, byte[] b) {
+		public Class<?> defineClassInternal(String name, byte[] b) {
 			return defineClass(name, b, 0, b.length);
 		}
 	}
