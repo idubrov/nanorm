@@ -41,13 +41,6 @@ public interface TypeHandlerFactory {
 	TypeHandler<?> getTypeHandler(Type type);
 
 	/**
-	 * Get type handler for unknown types.
-	 * 
-	 * @return type handler for unknown types
-	 */
-	TypeHandler<Object> getUnknownTypeHandler();
-
-	/**
 	 * Register new type handler.
 	 * 
 	 * @param type type

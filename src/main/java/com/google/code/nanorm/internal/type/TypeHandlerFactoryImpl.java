@@ -84,13 +84,6 @@ public final class TypeHandlerFactoryImpl implements TypeHandlerFactory {
         }
         return typeHandler;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public TypeHandler<Object> getUnknownTypeHandler() {
-        return unknownTypeHandler;
-    }
     
     /**
      * {@inheritDoc}
