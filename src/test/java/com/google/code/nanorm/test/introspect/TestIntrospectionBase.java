@@ -203,5 +203,35 @@ public abstract class TestIntrospectionBase {
 
         Assert.assertEquals(2008, getter.getValue(publications));
     }
+    
+    /**
+     * Test parameter setter generation.
+     */
+    @Test
+    public void testParameterSetter() {
+        Article article = new Article();        
+        Publication publication = new Publication();
+        publication.setArticle(article);
+        Publication[] arr = new Publication[4];
+        arr[1] = publication;
+        Type[] types = new Type[] { Publication.class, Publication.class, Publication.class, Publication.class }; 
+        Setter setter = factory.buildParameterSetter(types, "2.article.subject");
+
+        setter.setValue(arr, "World");
+        Assert.assertEquals("World", article.getSubject());
+    }
+    
+    /**
+     * Test parameter getter generation.
+     */
+    @Test
+    public void testParameterSetter2() {
+        String[] arr = new String[] { "one", "nottwo", "three", "four" };
+        Type[] types = new Type[] { String.class, String.class, String.class, String.class }; 
+        Setter setter = factory.buildParameterSetter(types, "2");
+        
+        setter.setValue(arr, "two");
+        Assert.assertEquals("two", arr[1]);
+    }
 }
 
