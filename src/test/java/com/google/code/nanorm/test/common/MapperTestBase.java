@@ -21,8 +21,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.TimeZone;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 
 import com.google.code.nanorm.NanormFactory;
 import com.google.code.nanorm.Session;
@@ -38,25 +38,25 @@ public class MapperTestBase {
 	/**
 	 * Connection.
 	 */
-	protected Connection conn;
+	protected static Connection conn;
 
 	/**
 	 * Nanorm factory.
 	 */
-	protected NanormFactory factory;
+	protected static NanormFactory factory;
 
 	/**
 	 * Current transaction.
 	 */
-	protected Session transaction;
+	protected static Session transaction;
 
 	/**
 	 * Loads the test data.
 	 * 
 	 * @throws Exception any error
 	 */
-	@Before
-	public void setUp() throws Exception {
+	@BeforeClass
+	public static void beforeClass() throws Exception {
 		TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
 		
 		Class.forName("org.h2.Driver");
@@ -125,7 +125,7 @@ public class MapperTestBase {
 	 * @param sql sql statement to execute
 	 * @throws SQLException any SQL error
 	 */
-	protected void execute(String sql) throws SQLException {
+	protected static void execute(String sql) throws SQLException {
 		Statement st = conn.createStatement();
 		try {
 			st.execute(sql);
@@ -139,8 +139,8 @@ public class MapperTestBase {
 	 * 
 	 * @throws SQLException any SQL exception
 	 */
-	@After
-	public void tearDown() throws SQLException {
+	@AfterClass
+	public static void afterClass() throws SQLException {
 		if (transaction != null) {
 			transaction.rollback();
 			transaction.end();
@@ -149,5 +149,4 @@ public class MapperTestBase {
 			conn.close();
 		}
 	}
-
 }
