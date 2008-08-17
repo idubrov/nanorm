@@ -60,7 +60,7 @@ public class SingleResultCallbackSource implements ResultCallbackSource {
                 set = true;
             }
 
-			public void finish() {
+			public void commit() {
 				// Nothing to do, we set data when it came.
 			}
         };

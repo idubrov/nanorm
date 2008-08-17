@@ -15,6 +15,8 @@
  */
 package com.google.code.nanorm.test.resultmap;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -23,6 +25,7 @@ import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapList;
 import com.google.code.nanorm.annotations.ResultMapRef;
 import com.google.code.nanorm.annotations.Select;
+import com.google.code.nanorm.test.beans.Article;
 import com.google.code.nanorm.test.beans.Category;
 import com.google.code.nanorm.test.beans.Publication;
 import com.google.code.nanorm.test.common.MapperTestBase;
@@ -61,7 +64,16 @@ public class NestedResultMapTest extends MapperTestBase {
             @Mapping(property = "subject"),
             @Mapping(property = "body"),
             @Mapping(property = "comments", nestedMap = @ResultMapRef("comment2"))
-        })        
+        }),
+        @ResultMap(id = "label", groupBy = "id", mappings = {
+        	@Mapping(property = "id", column = "label_id"),
+        	@Mapping(property = "label")
+        }),
+        @ResultMap(id = "comment3", groupBy = "id", mappings = {
+            @Mapping(property = "id", column = "comment_id"),
+            @Mapping(property = "comment", column = "comment"),
+            @Mapping(property = "year", column = "year")
+        }),
     })
     public interface Mapper {
         
@@ -117,7 +129,34 @@ public class NestedResultMapTest extends MapperTestBase {
                 "ORDER BY c.id, a.id, cm.id")
         Category getCategoriesById4(int id);
         
-        // TODO: More nested mappings
+        // Test 1-N mapping, the property type is array
+        @ResultMap(groupBy = "id", mappings = {
+        	@Mapping(property = "id"),
+            @Mapping(property = "subject"),
+            @Mapping(property = "body"),
+            @Mapping(property = "labels", nestedMap = @ResultMapRef("label"))
+        })
+        @Select("SELECT a.id, a.subject, a.body, l.id as label_id, l.label " +
+        		"FROM articles a " +
+        		"INNER JOIN labels l ON l.article_id = a.id " +
+        		"ORDER BY a.id, l.id")
+        List<Article> listArticles();
+        
+        // Test two 1-N mapping, one nested property is array and other is list
+        @ResultMap(groupBy = "id", mappings = {
+        	@Mapping(property = "id"),
+            @Mapping(property = "subject"),
+            @Mapping(property = "body"),
+            @Mapping(property = "labels", nestedMap = @ResultMapRef("label")),
+            @Mapping(property = "comments", nestedMap = @ResultMapRef("comment3"))
+        })
+        @Select("SELECT a.id, a.subject, a.body, l.id as label_id, l.label, " +
+        		"c.id as comment_id, c.comment, c.year " +
+        		"FROM articles a " +
+        		"INNER JOIN labels l ON l.article_id = a.id " +
+        		"INNER JOIN comments c ON c.article_id = a.id " +
+        		"ORDER BY a.id, l.id, c.id")
+        List<Article> listArticles2();
     }
     
     /**
@@ -214,5 +253,60 @@ public class NestedResultMapTest extends MapperTestBase {
         Assert.assertEquals("Green", car.getArticles().get(1).getLastName());
         Assert.assertEquals(0, car.getArticles().get(1).getCrashes().size());
         */
+    }
+    
+    /**
+     * Test 1-N mapping with nested maps where collection type is array.
+     * @throws Exception
+     */
+    @Test
+    public void testNestedOneToManyArray() throws Exception {
+        Mapper mapper = factory.createMapper(Mapper.class);
+        List<Article> articles = mapper.listArticles();
+        
+        // One article, because we use inner join
+        Assert.assertEquals(1, articles.size());
+        
+        Assert.assertEquals(1, articles.get(0).getId());
+        Assert.assertEquals("World Domination", articles.get(0).getSubject());
+        Assert.assertEquals("Everybody thinks of world domination.", articles.get(0).getBody());
+        Assert.assertEquals(2, articles.get(0).getLabels().length);
+        
+        Assert.assertEquals(1231, articles.get(0).getLabels()[0].getId());
+        Assert.assertEquals("World", articles.get(0).getLabels()[0].getLabel());
+        
+        Assert.assertEquals(1232, articles.get(0).getLabels()[1].getId());
+        Assert.assertEquals("Dominate", articles.get(0).getLabels()[1].getLabel());
+    }
+    
+    /**
+     * est two 1-N mapping with nested maps where one collection type is list and other is array.
+     * @throws Exception
+     */
+    @Test
+    public void testNestedOneToManyArrayList() throws Exception {
+        Mapper mapper = factory.createMapper(Mapper.class);
+        List<Article> articles = mapper.listArticles2();
+        
+        // One article, because we use inner join
+        Assert.assertEquals(1, articles.size());
+        
+        Assert.assertEquals(1, articles.get(0).getId());
+        Assert.assertEquals("World Domination", articles.get(0).getSubject());
+        Assert.assertEquals("Everybody thinks of world domination.", articles.get(0).getBody());
+        Assert.assertEquals(2, articles.get(0).getLabels().length);
+        Assert.assertEquals(2, articles.get(0).getComments().size());
+        
+        Assert.assertEquals(1231, articles.get(0).getLabels()[0].getId());
+        Assert.assertEquals("World", articles.get(0).getLabels()[0].getLabel());
+        
+        Assert.assertEquals(1232, articles.get(0).getLabels()[1].getId());
+        Assert.assertEquals("Dominate", articles.get(0).getLabels()[1].getLabel());
+        
+        Assert.assertEquals(101, articles.get(0).getComments().get(0).getId());
+        Assert.assertEquals("Great!", articles.get(0).getComments().get(0).getComment());
+        
+        Assert.assertEquals(102, articles.get(0).getComments().get(1).getId());
+        Assert.assertEquals("Always wanted to world-dominate!", articles.get(0).getComments().get(1).getComment());
     }
 }

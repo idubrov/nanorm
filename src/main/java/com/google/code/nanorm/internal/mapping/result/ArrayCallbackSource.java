@@ -77,7 +77,7 @@ public class ArrayCallbackSource implements ResultCallbackSource {
 			/**
 			 * {@inheritDoc}
 			 */
-			public void finish() {
+			public void commit() {
 				Object[] array = (Object[]) Array.newInstance(componentClass, list.size());
 				setter.setValue(instance, list.toArray(array));
 			}

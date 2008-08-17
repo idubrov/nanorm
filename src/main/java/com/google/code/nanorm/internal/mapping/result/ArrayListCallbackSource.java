@@ -69,7 +69,7 @@ public class ArrayListCallbackSource implements ResultCallbackSource {
 				list.add(obj);
 			}
 
-			public void finish() {
+			public void commit() {
 				// Nothing. We populate array list when data arrives.
 			}
 		};

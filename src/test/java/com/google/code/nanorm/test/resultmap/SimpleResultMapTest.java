@@ -134,7 +134,7 @@ public class SimpleResultMapTest extends MapperTestBase {
                 articles.add(pub);
             }
             
-            public void finish() {
+            public void commit() {
             	// Nothning...
             }
         };

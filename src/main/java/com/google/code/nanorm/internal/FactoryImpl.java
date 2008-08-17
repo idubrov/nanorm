@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -261,7 +262,10 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 			while (rs.next()) {
 				rowMapper.processResultSet(request, rs, callback);
 			}
-			callback.finish();
+			callback.commit();
+			
+			// Commit all callbacks used in the request
+			request.commitCallbacks();
 		} finally {
 			try {
 				rs.close();

@@ -36,7 +36,7 @@ public interface ResultCallback<T> {
 	void handleResult(T obj);
 
 	/**
-	 * No more data will be available, so flush the data to the destination.
+	 * No more data will be available, commit the data to the destination.
 	 */
-	void finish();
+	void commit();
 }

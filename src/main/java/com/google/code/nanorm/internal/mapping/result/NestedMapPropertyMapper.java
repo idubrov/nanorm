@@ -17,6 +17,7 @@ package com.google.code.nanorm.internal.mapping.result;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 import com.google.code.nanorm.ResultCallback;
 import com.google.code.nanorm.internal.Request;
@@ -63,12 +64,9 @@ public class NestedMapPropertyMapper {
 	 */
 	public final void mapResult(Request request, final Object result,
 			ResultSet rs) throws SQLException {
-		
-		// TODO: Not optimal to create callback and finish after that!
-		// This will force array recreation (if ArrayCallbackSource is used)!
-		// TODO: Cache them in request instead and finish on request end.
-		ResultCallback<Object> callback = callbackSource.forInstance(result);
-		resultMap.processResultSet(request, rs, callback);
-		callback.finish();
+
+		// Get the data sink from the request cache
+		ResultCallback<Object> callback = request.searchCallback(callbackSource, result);
+		resultMap.processResultSet(request, rs, callback);		
 	}
 }
