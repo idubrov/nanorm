@@ -35,7 +35,7 @@ import com.google.code.nanorm.test.beans.Publication;
  * @author Ivan Dubrov
  * @version 1.0 19.06.2008
  */
-public abstract class TestGetterBase {
+public abstract class TestIntrospectionBase {
 
 	/**
 	 * Introspection factory.

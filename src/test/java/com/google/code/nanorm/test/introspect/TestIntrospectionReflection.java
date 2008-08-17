@@ -24,7 +24,7 @@ import com.google.code.nanorm.internal.introspect.reflect.ReflectIntrospectionFa
  * @author Ivan Dubrov
  * @version 1.0 22.06.2008
  */
-public class TestGetterReflection extends TestGetterBase {
+public class TestIntrospectionReflection extends TestIntrospectionBase {
 
 	/**
 	 * {@inheritDoc}

@@ -32,7 +32,7 @@ import com.google.code.nanorm.test.beans.Publication;
  * @author Ivan Dubrov
  * @version 1.0 22.06.2008
  */
-public class TestGetterASM extends TestGetterBase {
+public class TestIntrospectionASM extends TestIntrospectionBase {
 
 	/**
 	 * {@inheritDoc}
