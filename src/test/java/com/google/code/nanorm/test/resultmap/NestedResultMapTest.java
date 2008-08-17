@@ -73,7 +73,7 @@ public class NestedResultMapTest extends MapperTestBase {
             @Mapping(property = "id", column = "comment_id"),
             @Mapping(property = "comment", column = "comment"),
             @Mapping(property = "year", column = "year")
-        }),
+        })
     })
     public interface Mapper {
         
