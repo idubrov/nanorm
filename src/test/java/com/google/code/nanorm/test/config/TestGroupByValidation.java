@@ -69,7 +69,7 @@ public class TestGroupByValidation extends TestConfigValidationBase {
 			new NanormConfiguration().configure(Mapper2.class);
 			Assert.fail();
 		} catch (ConfigurationException e) {
-			assertContains(e, "groupBy", "prop3", "not", "configured", "samplemap");
+			assertContains(e, "selectSome", "groupBy", "prop3", "not", "configured", "samplemap");
 		}
 	}
 }

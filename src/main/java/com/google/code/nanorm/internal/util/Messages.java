@@ -210,16 +210,17 @@ public class Messages {
 	 * explicitly configured.
 	 * 
 	 * @param mapper mapper interface
+	 * @param method method result map applied to
 	 * @param resultMap result map
 	 * @param prop property
 	 * @return message
 	 */
-	public static String groupByPropertyMissing(String prop, Class<?> mapper, ResultMap resultMap) {
+	public static String groupByPropertyMissing(String prop, Class<?> mapper, Method method, ResultMap resultMap) {
 		return MessageFormat
 				.format(
 						"Property ''{0}'' was specified in the ''groupBy'' list of the the "
-								+ "result map ''{1}'' of mapper ''{2}'', but is not explicitly configured.",
-						prop, resultMap.id(), mapper.getName());
+								+ "result map ''{1}'' of {2}, but is not explicitly configured.",
+						prop, resultMap.id(), location(mapper, method));
 	}
 
 	/**

@@ -580,7 +580,7 @@ public class InternalConfiguration {
 
 		for (String prop : resultMap.groupBy()) {
 			if (!propnames.contains(prop)) {
-				throw new ConfigurationException(Messages.groupByPropertyMissing(prop, mapper,
+				throw new ConfigurationException(Messages.groupByPropertyMissing(prop, mapper, method, 
 						resultMap));
 			}
 		}

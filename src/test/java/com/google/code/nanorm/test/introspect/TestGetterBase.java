@@ -30,7 +30,8 @@ import com.google.code.nanorm.test.beans.Label;
 import com.google.code.nanorm.test.beans.Publication;
 
 /**
- * 
+ * TODO: Rename
+ * TODO: Parameter setter test
  * @author Ivan Dubrov
  * @version 1.0 19.06.2008
  */
