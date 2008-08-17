@@ -17,7 +17,7 @@ package com.google.code.nanorm.test.beans;
 
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Date;
+import java.sql.Date;
 
 /**
  *

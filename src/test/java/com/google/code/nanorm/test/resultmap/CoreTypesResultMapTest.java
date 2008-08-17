@@ -109,6 +109,9 @@ public class CoreTypesResultMapTest extends MapperTestBase {
 				+ "${2.primFloat}, ${2.wrapFloat}, ${2.primDouble}, ${2.wrapDouble}, "
 				+ "${2.string}, ${2.date}, ${2.sqlDate}, ${2.sqlTime}, ${2.sqlTimestamp})")
 		void insert(int id, CoreTypesBean bean);
+		
+		@Select("SELECT 'myvalue' as primChar")
+		CoreTypesBean selectChar();
 	}
 
 	/**
@@ -182,6 +185,23 @@ public class CoreTypesResultMapTest extends MapperTestBase {
 		
 		// After adjustions, they should be equal
 		Assert.assertEquals(bean, bean2);
+	}
+	
+	/**
+	 * Test that string longer than 1 symbol cannot be converted to character. 
+	 */	
+	@Test
+	public void testLongChar() {
+		Mapper mapper = factory.createMapper(Mapper.class);
+		try {
+			mapper.selectChar();
+			Assert.fail();
+		} catch(IllegalArgumentException e) {
+			String[] keywords = {"too", "long", "myvalue"}; 
+			for(String keyword : keywords) {
+				Assert.assertTrue(e.getMessage().toLowerCase().contains(keyword.toLowerCase()));
+			}
+		}
 	}
 
 	private void assertData(CoreTypesBean bean) {
