@@ -63,14 +63,14 @@ public class MapperTestBase {
 		conn = DriverManager.getConnection("jdbc:h2:mem:", "sa", "");
 
 		// Tables for primitive values
-		execute("CREATE TABLE PRIMITIVE(id INTEGER, primByte TINYINT, wrapByte TINYINT, "
+		execute("CREATE TABLE CORE(id INTEGER, primByte TINYINT, wrapByte TINYINT, "
 				+ "primShort SMALLINT, wrapShort SMALLINT, primInt INT, wrapInt INT,"
 				+ "primLong BIGINT, wrapLong BIGINT, primBoolean BOOL, wrapBoolean BOOL,"
 				+ "primChar CHAR(1), wrapChar CHAR(1), primFloat REAL, wrapFloat REAL,"
 				+ "primDouble DOUBLE, wrapDouble DOUBLE, string VARCHAR(50), "
 				+ "date TIMESTAMP, sqldate DATE, sqltime TIME, sqltimestamp TIMESTAMP)");
 
-		execute("INSERT INTO PRIMITIVE(id, primByte, wrapByte, primShort, wrapShort, "
+		execute("INSERT INTO CORE(id, primByte, wrapByte, primShort, wrapShort, "
 				+ "primInt, wrapInt, primLong, wrapLong, primBoolean, wrapBoolean, "
 				+ "primChar, wrapChar, primFloat, wrapFloat, primDouble, wrapDouble, string, " 
 				+  "date, sqldate, sqltime, sqltimestamp) VALUES("
