@@ -303,7 +303,9 @@ public class InternalConfiguration {
 		} else {
 			returnType = method.getGenericReturnType();
 		}
-		stConfig.setRowMapper(createRowMapper(returnType, config));
+		if(returnType != void.class) {
+			stConfig.setRowMapper(createRowMapper(returnType, config));
+		}
 		stConfig.setResultType(returnType);
 
 		stConfig.setParameterTypes(method.getGenericParameterTypes());

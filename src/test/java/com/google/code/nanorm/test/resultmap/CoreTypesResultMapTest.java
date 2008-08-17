@@ -161,6 +161,34 @@ public class CoreTypesResultMapTest extends MapperTestBase {
 		mapper.insert(17, bean);
 		CoreTypesBean bean2 = mapper.select(17);
 
+		assertEmpty(bean, bean2);
+		
+		CoreTypesBean bean3 = new CoreTypesBean();
+		bean3.setId(18);
+		mapper.insert(18, bean3);
+		CoreTypesBean bean4 = mapper.select2(18);
+
+		assertEmpty(bean3, bean4);
+	}
+	
+	/**
+	 * Test that string longer than 1 symbol cannot be converted to character. 
+	 */	
+	@Test
+	public void testLongChar() {
+		Mapper mapper = factory.createMapper(Mapper.class);
+		try {
+			mapper.selectChar();
+			Assert.fail();
+		} catch(IllegalArgumentException e) {
+			String[] keywords = {"too", "long", "myvalue"}; 
+			for(String keyword : keywords) {
+				Assert.assertTrue(e.getMessage().toLowerCase().contains(keyword.toLowerCase()));
+			}
+		}
+	}
+	
+	private void assertEmpty(CoreTypesBean bean, CoreTypesBean bean2) {
 		// Some values are transformed from NULLs to zero values
 		Assert.assertEquals(Boolean.FALSE, bean2.getWrapBoolean());
 		bean.setWrapBoolean(Boolean.FALSE);
@@ -185,23 +213,6 @@ public class CoreTypesResultMapTest extends MapperTestBase {
 		
 		// After adjustions, they should be equal
 		Assert.assertEquals(bean, bean2);
-	}
-	
-	/**
-	 * Test that string longer than 1 symbol cannot be converted to character. 
-	 */	
-	@Test
-	public void testLongChar() {
-		Mapper mapper = factory.createMapper(Mapper.class);
-		try {
-			mapper.selectChar();
-			Assert.fail();
-		} catch(IllegalArgumentException e) {
-			String[] keywords = {"too", "long", "myvalue"}; 
-			for(String keyword : keywords) {
-				Assert.assertTrue(e.getMessage().toLowerCase().contains(keyword.toLowerCase()));
-			}
-		}
 	}
 
 	private void assertData(CoreTypesBean bean) {
