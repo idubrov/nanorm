@@ -27,7 +27,7 @@ import com.google.code.nanorm.internal.introspect.Setter;
 
 /**
  * Utility class for finding the result class based on the provided type and
- * creating {@link ResultCallbackSource} to be used fo pushing the results into
+ * creating {@link DataSinkSource} to be used fo pushing the results into
  * the property.
  * 
  * For example, result bean type for <code>java.util.List&lt;Bean&gt</code> will
@@ -47,26 +47,26 @@ import com.google.code.nanorm.internal.introspect.Setter;
 public class ResultCollectorUtil {
 
 	/**
-	 * Create result callback for property identified by given getter and
+	 * Create data sink source for property identified by given getter and
 	 * setter.
 	 * 
 	 * @param getter getter
 	 * @param setter setter
 	 * @param mappingSource any object that identifies the source of the
 	 *            results. Used for better error reporting.
-	 * @return result callback source
+	 * @return data sink source
 	 */
-	public static ResultCallbackSource createResultCallback(
+	public static DataSinkSource createDataSinkSource(
 			Getter getter, Setter setter, Object mappingSource) {
 		Type type = getter.getType();
 		// TODO: Generic arrays!
 		if(isGenericCollection(type)) {
-			return new ArrayListCallbackSource(getter, setter);
+			return new ArrayListDataSinkSource(getter, setter);
 		} else if(type instanceof Class<?> && ((Class<?>) type).isArray()) {
 			Class<?> arrClass = (Class<?>) type;
-			return new ArrayCallbackSource(getter, setter, arrClass.getComponentType());
+			return new ArrayDataSinkSource(getter, setter, arrClass.getComponentType());
 		} else {
-			return new SingleResultCallbackSource(setter, mappingSource);
+			return new SingleDataSinkSource(setter, mappingSource);
 		}
 	}
 

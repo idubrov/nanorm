@@ -15,10 +15,10 @@
  */
 package com.google.code.nanorm.internal.mapping.result;
 
-import com.google.code.nanorm.ResultCallback;
+import com.google.code.nanorm.DataSink;
 
 /**
- * Source for {@link ResultCallback} instances, not bound to any particular data
+ * Source for {@link DataSink} instances, not bound to any particular data
  * instance.
  * 
  * Instances are thread-safe.
@@ -26,12 +26,12 @@ import com.google.code.nanorm.ResultCallback;
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
  */
-public interface ResultCallbackSource {
+public interface DataSinkSource {
 
 	/**
-	 * Create {@link ResultCallback} instance bound to given object instance.
+	 * Create {@link DataSink} instance bound to given object instance.
 	 * @param instance object instance
-	 * @return result callback instance
+	 * @return data sink instance
 	 */
-	ResultCallback<Object> forInstance(Object instance);
+	DataSink<Object> forInstance(Object instance);
 }

@@ -22,7 +22,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import com.google.code.nanorm.ResultCallback;
+import com.google.code.nanorm.DataSink;
 import com.google.code.nanorm.annotations.Mapping;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.Select;
@@ -59,11 +59,11 @@ public class SimpleResultMapTest extends MapperTestBase {
         @Select("SELECT id, subject, year FROM articles ORDER BY id ASC")
         List<Publication> listPublications();
         
-        // Test result callback
+        // Test data sink
         @ResultMap(auto = true, mappings = {     
                 @Mapping(property = "article.subject", column = "subject") })
         @Select("SELECT id, subject, year FROM articles ORDER BY id ASC")
-        void listPublications2(ResultCallback<Publication> callback);
+        void listPublications2(DataSink<Publication> callback);
     }
     
     @Test
@@ -129,8 +129,8 @@ public class SimpleResultMapTest extends MapperTestBase {
         Mapper1 mapper = factory.createMapper(Mapper1.class);
 
         final List<Publication> articles = new ArrayList<Publication>();
-        ResultCallback<Publication> rc = new ResultCallback<Publication>() {
-            public void handleResult(Publication pub) {
+        DataSink<Publication> rc = new DataSink<Publication>() {
+            public void handleData(Publication pub) {
                 articles.add(pub);
             }
             

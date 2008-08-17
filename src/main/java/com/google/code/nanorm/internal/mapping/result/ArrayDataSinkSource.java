@@ -15,62 +15,71 @@
  */
 package com.google.code.nanorm.internal.mapping.result;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import com.google.code.nanorm.ResultCallback;
+import com.google.code.nanorm.DataSink;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.Setter;
 
 /**
- * Implementation of {@link ResultCallbackSource} that pushes the result into
- * the array list in the property, identified by given getter/setter.
+ * Implementation of {@link DataSinkSource} that pushes the result into
+ * the array in the property, identified by given getter/setter.
  * 
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
  */
-public class ArrayListCallbackSource implements ResultCallbackSource {
+public class ArrayDataSinkSource implements DataSinkSource {
 
 	private final Getter getter;
 
 	private final Setter setter;
+	
+	private final Class<?> componentClass;
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param getter property getter
 	 * @param setter property setter
+	 * @param componentClass array component type
 	 */
-	public ArrayListCallbackSource(Getter getter, Setter setter) {
+	public ArrayDataSinkSource(Getter getter, Setter setter, Class<?> componentClass) {
 		this.getter = getter;
 		this.setter = setter;
+		this.componentClass = componentClass;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@SuppressWarnings("unchecked")
-	public ResultCallback forInstance(final Object instance) {
-		return new ResultCallback() {
-			private List<Object> list;
+	public DataSink forInstance(final Object instance) {
+		return new DataSink() {
+			private final List<Object> list = new ArrayList<Object>();
 			{
-				// Check the list in the property and if null, create it and set
-				list = (List<Object>) getter.getValue(instance);
-				if (list == null) {
-					list = new ArrayList<Object>();
-					setter.setValue(instance, list);
+				// Populate from property
+				Object[] data = (Object[]) getter.getValue(instance);
+				if(data != null) {
+					Collections.addAll(list, data);
 				}
 			}
 			
 			/**
 			 * {@inheritDoc}
 			 */
-			public void handleResult(Object obj) {
+			public void handleData(Object obj) {
 				list.add(obj);
 			}
 
+			/**
+			 * {@inheritDoc}
+			 */
 			public void commit() {
-				// Nothing. We populate array list when data arrives.
+				Object[] array = (Object[]) Array.newInstance(componentClass, list.size());
+				setter.setValue(instance, list.toArray(array));
 			}
 		};
 	}

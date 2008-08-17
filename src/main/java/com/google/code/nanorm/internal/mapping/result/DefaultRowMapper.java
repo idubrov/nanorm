@@ -31,7 +31,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.code.nanorm.ResultCallback;
+import com.google.code.nanorm.DataSink;
 import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.exceptions.GenericException;
 import com.google.code.nanorm.internal.Key;
@@ -96,7 +96,7 @@ public class DefaultRowMapper implements RowMapper {
 	 * {@inheritDoc}
 	 */
 	public void processResultSet(Request request, ResultSet rs,
-			ResultCallback<Object> callback) throws SQLException {
+			DataSink<Object> callback) throws SQLException {
 		DynamicConfig dc;
 		if (config.isAuto()) {
 			synchronized (this) {
@@ -126,7 +126,7 @@ public class DefaultRowMapper implements RowMapper {
 			// No result -- create new
 			if (result == null) {
 				result = createResult(request, dc.mappers, rs);
-				callback.handleResult(result);
+				callback.handleData(result);
 
 				if (map == null) {
 					map = new HashMap<Key, Object>();
@@ -137,7 +137,7 @@ public class DefaultRowMapper implements RowMapper {
 		} else {
 			// We don't have a groupBy, create new result object
 			result = createResult(request, dc.mappers, rs);
-			callback.handleResult(result);
+			callback.handleData(result);
 		}
 
 		// Always apply nested maps

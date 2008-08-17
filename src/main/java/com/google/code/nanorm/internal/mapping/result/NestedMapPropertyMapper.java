@@ -19,7 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
-import com.google.code.nanorm.ResultCallback;
+import com.google.code.nanorm.DataSink;
 import com.google.code.nanorm.internal.Request;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.Setter;
@@ -35,7 +35,7 @@ public class NestedMapPropertyMapper {
 
 	private final RowMapper resultMap;
 
-	private final ResultCallbackSource callbackSource;
+	private final DataSinkSource callbackSource;
 
 	/**
 	 * Constructor.
@@ -49,7 +49,7 @@ public class NestedMapPropertyMapper {
 	public NestedMapPropertyMapper(Getter getter, Setter setter,
 			RowMapper resultMap, Object source) {
 		this.resultMap = resultMap;
-		this.callbackSource = ResultCollectorUtil.createResultCallback(getter,
+		this.callbackSource = ResultCollectorUtil.createDataSinkSource(getter,
 				setter, source);
 	}
 
@@ -66,7 +66,7 @@ public class NestedMapPropertyMapper {
 			ResultSet rs) throws SQLException {
 
 		// Get the data sink from the request cache
-		ResultCallback<Object> callback = request.searchCallback(callbackSource, result);
+		DataSink<Object> callback = request.searchCallback(callbackSource, result);
 		resultMap.processResultSet(request, rs, callback);		
 	}
 }

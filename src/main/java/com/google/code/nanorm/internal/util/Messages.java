@@ -230,7 +230,7 @@ public class Messages {
 	 */
 	public static String invalidReturnType(Method method) {
 		return "Cannot deduce return type for " + location(method.getDeclaringClass(), method)
-				+ " (return type is void and no ResultCallback is provided in parameters)";
+				+ " (return type is void and no DataSink is provided in parameters)";
 	}
 
 	private static Class<?> mapper(Class<?> override, Class<?> mapper) {

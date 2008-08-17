@@ -20,7 +20,7 @@ import java.lang.reflect.Type;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.google.code.nanorm.ResultCallback;
+import com.google.code.nanorm.DataSink;
 import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.internal.Request;
 import com.google.code.nanorm.internal.type.TypeHandler;
@@ -49,8 +49,8 @@ public class ScalarRowMapper implements RowMapper {
 	 * {@inheritDoc}
 	 */
 	public void processResultSet(Request request, ResultSet rs,
-			ResultCallback<Object> callback) throws SQLException {
+			DataSink<Object> callback) throws SQLException {
 		// TODO: Check we have only one column?
-		callback.handleResult(typeHandler.getValue(rs, 1));
+		callback.handleData(typeHandler.getValue(rs, 1));
 	}
 }

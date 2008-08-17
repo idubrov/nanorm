@@ -18,8 +18,8 @@ package com.google.code.nanorm.internal;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.code.nanorm.ResultCallback;
-import com.google.code.nanorm.internal.mapping.result.ResultCallbackSource;
+import com.google.code.nanorm.DataSink;
+import com.google.code.nanorm.internal.mapping.result.DataSinkSource;
 import com.google.code.nanorm.internal.util.ToStringBuilder;
 
 /**
@@ -36,7 +36,7 @@ public class Request {
 
 	private Object result;
 
-	private final Map<ResultCallbackKey, ResultCallback<Object>> callbacks;
+	private final Map<ResultCallbackKey, DataSink<Object>> callbacks;
 
 	/**
 	 * Constructor.
@@ -45,7 +45,7 @@ public class Request {
 	 */
 	public Request(QueryDelegate queryDelegate) {
 		this.queryDelegate = queryDelegate;
-		this.callbacks = new HashMap<ResultCallbackKey, ResultCallback<Object>>();
+		this.callbacks = new HashMap<ResultCallbackKey, DataSink<Object>>();
 		this.key2Objects = new HashMap<Object, Map<Key, Object>>();
 	}
 
@@ -70,16 +70,16 @@ public class Request {
 	}
 
 	/**
-	 * Search the result callback in the request cache.
+	 * Search the data sink in the request cache.
 	 * 
-	 * @param source result callback source
-	 * @param target result callback target
-	 * @return result callback
+	 * @param source data sink source
+	 * @param target sink target
+	 * @return data sink
 	 */
-	public ResultCallback<Object> searchCallback(ResultCallbackSource source, Object target) {
+	public DataSink<Object> searchCallback(DataSinkSource source, Object target) {
 		
 		ResultCallbackKey key = new ResultCallbackKey(source, target);
-		ResultCallback<Object> callback = callbacks.get(key);
+		DataSink<Object> callback = callbacks.get(key);
 		
 		if (callback == null) {
 			callback = source.forInstance(target);
@@ -89,10 +89,10 @@ public class Request {
 	}
 	
 	/**
-	 * Commit all result callbacks and clear the cache.
+	 * Commit all data sinks and clear the cache.
 	 */
 	public void commitCallbacks() {
-		for(ResultCallback<Object> c : callbacks.values()) {
+		for(DataSink<Object> c : callbacks.values()) {
 			c.commit();
 		}
 		callbacks.clear();

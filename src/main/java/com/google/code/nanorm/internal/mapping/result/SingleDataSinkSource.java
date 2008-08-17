@@ -15,17 +15,17 @@
  */
 package com.google.code.nanorm.internal.mapping.result;
 
-import com.google.code.nanorm.ResultCallback;
+import com.google.code.nanorm.DataSink;
 import com.google.code.nanorm.internal.introspect.Setter;
 
 /**
- * Implementation of {@link ResultCallbackSource} that sets the result
+ * Implementation of {@link DataSinkSource} that sets the result
  * to the property using the setter provided.
  * 
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
  */
-public class SingleResultCallbackSource implements ResultCallbackSource {
+public class SingleDataSinkSource implements DataSinkSource {
     
     private final Setter setter;
     
@@ -34,10 +34,10 @@ public class SingleResultCallbackSource implements ResultCallbackSource {
     /**
      * Constructor.
      * 
-     * @param setter setter for property this result callback will set
+     * @param setter setter for property this data sink will set
      * @param sourceName name of the source which will provide the data. Used for error messages generation.
      */
-    public SingleResultCallbackSource(Setter setter, Object sourceName) {
+    public SingleDataSinkSource(Setter setter, Object sourceName) {
         this.setter = setter;
         this.sourceName = sourceName;
     }
@@ -45,14 +45,14 @@ public class SingleResultCallbackSource implements ResultCallbackSource {
     /**
      * {@inheritDoc}
      */
-    public ResultCallback<Object> forInstance(final Object instance) {
-        return new ResultCallback<Object>() {
+    public DataSink<Object> forInstance(final Object instance) {
+        return new DataSink<Object>() {
             private boolean set;
             
             /**
              * {@inheritDoc}
              */
-            public void handleResult(Object obj) {
+            public void handleData(Object obj) {
                 if(set) {
                     throw new IllegalStateException("Single result expected for " + sourceName);
                 }

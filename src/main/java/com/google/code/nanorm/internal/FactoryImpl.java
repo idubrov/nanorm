@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.code.nanorm.NanormFactory;
-import com.google.code.nanorm.ResultCallback;
+import com.google.code.nanorm.DataSink;
 import com.google.code.nanorm.Session;
 import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.annotations.SelectKeyType;
@@ -40,7 +40,7 @@ import com.google.code.nanorm.internal.config.InternalConfiguration;
 import com.google.code.nanorm.internal.config.StatementConfig;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.Setter;
-import com.google.code.nanorm.internal.mapping.result.ResultCallbackSource;
+import com.google.code.nanorm.internal.mapping.result.DataSinkSource;
 import com.google.code.nanorm.internal.mapping.result.ResultCollectorUtil;
 import com.google.code.nanorm.internal.mapping.result.RowMapper;
 import com.google.code.nanorm.internal.session.SessionSpi;
@@ -254,7 +254,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 		
 		try {
 			// Create callback that will receive the mapped objects
-			ResultCallback<Object> callback = createResultCallback(
+			DataSink<Object> callback = createResultSink(
 					stConfig, args, request);
 	
 			// Iterate through the result set
@@ -275,29 +275,29 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 		}
 	}
 	
-	private ResultCallback<Object> createResultCallback(
+	private DataSink<Object> createResultSink(
 			StatementConfig stConfig, Object[] args, Request request) {
 
-		// If we have ResultCallback in mapper method parameters -- use it,
+		// If we have DataSink in mapper method parameters -- use it,
 		// otherwise create callback which will set result to the request.
-		ResultCallback<Object> callback;
+		DataSink<Object> sink;
 		if (stConfig.getCallbackIndex() != StatementConfig.RETURN_VALUE) {
 			// This is OK, since we deduced result type exactly
 			// from this parameter
 			@SuppressWarnings("unchecked")
-			ResultCallback<Object> temp = (ResultCallback<Object>) args[stConfig
+			DataSink<Object> temp = (DataSink<Object>) args[stConfig
 					.getCallbackIndex()];
-			callback = temp;
+			sink = temp;
 		} else {
-			// Prepare result callback and process results
+			// Prepare data sink and process results
 			ResultGetterSetter rgs = new ResultGetterSetter(stConfig
 					.getResultType());
-			ResultCallbackSource callbackSource = ResultCollectorUtil
-					.createResultCallback(rgs, rgs, stConfig);
+			DataSinkSource sinkSource = ResultCollectorUtil
+					.createDataSinkSource(rgs, rgs, stConfig);
 
-			callback = callbackSource.forInstance(request);
+			sink = sinkSource.forInstance(request);
 		}
-		return callback;
+		return sink;
 	}
 
 	private void checkNotPrimitive(Type type) {

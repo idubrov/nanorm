@@ -18,7 +18,7 @@ package com.google.code.nanorm.internal.mapping.result;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.google.code.nanorm.ResultCallback;
+import com.google.code.nanorm.DataSink;
 import com.google.code.nanorm.internal.Request;
 
 /**
@@ -40,5 +40,5 @@ public interface RowMapper {
 	 * @throws SQLException any exception from the result set
 	 */
 	void processResultSet(Request request, ResultSet rs,
-			ResultCallback<Object> callback) throws SQLException;
+			DataSink<Object> callback) throws SQLException;
 }

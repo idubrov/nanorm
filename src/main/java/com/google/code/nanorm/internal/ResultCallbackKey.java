@@ -16,21 +16,31 @@
 
 package com.google.code.nanorm.internal;
 
-import com.google.code.nanorm.internal.mapping.result.ResultCallbackSource;
+import com.google.code.nanorm.internal.mapping.result.DataSinkSource;
 
+/**
+ * Key in the cache for {@link com.google.code.nanorm.DataSink} instances.
+ * 
+ * @author Ivan Dubrov
+ */
 public final class ResultCallbackKey {
-	
-	private final ResultCallbackSource source;
-	
+
+	private final DataSinkSource source;
+
 	private final Object target;
-	
-	public ResultCallbackKey(ResultCallbackSource source, Object target) {
+
+	/**
+	 * Constructor.
+	 * @param source data sink source
+	 * @param target sink target
+	 */
+	public ResultCallbackKey(DataSinkSource source, Object target) {
 		this.source = source;
 		this.target = target;
 	}
 
 	/** @return the source */
-	public ResultCallbackSource getSource() {
+	public DataSinkSource getSource() {
 		return source;
 	}
 
@@ -44,21 +54,21 @@ public final class ResultCallbackKey {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if(this == obj) {
+		if (this == obj) {
 			return true;
 		}
-		if(obj == null) {
+		if (obj == null) {
 			return false;
 		}
-		if(obj.getClass() != ResultCallbackKey.class) {
+		if (obj.getClass() != ResultCallbackKey.class) {
 			return false;
 		}
 		ResultCallbackKey other = (ResultCallbackKey) obj;
-		
+
 		// Use identity equality
 		return other.source == source && other.target == target;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */

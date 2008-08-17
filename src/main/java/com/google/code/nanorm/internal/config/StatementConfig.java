@@ -164,7 +164,7 @@ public class StatementConfig {
 	}
 
 	/**
-	 * Get index of the parameter that is instance of {@link com.google.code.nanorm.ResultCallback},
+	 * Get index of the parameter that is instance of {@link com.google.code.nanorm.DataSink},
 	 * which will be used for processing the results.
 	 * 
 	 * @see #RETURN_VALUE
@@ -175,7 +175,7 @@ public class StatementConfig {
 	}
 
 	/**
-	 * Set index of the parameter that is instance of {@link com.google.code.nanorm.ResultCallback},
+	 * Set index of the parameter that is instance of {@link com.google.code.nanorm.DataSink},
 	 * which will be used for processing the results.
 	 * 
 	 * @see #RETURN_VALUE

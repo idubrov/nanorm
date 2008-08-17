@@ -15,28 +15,36 @@
  */
 package com.google.code.nanorm;
 
-
 /**
- * Interface for processing the {@link com.google.code.nanorm.internal.mapping.result.RowMapper} result values.
+ * Interface for processing the data. Typical implementation puts the data into
+ * property of the target (sets to the property, puts into the collection in the
+ * property, puts into the array).
+ * 
+ * Instances could push the data to the destination immediately or collect the
+ * data and push it when {@link #commit} is called.
  * 
  * Instances are not thread-safe.
  * 
- * @see com.google.code.nanorm.internal.mapping.result.ResultCallbackSource
+ * Clients could implement this interface and pass it as a parameter of query
+ * method with <code>void</code> return value. In that case, instead of
+ * returning the data from the method, framework will push the mapped objects
+ * into the provided data sink.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
  * @param <T> type of values this callback expects
  */
-public interface ResultCallback<T> {
+public interface DataSink<T> {
 
 	/**
-	 * Handle the result.
+	 * Handle the data.
 	 * 
-	 * @param obj result
+	 * @param obj data
 	 */
-	void handleResult(T obj);
+	void handleData(T obj);
 
 	/**
-	 * No more data will be available, commit the data to the destination.
+	 * Commit the data into the destination from the internal caches.
 	 */
 	void commit();
 }

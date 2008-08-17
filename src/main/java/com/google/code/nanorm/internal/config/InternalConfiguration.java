@@ -28,7 +28,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.code.nanorm.ResultCallback;
+import com.google.code.nanorm.DataSink;
 import com.google.code.nanorm.SQLSource;
 import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.annotations.Insert;
@@ -59,6 +59,8 @@ import com.google.code.nanorm.internal.util.ToStringBuilder;
  * TODO: Thread safety?
  * 
  * TODO: Validate: one map on method, no map + ref at the same time, no maps with same id
+ * 
+ * TODO: Validate: one data sink and query method is void
  * 
  * @author Ivan Dubrov
  * @version 1.0 29.05.2008
@@ -284,7 +286,7 @@ public class InternalConfiguration {
 		}
 
 		// For update we always use method return value, but for select we try
-		// to find ResultCallback if return type is void
+		// to find DataSink if return type is void
 		// TODO: Should this work for generated keys as well?
 		Type returnType = null;
 		if (select != null && method.getReturnType() == void.class) {
@@ -311,12 +313,12 @@ public class InternalConfiguration {
 
 	// TODO: Move to separate helper class
 	private int searchResultCallback(Method method) {
-		// Try to find ResultCallback
+		// Try to find DataSink
 		Type[] types = method.getGenericParameterTypes();
 		for (int i = 0; i < types.length; ++i) {
 			if (types[i] instanceof ParameterizedType) {
 				ParameterizedType pt = (ParameterizedType) types[i];
-				if (pt.getRawType() == ResultCallback.class) {
+				if (pt.getRawType() == DataSink.class) {
 					return i;
 				}
 			}
