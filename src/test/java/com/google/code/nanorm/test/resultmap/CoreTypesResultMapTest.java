@@ -145,6 +145,44 @@ public class CoreTypesResultMapTest extends MapperTestBase {
 		CoreTypesBean bean2 = mapper.select(5);
 		assertData(bean2);
 	}
+	
+	/**
+	 * Test core types mapping (nulls)
+	 */
+	@Test
+	public void testCoreTypes4() throws Exception {
+		Mapper mapper = factory.createMapper(Mapper.class);
+		
+		CoreTypesBean bean = new CoreTypesBean();
+		bean.setId(17);
+		mapper.insert(17, bean);
+		CoreTypesBean bean2 = mapper.select(17);
+
+		// Some values are transformed from NULLs to zero values
+		Assert.assertEquals(Boolean.FALSE, bean2.getWrapBoolean());
+		bean.setWrapBoolean(Boolean.FALSE);
+		
+		Assert.assertEquals(0, (byte) bean2.getWrapByte());
+		bean.setWrapByte((byte) 0);
+		
+		Assert.assertEquals(0, (double) bean2.getWrapDouble(), 0.01);
+		bean.setWrapDouble(0.0);
+		
+		Assert.assertEquals(0, (float) bean2.getWrapFloat(), 0.01);
+		bean.setWrapFloat(0.0F);
+		
+		Assert.assertEquals(0, (int) bean2.getWrapInt());
+		bean.setWrapInt(0);
+		
+		Assert.assertEquals(0, (long) bean2.getWrapLong());
+		bean.setWrapLong(0L);
+		
+		Assert.assertEquals(0, (short) bean2.getWrapShort());
+		bean.setWrapShort((short) 0);
+		
+		// After adjustions, they should be equal
+		Assert.assertEquals(bean, bean2);
+	}
 
 	private void assertData(CoreTypesBean bean) {
 		Assert.assertEquals(37, bean.getPrimByte());

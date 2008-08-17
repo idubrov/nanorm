@@ -289,4 +289,136 @@ public class CoreTypesBean {
 	public void setDate(java.util.Date date) {
 		this.date = date;
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((date == null) ? 0 : date.hashCode());
+		result = prime * result + id;
+		result = prime * result + (primBoolean ? 1231 : 1237);
+		result = prime * result + primByte;
+		result = prime * result + primChar;
+		long temp;
+		temp = Double.doubleToLongBits(primDouble);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + Float.floatToIntBits(primFloat);
+		result = prime * result + primInt;
+		result = prime * result + (int) (primLong ^ (primLong >>> 32));
+		result = prime * result + primShort;
+		result = prime * result + ((sqlDate == null) ? 0 : sqlDate.hashCode());
+		result = prime * result + ((sqlTime == null) ? 0 : sqlTime.hashCode());
+		result = prime * result + ((sqlTimestamp == null) ? 0 : sqlTimestamp.hashCode());
+		result = prime * result + ((string == null) ? 0 : string.hashCode());
+		result = prime * result + ((wrapBoolean == null) ? 0 : wrapBoolean.hashCode());
+		result = prime * result + ((wrapByte == null) ? 0 : wrapByte.hashCode());
+		result = prime * result + ((wrapChar == null) ? 0 : wrapChar.hashCode());
+		result = prime * result + ((wrapDouble == null) ? 0 : wrapDouble.hashCode());
+		result = prime * result + ((wrapFloat == null) ? 0 : wrapFloat.hashCode());
+		result = prime * result + ((wrapInt == null) ? 0 : wrapInt.hashCode());
+		result = prime * result + ((wrapLong == null) ? 0 : wrapLong.hashCode());
+		result = prime * result + ((wrapShort == null) ? 0 : wrapShort.hashCode());
+		return result;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CoreTypesBean other = (CoreTypesBean) obj;
+		if (date == null) {
+			if (other.date != null)
+				return false;
+		} else if (!date.equals(other.date))
+			return false;
+		if (id != other.id)
+			return false;
+		if (primBoolean != other.primBoolean)
+			return false;
+		if (primByte != other.primByte)
+			return false;
+		if (primChar != other.primChar)
+			return false;
+		if (Double.doubleToLongBits(primDouble) != Double.doubleToLongBits(other.primDouble))
+			return false;
+		if (Float.floatToIntBits(primFloat) != Float.floatToIntBits(other.primFloat))
+			return false;
+		if (primInt != other.primInt)
+			return false;
+		if (primLong != other.primLong)
+			return false;
+		if (primShort != other.primShort)
+			return false;
+		if (sqlDate == null) {
+			if (other.sqlDate != null)
+				return false;
+		} else if (!sqlDate.equals(other.sqlDate))
+			return false;
+		if (sqlTime == null) {
+			if (other.sqlTime != null)
+				return false;
+		} else if (!sqlTime.equals(other.sqlTime))
+			return false;
+		if (sqlTimestamp == null) {
+			if (other.sqlTimestamp != null)
+				return false;
+		} else if (!sqlTimestamp.equals(other.sqlTimestamp))
+			return false;
+		if (string == null) {
+			if (other.string != null)
+				return false;
+		} else if (!string.equals(other.string))
+			return false;
+		if (wrapBoolean == null) {
+			if (other.wrapBoolean != null)
+				return false;
+		} else if (!wrapBoolean.equals(other.wrapBoolean))
+			return false;
+		if (wrapByte == null) {
+			if (other.wrapByte != null)
+				return false;
+		} else if (!wrapByte.equals(other.wrapByte))
+			return false;
+		if (wrapChar == null) {
+			if (other.wrapChar != null)
+				return false;
+		} else if (!wrapChar.equals(other.wrapChar))
+			return false;
+		if (wrapDouble == null) {
+			if (other.wrapDouble != null)
+				return false;
+		} else if (!wrapDouble.equals(other.wrapDouble))
+			return false;
+		if (wrapFloat == null) {
+			if (other.wrapFloat != null)
+				return false;
+		} else if (!wrapFloat.equals(other.wrapFloat))
+			return false;
+		if (wrapInt == null) {
+			if (other.wrapInt != null)
+				return false;
+		} else if (!wrapInt.equals(other.wrapInt))
+			return false;
+		if (wrapLong == null) {
+			if (other.wrapLong != null)
+				return false;
+		} else if (!wrapLong.equals(other.wrapLong))
+			return false;
+		if (wrapShort == null) {
+			if (other.wrapShort != null)
+				return false;
+		} else if (!wrapShort.equals(other.wrapShort))
+			return false;
+		return true;
+	}
 }
