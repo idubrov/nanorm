@@ -17,6 +17,7 @@
 package com.google.code.nanorm.internal.util;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.text.MessageFormat;
 
 import com.google.code.nanorm.annotations.Mapping;
@@ -232,6 +233,17 @@ public class Messages {
 		return "Cannot deduce return type for " + location(method.getDeclaringClass(), method)
 				+ " (return type is void and no DataSink is provided in parameters)";
 	}
+	
+	/**
+	 * Generate error message for case when type handler could not be found for property.
+	 * 
+	 * @param type property type
+	 * @return message
+	 */
+	public static String typeHandlerNotFound(Type type) {
+		return "Type handler not found for type '" + type + '\'';
+	}
+
 
 	private static Class<?> mapper(Class<?> override, Class<?> mapper) {
 		return override != Object.class ? override : mapper;

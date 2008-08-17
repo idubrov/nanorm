@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.code.nanorm.TypeHandlerFactory;
+import com.google.code.nanorm.internal.util.Messages;
 
 /**
  * Type handler factory implementation.
@@ -34,8 +35,6 @@ import com.google.code.nanorm.TypeHandlerFactory;
 public final class TypeHandlerFactoryImpl implements TypeHandlerFactory {
     
     private final Map<Type, TypeHandler<?>> typeHandlers = new HashMap<Type, TypeHandler<?>>();
-    
-    private final UnknownTypeHandler unknownTypeHandler = new UnknownTypeHandler();
     
     /**
      * Constructor. Registers default type handlers.
@@ -79,8 +78,9 @@ public final class TypeHandlerFactoryImpl implements TypeHandlerFactory {
      */
     public TypeHandler<?> getTypeHandler(Type type) {
         TypeHandler<?> typeHandler = typeHandlers.get(type);
+        
         if(typeHandler == null) {
-            typeHandler = unknownTypeHandler;
+        	throw new IllegalArgumentException(Messages.typeHandlerNotFound(type));
         }
         return typeHandler;
     }

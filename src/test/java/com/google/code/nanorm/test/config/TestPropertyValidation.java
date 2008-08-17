@@ -25,6 +25,7 @@ import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.config.NanormConfiguration;
 import com.google.code.nanorm.exceptions.ConfigurationException;
+import com.google.code.nanorm.test.beans.Publication;
 
 /**
  * Test properties mappings validation.
@@ -34,51 +35,60 @@ public class TestPropertyValidation extends TestConfigValidationBase {
 
 	
 	private interface Mapper1 {
-		// Nothing...
-	}
-
-
-	private interface Mapper11 {
 		@Select("SELECT 1")
 		@ResultMap(id = "testmap", mappings = { @Mapping(property = "dummy", columnIndex = 23, column = "testcolumn") })
 		int selectSome(int id);
 	}
 
 	/**
-	 * Test result map referenced as nested map, but the referee is not mapped.
+	 * Test both column and column index are not specified.
 	 */
 	@Test
 	public void testPropertyValidation1() {
 		try {
-			new NanormConfiguration().configure(Mapper1.class, Mapper11.class);
+			new NanormConfiguration().configure(Mapper1.class);
 			Assert.fail();
 		} catch (ConfigurationException e) {
-			assertContains(e, "23");
-			assertContains(e, "testcolumn");
-			assertContains(e, "testmap");
-			assertContains(e, "mapper11");
+			assertContains(e, "23", "testcolumn", "testmap", "Mapper1");
 		}
 	}
 
-	private interface Mapper12 {
+	private interface Mapper2 {
 		@Select("SELECT 1")
 		@ResultMap(id = "testmap", mappings = { @Mapping(property = "", columnIndex = 1) })
 		int selectSome(int id);
 	}
 
 	/**
-	 * Test result map referenced as nested map, but the referee is not mapped.
+	 * Test property name is not empty.
 	 */
 	@Test
 	public void testPropertyValidation2() {
 		try {
-			new NanormConfiguration().configure(Mapper1.class, Mapper12.class);
+			new NanormConfiguration().configure(Mapper2.class);
 			Assert.fail();
 		} catch (ConfigurationException e) {
-			assertContains(e, "empty");
-			assertContains(e, "property");
-			assertContains(e, "testmap");
-			assertContains(e, "mapper12");
+			assertContains(e, "empty", "property", "testmap", "mapper2");
+		}
+	}
+	
+	private interface Mapper4 {
+		@Select("SELECT 1")
+		@ResultMap(id = "testmap", mappings = { @Mapping(property = "article") })
+		Publication selectSome(int id);
+	}
+
+	/**
+	 * Test all directly mapped properties have type handlers.
+	 */
+	@Test
+	public void testPropertyValidation3() {
+		try {
+			new NanormConfiguration().configure(Mapper4.class);
+			Assert.fail();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			assertContains(e, "type", "handler", "Article");
 		}
 	}
 
