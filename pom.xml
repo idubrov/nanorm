@@ -240,9 +240,6 @@
         </reportSets>
       </plugin>
       <plugin>
-        <artifactId>maven-changelog-plugin</artifactId>
-      </plugin>
-      <plugin>
         <artifactId>maven-pmd-plugin</artifactId>
         <configuration>
           <linkXref>true</linkXref>

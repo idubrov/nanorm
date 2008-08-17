@@ -23,13 +23,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.code.nanorm.NanormFactory;
 import com.google.code.nanorm.DataSink;
+import com.google.code.nanorm.NanormFactory;
 import com.google.code.nanorm.Session;
 import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.annotations.SelectKeyType;

@@ -17,7 +17,6 @@ package com.google.code.nanorm.internal.mapping.result;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
 
 import com.google.code.nanorm.DataSink;
 import com.google.code.nanorm.internal.Request;
