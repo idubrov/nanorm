@@ -20,7 +20,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.google.code.nanorm.annotations.Mapping;
+import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapList;
 import com.google.code.nanorm.annotations.ResultMapRef;
@@ -39,60 +39,60 @@ import com.google.code.nanorm.test.common.MapperTestBase;
 public class NestedResultMapTest extends MapperTestBase {
     @ResultMapList({
         @ResultMap(id = "article", mappings = {
-        	@Mapping(property = "id"),
-            @Mapping(property = "subject"),
-            @Mapping(property = "body")
+        	@Property(value = "id"),
+            @Property(value = "subject"),
+            @Property(value = "body")
         }),
         @ResultMap(id = "article2", mappings = {
-        	@Mapping(property = "id", column = "article_id"),
-            @Mapping(property = "subject"),
-            @Mapping(property = "body")
+        	@Property(value = "id", column = "article_id"),
+            @Property(value = "subject"),
+            @Property(value = "body")
         }),
         @ResultMap(id = "comment", mappings = {
-        	@Mapping(property = "id", column = "id"),
-        	@Mapping(property = "comment", column = "comment"),
-            @Mapping(property = "year", column = "year")
+        	@Property(value = "id", column = "id"),
+        	@Property(value = "comment", column = "comment"),
+            @Property(value = "year", column = "year")
         }),
         @ResultMap(id = "comment2", mappings = {
-        	@Mapping(property = "id", column = "comment_id"),
-        	@Mapping(property = "comment", column = "comment"),
-            @Mapping(property = "year", column = "year")
+        	@Property(value = "id", column = "comment_id"),
+        	@Property(value = "comment", column = "comment"),
+            @Property(value = "year", column = "year")
         }),
         // groupBy is the name of the property
         @ResultMap(id = "article3", groupBy = "id", mappings = {
-            @Mapping(property = "id", column = "article_id"),
-            @Mapping(property = "subject"),
-            @Mapping(property = "body"),
-            @Mapping(property = "comments", nestedMap = @ResultMapRef("comment2"))
+            @Property(value = "id", column = "article_id"),
+            @Property(value = "subject"),
+            @Property(value = "body"),
+            @Property(value = "comments", nestedMap = @ResultMapRef("comment2"))
         }),
         @ResultMap(id = "label", groupBy = "id", mappings = {
-        	@Mapping(property = "id", column = "label_id"),
-        	@Mapping(property = "label")
+        	@Property(value = "id", column = "label_id"),
+        	@Property(value = "label")
         }),
         @ResultMap(id = "comment3", groupBy = "id", mappings = {
-            @Mapping(property = "id", column = "comment_id"),
-            @Mapping(property = "comment", column = "comment"),
-            @Mapping(property = "year", column = "year")
+            @Property(value = "id", column = "comment_id"),
+            @Property(value = "comment", column = "comment"),
+            @Property(value = "year", column = "year")
         })
     })
     public interface Mapper {
         
         // Test 1-1 mapping with nested result map
         @ResultMap(mappings = {
-            @Mapping(property = "id"),
-            @Mapping(property = "title"),
-            @Mapping(property = "year"),
-            @Mapping(property = "article", nestedMap = @ResultMapRef("article")) 
+            @Property(value = "id"),
+            @Property(value = "title"),
+            @Property(value = "year"),
+            @Property(value = "article", nestedMap = @ResultMapRef("article")) 
         })
         @Select("SELECT id, subject as title, subject, body, year FROM articles WHERE ID = ${1}")
         Publication getPublicationById(int id);
         
         // Test 1-1 mapping with nested result map, the property type is List
         @ResultMap(mappings = {
-            @Mapping(property = "id"),
-            @Mapping(property = "title"),
-            @Mapping(property = "year"),
-            @Mapping(property = "articles", nestedMap = @ResultMapRef("article")) 
+            @Property(value = "id"),
+            @Property(value = "title"),
+            @Property(value = "year"),
+            @Property(value = "articles", nestedMap = @ResultMapRef("article")) 
         })
         @Select("SELECT id, title, year, 'Dummy Subject' as subject, 'Dummy Body' as body " +
         		"FROM categories WHERE ID = ${1}")
@@ -100,10 +100,10 @@ public class NestedResultMapTest extends MapperTestBase {
         
         // Test 1-N mapping with nested result map, the property type is List
         @ResultMap(groupBy = "id", mappings = {
-            @Mapping(property = "id"),
-            @Mapping(property = "title"),
-            @Mapping(property = "year"),
-            @Mapping(property = "articles", nestedMap = @ResultMapRef("article2")) 
+            @Property(value = "id"),
+            @Property(value = "title"),
+            @Property(value = "year"),
+            @Property(value = "articles", nestedMap = @ResultMapRef("article2")) 
         })
         @Select("SELECT c.id, c.title, c.year, " +
         		"a.id as article_id, a.subject, a.body " +
@@ -114,10 +114,10 @@ public class NestedResultMapTest extends MapperTestBase {
         
         // Test 1-N-M mapping with two nested result map, the property type is List
         @ResultMap(groupBy = "id", mappings = {
-            @Mapping(property = "id"),
-            @Mapping(property = "title"),
-            @Mapping(property = "year"),
-            @Mapping(property = "articles", nestedMap = @ResultMapRef("article3")) 
+            @Property(value = "id"),
+            @Property(value = "title"),
+            @Property(value = "year"),
+            @Property(value = "articles", nestedMap = @ResultMapRef("article3")) 
         })
         @Select("SELECT c.id, c.title, c.year, " +
                 "a.id as article_id, a.subject, a.body, " +
@@ -131,10 +131,10 @@ public class NestedResultMapTest extends MapperTestBase {
         
         // Test 1-N mapping, the property type is array
         @ResultMap(groupBy = "id", mappings = {
-        	@Mapping(property = "id"),
-            @Mapping(property = "subject"),
-            @Mapping(property = "body"),
-            @Mapping(property = "labels", nestedMap = @ResultMapRef("label"))
+        	@Property(value = "id"),
+            @Property(value = "subject"),
+            @Property(value = "body"),
+            @Property(value = "labels", nestedMap = @ResultMapRef("label"))
         })
         @Select("SELECT a.id, a.subject, a.body, l.id as label_id, l.label " +
         		"FROM articles a " +
@@ -144,11 +144,11 @@ public class NestedResultMapTest extends MapperTestBase {
         
         // Test two 1-N mapping, one nested property is array and other is list
         @ResultMap(groupBy = "id", mappings = {
-        	@Mapping(property = "id"),
-            @Mapping(property = "subject"),
-            @Mapping(property = "body"),
-            @Mapping(property = "labels", nestedMap = @ResultMapRef("label")),
-            @Mapping(property = "comments", nestedMap = @ResultMapRef("comment3"))
+        	@Property(value = "id"),
+            @Property(value = "subject"),
+            @Property(value = "body"),
+            @Property(value = "labels", nestedMap = @ResultMapRef("label")),
+            @Property(value = "comments", nestedMap = @ResultMapRef("comment3"))
         })
         @Select("SELECT a.id, a.subject, a.body, l.id as label_id, l.label, " +
         		"c.id as comment_id, c.comment, c.year " +
@@ -166,10 +166,10 @@ public class NestedResultMapTest extends MapperTestBase {
     public interface Mapper2 {
     	// Test 1-1 mapping with nested result map
         @ResultMap(mappings = {
-            @Mapping(property = "id"),
-            @Mapping(property = "title"),
-            @Mapping(property = "year"),
-            @Mapping(property = "article", nestedMap = @ResultMapRef(value = "article", declaringClass = Mapper.class)) 
+            @Property(value = "id"),
+            @Property(value = "title"),
+            @Property(value = "year"),
+            @Property(value = "article", nestedMap = @ResultMapRef(value = "article", declaringClass = Mapper.class)) 
         })
         @Select("SELECT id, subject as title, subject, body, year FROM articles WHERE ID = ${1}")
         Publication getPublicationById(int id);

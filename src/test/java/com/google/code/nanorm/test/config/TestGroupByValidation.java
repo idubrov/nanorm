@@ -19,7 +19,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import com.google.code.nanorm.annotations.Mapping;
+import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapRef;
 import com.google.code.nanorm.annotations.Select;
@@ -36,7 +36,7 @@ public class TestGroupByValidation extends TestConfigValidationBase {
 	@ResultMap(id = "nestedmap")
 	private interface Mapper1 {
 		@Select("SELECT 1")
-		@ResultMap(id = "samplemap", groupBy = "prop1", mappings = { @Mapping(property = "prop1", 
+		@ResultMap(id = "samplemap", groupBy = "prop1", mappings = { @Property(value = "prop1", 
 				nestedMap = @ResultMapRef("nestedmap")) })
 		int selectSome(int id);
 	}
@@ -56,7 +56,7 @@ public class TestGroupByValidation extends TestConfigValidationBase {
 
 	private interface Mapper2 {
 		@Select("SELECT 1")
-		@ResultMap(id = "samplemap", groupBy = { "prop1", "prop3" }, mappings = { @Mapping(property = "prop1") })
+		@ResultMap(id = "samplemap", groupBy = { "prop1", "prop3" }, mappings = { @Property(value = "prop1") })
 		int selectSome(int id);
 	}
 

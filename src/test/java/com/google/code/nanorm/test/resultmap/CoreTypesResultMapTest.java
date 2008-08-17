@@ -23,7 +23,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.code.nanorm.annotations.Insert;
-import com.google.code.nanorm.annotations.Mapping;
+import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.test.beans.CoreTypesBean;
@@ -37,28 +37,28 @@ import com.google.code.nanorm.test.common.MapperTestBase;
 @SuppressWarnings("all")
 public class CoreTypesResultMapTest extends MapperTestBase {
 	public interface Mapper {
-		@ResultMap(mappings = { @Mapping(property = "id", column = "id"),
-				@Mapping(property = "primByte", column = "primByte"),
-				@Mapping(property = "wrapByte", column = "wrapByte"),
-				@Mapping(property = "primShort", column = "primShort"),
-				@Mapping(property = "wrapShort", column = "wrapShort"),
-				@Mapping(property = "primInt", column = "primInt"),
-				@Mapping(property = "wrapInt", column = "wrapInt"),
-				@Mapping(property = "primLong", column = "primLong"),
-				@Mapping(property = "wrapLong", column = "wrapLong"),
-				@Mapping(property = "primBoolean", column = "primBoolean"),
-				@Mapping(property = "wrapBoolean", column = "wrapBoolean"),
-				@Mapping(property = "primChar", column = "primChar"),
-				@Mapping(property = "wrapChar", column = "wrapChar"),
-				@Mapping(property = "primFloat", column = "primFloat"),
-				@Mapping(property = "wrapFloat", column = "wrapFloat"),
-				@Mapping(property = "primDouble", column = "primDouble"),
-				@Mapping(property = "wrapDouble", column = "wrapDouble"),
-				@Mapping(property = "string", column = "string"),
-				@Mapping(property = "date", column = "date"),
-				@Mapping(property = "sqlDate", column = "sqlDate"),
-				@Mapping(property = "sqlTime", column = "sqlTime"),
-				@Mapping(property = "sqlTimestamp", column = "sqlTimestamp") })
+		@ResultMap(mappings = { @Property(value = "id", column = "id"),
+				@Property(value = "primByte", column = "primByte"),
+				@Property(value = "wrapByte", column = "wrapByte"),
+				@Property(value = "primShort", column = "primShort"),
+				@Property(value = "wrapShort", column = "wrapShort"),
+				@Property(value = "primInt", column = "primInt"),
+				@Property(value = "wrapInt", column = "wrapInt"),
+				@Property(value = "primLong", column = "primLong"),
+				@Property(value = "wrapLong", column = "wrapLong"),
+				@Property(value = "primBoolean", column = "primBoolean"),
+				@Property(value = "wrapBoolean", column = "wrapBoolean"),
+				@Property(value = "primChar", column = "primChar"),
+				@Property(value = "wrapChar", column = "wrapChar"),
+				@Property(value = "primFloat", column = "primFloat"),
+				@Property(value = "wrapFloat", column = "wrapFloat"),
+				@Property(value = "primDouble", column = "primDouble"),
+				@Property(value = "wrapDouble", column = "wrapDouble"),
+				@Property(value = "string", column = "string"),
+				@Property(value = "date", column = "date"),
+				@Property(value = "sqlDate", column = "sqlDate"),
+				@Property(value = "sqlTime", column = "sqlTime"),
+				@Property(value = "sqlTimestamp", column = "sqlTimestamp") })
 		@Select("SELECT id, primByte, wrapByte, primShort, wrapShort, "
 				+ "primInt, wrapInt, primLong, wrapLong, "
 				+ "primBoolean, wrapBoolean, primChar, wrapChar, "
@@ -67,28 +67,28 @@ public class CoreTypesResultMapTest extends MapperTestBase {
 				+ "FROM core WHERE id = ${1}")
 		CoreTypesBean select(int id);
 
-		@ResultMap(mappings = { @Mapping(property = "id", columnIndex = 1),
-				@Mapping(property = "primByte", columnIndex = 2),
-				@Mapping(property = "wrapByte", columnIndex = 3),
-				@Mapping(property = "primShort", columnIndex = 4),
-				@Mapping(property = "wrapShort", columnIndex = 5),
-				@Mapping(property = "primInt", columnIndex = 6),
-				@Mapping(property = "wrapInt", columnIndex = 7),
-				@Mapping(property = "primLong", columnIndex = 8),
-				@Mapping(property = "wrapLong", columnIndex = 9),
-				@Mapping(property = "primBoolean", columnIndex = 10),
-				@Mapping(property = "wrapBoolean", columnIndex = 11),
-				@Mapping(property = "primChar", columnIndex = 12),
-				@Mapping(property = "wrapChar", columnIndex = 13),
-				@Mapping(property = "primFloat", columnIndex = 14),
-				@Mapping(property = "wrapFloat", columnIndex = 15),
-				@Mapping(property = "primDouble", columnIndex = 16),
-				@Mapping(property = "wrapDouble", columnIndex = 17),
-				@Mapping(property = "string", columnIndex = 18),
-				@Mapping(property = "date", columnIndex = 19),
-				@Mapping(property = "sqlDate", columnIndex = 20),
-				@Mapping(property = "sqlTime", columnIndex = 21),
-				@Mapping(property = "sqlTimestamp", columnIndex = 22) })
+		@ResultMap(mappings = { @Property(value = "id", columnIndex = 1),
+				@Property(value = "primByte", columnIndex = 2),
+				@Property(value = "wrapByte", columnIndex = 3),
+				@Property(value = "primShort", columnIndex = 4),
+				@Property(value = "wrapShort", columnIndex = 5),
+				@Property(value = "primInt", columnIndex = 6),
+				@Property(value = "wrapInt", columnIndex = 7),
+				@Property(value = "primLong", columnIndex = 8),
+				@Property(value = "wrapLong", columnIndex = 9),
+				@Property(value = "primBoolean", columnIndex = 10),
+				@Property(value = "wrapBoolean", columnIndex = 11),
+				@Property(value = "primChar", columnIndex = 12),
+				@Property(value = "wrapChar", columnIndex = 13),
+				@Property(value = "primFloat", columnIndex = 14),
+				@Property(value = "wrapFloat", columnIndex = 15),
+				@Property(value = "primDouble", columnIndex = 16),
+				@Property(value = "wrapDouble", columnIndex = 17),
+				@Property(value = "string", columnIndex = 18),
+				@Property(value = "date", columnIndex = 19),
+				@Property(value = "sqlDate", columnIndex = 20),
+				@Property(value = "sqlTime", columnIndex = 21),
+				@Property(value = "sqlTimestamp", columnIndex = 22) })
 		@Select("SELECT id, primByte, wrapByte, primShort, wrapShort, "
 				+ "primInt, wrapInt, primLong, wrapLong, "
 				+ "primBoolean, wrapBoolean, primChar, wrapChar, "

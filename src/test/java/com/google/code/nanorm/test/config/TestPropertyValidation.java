@@ -20,7 +20,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import com.google.code.nanorm.annotations.Mapping;
+import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.config.NanormConfiguration;
@@ -36,7 +36,7 @@ public class TestPropertyValidation extends TestConfigValidationBase {
 	
 	private interface Mapper1 {
 		@Select("SELECT 1")
-		@ResultMap(id = "testmap", mappings = { @Mapping(property = "dummy", columnIndex = 23, column = "testcolumn") })
+		@ResultMap(id = "testmap", mappings = { @Property(value = "dummy", columnIndex = 23, column = "testcolumn") })
 		int selectSome(int id);
 	}
 
@@ -55,7 +55,7 @@ public class TestPropertyValidation extends TestConfigValidationBase {
 
 	private interface Mapper2 {
 		@Select("SELECT 1")
-		@ResultMap(id = "testmap", mappings = { @Mapping(property = "", columnIndex = 1) })
+		@ResultMap(id = "testmap", mappings = { @Property(value = "", columnIndex = 1) })
 		int selectSome(int id);
 	}
 
@@ -74,7 +74,7 @@ public class TestPropertyValidation extends TestConfigValidationBase {
 	
 	private interface Mapper4 {
 		@Select("SELECT 1")
-		@ResultMap(id = "testmap", mappings = { @Mapping(property = "article") })
+		@ResultMap(id = "testmap", mappings = { @Property(value = "article") })
 		Publication selectSome(int id);
 	}
 
@@ -87,7 +87,6 @@ public class TestPropertyValidation extends TestConfigValidationBase {
 			new NanormConfiguration().configure(Mapper4.class);
 			Assert.fail();
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
 			assertContains(e, "type", "handler", "Article");
 		}
 	}

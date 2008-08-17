@@ -20,7 +20,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import com.google.code.nanorm.annotations.Mapping;
+import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.config.NanormConfiguration;
@@ -34,7 +34,7 @@ public class TestSubselectValidation extends TestConfigValidationBase {
 
 	private interface Mapper8 {
 		@Select("SELECT 1")
-		@ResultMap(id = "testmap", mappings = { @Mapping(property = "dummy", subselect = "selectById") })
+		@ResultMap(id = "testmap", mappings = { @Property(value = "dummy", subselect = "selectById") })
 		int selectSome(int id);
 	}
 
@@ -61,7 +61,7 @@ public class TestSubselectValidation extends TestConfigValidationBase {
 
 	private interface Mapper10 {
 		@Select("SELECT 1")
-		@ResultMap(id = "testmap", mappings = { @Mapping(property = "dummy", subselect = "selectById", subselectMapper = Mapper9.class) })
+		@ResultMap(id = "testmap", mappings = { @Property(value = "dummy", subselect = "selectById", subselectMapper = Mapper9.class) })
 		int selectSome(int id);
 	}
 
@@ -88,7 +88,7 @@ public class TestSubselectValidation extends TestConfigValidationBase {
 		int selectSome(int id, int id2);
 		
 		@Select("SELECT 1")
-		@ResultMap(id = "testmap", mappings = { @Mapping(property = "dummy", subselect = "selectSome") })
+		@ResultMap(id = "testmap", mappings = { @Property(value = "dummy", subselect = "selectSome") })
 		int selectOther(int id);
 	}
 	

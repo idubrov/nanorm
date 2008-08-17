@@ -19,7 +19,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import com.google.code.nanorm.annotations.Mapping;
+import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapList;
 import com.google.code.nanorm.annotations.ResultMapRef;
@@ -37,17 +37,17 @@ import com.google.code.nanorm.test.common.MapperTestBase;
 public class ResultMapRefTest extends MapperTestBase {
     @ResultMapList({
         @ResultMap(id = "pub0", mappings = {
-            @Mapping(property = "article.subject", column = "subject"),
-            @Mapping(property = "article.body", column = "body")
+            @Property(value = "article.subject", column = "subject"),
+            @Property(value = "article.body", column = "body")
         }),
         @ResultMap(id = "pub1", auto = true, mappings = {
-            @Mapping(property = "article.subject", column = "subject"),
-            @Mapping(property = "article.body", column = "body")
+            @Property(value = "article.subject", column = "subject"),
+            @Property(value = "article.body", column = "body")
         }) 
     })
     @ResultMap(id = "pub2", auto = true, mappings = {
-        @Mapping(property = "article.subject", column = "subject"),
-        @Mapping(property = "article.body", column = "body")
+        @Property(value = "article.subject", column = "subject"),
+        @Property(value = "article.body", column = "body")
     })
     public interface Mapper1 {
 
@@ -82,7 +82,7 @@ public class ResultMapRefTest extends MapperTestBase {
     }
 
     // Test default result map reference
-    @ResultMap(mappings = {@Mapping(property = "article.subject", column = "subject") })
+    @ResultMap(mappings = {@Property(value = "article.subject", column = "subject") })
     public interface Mapper4 {
 
         // Using the default map

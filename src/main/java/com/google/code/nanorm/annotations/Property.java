@@ -30,11 +30,11 @@ import java.lang.annotation.Target;
  */
 @Target( { ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Mapping {
+public @interface Property {
 	/**
 	 * Property name.
 	 */
-	String property();
+	String value();
 
 	/**
 	 * Column name.

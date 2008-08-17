@@ -32,7 +32,7 @@ import com.google.code.nanorm.DataSink;
 import com.google.code.nanorm.SQLSource;
 import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.annotations.Insert;
-import com.google.code.nanorm.annotations.Mapping;
+import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapList;
 import com.google.code.nanorm.annotations.ResultMapRef;
@@ -425,7 +425,7 @@ public class InternalConfiguration {
 			if (resultMap.groupBy().length > 0) {
 				propnames = new HashSet<String>();
 			}
-			for (Mapping mapping : resultMap.mappings()) {
+			for (Property mapping : resultMap.mappings()) {
 				PropertyMappingConfig propMapping = createPropertyMappingConfig(mapper, method,
 						resultMap, mapping);
 				mappings.add(propMapping);
@@ -457,12 +457,12 @@ public class InternalConfiguration {
 	}
 
 	private PropertyMappingConfig createPropertyMappingConfig(Class<?> mapper, Method method,
-			ResultMap resultMap, Mapping mapping) throws ConfigurationException {
+			ResultMap resultMap, Property mapping) throws ConfigurationException {
 		PropertyMappingConfig propMapping = new PropertyMappingConfig();
 
 		validatePropertyMapping(mapping, mapper, resultMap);
 
-		propMapping.setProperty(mapping.property());
+		propMapping.setProperty(mapping.value());
 		propMapping.setColumn(mapping.column());
 		propMapping.setColumnIndex(mapping.columnIndex());
 		if (propMapping.getColumnIndex() == 0
@@ -613,13 +613,13 @@ public class InternalConfiguration {
 	 * @param mapper
 	 * @param resultMap
 	 */
-	private void validatePropertyMapping(Mapping mapping, Class<?> mapper, ResultMap resultMap)
+	private void validatePropertyMapping(Property mapping, Class<?> mapper, ResultMap resultMap)
 			throws ConfigurationException {
 		if (mapping.columnIndex() != 0 && mapping.column().length() > 0) {
 			throw new ConfigurationException(Messages.multipleColumn(mapping, mapper, resultMap));
 		}
 
-		if (mapping.property().length() == 0) {
+		if (mapping.value().length() == 0) {
 			throw new ConfigurationException(Messages.emptyProperty(mapping, mapper, resultMap));
 		}
 
@@ -630,7 +630,7 @@ public class InternalConfiguration {
 			}
 
 			for (String prop : resultMap.groupBy()) {
-				if (mapping.property().equals(prop)) {
+				if (mapping.value().equals(prop)) {
 					throw new ConfigurationException(Messages.bothNestedGroupBy(mapping, mapper,
 							resultMap));
 				}

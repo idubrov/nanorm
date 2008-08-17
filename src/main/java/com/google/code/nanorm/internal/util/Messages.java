@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.text.MessageFormat;
 
-import com.google.code.nanorm.annotations.Mapping;
+import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapRef;
 import com.google.code.nanorm.internal.config.StatementKey;
@@ -68,13 +68,13 @@ public class Messages {
 	 * @return message
 	 */
 	public static String nestedMapNotFound(Class<?> mapper, Method method, ResultMap resultMap,
-			Mapping mapping) {
+			Property mapping) {
 		ResultMapRef ref = mapping.nestedMap();
 
 		return MessageFormat.format(
 				"Nested map ''{0}'' not found in ''{1}'' for property ''{2}'' while processing "
 						+ "the result map ''{3}'' declared in {4}", ref.value(), mapper(
-						ref.declaringClass(), mapper).getName(), mapping.property(),
+						ref.declaringClass(), mapper).getName(), mapping.value(),
 				resultMap.id(), location(mapper, method));
 	}
 
@@ -146,11 +146,11 @@ public class Messages {
 	 * @param resultMap result map
 	 * @return message
 	 */
-	public static String multipleColumn(Mapping mapping, Class<?> mapper, ResultMap resultMap) {
+	public static String multipleColumn(Property mapping, Class<?> mapper, ResultMap resultMap) {
 		return MessageFormat
 				.format(
 						"Both column (''{0}'') and column index ({1}) specified for property ''{2}'' in result map ''{3}'' of mapper ''{4}''",
-						mapping.column(), mapping.columnIndex(), mapping.property(),
+						mapping.column(), mapping.columnIndex(), mapping.value(),
 						resultMap.id(), mapper.getName());
 	}
 
@@ -162,7 +162,7 @@ public class Messages {
 	 * @param resultMap result map
 	 * @return message
 	 */
-	public static String emptyProperty(Mapping mapping, Class<?> mapper, ResultMap resultMap) {
+	public static String emptyProperty(Property mapping, Class<?> mapper, ResultMap resultMap) {
 		return MessageFormat.format("Empty property found in result map ''{0}'' of mapper ''{1}''",
 				resultMap.id(), mapper.getName());
 	}
@@ -176,14 +176,14 @@ public class Messages {
 	 * @param resultMap result map
 	 * @return message
 	 */
-	public static String bothSubselectNested(Mapping mapping, Class<?> mapper, ResultMap resultMap) {
+	public static String bothSubselectNested(Property mapping, Class<?> mapper, ResultMap resultMap) {
 		return MessageFormat
 				.format(
 						"Both subselect (''{0}'' of mapper ''{1}'') and nested map (''{2}'' of mapper ''{3}'') are specified for "
 								+ "property ''{4}'' in result map ''{5}'' of mapper ''{6}''",
 						mapping.subselect(), mapper(mapping.subselectMapper(), mapper).getName(),
 						mapping.nestedMap().value(), mapper(mapping.nestedMap().declaringClass(),
-								mapper).getName(), mapping.property(), resultMap.id(), mapper
+								mapper).getName(), mapping.value(), resultMap.id(), mapper
 								.getName());
 	}
 
@@ -196,11 +196,11 @@ public class Messages {
 	 * @param resultMap result map
 	 * @return message
 	 */
-	public static String bothNestedGroupBy(Mapping mapping, Class<?> mapper, ResultMap resultMap) {
+	public static String bothNestedGroupBy(Property mapping, Class<?> mapper, ResultMap resultMap) {
 		return MessageFormat.format(
 				"Property ''{0}'' has nested map (''{1}'' of mapper ''{2}'') and is in the ''groupBy'' list "
 						+ "of the result map ''{3}'' of mapper ''{4}'' at the same time.", mapping
-						.property(), mapping.nestedMap().value(), mapper(
+						.value(), mapping.nestedMap().value(), mapper(
 						mapping.nestedMap().declaringClass(), mapper).getName(), resultMap.id(),
 				mapper.getName());
 	}

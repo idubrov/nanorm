@@ -20,7 +20,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import com.google.code.nanorm.annotations.Mapping;
+import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapRef;
 import com.google.code.nanorm.annotations.Select;
@@ -36,7 +36,7 @@ public class TestNestedMapValidation extends TestConfigValidationBase {
 
 	private interface Mapper3 {
 		@Select("SELECT 1")
-		@ResultMap(mappings = { @Mapping(property = "dummy", nestedMap = @ResultMapRef("notexist")) })
+		@ResultMap(mappings = { @Property(value = "dummy", nestedMap = @ResultMapRef("notexist")) })
 		void selectSome(int id);
 	}
 
@@ -64,7 +64,7 @@ public class TestNestedMapValidation extends TestConfigValidationBase {
 
 	private interface Mapper5 {
 		@Select("SELECT 1")
-		@ResultMap(mappings = { @Mapping(property = "dummy", nestedMap = @ResultMapRef(value = "notexist", declaringClass = Mapper4.class)) })
+		@ResultMap(mappings = { @Property(value = "dummy", nestedMap = @ResultMapRef(value = "notexist", declaringClass = Mapper4.class)) })
 		void selectSome(int id);
 	}
 
@@ -93,7 +93,7 @@ public class TestNestedMapValidation extends TestConfigValidationBase {
 
 	private interface Mapper7 {
 		@Select("SELECT 1")
-		@ResultMap(mappings = { @Mapping(property = "dummy", nestedMap = @ResultMapRef(value = "notexist", declaringClass = Mapper6.class)) })
+		@ResultMap(mappings = { @Property(value = "dummy", nestedMap = @ResultMapRef(value = "notexist", declaringClass = Mapper6.class)) })
 		void selectSome(int id);
 	}
 
@@ -116,7 +116,7 @@ public class TestNestedMapValidation extends TestConfigValidationBase {
 	@ResultMap(id = "refmap")
 	private interface Mapper13 {
 		@Select("SELECT 1")
-		@ResultMap(id = "testmap", mappings = { @Mapping(property = "dummy", 
+		@ResultMap(id = "testmap", mappings = { @Property(value = "dummy", 
 				subselect = "selectById", nestedMap = @ResultMapRef("nestedmap")) })
 		int selectSome(int id);
 

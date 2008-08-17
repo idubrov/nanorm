@@ -20,7 +20,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.google.code.nanorm.annotations.Mapping;
+import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.test.beans.Article;
@@ -39,7 +39,7 @@ public class SubselectResultMapTest extends MapperTestBase {
     public interface Mapper {
         
         @ResultMap(mappings = {
-            @Mapping(property = "subject", column = "subject")
+            @Property(value = "subject", column = "subject")
         })
         @Select("SELECT id, subject FROM articles WHERE id = ${1}")
         Article getArticle(int id);
@@ -54,31 +54,31 @@ public class SubselectResultMapTest extends MapperTestBase {
         
         // Test 1-1 mapping with nested result map
         @ResultMap(mappings = {
-            @Mapping(property = "id"),
-            @Mapping(property = "title"),
-            @Mapping(property = "year"),
-            @Mapping(property = "article", column = "article_id", subselect = "getArticle") 
+            @Property(value = "id"),
+            @Property(value = "title"),
+            @Property(value = "year"),
+            @Property(value = "article", column = "article_id", subselect = "getArticle") 
         })
         @Select("SELECT id, title, year, article_id FROM publications WHERE id = ${1}")
         Publication getPublicationById(int id);
         
         // Test 1-N mapping with nested result map, the property type is List
         @ResultMap(groupBy = "id", mappings = {
-            @Mapping(property = "id"),
-            @Mapping(property = "title"),
-            @Mapping(property = "year"),
-            @Mapping(property = "articles", column = "id", subselect = "getArticlesByCategoryId") 
+            @Property(value = "id"),
+            @Property(value = "title"),
+            @Property(value = "year"),
+            @Property(value = "articles", column = "id", subselect = "getArticlesByCategoryId") 
         })
         @Select("SELECT id, title, year FROM categories WHERE id = ${1}")
         Category getCategoryById3(int id);
         
         // Test 1-N mapping with nested result map, the property type is Array
         @ResultMap(groupBy = "id", mappings = {
-            @Mapping(property = "id"),
-            @Mapping(property = "subject"),
-            @Mapping(property = "body"),
-            @Mapping(property = "year"),
-            @Mapping(property = "labels", column = "id", subselect = "getLabelsByArticleId") 
+            @Property(value = "id"),
+            @Property(value = "subject"),
+            @Property(value = "body"),
+            @Property(value = "year"),
+            @Property(value = "labels", column = "id", subselect = "getLabelsByArticleId") 
         })
         @Select("SELECT id, subject, body, year FROM articles WHERE id = ${1}")
         Article getArticleById4(int id);

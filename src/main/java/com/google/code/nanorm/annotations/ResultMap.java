@@ -38,7 +38,7 @@ public @interface ResultMap {
 	/**
 	 * Property mappings.
 	 */
-	Mapping[] mappings() default {};
+	Property[] mappings() default {};
 
 	/**
 	 * Properties that will be used for grouping together several rows of the

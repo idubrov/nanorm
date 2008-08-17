@@ -23,7 +23,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 import com.google.code.nanorm.DataSink;
-import com.google.code.nanorm.annotations.Mapping;
+import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.test.beans.Publication;
@@ -43,25 +43,25 @@ public class SimpleResultMapTest extends MapperTestBase {
         
         // Test automatic is off by default
         @ResultMap(mappings = {
-            @Mapping(property = "article.subject", column = "subject") })
+            @Property(value = "article.subject", column = "subject") })
         @Select("SELECT id, subject, body, year FROM articles WHERE ID = ${1}")
         Publication getPublicationById2(int id);
         
         // Turning on automatic mapping
         @ResultMap(auto = true, mappings = {
-            @Mapping(property = "article.subject", column = "subject") })
+            @Property(value = "article.subject", column = "subject") })
         @Select("SELECT id, subject, subject as title FROM articles WHERE ID = ${1}")
         Publication getPublicationById3(int id);
         
         // Test list
         @ResultMap(auto = true, mappings = {     
-                @Mapping(property = "article.subject", column = "subject") })
+                @Property(value = "article.subject", column = "subject") })
         @Select("SELECT id, subject, year FROM articles ORDER BY id ASC")
         List<Publication> listPublications();
         
         // Test data sink
         @ResultMap(auto = true, mappings = {     
-                @Mapping(property = "article.subject", column = "subject") })
+                @Property(value = "article.subject", column = "subject") })
         @Select("SELECT id, subject, year FROM articles ORDER BY id ASC")
         void listPublications2(DataSink<Publication> callback);
     }
