@@ -24,7 +24,7 @@ import java.util.Date;
  * @author Ivan Dubrov
  * @version 1.0 31.05.2008
  */
-public class PrimitiveTypesBean {
+public class CoreTypesBean {
     
     private int id;
     
