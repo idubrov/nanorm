@@ -340,6 +340,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 		for (int i = 0; i < params.size(); ++i) {
 			Object item = params.get(i);
 			Type type = types.get(i);
+			// TODO: Void.class handling (null parameters)
 			TypeHandler<?> typeHandler = factory.getTypeHandler(type);
 			typeHandler.setParameter(statement, i + 1, item);
 		}

@@ -198,7 +198,7 @@ public abstract class SQLSource implements BoundFragment {
 	public <T> Join join(ParamBlock<T> block, Collection<T> params) {
 		Join join = new Join();
 		
-		if(params != null) {
+		if(params != null && params.size() > 0) {
 			List<BoundFragment> items = new ArrayList<BoundFragment>();
 			for (T param : params) {
 				if(items.size() > 0) {
