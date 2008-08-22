@@ -38,7 +38,7 @@ import com.google.code.nanorm.internal.introspect.asm.AccessorKey;
  */
 public class ReflectIntrospectionFactory extends AbstractIntrospectionFactory {
 
-	private final Map<AccessorKey, Method> getters = new ConcurrentHashMap<AccessorKey, Method>();
+	//private final Map<AccessorKey, Method> getters = new ConcurrentHashMap<AccessorKey, Method>();
 
 	private final Map<AccessorKey, Method> setters = new ConcurrentHashMap<AccessorKey, Method>();
 
@@ -72,22 +72,23 @@ public class ReflectIntrospectionFactory extends AbstractIntrospectionFactory {
 		return new ReflectSetter(this, null, types, path);
 	}
 
-	/**
-	 * Lookup getter method for given bean property.
-	 * 
-	 * @param clazz bean class
-	 * @param property bean property
-	 * @return getter method
-	 */
-	Method lookupGetter(Class<?> clazz, String property) {
-		AccessorKey key = new AccessorKey(clazz, property);
-		Method getter = getters.get(key);
-		if (getter == null) {
-			getter = IntrospectUtils.findGetter(clazz, property);
-			getters.put(key, getter);
-		}
-		return getter;
-	}
+// FIXME: Temporarily not used
+//	/**
+//	 * Lookup getter method for given bean property.
+//	 * 
+//	 * @param clazz bean class
+//	 * @param property bean property
+//	 * @return getter method
+//	 */
+//	Method lookupGetter(Class<?> clazz, String property) {
+//		AccessorKey key = new AccessorKey(clazz, property);
+//		Method getter = getters.get(key);
+//		if (getter == null) {
+//			getter = IntrospectUtils.findGetter(clazz, property);
+//			getters.put(key, getter);
+//		}
+//		return getter;
+//	}
 
 	/**
 	 * Lookup setter method for given bean property.

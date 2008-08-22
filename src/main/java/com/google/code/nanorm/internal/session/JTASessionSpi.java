@@ -41,9 +41,9 @@ public class JTASessionSpi implements SessionSpi {
 
 	private final UserTransaction userTransaction;
 
-	private boolean commmitted = false;
+	private boolean commmitted;
 
-	private boolean newTransaction = false;
+	private boolean newTransaction;
 
 	/**
 	 * Constructor.

@@ -55,7 +55,7 @@ public class DynamicFragment implements Fragment {
 			if (method.getName().equals(SQLSource.GENERATOR_METHOD)) {
 				try {
 					SQLSource source = sqlSource.newInstance();
-					source.setIntrospectionFactory(introspectionFactory);
+					source.setReflFactory(introspectionFactory);
 					// TODO: Test parameter types
 					method.invoke(source, parameters);
 					return source;

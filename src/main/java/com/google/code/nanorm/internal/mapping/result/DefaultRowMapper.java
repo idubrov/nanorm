@@ -53,7 +53,7 @@ import com.google.code.nanorm.internal.type.TypeHandler;
  */
 public class DefaultRowMapper implements RowMapper {
 	
-	private Logger LOGGER = LoggerFactory.getLogger(DefaultRowMapper.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultRowMapper.class);
 
 	private final Class<?> elementClass;
 

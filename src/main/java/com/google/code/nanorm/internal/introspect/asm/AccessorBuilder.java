@@ -80,7 +80,7 @@ public final class AccessorBuilder implements PropertyVisitor<byte[]> {
 
 		cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 
-		Type owner = Type.getType("L" + name + ";");
+		Type owner = Type.getType('L' + name + ';');
 		if (isSetter) {
 			String iface = "com/google/code/nanorm/internal/introspect/Setter";
 			cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, name, null,

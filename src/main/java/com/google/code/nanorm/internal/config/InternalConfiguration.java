@@ -118,7 +118,7 @@ public class InternalConfiguration {
 	private StatementConfig getStatementConfig(StatementKey key) {
 		StatementConfig statementConfig = statementsConfig.get(key);
 		if (statementConfig == null) {
-			throw new IllegalArgumentException("Missing configuration for method '" + key + "'");
+			throw new IllegalArgumentException("Missing configuration for method '" + key + '\'');
 		}
 		return statementConfig;
 	}

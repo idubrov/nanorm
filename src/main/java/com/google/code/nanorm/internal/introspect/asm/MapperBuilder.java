@@ -51,7 +51,7 @@ public class MapperBuilder {
 			MethodConfig[] configs) {
 		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 
-		Type owner = Type.getType("L" + name + ";");
+		Type owner = Type.getType('L' + name + ';');
 
 		cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, name, null,
 				"java/lang/Object", new String[] { interfaze.getName().replace(

@@ -47,7 +47,7 @@ public abstract class SQLSource implements BoundFragment {
 	 */
 	private final List<List<BoundFragment>> stack = new ArrayList<List<BoundFragment>>();
 
-	private IntrospectionFactory introspectionFactory;
+	private IntrospectionFactory reflFactory;
 
 	/**
 	 * Helper class for generating different joins.
@@ -101,8 +101,7 @@ public abstract class SQLSource implements BoundFragment {
 		 */
 		public void generate(StringBuilder builder, List<Object> parameters,
 				List<Type> types) {
-			// TODO: Test on empty join
-			if(clauses.size() == 0) {
+			if(clauses.isEmpty()) {
 				return;
 			}
 			if (open != null) {
@@ -142,10 +141,10 @@ public abstract class SQLSource implements BoundFragment {
 		stack.add(new ArrayList<BoundFragment>());
 	}
 
-	/** @param introspectionFactory The introspectionFactory to set. */
-	public void setIntrospectionFactory(
-			IntrospectionFactory introspectionFactory) {
-		this.introspectionFactory = introspectionFactory;
+	/** @param reflFactory The reflFactory to set. */
+	public void setReflFactory(
+			IntrospectionFactory reflFactory) {
+		this.reflFactory = reflFactory;
 	}
 
 	/**
@@ -156,7 +155,7 @@ public abstract class SQLSource implements BoundFragment {
 	 * @param params clause parameters
 	 */
 	public void append(String fragment, Object... params) {
-		BoundFragment f = new TextFragment(fragment, introspectionFactory)
+		BoundFragment f = new TextFragment(fragment, reflFactory)
 				.bindParameters(params);
 		last().add(f);
 	}
@@ -169,7 +168,7 @@ public abstract class SQLSource implements BoundFragment {
 	 */
 	public void appendNotNull(String fragment, Object param) {
 		if(param != null) {
-			BoundFragment f = new TextFragment(fragment, introspectionFactory)
+			BoundFragment f = new TextFragment(fragment, reflFactory)
 					.bindParameters(new Object[] { param });
 			last().add(f);
 		}
@@ -198,10 +197,11 @@ public abstract class SQLSource implements BoundFragment {
 	public <T> Join join(ParamBlock<T> block, Collection<T> params) {
 		Join join = new Join();
 		
-		if(params != null && params.size() > 0) {
+		if(params != null && !params.isEmpty()) {
 			List<BoundFragment> items = new ArrayList<BoundFragment>();
 			for (T param : params) {
-				if(items.size() > 0) {
+				// Create new list if previous one is not empty, otherwise reuse
+				if(!items.isEmpty()) {
 					items = new ArrayList<BoundFragment>();
 				}
 				stack.add(items);
@@ -211,7 +211,7 @@ public abstract class SQLSource implements BoundFragment {
 					assert last() == items;
 					stack.remove(stack.size() - 1);
 				}
-				if(items.size() > 0) {
+				if(!items.isEmpty()) {
 					join.clauses.add(items);
 				}
 			}
@@ -231,7 +231,8 @@ public abstract class SQLSource implements BoundFragment {
 
 		List<BoundFragment> items = new ArrayList<BoundFragment>();
 		for (Block block : blocks) {
-			if(items.size() > 0) {
+			if(!items.isEmpty()) {
+				// Create new list if previous one is not empty, otherwise reuse
 				items = new ArrayList<BoundFragment>();
 			}			
 			stack.add(items);
@@ -241,7 +242,7 @@ public abstract class SQLSource implements BoundFragment {
 				assert last() == items;
 				stack.remove(stack.size() - 1);
 			}
-			if(items.size() > 0) {
+			if(!items.isEmpty()) {
 				join.clauses.add(items);
 			}
 		}

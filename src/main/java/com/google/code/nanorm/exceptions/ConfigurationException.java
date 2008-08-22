@@ -41,7 +41,7 @@ public class ConfigurationException extends GenericException {
 	 * @param message message
 	 * @param cause cause
 	 */
-	public ConfigurationException(String message, Throwable cause) {
+	public ConfigurationException(String message, Throwable cause) { // NOPMD by Ivan Dubrov on 22.08.08 18:46
 		super(message, cause);
 	}
 
