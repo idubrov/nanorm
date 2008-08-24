@@ -529,12 +529,13 @@ public class InternalConfiguration {
 
 	/**
 	 * Find result map config with given reference id.
+	 * FIXME: Made public for custom project, to get information about the property&lt;-&gt;column. 
 	 * 
 	 * @param clazz declaring class
 	 * @param refId reference id
 	 * @return result map config
 	 */
-	private ResultMapConfig findResultMap(Class<?> clazz, String refId)
+	public ResultMapConfig findResultMap(Class<?> clazz, String refId)
 			throws ConfigurationException {
 		String key = clazz.getName() + "#" + refId;
 
