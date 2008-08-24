@@ -155,20 +155,27 @@ public class TypeOracle {
 	public static Type[] resolveMethodArguments(Method method, Type contextCls) {
 		Class<?> methodCls = method.getDeclaringClass();
 
-		List<Type> path = new ArrayList<Type>();
-		if (!findPath(path, contextCls, methodCls)) {
-			throw new IllegalArgumentException("Class " + methodCls + " which declares method "
-					+ method.getName() + " does not belong to the hierarchy of " + contextCls);
-		}
-
 		Type context = null;
-		for (Type type : path) {
-			if (context == null) {
-				context = type;
-			} else {
-				context = resolve(type, context);
+		
+		if(methodCls == contextCls) {
+			// Quick path, nothing to resolve
+			context = contextCls;
+		} else {		 
+			List<Type> path = new ArrayList<Type>();
+			if (!findPath(path, contextCls, methodCls)) {
+				throw new IllegalArgumentException("Class " + methodCls + " which declares method "
+						+ method.getName() + " does not belong to the hierarchy of " + contextCls);
 			}
-		}
+	
+			
+			for (Type type : path) {
+				if (context == null) {
+					context = type;
+				} else {
+					context = resolve(type, context);
+				}
+			}
+		} 
 
 		// Now we propagated all type information from the contextCls to the
 		// method class
