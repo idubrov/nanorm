@@ -191,13 +191,11 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 		List<MethodConfig> methods = new ArrayList<MethodConfig>();
 		List<StatementConfig> configs = new ArrayList<StatementConfig>();
 		for (java.lang.reflect.Method m : interfaze.getMethods()) {
-			StatementConfig stConfig = config.getStatementConfig(interfaze, m.getName(), m
-					.getGenericParameterTypes());
-			if (stConfig != null) {
-				MethodConfig cfg = new MethodConfig(m, methods.size());
-				methods.add(cfg);
-				configs.add(stConfig);
-			}
+			StatementConfig stConfig = config.getStatementConfig(interfaze, m);
+			
+			MethodConfig cfg = new MethodConfig(m, methods.size());
+			methods.add(cfg);
+			configs.add(stConfig);
 		}
 
 		String name = "com/google/code/nanorm/generated/Mapper" + counter.incrementAndGet();

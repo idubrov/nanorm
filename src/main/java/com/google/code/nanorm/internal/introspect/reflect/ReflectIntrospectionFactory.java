@@ -149,8 +149,7 @@ public class ReflectIntrospectionFactory extends AbstractIntrospectionFactory {
 		 *      java.lang.reflect.Method, java.lang.Object[])
 		 */
 		public Object invoke(Object proxy, Method method, Object[] args) {
-			StatementConfig stConfig = config.getStatementConfig(mapper, method
-					.getName(), method.getGenericParameterTypes());
+			StatementConfig stConfig = config.getStatementConfig(mapper, method);
 			return delegate.query(stConfig, args);
 		}
 	}

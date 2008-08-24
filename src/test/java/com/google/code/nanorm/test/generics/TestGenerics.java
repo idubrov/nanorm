@@ -176,5 +176,5 @@ public class TestGenerics {
         type = TypeOracle.resolve(returnType, type);
         
         Assert.assertEquals(String.class, TypeOracle.resolveClass(type));
-    }
+    }    
 }

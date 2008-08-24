@@ -47,6 +47,7 @@ import com.google.code.nanorm.internal.Fragment;
 import com.google.code.nanorm.internal.TextFragment;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Setter;
+import com.google.code.nanorm.internal.introspect.TypeOracle;
 import com.google.code.nanorm.internal.mapping.result.DefaultRowMapper;
 import com.google.code.nanorm.internal.mapping.result.RowMapper;
 import com.google.code.nanorm.internal.mapping.result.ScalarRowMapper;
@@ -116,7 +117,9 @@ public class InternalConfiguration {
 	 * @return statement configuration for method
 	 */
 	private StatementConfig getStatementConfig(StatementKey key) {
-		StatementConfig statementConfig = statementsConfig.get(key);
+		
+		StatementConfig statementConfig = statementsConfig.get(key);			
+		
 		if (statementConfig == null) {
 			throw new IllegalArgumentException("Missing configuration for method '" + key + '\'');
 		}
@@ -127,12 +130,12 @@ public class InternalConfiguration {
 	 * Get statement configuration for method.
 	 * 
 	 * @param mapper mapper interface
-	 * @param name statement name (method name)
-	 * @param parameters statement parameter types
+	 * @param method method to get configuration for
 	 * @return statement configuration for method
 	 */
-	public StatementConfig getStatementConfig(Class<?> mapper, String name, Type[] parameters) {
-		StatementKey key = new StatementKey(mapper, name, parameters);
+	public StatementConfig getStatementConfig(Class<?> mapper, Method method) {
+		Type[] resolved = TypeOracle.resolveMethodArguments(method, mapper);
+		StatementKey key = new StatementKey(mapper, method.getName(), resolved);
 		return getStatementConfig(key);
 	}
 
@@ -184,8 +187,20 @@ public class InternalConfiguration {
 	 * @param method method to gather configuration from
 	 */
 	private void processMethod(Class<?> mapper, Method method) throws ConfigurationException {
-		StatementKey key = new StatementKey(mapper, method.getName(), method
-				.getGenericParameterTypes());
+		// FIXME: Is that ok to just strip generics info?
+		// We probably should propagate type info from the top mapper class when
+		// going down to the interfaces in configure method.
+		// So, currently, the Nanorm annotations could be applied only to methods without
+		// unknown generic types
+		// That means you cannot do something like this:
+		// interface Super<T> {
+		//     @Select("SELECT FROM SOME WHERE ID = id")
+		//     Some selectById(T id);
+		// }
+		// interface Concrete extends Super<Integer> {
+		//     Some selectById(Integer id);
+		// }
+		StatementKey key = new StatementKey(mapper, method.getName(), method.getParameterTypes());
 
 		if (statementsConfig.containsKey(key)) {
 			// TODO: Log debug message "Query method '" + key + "' is already
@@ -193,10 +208,8 @@ public class InternalConfiguration {
 			return;
 		}
 
-		// TODO: Invoke method.getGeneryParameters once!
 		final StatementConfig stConfig = new StatementConfig(key);
-
-		final ResultMapConfig config = createResultMapConfig(method);
+		final ResultMapConfig mapConfig = createResultMapConfig(method);
 
 		// TODO: Check we have only one of those!
 		Select select = method.getAnnotation(Select.class);
@@ -284,7 +297,7 @@ public class InternalConfiguration {
 			postConfigureList.add(new Runnable() {
 				public void run() {
 					// At this time, all subselect properties should be post-configured already
-					stConfig.setRowMapper(createRowMapper(stConfig.getResultType(), config));
+					stConfig.setRowMapper(createRowMapper(stConfig.getResultType(), mapConfig));
 				}
 			});
 		}
@@ -534,6 +547,7 @@ public class InternalConfiguration {
 	 * @param clazz declaring class
 	 * @param refId reference id
 	 * @return result map config
+	 * @throws ConfigurationException configuration is invalid 
 	 */
 	public ResultMapConfig findResultMap(Class<?> clazz, String refId)
 			throws ConfigurationException {
