@@ -32,9 +32,6 @@ import com.google.code.nanorm.internal.util.ToStringBuilder;
  * @version 1.0 19.06.2008
  */
 public class TextFragment implements Fragment {
-	private static final Pattern PATTERN = Pattern
-			.compile("([^#$]*)([$#]\\{[^}]+\\})");
-
 	/**
 	 * SQL template.
 	 */
@@ -84,7 +81,7 @@ public class TextFragment implements Fragment {
 	 */
 	public TextFragment(String sql, Type[] types,
 			IntrospectionFactory introspectionFactory) {
-		this.sqlBuilder = new StringBuilder();
+		this.sqlBuilder = new StringBuilder(sql.length());
 		this.gettersList = new ArrayList<Getter>();
 		this.sql = sql;
 		this.introspectionFactory = introspectionFactory;
@@ -132,33 +129,35 @@ public class TextFragment implements Fragment {
 	 */
 	private void configureTypes(Type[] types, StringBuilder builder,
 			List<Getter> getters) {
-		Matcher matcher = PATTERN.matcher(sql);
-		int end = 0;
-		while (matcher.find()) {
-			int count = matcher.groupCount();
-			if (count > 0) {
-				builder.append(matcher.group(1));
+		int pos = 0;
+		while (pos < sql.length()) {
+			int start = sql.indexOf("${", pos);
+			if(start == -1) {
+				builder.append(sql.substring(pos));
+				break;
+			} 
+			
+			int end = sql.indexOf("}", start + 2);
+			if(end == -1) {
+				builder.append(sql.substring(pos));
+				break;
 			}
-			if (count > 1) {
-				String prop = matcher.group(2);
-				if (prop.charAt(0) == '$') {
-					// TODO: Add support for lists, which should expand into something like (?, ?, ?, ?)
-					builder.append('?');
-					prop = prop.substring(2, prop.length() - 1);
-					try {
-						getters.add(introspectionFactory.buildParameterGetter(
-							types, prop));
-					} catch(IllegalArgumentException e) {
-						throw new IllegalArgumentException("Failed to create parameter getter for "
-								+ " (failed property marked by $[]): "
-								+ sql.substring(0, matcher.start(2)) + "$["
-								+ prop + ']' + sql.substring(matcher.end(2)), e);
-					}
-				}
+			builder.append(sql.substring(pos, start));
+				
+			String prop = sql.substring(start + 2, end);
+			// TODO: Add support for lists, which should expand into something like (?, ?, ?, ?)
+			builder.append('?');
+			try {
+				getters.add(introspectionFactory.buildParameterGetter(
+					types, prop));
+			} catch(IllegalArgumentException e) {
+				throw new IllegalArgumentException("Failed to create parameter getter for "
+						+ " (failed property marked by $[]): "
+						+ sql.substring(0, start) + "$["
+						+ prop + ']' + sql.substring(end), e);
 			}
-			end = matcher.end(0);
+			pos = end + 1;
 		}
-		builder.append(sql, end, sql.length());
 	}
 
 	/**

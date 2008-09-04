@@ -23,7 +23,7 @@ import com.google.code.nanorm.internal.util.ToStringBuilder;
  * @author Ivan Dubrov
  * @version 1.0 28.05.2008
  */
-public class PropertyMappingConfig {
+public final class PropertyMappingConfig {
     
     private String property;
     
