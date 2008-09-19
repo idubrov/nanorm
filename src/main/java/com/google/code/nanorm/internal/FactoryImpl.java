@@ -49,6 +49,8 @@ import com.google.code.nanorm.internal.type.TypeHandler;
 /**
  * Factory implementation.
  * 
+ * Executing the query and iteration through result set is located here.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 27.05.2008
  */
@@ -196,9 +198,14 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 						stConfig.getSelectKey().getStatementBuilder() == null;
 
 				// Prepare the statement
-				PreparedStatement st = isJDBCKey ? 
+				PreparedStatement st;
+				if(stConfig.isCall()) {
+					st = conn.prepareCall(sql.toString());
+				} else {
+					st = isJDBCKey ? 
 						conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS) :
 						conn.prepareStatement(sql.toString());
+				}
 				try {
 					// Map parameters to the statement
 					mapParameters(st, types, parameters);

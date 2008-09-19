@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.google.code.nanorm.DataSink;
 import com.google.code.nanorm.SQLSource;
 import com.google.code.nanorm.TypeHandlerFactory;
+import com.google.code.nanorm.annotations.Call;
 import com.google.code.nanorm.annotations.Insert;
 import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
@@ -63,6 +64,8 @@ import com.google.code.nanorm.internal.util.ToStringBuilder;
  * with same id
  * 
  * TODO: Validate: one data sink and query method is void
+ * 
+ * TODO: Test on scalar mapping the String.
  * 
  * @author Ivan Dubrov
  * @version 1.0 29.05.2008
@@ -215,12 +218,16 @@ public class InternalConfiguration {
 		Select select = method.getAnnotation(Select.class);
 		Update update = method.getAnnotation(Update.class);
 		Insert insert = method.getAnnotation(Insert.class);
+		Call call = method.getAnnotation(Call.class);
 		Source source = method.getAnnotation(Source.class);
 		String sql = null;
 		boolean isUpdate = (update != null);
 		boolean isInsert = (insert != null);
+		boolean isCall = (call != null);
 		if (select != null) {
 			sql = select.value();
+		} else if (call != null) {
+			sql = call.value();
 		} else if (insert != null) {
 			sql = insert.value();
 		} else if (update != null) {
@@ -241,6 +248,7 @@ public class InternalConfiguration {
 			stConfig.setStatementBuilder(builder);
 			stConfig.setUpdate(isUpdate);
 			stConfig.setInsert(isInsert);
+			stConfig.setCall(isCall);
 		}
 		// TODO: Check sql is not empty!
 
@@ -338,7 +346,7 @@ public class InternalConfiguration {
 	 */
 	private RowMapper createRowMapper(Type type, ResultMapConfig config) {
 		// For primitive types we simply return the mapped value of first column
-		if (type instanceof Class<?> && ((Class<?>) type).isPrimitive()) {
+		if (type instanceof Class<?> && (((Class<?>) type).isPrimitive() || type == String.class)) {
 			return new ScalarRowMapper(type, typeHandlerFactory);
 		}
 		// TODO: If config is null, automap it?

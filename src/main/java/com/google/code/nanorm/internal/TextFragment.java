@@ -131,6 +131,7 @@ public class TextFragment implements Fragment {
 			List<Getter> getters) {
 		int pos = 0;
 		while (pos < sql.length()) {
+			// TODO: Add support for out parameters!
 			int start = sql.indexOf("${", pos);
 			if(start == -1) {
 				builder.append(sql.substring(pos));

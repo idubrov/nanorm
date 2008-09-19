@@ -42,6 +42,8 @@ public class StatementConfig {
 	private boolean update;
 
 	private boolean insert;
+	
+	private boolean call;
 
 	private Fragment fragment;
 
@@ -86,6 +88,16 @@ public class StatementConfig {
 	/** @param insert the insert to set */
 	public void setInsert(boolean insert) {
 		this.insert = insert;
+	}
+
+	/** @return the call */
+	public boolean isCall() {
+		return call;
+	}
+
+	/** @param call the call to set */
+	public void setCall(boolean call) {
+		this.call = call;
 	}
 
 	/** @return Returns the statementBuilder. */
@@ -190,11 +202,17 @@ public class StatementConfig {
 	 */
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this).append("id", id).append("update",
-				update).append("resultType", resultType).append("rowMapper",
-				rowMapper).append("fragment", fragment)
-				.append("parameterTypes", parameterTypes).append("selectKey",
-						selectKey).append("selectKeyType", selectKeyType)
-				.toString();
+		return new ToStringBuilder(this)
+			.append("id", id)
+			.append("update", update)
+			.append("insert", insert)
+			.append("call", call)
+			.append("resultType", resultType)
+			.append("rowMapper", rowMapper)
+			.append("fragment", fragment)
+			.append("parameterTypes", parameterTypes)
+			.append("selectKey", selectKey)
+			.append("selectKeyType", selectKeyType)
+			.toString();
 	}
 }

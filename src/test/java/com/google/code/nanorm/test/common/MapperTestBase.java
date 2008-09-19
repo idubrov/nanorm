@@ -112,6 +112,9 @@ public class MapperTestBase {
 
 		// Sequence for ids
 		execute("CREATE SEQUENCE ids START WITH 123 INCREMENT BY 1");
+		
+		// Some functions to invoke
+		execute("CREATE ALIAS myConcat FOR \"com.google.code.nanorm.test.common.Funcs.concat\"");
 
 		conn.commit();
 
