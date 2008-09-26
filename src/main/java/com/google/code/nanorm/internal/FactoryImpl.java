@@ -259,19 +259,21 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 			ResultSet rs) throws SQLException {
 		
 		try {
-			// Create callback that will receive the mapped objects
-			DataSink<Object> callback = createResultSink(
-					stConfig, args, request);
-	
-			// Iterate through the result set
-			RowMapper rowMapper = stConfig.getRowMapper();
-			while (rs.next()) {
-				rowMapper.processResultSet(request, rs, callback);
+			if (stConfig.getResultType() != void.class) {
+				// Create callback that will receive the mapped objects
+				DataSink<Object> callback = createResultSink(
+						stConfig, args, request);
+		
+				// Iterate through the result set
+				RowMapper rowMapper = stConfig.getRowMapper();
+				while (rs.next()) {
+					rowMapper.processResultSet(request, rs, callback);
+				}
+				callback.commit();
+				
+				// Commit all callbacks used in the request
+				request.commitCallbacks();
 			}
-			callback.commit();
-			
-			// Commit all callbacks used in the request
-			request.commitCallbacks();
 		} finally {
 			try {
 				rs.close();
