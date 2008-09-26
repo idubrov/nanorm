@@ -63,7 +63,7 @@ public class CallTest extends MapperTestBase {
     public void testCall1() throws Exception {
         Mapper1 mapper = factory.createMapper(Mapper1.class);
         
-        Assert.assertEquals("testtest", mapper.concat("test", "test").getValue());
+        Assert.assertEquals("Hello, World!", mapper.concat("Hello", ", World!").getValue());
     }
     
     @Test
@@ -73,6 +73,6 @@ public class CallTest extends MapperTestBase {
     public void testCall2() throws Exception {
         Mapper1 mapper = factory.createMapper(Mapper1.class);
         
-        Assert.assertEquals("testtest", mapper.concat2("test", "test"));
+        Assert.assertEquals("World, Hello!", mapper.concat2("World", ", Hello!"));
     }
 }
