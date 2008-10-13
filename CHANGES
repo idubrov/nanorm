@@ -1,3 +1,9 @@
+0.4.0, released 2008-09-27:
+    * Added support for stored procedures calls (@Call annotation added)
+
+0.3.3, released 2008-09-04:
+    * Performance improvement.
+
 0.3.2, released 2008-08-24:
     * Improved generics support. Now you can declare method with generic parameters
       in super-interface, with sub-interface providing all type arguments and Nanorm
