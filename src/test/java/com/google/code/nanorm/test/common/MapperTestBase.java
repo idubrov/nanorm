@@ -68,17 +68,19 @@ public class MapperTestBase {
 				+ "primLong BIGINT, wrapLong BIGINT, primBoolean BOOL, wrapBoolean BOOL,"
 				+ "primChar CHAR(1), wrapChar CHAR(1), primFloat REAL, wrapFloat REAL,"
 				+ "primDouble DOUBLE, wrapDouble DOUBLE, string VARCHAR(50), "
-				+ "date TIMESTAMP, sqldate DATE, sqltime TIME, sqltimestamp TIMESTAMP)");
+				+ "date TIMESTAMP, sqldate DATE, sqltime TIME, sqltimestamp TIMESTAMP," 
+				+ "bytearr BLOB, locale VARCHAR(10))");
 
 		execute("INSERT INTO CORE(id, primByte, wrapByte, primShort, wrapShort, "
 				+ "primInt, wrapInt, primLong, wrapLong, primBoolean, wrapBoolean, "
 				+ "primChar, wrapChar, primFloat, wrapFloat, primDouble, wrapDouble, string, " 
-				+  "date, sqldate, sqltime, sqltimestamp) VALUES("
+				+  "date, sqldate, sqltime, sqltimestamp, bytearr, locale) VALUES("
 				+ "1, 37, -23, 8723, -6532, "
 				+ "824756237, -123809163, 282347987987234987, -23429879871239879, TRUE, FALSE,"
 				+ "'a', 'H', 34.5, -25.25, "
 				+ "44.5, -47.125, 'Hello, H2!', "
-				+ "'2009-06-07 15:23:34', '2006-12-11', '16:32:01', '2008-07-08 18:08:11')");
+				+ "'2009-06-07 15:23:34', '2006-12-11', '16:32:01', '2008-07-08 18:08:11'," 
+				+ "'1A5C6F', 'ru_RU')");
 
 		// Create some categories
 		execute("CREATE TABLE CATEGORIES(id INTEGER, title VARCHAR(50), year INTEGER)");

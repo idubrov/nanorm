@@ -23,7 +23,7 @@ import java.sql.Types;
 import java.util.Date;
 
 /**
- * Type handler for {@link java.util.Date}
+ * Type handler for {@link java.util.Date}.
  * 
  * @author Ivan Dubrov
  */

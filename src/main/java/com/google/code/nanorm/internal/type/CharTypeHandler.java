@@ -21,7 +21,8 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 /**
- *
+ * Type handler for <code>char</code>.
+ * 
  * @author Ivan Dubrov
  * @version 1.0 31.05.2008
  */

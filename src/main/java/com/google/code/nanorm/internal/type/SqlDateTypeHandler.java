@@ -22,6 +22,7 @@ import java.sql.SQLException;
 
 /**
  * Type handler for {@link java.sql.Date}
+ * 
  * @author Ivan Dubrov
  */
 public class SqlDateTypeHandler implements TypeHandler<Date> {

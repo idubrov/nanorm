@@ -18,6 +18,7 @@ package com.google.code.nanorm.test.resultmap;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Locale;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -58,12 +59,16 @@ public class CoreTypesResultMapTest extends MapperTestBase {
 				@Property(value = "date", column = "date"),
 				@Property(value = "sqlDate", column = "sqlDate"),
 				@Property(value = "sqlTime", column = "sqlTime"),
-				@Property(value = "sqlTimestamp", column = "sqlTimestamp") })
+				@Property(value = "sqlTimestamp", column = "sqlTimestamp"), 
+				@Property(value = "bytearr", column = "bytearr"),
+				@Property(value = "locale", column = "locale") })
+			
 		@Select("SELECT id, primByte, wrapByte, primShort, wrapShort, "
 				+ "primInt, wrapInt, primLong, wrapLong, "
 				+ "primBoolean, wrapBoolean, primChar, wrapChar, "
 				+ "primFloat, wrapFloat, primDouble, wrapDouble, "
-				+ "string, date, sqldate, sqltime, sqltimestamp "
+				+ "string, date, sqldate, sqltime, sqltimestamp, "
+				+ "bytearr, locale "
 				+ "FROM core WHERE id = ${1}")
 		CoreTypesBean select(int id);
 
@@ -88,12 +93,15 @@ public class CoreTypesResultMapTest extends MapperTestBase {
 				@Property(value = "date", columnIndex = 19),
 				@Property(value = "sqlDate", columnIndex = 20),
 				@Property(value = "sqlTime", columnIndex = 21),
-				@Property(value = "sqlTimestamp", columnIndex = 22) })
+				@Property(value = "sqlTimestamp", columnIndex = 22),
+				@Property(value = "bytearr", columnIndex = 23),
+				@Property(value = "locale", columnIndex = 24) })
 		@Select("SELECT id, primByte, wrapByte, primShort, wrapShort, "
 				+ "primInt, wrapInt, primLong, wrapLong, "
 				+ "primBoolean, wrapBoolean, primChar, wrapChar, "
 				+ "primFloat, wrapFloat, primDouble, wrapDouble, "
-				+ "string, date, sqldate, sqltime, sqltimestamp "
+				+ "string, date, sqldate, sqltime, sqltimestamp, " 
+				+ "bytearr, locale "
 				+ "FROM core WHERE id = ${1}")
 		CoreTypesBean select2(int id);
 
@@ -102,12 +110,13 @@ public class CoreTypesResultMapTest extends MapperTestBase {
 				+ "primInt, wrapInt, primLong, wrapLong, "
 				+ "primBoolean, wrapBoolean, primChar, wrapChar, "
 				+ "primFloat, wrapFloat, primDouble, wrapDouble, "
-				+ "string, date, sqldate, sqltime, sqltimestamp) VALUES("
+				+ "string, date, sqldate, sqltime, sqltimestamp, bytearr, locale) VALUES("
 				+ "${1}, ${2.primByte}, ${2.wrapByte}, ${2.primShort}, ${2.wrapShort}, "
 				+ "${2.primInt}, ${2.wrapInt}, ${2.primLong}, ${2.wrapLong}, "
 				+ "${2.primBoolean}, ${2.wrapBoolean}, ${2.primChar}, ${2.wrapChar}, "
 				+ "${2.primFloat}, ${2.wrapFloat}, ${2.primDouble}, ${2.wrapDouble}, "
-				+ "${2.string}, ${2.date}, ${2.sqlDate}, ${2.sqlTime}, ${2.sqlTimestamp})")
+				+ "${2.string}, ${2.date}, ${2.sqlDate}, ${2.sqlTime}, ${2.sqlTimestamp}, "
+				+ "${2.bytearr}, ${2.locale})")
 		void insert(int id, CoreTypesBean bean);
 		
 		@Select("SELECT 'myvalue' as primChar")
@@ -198,7 +207,7 @@ public class CoreTypesResultMapTest extends MapperTestBase {
 		
 		Assert.assertEquals(0, (double) bean2.getWrapDouble(), 0.01);
 		bean.setWrapDouble(0.0);
-		
+
 		Assert.assertEquals(0, (float) bean2.getWrapFloat(), 0.01);
 		bean.setWrapFloat(0.0F);
 		
@@ -237,5 +246,7 @@ public class CoreTypesResultMapTest extends MapperTestBase {
 		Assert.assertEquals(new Time(59521000L), bean.getSqlTime());
 		Assert.assertEquals(new Timestamp(1215540491000L), bean.getSqlTimestamp());
 		Assert.assertEquals(new java.util.Date(1244388214000L), bean.getDate());
+		Assert.assertArrayEquals(new byte[] { 0x1a, 0x5c, 0x6f }, bean.getBytearr());
+		Assert.assertEquals(new Locale("ru", "RU"), bean.getLocale());
 	}
 }

@@ -18,33 +18,35 @@ package com.google.code.nanorm.internal.type;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
+
+import com.google.code.nanorm.internal.type.TypeHandler;
 
 /**
- * Type handler for {@link java.sql.Time}
+ * Type handler for <code>byte[]</code>.
  * 
  * @author Ivan Dubrov
  */
-public class SqlTimeTypeHandler implements TypeHandler<Time> {
+public class ByteArrayTypeHandler implements TypeHandler<byte[]> {
 
-    /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getValue(java.sql.ResultSet, int)
-     */
-    public Time getValue(ResultSet rs, int column) throws SQLException {
-        return rs.getTime(column);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public byte[] getResult(ResultSet rs, String column) throws SQLException {
+		return rs.getBytes(column);
+	}
 
-    /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getResult(java.sql.ResultSet, java.lang.String)
-     */
-    public Time getResult(ResultSet rs, String column) throws SQLException {
-    	return rs.getTime(column);
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
-        st.setTime(column, (Time) value);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public byte[] getValue(ResultSet rs, int column) throws SQLException {
+		return rs.getBytes(column);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
+		st.setBytes(column, (byte[]) value);
+	}
+
 }

@@ -20,6 +20,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import com.google.code.nanorm.TypeHandlerFactory;
@@ -71,6 +72,9 @@ public final class TypeHandlerFactoryImpl implements TypeHandlerFactory {
         register(Date.class, new SqlDateTypeHandler());
         register(Time.class, new SqlTimeTypeHandler());
         register(Timestamp.class, new SqlTimestampTypeHandler());
+        
+        register(byte[].class, new ByteArrayTypeHandler());
+        register(Locale.class, new LocaleTypeHandler());
     }
 
     /**

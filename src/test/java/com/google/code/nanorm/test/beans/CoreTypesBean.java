@@ -15,240 +15,246 @@
  */
 package com.google.code.nanorm.test.beans;
 
+import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.sql.Date;
+import java.util.Arrays;
+import java.util.Locale;
 
 /**
- *
+ * 
  * @author Ivan Dubrov
  * @version 1.0 31.05.2008
  */
 public class CoreTypesBean {
-    
-    private int id;
-    
-    private byte primByte;
-    
-    private Byte wrapByte;
-    
-    private short primShort;
-    
-    private Short wrapShort;
-    
-    private int primInt;
-    
-    private Integer wrapInt;
-    
-    private long primLong;
-    
-    private Long wrapLong;
-    
-    private boolean primBoolean;
-    
-    private Boolean wrapBoolean;
-    
-    private char primChar;
-    
-    private Character wrapChar;
-    
-    private float primFloat;
-    
-    private Float wrapFloat;
-    
-    private double primDouble;
-    
-    private Double wrapDouble;
-    
-    private String string;
-    
-    private Date sqlDate;
-    
-    private Time sqlTime;
-    
-    private Timestamp sqlTimestamp;
-    
-    private java.util.Date date;
-    
-    /** @return Returns the id. */
-    public int getId() {
-        return id;
-    }
 
-    /** @param id The id to set. */
-    public void setId(int id) {
-        this.id = id;
-    }
+	private int id;
 
-    /** @return Returns the primByte. */
-    public byte getPrimByte() {
-        return primByte;
-    }
+	private byte primByte;
 
-    /** @param primByte The primByte to set. */
-    public void setPrimByte(byte primByte) {
-        this.primByte = primByte;
-    }
+	private Byte wrapByte;
 
-    /** @return Returns the wrapByte. */
-    public Byte getWrapByte() {
-        return wrapByte;
-    }
+	private short primShort;
 
-    /** @param wrapByte The wrapByte to set. */
-    public void setWrapByte(Byte wrapByte) {
-        this.wrapByte = wrapByte;
-    }
+	private Short wrapShort;
 
-    /** @return Returns the primShort. */
-    public short getPrimShort() {
-        return primShort;
-    }
+	private int primInt;
 
-    /** @param primShort The primShort to set. */
-    public void setPrimShort(short primShort) {
-        this.primShort = primShort;
-    }
+	private Integer wrapInt;
 
-    /** @return Returns the wrapShort. */
-    public Short getWrapShort() {
-        return wrapShort;
-    }
+	private long primLong;
 
-    /** @param wrapShort The wrapShort to set. */
-    public void setWrapShort(Short wrapShort) {
-        this.wrapShort = wrapShort;
-    }
+	private Long wrapLong;
 
-    /** @return Returns the primInt. */
-    public int getPrimInt() {
-        return primInt;
-    }
+	private boolean primBoolean;
 
-    /** @param primInt The primInt to set. */
-    public void setPrimInt(int primInt) {
-        this.primInt = primInt;
-    }
+	private Boolean wrapBoolean;
 
-    /** @return Returns the wrapInt. */
-    public Integer getWrapInt() {
-        return wrapInt;
-    }
+	private char primChar;
 
-    /** @param wrapInt The wrapInt to set. */
-    public void setWrapInt(Integer wrapInt) {
-        this.wrapInt = wrapInt;
-    }
+	private Character wrapChar;
 
-    /** @return Returns the primLong. */
-    public long getPrimLong() {
-        return primLong;
-    }
+	private float primFloat;
 
-    /** @param primLong The primLong to set. */
-    public void setPrimLong(long primLong) {
-        this.primLong = primLong;
-    }
+	private Float wrapFloat;
 
-    /** @return Returns the wrapLong. */
-    public Long getWrapLong() {
-        return wrapLong;
-    }
+	private double primDouble;
 
-    /** @param wrapLong The wrapLong to set. */
-    public void setWrapLong(Long wrapLong) {
-        this.wrapLong = wrapLong;
-    }
+	private Double wrapDouble;
 
-    /** @return Returns the primBoolean. */
-    public boolean isPrimBoolean() {
-        return primBoolean;
-    }
+	private String string;
 
-    /** @param primBoolean The primBoolean to set. */
-    public void setPrimBoolean(boolean primBoolean) {
-        this.primBoolean = primBoolean;
-    }
+	private Date sqlDate;
 
-    /** @return Returns the wrapBoolean. */
-    public Boolean getWrapBoolean() {
-        return wrapBoolean;
-    }
+	private Time sqlTime;
 
-    /** @param wrapBoolean The wrapBoolean to set. */
-    public void setWrapBoolean(Boolean wrapBoolean) {
-        this.wrapBoolean = wrapBoolean;
-    }
+	private Timestamp sqlTimestamp;
 
-    /** @return Returns the primChar. */
-    public char getPrimChar() {
-        return primChar;
-    }
+	private java.util.Date date;
 
-    /** @param primChar The primChar to set. */
-    public void setPrimChar(char primChar) {
-        this.primChar = primChar;
-    }
+	private byte[] bytearr;
 
-    /** @return Returns the wrapChar. */
-    public Character getWrapChar() {
-        return wrapChar;
-    }
+	private Locale locale;
 
-    /** @param wrapChar The wrapChar to set. */
-    public void setWrapChar(Character wrapChar) {
-        this.wrapChar = wrapChar;
-    }
+	/** @return Returns the id. */
+	public int getId() {
+		return id;
+	}
 
-    /** @return Returns the primFloat. */
-    public float getPrimFloat() {
-        return primFloat;
-    }
+	/** @param id The id to set. */
+	public void setId(int id) {
+		this.id = id;
+	}
 
-    /** @param primFloat The primFloat to set. */
-    public void setPrimFloat(float primFloat) {
-        this.primFloat = primFloat;
-    }
+	/** @return Returns the primByte. */
+	public byte getPrimByte() {
+		return primByte;
+	}
 
-    /** @return Returns the wrapFloat. */
-    public Float getWrapFloat() {
-        return wrapFloat;
-    }
+	/** @param primByte The primByte to set. */
+	public void setPrimByte(byte primByte) {
+		this.primByte = primByte;
+	}
 
-    /** @param wrapFloat The wrapFloat to set. */
-    public void setWrapFloat(Float wrapFloat) {
-        this.wrapFloat = wrapFloat;
-    }
+	/** @return Returns the wrapByte. */
+	public Byte getWrapByte() {
+		return wrapByte;
+	}
 
-    /** @return Returns the primDouble. */
-    public double getPrimDouble() {
-        return primDouble;
-    }
+	/** @param wrapByte The wrapByte to set. */
+	public void setWrapByte(Byte wrapByte) {
+		this.wrapByte = wrapByte;
+	}
 
-    /** @param primDouble The primDouble to set. */
-    public void setPrimDouble(double primDouble) {
-        this.primDouble = primDouble;
-    }
+	/** @return Returns the primShort. */
+	public short getPrimShort() {
+		return primShort;
+	}
 
-    /** @return Returns the wrapDouble. */
-    public Double getWrapDouble() {
-        return wrapDouble;
-    }
+	/** @param primShort The primShort to set. */
+	public void setPrimShort(short primShort) {
+		this.primShort = primShort;
+	}
 
-    /** @param wrapDouble The wrapDouble to set. */
-    public void setWrapDouble(Double wrapDouble) {
-        this.wrapDouble = wrapDouble;
-    }
+	/** @return Returns the wrapShort. */
+	public Short getWrapShort() {
+		return wrapShort;
+	}
 
-    /** @return Returns the string. */
-    public String getString() {
-        return string;
-    }
+	/** @param wrapShort The wrapShort to set. */
+	public void setWrapShort(Short wrapShort) {
+		this.wrapShort = wrapShort;
+	}
 
-    /** @param string The string to set. */
-    public void setString(String string) {
-        this.string = string;
-    }
+	/** @return Returns the primInt. */
+	public int getPrimInt() {
+		return primInt;
+	}
+
+	/** @param primInt The primInt to set. */
+	public void setPrimInt(int primInt) {
+		this.primInt = primInt;
+	}
+
+	/** @return Returns the wrapInt. */
+	public Integer getWrapInt() {
+		return wrapInt;
+	}
+
+	/** @param wrapInt The wrapInt to set. */
+	public void setWrapInt(Integer wrapInt) {
+		this.wrapInt = wrapInt;
+	}
+
+	/** @return Returns the primLong. */
+	public long getPrimLong() {
+		return primLong;
+	}
+
+	/** @param primLong The primLong to set. */
+	public void setPrimLong(long primLong) {
+		this.primLong = primLong;
+	}
+
+	/** @return Returns the wrapLong. */
+	public Long getWrapLong() {
+		return wrapLong;
+	}
+
+	/** @param wrapLong The wrapLong to set. */
+	public void setWrapLong(Long wrapLong) {
+		this.wrapLong = wrapLong;
+	}
+
+	/** @return Returns the primBoolean. */
+	public boolean isPrimBoolean() {
+		return primBoolean;
+	}
+
+	/** @param primBoolean The primBoolean to set. */
+	public void setPrimBoolean(boolean primBoolean) {
+		this.primBoolean = primBoolean;
+	}
+
+	/** @return Returns the wrapBoolean. */
+	public Boolean getWrapBoolean() {
+		return wrapBoolean;
+	}
+
+	/** @param wrapBoolean The wrapBoolean to set. */
+	public void setWrapBoolean(Boolean wrapBoolean) {
+		this.wrapBoolean = wrapBoolean;
+	}
+
+	/** @return Returns the primChar. */
+	public char getPrimChar() {
+		return primChar;
+	}
+
+	/** @param primChar The primChar to set. */
+	public void setPrimChar(char primChar) {
+		this.primChar = primChar;
+	}
+
+	/** @return Returns the wrapChar. */
+	public Character getWrapChar() {
+		return wrapChar;
+	}
+
+	/** @param wrapChar The wrapChar to set. */
+	public void setWrapChar(Character wrapChar) {
+		this.wrapChar = wrapChar;
+	}
+
+	/** @return Returns the primFloat. */
+	public float getPrimFloat() {
+		return primFloat;
+	}
+
+	/** @param primFloat The primFloat to set. */
+	public void setPrimFloat(float primFloat) {
+		this.primFloat = primFloat;
+	}
+
+	/** @return Returns the wrapFloat. */
+	public Float getWrapFloat() {
+		return wrapFloat;
+	}
+
+	/** @param wrapFloat The wrapFloat to set. */
+	public void setWrapFloat(Float wrapFloat) {
+		this.wrapFloat = wrapFloat;
+	}
+
+	/** @return Returns the primDouble. */
+	public double getPrimDouble() {
+		return primDouble;
+	}
+
+	/** @param primDouble The primDouble to set. */
+	public void setPrimDouble(double primDouble) {
+		this.primDouble = primDouble;
+	}
+
+	/** @return Returns the wrapDouble. */
+	public Double getWrapDouble() {
+		return wrapDouble;
+	}
+
+	/** @param wrapDouble The wrapDouble to set. */
+	public void setWrapDouble(Double wrapDouble) {
+		this.wrapDouble = wrapDouble;
+	}
+
+	/** @return Returns the string. */
+	public String getString() {
+		return string;
+	}
+
+	/** @param string The string to set. */
+	public void setString(String string) {
+		this.string = string;
+	}
 
 	/** @return the sqlDate */
 	public Date getSqlDate() {
@@ -290,6 +296,26 @@ public class CoreTypesBean {
 		this.date = date;
 	}
 
+	/** @return the bytearr */
+	public byte[] getBytearr() {
+		return bytearr;
+	}
+
+	/** @param bytearr the bytearr to set */
+	public void setBytearr(byte[] bytearr) {
+		this.bytearr = bytearr;
+	}
+
+	/** @return the locale */
+	public Locale getLocale() {
+		return locale;
+	}
+
+	/** @param locale the locale to set */
+	public void setLocale(Locale locale) {
+		this.locale = locale;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -297,8 +323,10 @@ public class CoreTypesBean {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + Arrays.hashCode(bytearr);
 		result = prime * result + ((date == null) ? 0 : date.hashCode());
 		result = prime * result + id;
+		result = prime * result + ((locale == null) ? 0 : locale.hashCode());
 		result = prime * result + (primBoolean ? 1231 : 1237);
 		result = prime * result + primByte;
 		result = prime * result + primChar;
@@ -336,12 +364,19 @@ public class CoreTypesBean {
 		if (getClass() != obj.getClass())
 			return false;
 		CoreTypesBean other = (CoreTypesBean) obj;
+		if (!Arrays.equals(bytearr, other.bytearr))
+			return false;
 		if (date == null) {
 			if (other.date != null)
 				return false;
 		} else if (!date.equals(other.date))
 			return false;
 		if (id != other.id)
+			return false;
+		if (locale == null) {
+			if (other.locale != null)
+				return false;
+		} else if (!locale.equals(other.locale))
 			return false;
 		if (primBoolean != other.primBoolean)
 			return false;
