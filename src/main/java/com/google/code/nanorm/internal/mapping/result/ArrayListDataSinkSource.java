@@ -65,12 +65,12 @@ public class ArrayListDataSinkSource implements DataSinkSource {
 			/**
 			 * {@inheritDoc}
 			 */
-			public void handleData(Object obj) {
+			public void pushData(Object obj) {
 				list.add(obj);
 			}
 
-			public void commit() {
-				// Nothing. We populate array list immediately in handleData
+			public void commitData() {
+				// Nothing. We populate array list immediately in pushData
 			}
 		};
 	}

@@ -51,6 +51,6 @@ public class ScalarRowMapper implements RowMapper {
 	public void processResultSet(Request request, ResultSet rs,
 			DataSink<Object> callback) throws SQLException {
 		// TODO: Check we have only one column?
-		callback.handleData(typeHandler.getValue(rs, 1));
+		callback.pushData(typeHandler.getValue(rs, 1));
 	}
 }

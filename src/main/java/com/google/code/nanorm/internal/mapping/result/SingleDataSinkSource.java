@@ -53,7 +53,7 @@ public class SingleDataSinkSource implements DataSinkSource {
             /**
              * {@inheritDoc}
              */
-            public void handleData(Object obj) {
+            public void pushData(Object obj) {
                 if(set) {
                     throw new IllegalStateException(Messages.singleResultExpected(location));
                 }
@@ -61,7 +61,7 @@ public class SingleDataSinkSource implements DataSinkSource {
                 set = true;
             }
 
-			public void commit() {
+			public void commitData() {
 				// Nothing to do, we set data when it came.
 			}
         };

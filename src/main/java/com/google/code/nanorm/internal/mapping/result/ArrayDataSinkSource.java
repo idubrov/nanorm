@@ -70,14 +70,14 @@ public class ArrayDataSinkSource implements DataSinkSource {
 			/**
 			 * {@inheritDoc}
 			 */
-			public void handleData(Object obj) {
+			public void pushData(Object obj) {
 				list.add(obj);
 			}
 
 			/**
 			 * {@inheritDoc}
 			 */
-			public void commit() {
+			public void commitData() {
 				Object[] array = (Object[]) Array.newInstance(componentClass, list.size());
 				setter.setValue(instance, list.toArray(array));
 			}

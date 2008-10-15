@@ -275,7 +275,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 				while (rs.next()) {
 					rowMapper.processResultSet(request, rs, callback);
 				}
-				callback.commit();
+				callback.commitData();
 				
 				// Commit all callbacks used in the request
 				request.commitCallbacks();

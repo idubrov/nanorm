@@ -21,7 +21,7 @@ package com.google.code.nanorm;
  * property, puts into the array).
  * 
  * Instances could push the data to the destination immediately or collect the
- * data and push it when {@link #commit} is called.
+ * data and push it when {@link #commitData} is called.
  * 
  * Instances are not thread-safe.
  * 
@@ -37,14 +37,14 @@ package com.google.code.nanorm;
 public interface DataSink<T> {
 
 	/**
-	 * Handle the data.
+	 * Push the data into the sink.
 	 * 
 	 * @param obj data
 	 */
-	void handleData(T obj);
+	void pushData(T obj);
 
 	/**
 	 * Commit the data into the destination from the internal caches.
 	 */
-	void commit();
+	void commitData();
 }

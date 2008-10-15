@@ -93,7 +93,7 @@ public class Request {
 	 */
 	public void commitCallbacks() {
 		for(DataSink<Object> c : callbacks.values()) {
-			c.commit();
+			c.commitData();
 		}
 		callbacks.clear();
 	}

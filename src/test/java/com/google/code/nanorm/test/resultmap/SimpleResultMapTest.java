@@ -142,11 +142,11 @@ public class SimpleResultMapTest extends MapperTestBase {
 
         final List<Publication> articles = new ArrayList<Publication>();
         DataSink<Publication> rc = new DataSink<Publication>() {
-            public void handleData(Publication pub) {
+            public void pushData(Publication pub) {
                 articles.add(pub);
             }
             
-            public void commit() {
+            public void commitData() {
             	// Nothning...
             }
         };

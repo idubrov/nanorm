@@ -126,7 +126,7 @@ public class DefaultRowMapper implements RowMapper {
 			// No result -- create new
 			if (result == null) {
 				result = createResult(request, dc.mappers, rs);
-				callback.handleData(result);
+				callback.pushData(result);
 
 				if (map == null) {
 					map = new HashMap<Key, Object>();
@@ -137,7 +137,7 @@ public class DefaultRowMapper implements RowMapper {
 		} else {
 			// We don't have a groupBy, create new result object
 			result = createResult(request, dc.mappers, rs);
-			callback.handleData(result);
+			callback.pushData(result);
 		}
 
 		// Always apply nested maps
