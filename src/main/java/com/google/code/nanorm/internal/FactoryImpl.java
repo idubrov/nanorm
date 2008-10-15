@@ -162,11 +162,6 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 
 		// Close session spi after this block if in auto mode
 		try {
-			Connection conn = spi.getConnection();
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Using the connection " + conn);
-			}
-
 			// Generate key prior to mapping the parameters, so we
 			// have a chance to update arguments with generated key
 			selectKey(request, stConfig, false, args);
@@ -184,7 +179,12 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 			fragment.generate(sql, parameters, types);
 
 			// Close connection after this try
+			Connection conn = spi.getConnection();
 			try {
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Using the connection " + conn);
+				}
+
 				if (LOGGER_SQL.isDebugEnabled()) {
 					LOGGER_SQL.debug(sql.toString());
 					if (LOGGER_SQL.isTraceEnabled()) {
@@ -206,20 +206,24 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 						conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS) :
 						conn.prepareStatement(sql.toString());
 				}
+				// Close statement after this try
 				try {
 					// Map parameters to the statement
 					mapParameters(st, types, parameters);
 
 					if (stConfig.isInsert()) {
 						st.executeUpdate();
-
 						
 						if(isJDBCKey) {
+							// If we use getGeneratedKeys, we need to process the result set
+							// with generated keys as regular result set
 							processResultSet(stConfig, args, request, st.getGeneratedKeys());
 						} else {
+							// otherwise, simply execute statement that selects a key 
 							selectKey(request, stConfig, true, args);
 						}
 					} else if (stConfig.isUpdate()) {
+						// The result is amount of rows updated
 						request.setResult(st.executeUpdate());
 					} else {
 						processResultSet(stConfig, args, request, st.executeQuery());
