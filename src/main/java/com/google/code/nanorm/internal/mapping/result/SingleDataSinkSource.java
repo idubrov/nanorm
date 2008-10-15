@@ -17,6 +17,7 @@ package com.google.code.nanorm.internal.mapping.result;
 
 import com.google.code.nanorm.DataSink;
 import com.google.code.nanorm.internal.introspect.Setter;
+import com.google.code.nanorm.internal.util.Messages;
 
 /**
  * Implementation of {@link DataSinkSource} that sets the result
@@ -29,17 +30,17 @@ public class SingleDataSinkSource implements DataSinkSource {
     
     private final Setter setter;
     
-    private final Object sourceName;
+    private final Object location;
     
     /**
      * Constructor.
      * 
      * @param setter setter for property this data sink will set
-     * @param sourceName name of the source which will provide the data. Used for error messages generation.
+     * @param location location that identifies the context error occurred.
      */
-    public SingleDataSinkSource(Setter setter, Object sourceName) {
+    public SingleDataSinkSource(Setter setter, Object location) {
         this.setter = setter;
-        this.sourceName = sourceName;
+        this.location = location;
     }
 
     /**
@@ -54,7 +55,7 @@ public class SingleDataSinkSource implements DataSinkSource {
              */
             public void handleData(Object obj) {
                 if(set) {
-                    throw new IllegalStateException("Single result expected for " + sourceName);
+                    throw new IllegalStateException(Messages.singleResultExpected(location));
                 }
                 setter.setValue(instance, obj);
                 set = true;

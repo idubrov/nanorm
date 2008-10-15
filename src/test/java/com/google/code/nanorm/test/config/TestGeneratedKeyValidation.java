@@ -25,13 +25,14 @@ import com.google.code.nanorm.annotations.SelectKey;
 import com.google.code.nanorm.annotations.SelectKeyType;
 import com.google.code.nanorm.config.NanormConfiguration;
 import com.google.code.nanorm.exceptions.ConfigurationException;
+import static com.google.code.nanorm.test.common.Utils.assertContains;
 
 /**
  * Test validation for generated keys.
  * 
  * @author Ivan Dubrov
  */
-public class TestGeneratedKeyValidation extends TestConfigValidationBase {
+public class TestGeneratedKeyValidation {
 	private interface Mapper1 {
 		@Insert("INSERT INTO table(id) VALUES ${1}")
 		@SelectKey(type = SelectKeyType.BEFORE, property = "dummy")

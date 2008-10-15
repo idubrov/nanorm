@@ -15,6 +15,8 @@
  */
 package com.google.code.nanorm.test.resultmap;
 
+import static com.google.code.nanorm.test.common.Utils.assertContains;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +28,7 @@ import com.google.code.nanorm.DataSink;
 import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.Select;
+import com.google.code.nanorm.exceptions.DataException;
 import com.google.code.nanorm.test.beans.Publication;
 import com.google.code.nanorm.test.common.MapperTestBase;
 
@@ -64,6 +67,15 @@ public class SimpleResultMapTest extends MapperTestBase {
                 @Property(value = "article.subject", column = "subject") })
         @Select("SELECT id, subject, year FROM articles ORDER BY id ASC")
         void listPublications2(DataSink<Publication> callback);
+        
+        // Test null return value
+        @Select("SELECT id FROM articles WHERE 1 = 0")
+        int selectN();
+        
+        // Test null return value
+        @Select("SELECT id FROM articles")
+        int selectSM();
+
     }
     
     @Test
@@ -150,5 +162,28 @@ public class SimpleResultMapTest extends MapperTestBase {
         Assert.assertEquals(2, pub.getId());
         Assert.assertEquals("Saving the Earth", pub.getArticle().getSubject());
         Assert.assertEquals(2008, pub.getYear());
+    }
+    
+    @Test
+    public void testSelectNull() throws Exception {
+        Mapper1 mapper = factory.createMapper(Mapper1.class);
+        try {
+        	mapper.selectN();
+        	Assert.fail();
+        } catch(DataException e) {
+        	assertContains(e, "selectN", "Mapper1", "empty", "primitive", "int");
+        }
+    }
+    
+    @Test
+    public void testSelectSingleMultiple() throws Exception {
+        Mapper1 mapper = factory.createMapper(Mapper1.class);
+        
+        try {
+            mapper.selectSM();
+        	Assert.fail();
+        } catch(IllegalStateException e) {
+        	assertContains(e, "selectSM", "Mapper1", "single");
+        }
     }
 }

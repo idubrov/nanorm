@@ -37,6 +37,7 @@ import com.google.code.nanorm.exceptions.ConfigurationException;
 import com.google.code.nanorm.exceptions.DataException;
 import com.google.code.nanorm.internal.config.InternalConfiguration;
 import com.google.code.nanorm.internal.config.StatementConfig;
+import com.google.code.nanorm.internal.config.StatementKey;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.mapping.result.DataSinkSource;
@@ -45,6 +46,7 @@ import com.google.code.nanorm.internal.mapping.result.RowMapper;
 import com.google.code.nanorm.internal.session.SessionSpi;
 import com.google.code.nanorm.internal.session.SingleConnSessionSpi;
 import com.google.code.nanorm.internal.type.TypeHandler;
+import com.google.code.nanorm.internal.util.Messages;
 
 /**
  * Factory implementation.
@@ -251,7 +253,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 			}
 		}
 		if (request.getResult() == null) {
-			checkNotPrimitive(stConfig.getResultType());
+			checkNotPrimitive(stConfig);
 		}
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Query result is " + request.getResult());
@@ -312,13 +314,14 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 		return sink;
 	}
 
-	private void checkNotPrimitive(Type type) {
+	private void checkNotPrimitive(StatementConfig stConfig) {
+		Type type = stConfig.getResultType();
+		
 		if (type instanceof Class<?> && ((Class<?>) type).isPrimitive()
 				&& type != void.class) {
-			// TODO: Refer to the method/mapper class?
-			throw new DataException(
-					"Going to return null result, but return type is primitive ("
-							+ type + ")");
+			
+			StatementKey key = stConfig.getId();
+			throw new DataException(Messages.nullResult(key.getMapper(), key.getName(), (Class<?>) type));
 		}
 	}
 

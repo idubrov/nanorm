@@ -23,13 +23,14 @@ import org.junit.Test;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.config.NanormConfiguration;
 import com.google.code.nanorm.exceptions.ConfigurationException;
+import static com.google.code.nanorm.test.common.Utils.assertContains;
 
 /**
  * Tests for different result types validation.
  * 
  * @author Ivan Dubrov
  */
-public class TestReturnTypeValidation extends TestConfigValidationBase {
+public class TestReturnTypeValidation {
 
 	private interface Mapper1 {
 		@Select("SELECT 1")

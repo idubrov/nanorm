@@ -26,12 +26,14 @@ import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.config.NanormConfiguration;
 import com.google.code.nanorm.exceptions.ConfigurationException;
 import com.google.code.nanorm.test.beans.Publication;
+import static com.google.code.nanorm.test.common.Utils.assertContains;
+
 
 /**
  * Test properties mappings validation.
  * @author Ivan Dubrov
  */
-public class TestPropertyValidation extends TestConfigValidationBase {
+public class TestPropertyValidation {
 
 	
 	private interface Mapper1 {

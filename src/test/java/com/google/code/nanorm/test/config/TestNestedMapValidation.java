@@ -16,6 +16,7 @@
 
 package com.google.code.nanorm.test.config;
 
+import static com.google.code.nanorm.test.common.Utils.assertContains;
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -32,7 +33,7 @@ import com.google.code.nanorm.exceptions.ConfigurationException;
  * 
  * @author Ivan Dubrov
  */
-public class TestNestedMapValidation extends TestConfigValidationBase {
+public class TestNestedMapValidation {
 
 	private interface Mapper3 {
 		@Select("SELECT 1")

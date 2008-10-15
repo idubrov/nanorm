@@ -25,12 +25,13 @@ import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.config.NanormConfiguration;
 import com.google.code.nanorm.exceptions.ConfigurationException;
+import static com.google.code.nanorm.test.common.Utils.assertContains;
 
 /**
  * Test subselect validation.
  * @author Ivan Dubrov
  */
-public class TestSubselectValidation extends TestConfigValidationBase {
+public class TestSubselectValidation {
 
 	private interface Mapper8 {
 		@Select("SELECT 1")

@@ -24,12 +24,13 @@ import com.google.code.nanorm.annotations.ResultMapRef;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.config.NanormConfiguration;
 import com.google.code.nanorm.exceptions.ConfigurationException;
+import static com.google.code.nanorm.test.common.Utils.assertContains;
 
 /**
  * Test result map configurations.
  * @author Ivan Dubrov
  */
-public class TestResultMapValidation extends TestConfigValidationBase {
+public class TestResultMapValidation {
 	
 	private interface Mapper1 {
 		// Nothing...

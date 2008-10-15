@@ -23,6 +23,7 @@ import java.text.MessageFormat;
 import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapRef;
+import com.google.code.nanorm.internal.config.StatementConfig;
 import com.google.code.nanorm.internal.config.StatementKey;
 import com.google.code.nanorm.internal.config.SubselectConfig;
 
@@ -224,6 +225,40 @@ public class Messages {
 	}
 
 	/**
+	 * Generate error message for case when mapper method result type is primitive, but no values were got
+	 * during the query.
+	 * 
+	 * @param mapper mapper interface
+	 * @param method method result map applied to
+	 * @param type result type (primitive)
+	 * 
+	 * @return message
+	 */
+	public static String nullResult(Class<?> mapper, String method, Class<?> type) {
+		return "Cannot convert empty result set to primitive type '" + type.getName() + "' while executing " + 
+			location(mapper, method) + '.';
+	}
+	
+	/**
+	 * Generate error message for case when single result was expected, but result set contained more
+	 * than one row.
+	 * 
+	 * @param location mapper interface
+	 * 
+	 * @return message
+	 */
+	public static String singleResultExpected(Object location) {
+		if(location instanceof StatementConfig) {
+			StatementConfig stConfig = (StatementConfig) location;
+			String method = stConfig.getId().getName();
+			Class<?> mapper = stConfig.getId().getMapper();
+			location = location(mapper, method);
+		}
+		return "Single result expected while executing " + 
+			 location + '.';
+	}
+
+	/**
 	 * Generate error message for case when method result type could not be
 	 * deduced.
 	 * 
@@ -251,8 +286,12 @@ public class Messages {
 	}
 
 	private static String location(Class<?> mapper, Method method) {
+		return location(mapper, method.getName());
+	}
+	
+	private static String location(Class<?> mapper, String method) {
 		if (method != null) {
-			return "method '" + method.getName() + "' of mapper '" + mapper.getName() + '\'';
+			return "method '" + method + "' of mapper '" + mapper.getName() + '\'';
 		}
 		return "mapper '" + mapper.getName() + '\'';
 	}

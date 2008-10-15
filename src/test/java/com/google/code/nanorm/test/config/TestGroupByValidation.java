@@ -15,6 +15,7 @@
  */
 package com.google.code.nanorm.test.config;
 
+import static com.google.code.nanorm.test.common.Utils.assertContains;
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -31,7 +32,7 @@ import com.google.code.nanorm.exceptions.ConfigurationException;
  * 
  * @author Ivan Dubrov
  */
-public class TestGroupByValidation extends TestConfigValidationBase {
+public class TestGroupByValidation {
 	
 	@ResultMap(id = "nestedmap")
 	private interface Mapper1 {
