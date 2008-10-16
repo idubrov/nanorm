@@ -44,13 +44,15 @@ public abstract class SQLSource implements BoundFragment {
 	/**
 	 * Stack of list of bound fragments. Each basic "append" operation adds
 	 * bound fragment to the list on stack top.
+	 * 
+	 * Used for collecting the generated fragments, bound to the parameters.
 	 */
 	private final List<List<BoundFragment>> stack = new ArrayList<List<BoundFragment>>();
 
 	private IntrospectionFactory reflFactory;
 
 	/**
-	 * Helper class for generating different joins.
+	 * Helper class for generating different text fragment joins (not SQL joins).
 	 * 
 	 * @author Ivan Dubrov
 	 */
@@ -99,24 +101,24 @@ public abstract class SQLSource implements BoundFragment {
 		/**
 		 * {@inheritDoc}
 		 */
-		public void generate(StringBuilder builder, List<Object> parameters,
-				List<Type> types) {
-			if(clauses.isEmpty()) {
+		public void generate(StringBuilder builder, List<Object> parameters, List<Type> types) {
+			if (clauses.isEmpty()) {
 				return;
 			}
 			if (open != null) {
 				builder.append(open);
 			}
-			boolean flag = false;
+			
 			// Join elements in the clauses list
+			boolean first = true;
 			for (List<BoundFragment> items : clauses) {
-				if (flag && with != null) {
+				if (!first && with != null) {
 					builder.append(with);
 				}
 				for (BoundFragment item : items) {
 					item.generate(builder, parameters, types);
 				}
-				flag = true;
+				first = false;
 			}
 
 			if (close != null) {
@@ -142,8 +144,7 @@ public abstract class SQLSource implements BoundFragment {
 	}
 
 	/** @param reflFactory The reflFactory to set. */
-	public void setReflFactory(
-			IntrospectionFactory reflFactory) {
+	public void setReflFactory(IntrospectionFactory reflFactory) {
 		this.reflFactory = reflFactory;
 	}
 
@@ -155,11 +156,10 @@ public abstract class SQLSource implements BoundFragment {
 	 * @param params clause parameters
 	 */
 	public void append(String fragment, Object... params) {
-		BoundFragment f = new TextFragment(fragment, reflFactory)
-				.bindParameters(params);
+		BoundFragment f = new TextFragment(fragment, reflFactory).bindParameters(params);
 		last().add(f);
 	}
-	
+
 	/**
 	 * Append given SQL fragment with given parameter if parameter is not null.
 	 * 
@@ -167,7 +167,7 @@ public abstract class SQLSource implements BoundFragment {
 	 * @param param parameter
 	 */
 	public void appendNotNull(String fragment, Object param) {
-		if(param != null) {
+		if (param != null) {
 			BoundFragment f = new TextFragment(fragment, reflFactory)
 					.bindParameters(new Object[] { param });
 			last().add(f);
@@ -175,7 +175,16 @@ public abstract class SQLSource implements BoundFragment {
 	}
 
 	/**
-	 * Iterate the parameters and apply block to each of them.
+	 * Iterate the parameters and apply block to each of them, generating the
+	 * string join as a result.
+	 * 
+	 * From the functional programming point of view, this is kind of map+reduce
+	 * operation. {@link ParamBlock} is the map function, {@link Join} defines
+	 * the reduce rules (separator between fragments, opening character, closing
+	 * character).
+	 * 
+	 * Using the methods of the {@link Join} object, one can modify the rules of
+	 * joining the text fragments.
 	 * 
 	 * @param <T> parameters type
 	 * @param block block to apply to each parameter
@@ -185,9 +194,18 @@ public abstract class SQLSource implements BoundFragment {
 	public <T> Join join(ParamBlock<T> block, T... params) {
 		return join(block, params == null ? null : Arrays.asList(params));
 	}
-	
+
 	/**
-	 * Iterate the parameters and apply block to each of them.
+	 * Iterate the parameters and apply block to each of them, generating the
+	 * string join as a result.
+	 * 
+	 * From the functional programming point of view, this is kind of map+reduce
+	 * operation. {@link ParamBlock} is the map function, {@link Join} defines
+	 * the reduce rules (separator between fragments, opening character, closing
+	 * character).
+	 * 
+	 * Using the methods of the {@link Join} object, one can modify the rules of
+	 * joining the text fragments.
 	 * 
 	 * @param <T> parameters type
 	 * @param block block to apply to each parameter
@@ -196,12 +214,12 @@ public abstract class SQLSource implements BoundFragment {
 	 */
 	public <T> Join join(ParamBlock<T> block, Collection<T> params) {
 		Join join = new Join();
-		
-		if(params != null && !params.isEmpty()) {
+
+		if (params != null && !params.isEmpty()) {
 			List<BoundFragment> items = new ArrayList<BoundFragment>();
 			for (T param : params) {
 				// Create new list if previous one is not empty, otherwise reuse
-				if(!items.isEmpty()) {
+				if (!items.isEmpty()) {
 					items = new ArrayList<BoundFragment>();
 				}
 				stack.add(items);
@@ -211,7 +229,7 @@ public abstract class SQLSource implements BoundFragment {
 					assert last() == items;
 					stack.remove(stack.size() - 1);
 				}
-				if(!items.isEmpty()) {
+				if (!items.isEmpty()) {
 					join.clauses.add(items);
 				}
 			}
@@ -223,6 +241,14 @@ public abstract class SQLSource implements BoundFragment {
 	/**
 	 * Join given generator blocks together.
 	 * 
+	 * From the functional programming point of view, this is kind of reduce
+	 * operation. {@link Block} is the text fragment generator, {@link Join}
+	 * defines the reduce rules (separator between fragments, opening character,
+	 * closing character).
+	 * 
+	 * Using the methods of the {@link Join} object, one can modify the rules of
+	 * joining the text fragments.
+	 * 
 	 * @param blocks generator blocks to join
 	 * @return join configuration method.
 	 */
@@ -231,18 +257,21 @@ public abstract class SQLSource implements BoundFragment {
 
 		List<BoundFragment> items = new ArrayList<BoundFragment>();
 		for (Block block : blocks) {
-			if(!items.isEmpty()) {
+			if (!items.isEmpty()) {
 				// Create new list if previous one is not empty, otherwise reuse
 				items = new ArrayList<BoundFragment>();
-			}			
+			}
 			stack.add(items);
 			try {
 				block.generate();
 			} finally {
-				assert last() == items;
+				if (last() != items) {
+					throw new IllegalStateException(
+							"Wrong stack state, last element must be the one generated by 'join' call!");
+				}
 				stack.remove(stack.size() - 1);
 			}
-			if(!items.isEmpty()) {
+			if (!items.isEmpty()) {
 				join.clauses.add(items);
 			}
 		}
@@ -257,9 +286,10 @@ public abstract class SQLSource implements BoundFragment {
 	 * @param parameters parameters
 	 * @param types parameter types
 	 */
-	public void generate(StringBuilder builder, List<Object> parameters,
-			List<Type> types) {
-		assert (stack.size() == 1);
+	public void generate(StringBuilder builder, List<Object> parameters, List<Type> types) {
+		if (stack.size() != 1) {
+			throw new IllegalStateException("Stack must contain exactly one element!");
+		}
 		for (BoundFragment obj : last()) {
 			obj.generate(builder, parameters, types);
 		}
