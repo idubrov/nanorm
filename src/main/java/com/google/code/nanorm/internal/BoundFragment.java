@@ -15,8 +15,9 @@
  */
 package com.google.code.nanorm.internal;
 
-import java.lang.reflect.Type;
 import java.util.List;
+
+import com.google.code.nanorm.internal.mapping.parameter.ParameterMapper;
 
 /**
  * Fragment of the SQL code that is bound to concrete query parameters.
@@ -31,8 +32,6 @@ public interface BoundFragment {
 	 * 
 	 * @param builder SQL builder
 	 * @param parameters collection of parameters
-	 * @param types collection of types
 	 */
-	void generate(StringBuilder builder, List<Object> parameters,
-			List<Type> types);
+	void generate(StringBuilder builder, List<ParameterMapper> parameters);
 }

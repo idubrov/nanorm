@@ -16,10 +16,10 @@
 
 package com.google.code.nanorm.internal;
 
-import java.lang.reflect.Type;
 import java.util.List;
 
-import com.google.code.nanorm.internal.introspect.Getter;
+import com.google.code.nanorm.internal.config.ParameterMappingConfig;
+import com.google.code.nanorm.internal.mapping.parameter.ParameterMapper;
 
 /**
  * Implementation of {@link BoundFragment}. This implementation is based on list
@@ -32,7 +32,7 @@ public class BoundFragmentImpl implements BoundFragment {
 
 	private final String sql;
 
-	private final List<Getter> gettersList;
+	private final List<ParameterMappingConfig> paramMappers;
 
 	private final Object[] parameters;
 
@@ -40,25 +40,23 @@ public class BoundFragmentImpl implements BoundFragment {
 	 * Constructor.
 	 * 
 	 * @param sql sql fragment
-	 * @param gettersList list of getters
+	 * @param paramMappers list of unbound parameter mappers
 	 * @param parameters parameters
 	 */
-	public BoundFragmentImpl(String sql, List<Getter> gettersList,
+	public BoundFragmentImpl(String sql, List<ParameterMappingConfig> paramMappers,
 			Object[] parameters) {
 		this.sql = sql;
-		this.gettersList = gettersList;
+		this.paramMappers = paramMappers;
 		this.parameters = parameters;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void generate(StringBuilder builder, List<Object> params,
-			List<Type> types) {
+	public void generate(StringBuilder builder, List<ParameterMapper> params) {
 		builder.append(sql);
-		for (Getter getter : gettersList) {
-			params.add(getter.getValue(this.parameters));
-			types.add(getter.getType());
+		for (ParameterMappingConfig config : paramMappers) {
+			params.add(new ParameterMapper(config, params.size() + 1, parameters));
 		}
 	}
 

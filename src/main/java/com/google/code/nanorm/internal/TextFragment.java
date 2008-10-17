@@ -19,6 +19,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.code.nanorm.internal.config.ParameterMappingConfig;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.util.ToStringBuilder;
@@ -40,8 +41,8 @@ public class TextFragment implements Fragment {
 	 */
 	private final StringBuilder sqlBuilder;
 
-	/** List of getters */
-	private final List<Getter> gettersList;
+	/** List of parameter mappers configs */
+	private final List<ParameterMappingConfig> paramMappers;
 
 	private final IntrospectionFactory introspectionFactory;
 
@@ -65,7 +66,7 @@ public class TextFragment implements Fragment {
 	public TextFragment(String sql, IntrospectionFactory introspectionFactory) {
 		this.sql = sql;
 		this.sqlBuilder = null;
-		this.gettersList = null;
+		this.paramMappers = null;
 		this.introspectionFactory = introspectionFactory;
 	}
 
@@ -80,25 +81,24 @@ public class TextFragment implements Fragment {
 	public TextFragment(String sql, Type[] types,
 			IntrospectionFactory introspectionFactory) {
 		this.sqlBuilder = new StringBuilder(sql.length());
-		this.gettersList = new ArrayList<Getter>();
 		this.sql = sql;
 		this.introspectionFactory = introspectionFactory;
-		configureTypes(types, sqlBuilder, gettersList);
+		this.paramMappers = configureTypes(types, sqlBuilder);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public BoundFragment bindParameters(Object[] parameters) {
-		if (gettersList == null) {
-			List<Getter> getters = new ArrayList<Getter>();
+		if (paramMappers == null) {
 			StringBuilder builder = new StringBuilder();
 
-			configureTypes(typesFromParameters(parameters), builder, getters);
-			return new BoundFragmentImpl(builder.toString(), getters,
+			List<ParameterMappingConfig> mappers = configureTypes(typesFromParameters(parameters), 
+					builder);
+			return new BoundFragmentImpl(builder.toString(), mappers,
 					parameters);
 		}
-		return new BoundFragmentImpl(sqlBuilder.toString(), gettersList,
+		return new BoundFragmentImpl(sqlBuilder.toString(), paramMappers,
 				parameters);
 	}
 
@@ -123,10 +123,11 @@ public class TextFragment implements Fragment {
 	 * 
 	 * @param types parameter types
 	 * @param builder builder for output SQL
-	 * @param getters getters list to fill
+	 * @param mappers parameters mapping configs
 	 */
-	private void configureTypes(Type[] types, StringBuilder builder,
-			List<Getter> getters) {
+	private List<ParameterMappingConfig> configureTypes(Type[] types, StringBuilder builder) {
+		List<ParameterMappingConfig> mappers = new ArrayList<ParameterMappingConfig>();
+		
 		int pos = 0;
 		while (pos < sql.length()) {
 			// TODO: Add support for out parameters!
@@ -147,8 +148,12 @@ public class TextFragment implements Fragment {
 			// TODO: Add support for lists, which should expand into something like (?, ?, ?, ?)
 			builder.append('?');
 			try {
-				getters.add(introspectionFactory.buildParameterGetter(
-					types, prop));
+				
+				Getter getter = introspectionFactory.buildParameterGetter(types, prop);
+				Type type = getter.getType();
+				
+				ParameterMappingConfig paramMapper = new ParameterMappingConfig(type, getter, null);
+				mappers.add(paramMapper);
 			} catch(IllegalArgumentException e) {
 				throw new IllegalArgumentException("Failed to create parameter getter for "
 						+ " (failed property marked by $[]): "
@@ -157,6 +162,7 @@ public class TextFragment implements Fragment {
 			}
 			pos = end + 1;
 		}
+		return mappers;
 	}
 
 	/**

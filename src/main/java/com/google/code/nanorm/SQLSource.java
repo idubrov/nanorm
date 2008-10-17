@@ -15,7 +15,6 @@
  */
 package com.google.code.nanorm;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,6 +23,7 @@ import java.util.List;
 import com.google.code.nanorm.internal.BoundFragment;
 import com.google.code.nanorm.internal.TextFragment;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
+import com.google.code.nanorm.internal.mapping.parameter.ParameterMapper;
 import com.google.code.nanorm.internal.util.ToStringBuilder;
 
 /**
@@ -101,7 +101,7 @@ public abstract class SQLSource implements BoundFragment {
 		/**
 		 * {@inheritDoc}
 		 */
-		public void generate(StringBuilder builder, List<Object> parameters, List<Type> types) {
+		public void generate(StringBuilder builder, List<ParameterMapper> parameters) {
 			if (clauses.isEmpty()) {
 				return;
 			}
@@ -116,7 +116,7 @@ public abstract class SQLSource implements BoundFragment {
 					builder.append(with);
 				}
 				for (BoundFragment item : items) {
-					item.generate(builder, parameters, types);
+					item.generate(builder, parameters);
 				}
 				first = false;
 			}
@@ -284,14 +284,13 @@ public abstract class SQLSource implements BoundFragment {
 	 * 
 	 * @param builder SQL fragment builder
 	 * @param parameters parameters
-	 * @param types parameter types
 	 */
-	public void generate(StringBuilder builder, List<Object> parameters, List<Type> types) {
+	public void generate(StringBuilder builder, List<ParameterMapper> parameters) {
 		if (stack.size() != 1) {
 			throw new IllegalStateException("Stack must contain exactly one element!");
 		}
 		for (BoundFragment obj : last()) {
-			obj.generate(builder, parameters, types);
+			obj.generate(builder, parameters);
 		}
 	}
 

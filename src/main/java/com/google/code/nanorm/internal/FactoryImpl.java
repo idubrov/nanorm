@@ -16,6 +16,7 @@
 package com.google.code.nanorm.internal;
 
 import java.lang.reflect.Type;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import com.google.code.nanorm.DataSink;
 import com.google.code.nanorm.NanormFactory;
 import com.google.code.nanorm.Session;
-import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.annotations.SelectKeyType;
 import com.google.code.nanorm.config.SessionConfig;
 import com.google.code.nanorm.exceptions.ConfigurationException;
@@ -40,12 +40,12 @@ import com.google.code.nanorm.internal.config.StatementConfig;
 import com.google.code.nanorm.internal.config.StatementKey;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.Setter;
+import com.google.code.nanorm.internal.mapping.parameter.ParameterMapper;
 import com.google.code.nanorm.internal.mapping.result.DataSinkSource;
 import com.google.code.nanorm.internal.mapping.result.ResultCollectorUtil;
 import com.google.code.nanorm.internal.mapping.result.RowMapper;
 import com.google.code.nanorm.internal.session.SessionSpi;
 import com.google.code.nanorm.internal.session.SingleConnSessionSpi;
-import com.google.code.nanorm.internal.type.TypeHandler;
 import com.google.code.nanorm.internal.util.Messages;
 
 /**
@@ -174,11 +174,10 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 
 			// SQL, parameters and their types
 			StringBuilder sql = new StringBuilder();
-			List<Object> parameters = new ArrayList<Object>();
-			List<Type> types = new ArrayList<Type>();
+			List<ParameterMapper> parameters = new ArrayList<ParameterMapper>();
 
-			// Fill SQL string builder, parameter and types
-			fragment.generate(sql, parameters, types);
+			// Fill SQL string builder and parameter mappers
+			fragment.generate(sql, parameters);
 
 			// Close connection after this try
 			Connection conn = spi.getConnection();
@@ -211,7 +210,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 				// Close statement after this try
 				try {
 					// Map parameters to the statement
-					mapParameters(st, types, parameters);
+					mapParametersIn(st, parameters);
 
 					if (stConfig.isInsert()) {
 						st.executeUpdate();
@@ -230,7 +229,11 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 					} else {
 						processResultSet(stConfig, args, request, st.executeQuery());
 					}
-
+					
+					// Map OUT parameters
+					if(stConfig.isCall()) {
+						mapParametersOut((CallableStatement) st, parameters);
+					}
 				} finally {
 					st.close();
 				}
@@ -348,17 +351,17 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 		}
 	}
 
-	private void mapParameters(PreparedStatement statement, List<Type> types,
-			List<Object> params) throws SQLException {
-
-		TypeHandlerFactory factory = config.getTypeHandlerFactory();
-
-		for (int i = 0; i < params.size(); ++i) {
-			Object item = params.get(i);
-			Type type = types.get(i);
+	private void mapParametersIn(PreparedStatement statement, List<ParameterMapper> params) throws SQLException {
+		for (ParameterMapper mapper : params) {
 			// TODO: Void.class handling (null parameters)
-			TypeHandler<?> typeHandler = factory.getTypeHandler(type);
-			typeHandler.setParameter(statement, i + 1, item);
+			mapper.mapParameterIn(config.getTypeHandlerFactory(), statement);
+		}
+	}
+
+	private void mapParametersOut(CallableStatement statement, List<ParameterMapper> params) throws SQLException {
+		for (ParameterMapper mapper : params) {
+			// TODO: Void.class handling (null parameters)
+			mapper.mapParameterOut(config.getTypeHandlerFactory(), statement);
 		}
 	}
 
