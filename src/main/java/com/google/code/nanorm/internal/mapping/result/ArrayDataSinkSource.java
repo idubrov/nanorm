@@ -17,6 +17,7 @@ package com.google.code.nanorm.internal.mapping.result;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -78,8 +79,16 @@ public class ArrayDataSinkSource implements DataSinkSource {
 			 * {@inheritDoc}
 			 */
 			public void commitData() {
-				Object[] array = (Object[]) Array.newInstance(componentClass, list.size());
-				setter.setValue(instance, list.toArray(array));
+				Object array = Array.newInstance(componentClass, list.size());
+				if(componentClass.isPrimitive()) {
+					int i = 0;
+					for(Object obj : list) {
+						Array.set(array, i++, obj);
+					}
+				} else {
+					array = list.toArray((Object[]) array);
+				}
+				setter.setValue(instance, array);
 			}
 		};
 	}

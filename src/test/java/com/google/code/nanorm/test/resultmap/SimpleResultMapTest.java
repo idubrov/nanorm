@@ -75,7 +75,10 @@ public class SimpleResultMapTest extends MapperTestBase {
         // Test null return value
         @Select("SELECT id FROM articles")
         int selectSM();
-
+        
+        // Test primitive array
+        @Select("SELECT id FROM articles")
+        int[] selectArticleIds();
     }
     
     @Test
@@ -185,5 +188,14 @@ public class SimpleResultMapTest extends MapperTestBase {
         } catch(IllegalStateException e) {
         	assertContains(e, "selectSM", "Mapper1", "single");
         }
+    }
+    
+    @Test
+    public void testPrimitiveArray() throws Exception {
+    	Mapper1 mapper = factory.createMapper(Mapper1.class);
+    	int[] arr = mapper.selectArticleIds();
+    	Assert.assertEquals(2, arr.length);
+    	Assert.assertEquals(1, arr[0]);
+    	Assert.assertEquals(2, arr[1]);
     }
 }

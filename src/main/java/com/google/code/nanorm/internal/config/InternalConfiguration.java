@@ -346,9 +346,17 @@ public class InternalConfiguration {
 	 */
 	private RowMapper createRowMapper(Type type, ResultMapConfig config) {
 		// For primitive types we simply return the mapped value of first column
-		if (type instanceof Class<?> && (((Class<?>) type).isPrimitive() || type == String.class)) {
-			return new ScalarRowMapper(type, typeHandlerFactory);
+		if (type instanceof Class<?>) {
+			Class<?> clazz = (Class<?>) type;
+			if(clazz.isPrimitive() || type == String.class) {
+				return new ScalarRowMapper(type, typeHandlerFactory);
+			}
+			if(clazz.isArray() && (clazz.getComponentType().isPrimitive() || 
+					clazz.getComponentType() == String.class)) {
+				return new ScalarRowMapper(clazz.getComponentType(), typeHandlerFactory);
+			}
 		}
+		
 		// TODO: If config is null, automap it?
 		return new DefaultRowMapper(type, config, introspectionFactory, typeHandlerFactory);
 	}

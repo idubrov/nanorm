@@ -151,7 +151,8 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 	 * @return setter instance
 	 */
 	public Setter buildSetterImpl(final Class<?> beanClass, final Type[] types, final String path) {
-		AccessorKey key = new AccessorKey(beanClass, path);
+		AccessorKey key = types == null ? new AccessorKey(beanClass, path) : new AccessorKey(types,
+				path);
 		Setter instance = setters.get(key);
 		if (instance == null) {
 			String name = "com/google/code/nanorm/generated/Setter" + counter.incrementAndGet();
@@ -185,14 +186,14 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 	 * {@inheritDoc}
 	 */
 	public <T> T createMapper(Class<T> interfaze, InternalConfiguration config,
-			QueryDelegate delegate){
+			QueryDelegate delegate) {
 
 		// TODO: Cache!
 		List<MethodConfig> methods = new ArrayList<MethodConfig>();
 		List<StatementConfig> configs = new ArrayList<StatementConfig>();
 		for (java.lang.reflect.Method m : interfaze.getMethods()) {
 			StatementConfig stConfig = config.getStatementConfig(interfaze, m);
-			
+
 			MethodConfig cfg = new MethodConfig(m, methods.size());
 			methods.add(cfg);
 			configs.add(stConfig);
@@ -214,9 +215,10 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 		}
 		return interfaze.cast(instance);
 	}
-	
+
 	/**
 	 * Define class in the classloader.
+	 * 
 	 * @param name
 	 * @param b
 	 * @return

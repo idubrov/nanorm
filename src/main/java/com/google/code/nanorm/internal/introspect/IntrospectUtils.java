@@ -219,7 +219,7 @@ public final class IntrospectUtils {
 	 */
 	public static Method findGetterCaseInsensitive(
 			Class<?> clazz, String property) {
-		for (Method m : clazz.getDeclaredMethods()) {
+		for (Method m : clazz.getMethods()) {
 			if (m.getName().equalsIgnoreCase("get" + property)) {
 				return m;
 			} else if (m.getName().equalsIgnoreCase("is" + property)
@@ -242,7 +242,7 @@ public final class IntrospectUtils {
 			String property) {
 		String name = "set" + Character.toUpperCase(property.charAt(0))
 				+ property.substring(1);
-		for (Method method : clazz.getDeclaredMethods()) {
+		for (Method method : clazz.getMethods()) {
 			if (method.getParameterTypes().length == 1
 					&& method.getName().equals(name)) {
 				return method;
