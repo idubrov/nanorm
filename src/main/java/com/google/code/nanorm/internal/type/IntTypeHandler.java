@@ -15,6 +15,7 @@
  */
 package com.google.code.nanorm.internal.type;
 
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,17 +30,24 @@ import java.sql.Types;
 public class IntTypeHandler implements TypeHandler<Integer> {
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getValue(java.sql.ResultSet, int)
+     * {@inheritDoc}
      */
     public Integer getValue(ResultSet rs, int column) throws SQLException {
         return rs.getInt(column);
     }
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getResult(java.sql.ResultSet, java.lang.String)
+     * {@inheritDoc}
      */
-    public Integer getResult(ResultSet rs, String column) throws SQLException {
+    public Integer getValue(ResultSet rs, String column) throws SQLException {
         return rs.getInt(column);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Integer getValue(CallableStatement cs, int index) throws SQLException {
+        return cs.getInt(index);
     }
     
     /**
@@ -51,5 +59,12 @@ public class IntTypeHandler implements TypeHandler<Integer> {
         } else {
             st.setInt(column, (Integer) value);
         }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public int getSqlType() {
+    	return Types.INTEGER;
     }
 }

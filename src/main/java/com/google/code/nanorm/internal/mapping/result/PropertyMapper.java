@@ -66,7 +66,7 @@ public class PropertyMapper {
 		if (config.getColumnIndex() != 0) {
 			value = typeHandler.getValue(rs, config.getColumnIndex());
 		} else {
-			value = typeHandler.getResult(rs, config.getColumn());
+			value = typeHandler.getValue(rs, config.getColumn());
 		}
 		if (config.getSubselect() != null) {
 			value = request.getQueryDelegate().query(config.getSubselect(),

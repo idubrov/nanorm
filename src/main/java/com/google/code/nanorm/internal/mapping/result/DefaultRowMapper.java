@@ -355,7 +355,7 @@ public class DefaultRowMapper implements RowMapper {
 			if (config.getColumnIndex() != 0) {
 				return typeHandler.getValue(rs, config.getColumnIndex());
 			}
-			return typeHandler.getResult(rs, config.getColumn());
+			return typeHandler.getValue(rs, config.getColumn());
 		}
 	}
 }

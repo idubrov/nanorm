@@ -15,10 +15,12 @@
  */
 package com.google.code.nanorm.internal.type;
 
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Types;
 
 /**
  * Type handler for {@link java.sql.Timestamp}
@@ -35,10 +37,17 @@ public class SqlTimestampTypeHandler implements TypeHandler<Timestamp> {
     }
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getResult(java.sql.ResultSet, java.lang.String)
+     * @see com.google.code.nanorm.internal.type.TypeHandler#getValue(java.sql.ResultSet, java.lang.String)
      */
-    public Timestamp getResult(ResultSet rs, String column) throws SQLException {
+    public Timestamp getValue(ResultSet rs, String column) throws SQLException {
     	return rs.getTimestamp(column);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Timestamp getValue(CallableStatement cs, int index) throws SQLException {
+        return cs.getTimestamp(index);
     }
     
     /**
@@ -46,5 +55,12 @@ public class SqlTimestampTypeHandler implements TypeHandler<Timestamp> {
      */
     public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
         st.setTimestamp(column, (Timestamp) value);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public int getSqlType() {
+    	return Types.TIMESTAMP;
     }
 }

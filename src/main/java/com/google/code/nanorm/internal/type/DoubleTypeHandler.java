@@ -15,6 +15,7 @@
  */
 package com.google.code.nanorm.internal.type;
 
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,17 +30,24 @@ import java.sql.Types;
 public class DoubleTypeHandler implements TypeHandler<Double> {
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getValue(java.sql.ResultSet, int)
+     * {@inheritDoc}
      */
     public Double getValue(ResultSet rs, int column) throws SQLException {
         return rs.getDouble(column);
     }
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getResult(java.sql.ResultSet, java.lang.String)
+     * {@inheritDoc}
      */
-    public Double getResult(ResultSet rs, String column) throws SQLException {
+    public Double getValue(ResultSet rs, String column) throws SQLException {
         return rs.getDouble(column);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Double getValue(CallableStatement cs, int index) throws SQLException {
+        return cs.getDouble(index);
     }
     
     /**
@@ -51,5 +59,12 @@ public class DoubleTypeHandler implements TypeHandler<Double> {
         } else {
             st.setDouble(column, (Double) value);
         }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public int getSqlType() {
+    	return Types.DOUBLE;
     }
 }

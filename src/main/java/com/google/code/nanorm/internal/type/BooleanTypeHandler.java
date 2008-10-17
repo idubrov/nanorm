@@ -15,6 +15,7 @@
  */
 package com.google.code.nanorm.internal.type;
 
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,8 +39,15 @@ public class BooleanTypeHandler implements TypeHandler<Boolean> {
     /**
      * {@inheritDoc}
      */
-    public Boolean getResult(ResultSet rs, String column) throws SQLException {
+    public Boolean getValue(ResultSet rs, String column) throws SQLException {
         return rs.getBoolean(column);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Boolean getValue(CallableStatement cs, int index) throws SQLException {
+        return cs.getBoolean(index);
     }
 
     /**
@@ -51,5 +59,12 @@ public class BooleanTypeHandler implements TypeHandler<Boolean> {
         } else {
             st.setBoolean(column, (Boolean) value);
         }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public int getSqlType() {
+    	return Types.BOOLEAN;
     }
 }

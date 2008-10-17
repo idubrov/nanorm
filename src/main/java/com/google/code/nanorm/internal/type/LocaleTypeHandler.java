@@ -15,6 +15,7 @@
  */
 package com.google.code.nanorm.internal.type;
 
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -33,7 +34,7 @@ public class LocaleTypeHandler implements TypeHandler<Locale>{
 	/**
 	 * {@inheritDoc}
 	 */
-	public Locale getResult(ResultSet rs, String column) throws SQLException {
+	public Locale getValue(ResultSet rs, String column) throws SQLException {
 		return valueOf(rs.getString(column));
 	}
 
@@ -43,6 +44,13 @@ public class LocaleTypeHandler implements TypeHandler<Locale>{
 	public Locale getValue(ResultSet rs, int column) throws SQLException {
 		return valueOf(rs.getString(column));
 	}
+	
+    /**
+     * {@inheritDoc}
+     */
+    public Locale getValue(CallableStatement cs, int index) throws SQLException {
+        return valueOf(cs.getString(index));
+    }
 
 	/**
 	 * {@inheritDoc}
@@ -75,4 +83,10 @@ public class LocaleTypeHandler implements TypeHandler<Locale>{
         return locale;
     }
 
+	/**
+     * {@inheritDoc}
+     */
+    public int getSqlType() {
+    	return Types.VARCHAR;
+    }
 }

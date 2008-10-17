@@ -15,6 +15,7 @@
  */
 package com.google.code.nanorm.internal.type;
 
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,18 +29,25 @@ import java.sql.Types;
  */
 public class CharTypeHandler implements TypeHandler<Character> {
 
-    /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getValue(java.sql.ResultSet, int)
-     */
+	/**
+	 * {@inheritDoc}
+	 */
     public Character getValue(ResultSet rs, int column) throws SQLException {
         return getFromString(rs.getString(column));
     }
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getResult(java.sql.ResultSet, java.lang.String)
+     * {@inheritDoc}
      */
-    public Character getResult(ResultSet rs, String column) throws SQLException {
+    public Character getValue(ResultSet rs, String column) throws SQLException {
         return getFromString(rs.getString(column));
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Character getValue(CallableStatement cs, int index) throws SQLException {
+        return getFromString(cs.getString(index));
     }
     
     private Character getFromString(String str) {
@@ -62,5 +70,11 @@ public class CharTypeHandler implements TypeHandler<Character> {
             st.setString(column, ((Character) value).toString());
         }
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
+    public int getSqlType() {
+    	return Types.CHAR;
+    }
 }

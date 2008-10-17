@@ -15,6 +15,7 @@
  */
 package com.google.code.nanorm.internal.type;
 
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,7 +31,7 @@ import java.util.Date;
 public class DateTypeHandler implements TypeHandler<Date> {
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getValue(java.sql.ResultSet, int)
+     * {@inheritDoc}
      */
     public Date getValue(ResultSet rs, int column) throws SQLException {
         Timestamp timestamp = rs.getTimestamp(column);
@@ -38,10 +39,18 @@ public class DateTypeHandler implements TypeHandler<Date> {
     }
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getResult(java.sql.ResultSet, java.lang.String)
+     * {@inheritDoc}
      */
-    public Date getResult(ResultSet rs, String column) throws SQLException {
+    public Date getValue(ResultSet rs, String column) throws SQLException {
     	Timestamp timestamp = rs.getTimestamp(column);
+        return timestamp == null ? null : new Date(timestamp.getTime());
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Date getValue(CallableStatement cs, int index) throws SQLException {
+    	Timestamp timestamp = cs.getTimestamp(index);
         return timestamp == null ? null : new Date(timestamp.getTime());
     }
     
@@ -54,5 +63,12 @@ public class DateTypeHandler implements TypeHandler<Date> {
         } else {
             st.setTimestamp(column, new Timestamp(((Date) value).getTime()));
         }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public int getSqlType() {
+    	return Types.TIMESTAMP;
     }
 }

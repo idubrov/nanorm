@@ -15,6 +15,7 @@
  */
 package com.google.code.nanorm.internal.type;
 
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,17 +30,24 @@ import java.sql.Types;
 public class LongTypeHandler implements TypeHandler<Long> {
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getValue(java.sql.ResultSet, int)
+     * {@inheritDoc}
      */
     public Long getValue(ResultSet rs, int column) throws SQLException {
         return rs.getLong(column);
     }
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getResult(java.sql.ResultSet, java.lang.String)
+     * {@inheritDoc}
      */
-    public Long getResult(ResultSet rs, String column) throws SQLException {
+    public Long getValue(ResultSet rs, String column) throws SQLException {
         return rs.getLong(column);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Long getValue(CallableStatement cs, int index) throws SQLException {
+        return cs.getLong(index);
     }
     
     /**
@@ -51,5 +59,12 @@ public class LongTypeHandler implements TypeHandler<Long> {
         } else {
             st.setLong(column, (Long) value);
         }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public int getSqlType() {
+    	return Types.BIGINT;
     }
 }

@@ -15,6 +15,7 @@
  */
 package com.google.code.nanorm.internal.type;
 
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,10 +37,17 @@ public class ByteTypeHandler implements TypeHandler<Byte> {
     }
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getResult(java.sql.ResultSet, java.lang.String)
+     * @see com.google.code.nanorm.internal.type.TypeHandler#getValue(java.sql.ResultSet, java.lang.String)
      */
-    public Byte getResult(ResultSet rs, String column) throws SQLException {
+    public Byte getValue(ResultSet rs, String column) throws SQLException {
         return rs.getByte(column);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Byte getValue(CallableStatement cs, int index) throws SQLException {
+        return cs.getByte(index);
     }
     
     /**
@@ -51,5 +59,12 @@ public class ByteTypeHandler implements TypeHandler<Byte> {
         } else {
             st.setByte(column, (Byte) value);
         }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public int getSqlType() {
+    	return Types.TINYINT;
     }
 }

@@ -15,10 +15,12 @@
  */
 package com.google.code.nanorm.internal.type;
 
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
+import java.sql.Types;
 
 /**
  * Type handler for {@link java.sql.Time}
@@ -35,10 +37,17 @@ public class SqlTimeTypeHandler implements TypeHandler<Time> {
     }
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getResult(java.sql.ResultSet, java.lang.String)
+     * @see com.google.code.nanorm.internal.type.TypeHandler#getValue(java.sql.ResultSet, java.lang.String)
      */
-    public Time getResult(ResultSet rs, String column) throws SQLException {
+    public Time getValue(ResultSet rs, String column) throws SQLException {
     	return rs.getTime(column);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Time getValue(CallableStatement cs, int index) throws SQLException {
+        return cs.getTime(index);
     }
     
     /**
@@ -46,5 +55,12 @@ public class SqlTimeTypeHandler implements TypeHandler<Time> {
      */
     public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
         st.setTime(column, (Time) value);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public int getSqlType() {
+    	return Types.TIME;
     }
 }

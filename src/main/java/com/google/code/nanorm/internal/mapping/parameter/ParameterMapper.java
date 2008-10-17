@@ -54,8 +54,7 @@ public final class ParameterMapper {
 	}
 
 	/**
-	 * TODO: Not used by now
-	 * TODO: Check out is used only for @Call
+	 * TODO: Not used by now TODO: Check out is used only for @Call
 	 * 
 	 * Map OUT parameter from {@link CallableStatement}.
 	 * 
@@ -68,10 +67,26 @@ public final class ParameterMapper {
 		// OUT parameter
 		if (config.getSetter() != null) {
 			// TODO: Use typeHandler
-			//TypeHandler<?> typeHandler = factory.getTypeHandler(config.getType());
+			// TypeHandler<?> typeHandler =
+			// factory.getTypeHandler(config.getType());
 
 			Object value = cs.getObject(index); // TODO: Use type handler;
 			config.getSetter().setValue(args, value);
+		}
+	}
+
+	/**
+	 * Register OUT parameter.
+	 * @param factory type handler factory
+	 * @param cs callable statement
+	 * @throws SQLException exception while registering parameter
+	 */
+	public void registerOutParameter(TypeHandlerFactory factory, CallableStatement cs)
+			throws SQLException {
+		if(config.getSetter() != null) {
+			TypeHandler<?> typeHandler = factory.getTypeHandler(config.getType());
+
+			cs.registerOutParameter(index, typeHandler.getSqlType());
 		}
 	}
 }

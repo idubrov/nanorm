@@ -15,10 +15,12 @@
  */
 package com.google.code.nanorm.internal.type;
 
+import java.sql.CallableStatement;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 /**
  * Type handler for {@link java.sql.Date}
@@ -28,17 +30,24 @@ import java.sql.SQLException;
 public class SqlDateTypeHandler implements TypeHandler<Date> {
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getValue(java.sql.ResultSet, int)
+     * {@inheritDoc}
      */
     public Date getValue(ResultSet rs, int column) throws SQLException {
         return rs.getDate(column);
     }
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getResult(java.sql.ResultSet, java.lang.String)
+     * {@inheritDoc}
      */
-    public Date getResult(ResultSet rs, String column) throws SQLException {
+    public Date getValue(ResultSet rs, String column) throws SQLException {
     	return rs.getDate(column);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Date getValue(CallableStatement cs, int index) throws SQLException {
+        return cs.getDate(index);
     }
     
     /**
@@ -46,5 +55,12 @@ public class SqlDateTypeHandler implements TypeHandler<Date> {
      */
     public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
         st.setDate(column, (Date) value);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public int getSqlType() {
+    	return Types.DATE;
     }
 }

@@ -202,6 +202,13 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 				PreparedStatement st;
 				if(stConfig.isCall()) {
 					st = conn.prepareCall(sql.toString());
+					
+					// Register OUT parameters
+					CallableStatement cs = (CallableStatement) st;
+					for (ParameterMapper mapper : parameters) {
+						// TODO: Void.class handling (null parameters)
+						mapper.registerOutParameter(config.getTypeHandlerFactory(), cs);
+					}
 				} else {
 					st = isJDBCKey ? 
 						conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS) :
@@ -210,7 +217,10 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 				// Close statement after this try
 				try {
 					// Map parameters to the statement
-					mapParametersIn(st, parameters);
+					for (ParameterMapper mapper : parameters) {
+						// TODO: Void.class handling (null parameters)
+						mapper.mapParameterIn(config.getTypeHandlerFactory(), st);
+					}
 
 					if (stConfig.isInsert()) {
 						st.executeUpdate();
@@ -232,7 +242,11 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 					
 					// Map OUT parameters
 					if(stConfig.isCall()) {
-						mapParametersOut((CallableStatement) st, parameters);
+						CallableStatement cs = (CallableStatement) st;
+						for (ParameterMapper mapper : parameters) {
+							// TODO: Void.class handling (null parameters)
+							mapper.mapParameterOut(config.getTypeHandlerFactory(), cs);
+						}
 					}
 				} finally {
 					st.close();
@@ -348,20 +362,6 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 			}
 
 			request.setResult(result);
-		}
-	}
-
-	private void mapParametersIn(PreparedStatement statement, List<ParameterMapper> params) throws SQLException {
-		for (ParameterMapper mapper : params) {
-			// TODO: Void.class handling (null parameters)
-			mapper.mapParameterIn(config.getTypeHandlerFactory(), statement);
-		}
-	}
-
-	private void mapParametersOut(CallableStatement statement, List<ParameterMapper> params) throws SQLException {
-		for (ParameterMapper mapper : params) {
-			// TODO: Void.class handling (null parameters)
-			mapper.mapParameterOut(config.getTypeHandlerFactory(), statement);
 		}
 	}
 

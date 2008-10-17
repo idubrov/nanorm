@@ -15,6 +15,7 @@
  */
 package com.google.code.nanorm.internal.type;
 
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,19 +30,26 @@ import java.sql.Types;
 public class ShortTypeHandler implements TypeHandler<Short> {
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getValue(java.sql.ResultSet, int)
+     * {@inheritDoc}
      */
     public Short getValue(ResultSet rs, int column) throws SQLException {
         return rs.getShort(column);
     }
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getResult(java.sql.ResultSet, java.lang.String)
+     * {@inheritDoc}
      */
-    public Short getResult(ResultSet rs, String column) throws SQLException {
+    public Short getValue(ResultSet rs, String column) throws SQLException {
         return rs.getShort(column);
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    public Short getValue(CallableStatement cs, int index) throws SQLException {
+        return cs.getShort(index);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -51,5 +59,12 @@ public class ShortTypeHandler implements TypeHandler<Short> {
         } else {
             st.setShort(column, (Short) value);
         }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public int getSqlType() {
+    	return Types.SMALLINT;
     }
 }
