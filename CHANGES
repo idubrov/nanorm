@@ -1,6 +1,6 @@
 0.4.1, (unreleased)
     * Added two new type handlers, for byte[] and java.util.Locale.
-    * DataSink interface method renames
+    * Some methods were renamed in public interface DataSink
     * Fixed issue with wrong caching of setters used for setting pre-generated keys
     * Fixed issue with incorrect getters/setters lookup (didn't searched in inherited methods)
     * Fixed issue with handling arrays of primitive types
