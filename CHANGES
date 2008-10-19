@@ -1,4 +1,4 @@
-0.4.1, (unreleased)
+0.4.1, released 2008-10-19
     * Added two new type handlers, for byte[] and java.util.Locale.
     * Some methods were renamed in public interface DataSink
     * Fixed issue with wrong caching of setters used for setting pre-generated keys
