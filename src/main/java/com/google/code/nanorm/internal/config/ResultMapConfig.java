@@ -86,6 +86,15 @@ public class ResultMapConfig {
 	public boolean isScalar() {
 		return scalar;
 	}
+	
+	/**
+	 * Mark this result map configuration as scalar mapping.
+	 * 
+	 * @param scalar scalar mapping flag
+	 */
+	public void setScalar(boolean scalar) {
+		this.scalar = scalar;
+	}
 
 	/**
 	 * Get the list of properties to group results by.

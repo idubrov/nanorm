@@ -26,8 +26,10 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 import com.google.code.nanorm.DataSink;
+import com.google.code.nanorm.TypeHandler;
 import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
+import com.google.code.nanorm.annotations.Scalar;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.exceptions.DataException;
 import com.google.code.nanorm.test.beans.Publication;
@@ -79,10 +81,12 @@ public class SimpleResultMapTest extends MapperTestBase {
 
 		// Scalar mapping
 		@Select("SELECT '2009-06-07 15:23:34'")
+		@Scalar
 		Timestamp selectTimestamp();
 		
 		// Scalar mapping
-		@Select("SELECT '2009-06-07 15:23:34', '2010-01-03 06:17:54'")
+		@Select("SELECT '2009-06-07 15:23:34' UNION SELECT '2010-01-03 06:17:54'")
+		@Scalar
 		Timestamp[] selectTimestampArray();
 	}
 
@@ -216,11 +220,11 @@ public class SimpleResultMapTest extends MapperTestBase {
 	public void testScalarMapping() throws Exception {
 		Mapper1 mapper = factory.createMapper(Mapper1.class);
 		Timestamp stamp = mapper.selectTimestamp();
-		Assert.assertEquals(new Timestamp(111), stamp);
+		Assert.assertEquals(new Timestamp(1244388214000L), stamp);
 		
 		Timestamp[] arr = mapper.selectTimestampArray();
 		Assert.assertEquals(2, arr.length);
-		Assert.assertEquals(new Timestamp(111), arr[0]);
-		Assert.assertEquals(new Timestamp(111), arr[1]);
+		Assert.assertEquals(new Timestamp(1244388214000L), arr[0]);
+		Assert.assertEquals(new Timestamp(1262499474000L), arr[1]);
 	}
 }

@@ -37,6 +37,7 @@ import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapList;
 import com.google.code.nanorm.annotations.ResultMapRef;
+import com.google.code.nanorm.annotations.Scalar;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.annotations.SelectKey;
 import com.google.code.nanorm.annotations.SelectKeyType;
@@ -345,7 +346,16 @@ public class InternalConfiguration {
 	 * @return
 	 */
 	private RowMapper createRowMapper(Type type, ResultMapConfig config) {
-		// For primitive types we simply return the mapped value of first column
+		// For explicitly marked by @Scalar, we use scalar row mapper
+		if (config.isScalar()) {
+			if (type instanceof Class<?> && ((Class<?>) type).isArray()) {
+				return new ScalarRowMapper(((Class<?>) type).getComponentType(), typeHandlerFactory);
+			}
+			return new ScalarRowMapper(type, typeHandlerFactory);
+		}
+		
+		// For primitive types and String we never use usual row mapper, only
+		// scalar mapping
 		if (type instanceof Class<?>) {
 			Class<?> clazz = (Class<?>) type;
 			if(clazz.isPrimitive() || type == String.class) {
@@ -400,36 +410,44 @@ public class InternalConfiguration {
 	 * @return
 	 */
 	private ResultMapConfig createResultMapConfig(Method method) throws ConfigurationException {
+		Class<?> mapper = method.getDeclaringClass();
+		
+		// FIXME: These three are mutually exclusive! Check this!
 		ResultMap resultMap = method.getAnnotation(ResultMap.class);
 		ResultMapRef ref = method.getAnnotation(ResultMapRef.class);
-		Class<?> mapper = method.getDeclaringClass();
+		Scalar scalar = method.getAnnotation(Scalar.class);
+		
 		if (resultMap != null) {
-			return createResultMapConfig(method.getDeclaringClass(), method, resultMap);
-		}
-
-		// No explicit map on method is defined -- try to find reference or
-		// default map
-		ResultMapConfig resultMapConfig;
-		if (ref != null) {
+			// Use result map
+			return createResultMapConfig(mapper, method, resultMap);
+		} else if(scalar != null) {
+			// Use scalar mapping
+			ResultMapConfig config = new ResultMapConfig(mapper.getName() + "#(scalar)");
+			config.setScalar(true);
+			return config;
+		} else if (ref != null) {
 			// Resolve reference
 			Class<?> refMapper = ref.declaringClass();
 			if (ref.declaringClass() == Object.class) {
 				refMapper = mapper;
 			}
-			resultMapConfig = findResultMap(refMapper, ref.value());
+			ResultMapConfig resultMapConfig = findResultMap(refMapper, ref.value());
 			if (resultMapConfig == null) {
 				throw new ConfigurationException(Messages.resultMapNotFound(mapper, method, ref));
 			}
+			return resultMapConfig;
 		} else {
+			// Search for default map or automap
+			
 			// Search for default map for the mapper (with empty id)
 			// FIXME: Remove this feature?
-			resultMapConfig = findResultMap(method.getDeclaringClass(), "");
+			ResultMapConfig resultMapConfig = findResultMap(mapper, "");
 			if (resultMapConfig == null) {
 				// Return automap if no map is defined
-				return createResultMapConfig(method.getDeclaringClass(), method, null);
+				resultMapConfig = createResultMapConfig(mapper, method, null);
 			}
+			return resultMapConfig;
 		}
-		return resultMapConfig;
 	}
 
 	/**
