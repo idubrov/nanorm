@@ -1,6 +1,7 @@
-0.4.2, unreleased
+0.4.2, released 2008-11-08
     * Moved TypeHandler from the internal package to the API package
-    * Added support for mapping result set directly via TypeHandler
+    * Added support for mapping result set directly via TypeHandler (@Scalar annotation)
+    * Configuration validation improved.
 
 0.4.1, released 2008-10-19
     * Added two new type handlers, for byte[] and java.util.Locale.
