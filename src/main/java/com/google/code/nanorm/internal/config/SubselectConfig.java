@@ -24,13 +24,13 @@ import com.google.code.nanorm.annotations.ResultMap;
  * @author Ivan Dubrov
  */
 public class SubselectConfig {
-	private StatementKey subselectKey;
+	private final StatementKey subselectKey;
 	
-	private PropertyMappingConfig propertyMapping;
+	private final PropertyMappingConfig propertyMapping;
 	
-	private Class<?> mapper;
+	private final Class<?> mapper;
 	
-	private ResultMap resultMap;
+	private final ResultMap resultMap;
 	
 	/**
 	 * Constructor.
@@ -55,7 +55,7 @@ public class SubselectConfig {
 	}
 	
 	/**
-	 * Getter for property mapping.
+	 * Getter for property subselectPostConfiguremapping.
 	 * @return property mapping;
 	 */
 	public PropertyMappingConfig getPropertyMapping() {

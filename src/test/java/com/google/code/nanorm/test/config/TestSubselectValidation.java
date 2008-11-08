@@ -29,6 +29,7 @@ import static com.google.code.nanorm.test.common.Utils.assertContains;
 
 /**
  * Test subselect validation.
+ * 
  * @author Ivan Dubrov
  */
 public class TestSubselectValidation {
@@ -40,7 +41,11 @@ public class TestSubselectValidation {
 	}
 
 	/**
-	 * Test result map referenced as nested map, but the referee is not mapped.
+	 * TEST: Configure mapper interface that has a property with subselect which
+	 * refers to unexistent query method.
+	 * 
+	 * EXPECT: Configuration exception that contains certain information
+	 * strings.
 	 */
 	@Test
 	public void testSubselectValidation1() {
@@ -48,11 +53,7 @@ public class TestSubselectValidation {
 			new NanormConfiguration().configure(Mapper8.class);
 			Assert.fail();
 		} catch (ConfigurationException e) {
-			assertContains(e, "not found");
-			assertContains(e, "Mapper8");
-			assertContains(e, "dummy");
-			assertContains(e, "testmap");
-			assertContains(e, "selectById");
+			assertContains(e, "not found", "Mapper8", "dummy", "testmap", "selectById");
 		}
 	}
 
@@ -67,7 +68,11 @@ public class TestSubselectValidation {
 	}
 
 	/**
-	 * Test result map referenced as nested map, but the referee is not mapped.
+	 * TEST: Configure mapper interface that has a property with subselect which
+	 * refers to unexistent query method.
+	 * 
+	 * EXPECT: Configuration exception that contains certain information
+	 * strings.
 	 */
 	@Test
 	public void testSubselectValidation2() {
@@ -75,26 +80,25 @@ public class TestSubselectValidation {
 			new NanormConfiguration().configure(Mapper9.class, Mapper10.class);
 			Assert.fail();
 		} catch (ConfigurationException e) {
-			assertContains(e, "not found");
-			assertContains(e, "Mapper9");
-			assertContains(e, "Mapper10");
-			assertContains(e, "dummy");
-			assertContains(e, "testmap");
-			assertContains(e, "selectById");
+			assertContains(e, "not found", "Mapper9", "Mapper10", "dummy", "testmap", "selectById");
 		}
 	}
-	
+
 	private interface Mapper11 {
 		@Select("SELECT 1")
 		int selectSome(int id, int id2);
-		
+
 		@Select("SELECT 1")
 		@ResultMap(id = "testmap", mappings = { @Property(value = "dummy", subselect = "selectSome") })
 		int selectOther(int id);
 	}
-	
+
 	/**
-	 * Test that subselect statement has exactly 1 parameter.
+	 * TEST: Configure mapper interface with subselect query having more than
+	 * one parameter.
+	 * 
+	 * EXPECT: Configuration exception is thrown that contains certain
+	 * information strings.
 	 */
 	@Test
 	public void testSubselectParameters1() {
@@ -105,4 +109,29 @@ public class TestSubselectValidation {
 			assertContains(e, "subselect", "exactly one", "Mapper11", "selectSome", "dummy");
 		}
 	}
+
+	private interface Mapper12 {
+		@Select("SELECT 1")
+		@ResultMap(id = "testmap", mappings = { @Property(value = "dummy", subselectMapper = Mapper9.class) })
+		int selectSome(int id);
+	}
+
+	/**
+	 * TEST: Configure mapper interface that has a property with subselectMapper
+	 * specified, but without subselect specified.
+	 * 
+	 * EXPECT: Configuration exception is thrown that contains certain
+	 * information strings.
+	 */
+	@Test
+	public void testSubselectValidation3() {
+		try {
+			new NanormConfiguration().configure(Mapper9.class, Mapper12.class);
+			Assert.fail();
+		} catch (ConfigurationException e) {
+			assertContains(e, "without specifying subselect", "Mapper9", "Mapper12", "dummy",
+					"testmap", "subselectMapper");
+		}
+	}
+
 }

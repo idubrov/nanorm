@@ -75,8 +75,8 @@ public class Messages {
 		return MessageFormat.format(
 				"Nested map ''{0}'' not found in ''{1}'' for property ''{2}'' while processing "
 						+ "the result map ''{3}'' declared in {4}", ref.value(), mapper(
-						ref.declaringClass(), mapper).getName(), mapping.value(),
-				resultMap.id(), location(mapper, method));
+						ref.declaringClass(), mapper).getName(), mapping.value(), resultMap.id(),
+				location(mapper, method));
 	}
 
 	/**
@@ -151,8 +151,8 @@ public class Messages {
 		return MessageFormat
 				.format(
 						"Both column (''{0}'') and column index ({1}) specified for property ''{2}'' in result map ''{3}'' of mapper ''{4}''",
-						mapping.column(), mapping.columnIndex(), mapping.value(),
-						resultMap.id(), mapper.getName());
+						mapping.column(), mapping.columnIndex(), mapping.value(), resultMap.id(),
+						mapper.getName());
 	}
 
 	/**
@@ -166,6 +166,24 @@ public class Messages {
 	public static String emptyProperty(Property mapping, Class<?> mapper, ResultMap resultMap) {
 		return MessageFormat.format("Empty property found in result map ''{0}'' of mapper ''{1}''",
 				resultMap.id(), mapper.getName());
+	}
+
+	/**
+	 * Generate error message for case when subselectMapper is specified without
+	 * specifying subselect.
+	 * 
+	 * @param mapping mapping annotation
+	 * @param mapper mapper interface
+	 * @param resultMap result map
+	 * @return message
+	 */
+	public static String subselectMapperWithoutSubselect(Property mapping, Class<?> mapper,
+			ResultMap resultMap) {
+		return MessageFormat.format(
+				"subselectMapper ''{0}'' used without specifying subselect itself for "
+						+ "property ''{1}'' in result map ''{2}'' of mapper ''{3}''", mapping
+						.subselectMapper().getName(), mapping.value(), resultMap.id(), mapper
+						.getName());
 	}
 
 	/**
@@ -216,17 +234,17 @@ public class Messages {
 	 * @param prop property
 	 * @return message
 	 */
-	public static String groupByPropertyMissing(String prop, Class<?> mapper, Method method, ResultMap resultMap) {
-		return MessageFormat
-				.format(
-						"Property ''{0}'' was specified in the ''groupBy'' list of the the "
-								+ "result map ''{1}'' of {2}, but is not explicitly configured.",
-						prop, resultMap.id(), location(mapper, method));
+	public static String groupByPropertyMissing(String prop, Class<?> mapper, Method method,
+			ResultMap resultMap) {
+		return MessageFormat.format(
+				"Property ''{0}'' was specified in the ''groupBy'' list of the the "
+						+ "result map ''{1}'' of {2}, but is not explicitly configured.", prop,
+				resultMap.id(), location(mapper, method));
 	}
 
 	/**
-	 * Generate error message for case when mapper method result type is primitive, but no values were got
-	 * during the query.
+	 * Generate error message for case when mapper method result type is
+	 * primitive, but no values were got during the query.
 	 * 
 	 * @param mapper mapper interface
 	 * @param method method result map applied to
@@ -235,27 +253,26 @@ public class Messages {
 	 * @return message
 	 */
 	public static String nullResult(Class<?> mapper, String method, Class<?> type) {
-		return "Cannot convert empty result set to primitive type '" + type.getName() + "' while executing " + 
-			location(mapper, method) + '.';
+		return "Cannot convert empty result set to primitive type '" + type.getName()
+				+ "' while executing " + location(mapper, method) + '.';
 	}
-	
+
 	/**
-	 * Generate error message for case when single result was expected, but result set contained more
-	 * than one row.
+	 * Generate error message for case when single result was expected, but
+	 * result set contained more than one row.
 	 * 
 	 * @param location mapper interface
 	 * 
 	 * @return message
 	 */
 	public static String singleResultExpected(Object location) {
-		if(location instanceof StatementConfig) {
+		if (location instanceof StatementConfig) {
 			StatementConfig stConfig = (StatementConfig) location;
 			String method = stConfig.getId().getName();
 			Class<?> mapper = stConfig.getId().getMapper();
 			location = location(mapper, method);
 		}
-		return "Single result expected while executing " + 
-			 location + '.';
+		return "Single result expected while executing " + location + '.';
 	}
 
 	/**
@@ -269,9 +286,10 @@ public class Messages {
 		return "Cannot deduce return type for " + location(method.getDeclaringClass(), method)
 				+ " (return type is void and no DataSink is provided in parameters)";
 	}
-	
+
 	/**
-	 * Generate error message for case when type handler could not be found for property.
+	 * Generate error message for case when type handler could not be found for
+	 * property.
 	 * 
 	 * @param type property type
 	 * @return message
@@ -280,7 +298,6 @@ public class Messages {
 		return "Type handler not found for type '" + type + '\'';
 	}
 
-
 	private static Class<?> mapper(Class<?> override, Class<?> mapper) {
 		return override != Object.class ? override : mapper;
 	}
@@ -288,7 +305,7 @@ public class Messages {
 	private static String location(Class<?> mapper, Method method) {
 		return location(mapper, method.getName());
 	}
-	
+
 	private static String location(Class<?> mapper, String method) {
 		if (method != null) {
 			return "method '" + method + "' of mapper '" + mapper.getName() + '\'';

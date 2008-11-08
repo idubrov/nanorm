@@ -52,13 +52,34 @@ public @interface Property {
 	ResultMapRef nestedMap() default @ResultMapRef();
 
 	/**
-	 * Subselect query.
+	 * <p>
+	 * Name of the mapper method to use for subselect query. Instead of mapping
+	 * the column value to the property, the subselect method is invoked with
+	 * column value as a parameter. Then the result object is set to the
+	 * property.
+	 * </p>
+	 * <p>
+	 * Mapper method is searched by the name. It must have exactly one
+	 * parameter. There should be a {@link com.google.code.nanorm.TypeHandler}
+	 * registered that is able to convert column value to the subselect method
+	 * parameter.
+	 * </p>
+	 * <p>
+	 * Unless {@link #subselectMapper()} is specified, the mapper method is
+	 * searched in the same mapper interface.
+	 * </p>
 	 */
 	String subselect() default "";
 
 	/**
-	 * Subselect query mapper. By default, assume that subselect query is in the
-	 * same mapper interface.
+	 * <p>
+	 * Mapper interface to search for subselect mapper method. Name of the
+	 * subselect method is specified in {@link #subselect()} property.
+	 * </p>
+	 * <p>
+	 * By default, subselect mapper method is searched in the same mapper
+	 * interface.
+	 * </p>
 	 */
 	Class<?> subselectMapper() default Object.class;
 }

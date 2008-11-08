@@ -31,7 +31,7 @@ public class Utils {
 	 */
 	public static void assertContains(Exception e, String... keywords) {
 		for(String keyword : keywords) {
-			Assert.assertTrue(e.getMessage().toLowerCase().contains(keyword.toLowerCase()));
+			Assert.assertTrue("Exception must contain keyword " + keyword, e.getMessage().toLowerCase().contains(keyword.toLowerCase()));
 		}
 	}
 }

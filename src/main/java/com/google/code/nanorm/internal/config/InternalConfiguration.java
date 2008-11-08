@@ -40,7 +40,6 @@ import com.google.code.nanorm.annotations.ResultMapRef;
 import com.google.code.nanorm.annotations.Scalar;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.annotations.SelectKey;
-import com.google.code.nanorm.annotations.SelectKeyType;
 import com.google.code.nanorm.annotations.Source;
 import com.google.code.nanorm.annotations.Update;
 import com.google.code.nanorm.exceptions.ConfigurationException;
@@ -121,9 +120,9 @@ public class InternalConfiguration {
 	 * @return statement configuration for method
 	 */
 	private StatementConfig getStatementConfig(StatementKey key) {
-		
-		StatementConfig statementConfig = statementsConfig.get(key);			
-		
+
+		StatementConfig statementConfig = statementsConfig.get(key);
+
 		if (statementConfig == null) {
 			throw new IllegalArgumentException("Missing configuration for method '" + key + '\'');
 		}
@@ -194,15 +193,16 @@ public class InternalConfiguration {
 		// FIXME: Is that ok to just strip generics info?
 		// We probably should propagate type info from the top mapper class when
 		// going down to the interfaces in configure method.
-		// So, currently, the Nanorm annotations could be applied only to methods without
+		// So, currently, the Nanorm annotations could be applied only to
+		// methods without
 		// unknown generic types
 		// That means you cannot do something like this:
 		// interface Super<T> {
-		//     @Select("SELECT FROM SOME WHERE ID = id")
-		//     Some selectById(T id);
+		// @Select("SELECT FROM SOME WHERE ID = id")
+		// Some selectById(T id);
 		// }
 		// interface Concrete extends Super<Integer> {
-		//     Some selectById(Integer id);
+		// Some selectById(Integer id);
 		// }
 		StatementKey key = new StatementKey(mapper, method.getName(), method.getParameterTypes());
 
@@ -256,7 +256,7 @@ public class InternalConfiguration {
 		// Configure select key statement
 		SelectKey selectKey = method.getAnnotation(SelectKey.class);
 		if (selectKey != null) {
-			validateSelectKey(selectKey, mapper, method);
+			Validation.validateSelectKey(selectKey, mapper, method);
 
 			StatementKey selectKeyKey = new StatementKey(mapper, method.getName() + ":key", method
 					.getGenericParameterTypes());
@@ -301,11 +301,13 @@ public class InternalConfiguration {
 		}
 		stConfig.setResultType(returnType);
 		if (returnType != void.class) {
-			// Create row mapper during post-configuration step, after the subselects
+			// Create row mapper during post-configuration step, after the
+			// subselects
 			// are configured
 			postConfigureList.add(new Runnable() {
 				public void run() {
-					// At this time, all subselect properties should be post-configured already
+					// At this time, all subselect properties should be
+					// post-configured already
 					stConfig.setRowMapper(createRowMapper(stConfig.getResultType(), mapConfig));
 				}
 			});
@@ -353,20 +355,20 @@ public class InternalConfiguration {
 			}
 			return new ScalarRowMapper(type, typeHandlerFactory);
 		}
-		
+
 		// For primitive types and String we never use usual row mapper, only
 		// scalar mapping
 		if (type instanceof Class<?>) {
 			Class<?> clazz = (Class<?>) type;
-			if(clazz.isPrimitive() || type == String.class) {
+			if (clazz.isPrimitive() || type == String.class) {
 				return new ScalarRowMapper(type, typeHandlerFactory);
 			}
-			if(clazz.isArray() && (clazz.getComponentType().isPrimitive() || 
-					clazz.getComponentType() == String.class)) {
+			if (clazz.isArray()
+					&& (clazz.getComponentType().isPrimitive() || clazz.getComponentType() == String.class)) {
 				return new ScalarRowMapper(clazz.getComponentType(), typeHandlerFactory);
 			}
 		}
-		
+
 		// TODO: If config is null, automap it?
 		return new DefaultRowMapper(type, config, introspectionFactory, typeHandlerFactory);
 	}
@@ -377,30 +379,24 @@ public class InternalConfiguration {
 	 * @param clazz class to gather result maps from
 	 */
 	private void processResultMaps(Class<?> clazz) throws ConfigurationException {
-		ResultMap classResultMap = clazz.getAnnotation(ResultMap.class);
+		ResultMap resultMap = clazz.getAnnotation(ResultMap.class);
 
-		if (classResultMap != null) {
-			processResultMap(clazz, classResultMap);
+		// Search for @ResultMap
+		if (resultMap != null) {
+			ResultMapConfig cfg = createResultMapConfig(clazz, null, resultMap);
+
+			resultMapsConfig.put(cfg.getId(), cfg);
 		}
 
-		ResultMapList classResultMapList = clazz.getAnnotation(ResultMapList.class);
-		if (classResultMapList != null) {
-			for (ResultMap classResultMap2 : classResultMapList.value()) {
-				processResultMap(clazz, classResultMap2);
+		// Search for @ResultMapList
+		ResultMapList list = clazz.getAnnotation(ResultMapList.class);
+		if (list != null) {
+			for (ResultMap resultMap2 : list.value()) {
+				ResultMapConfig cfg = createResultMapConfig(clazz, null, resultMap2);
+
+				resultMapsConfig.put(cfg.getId(), cfg);
 			}
 		}
-	}
-
-	/**
-	 * Process the result map annotation.
-	 * 
-	 * @param clazz declaring class
-	 * @param resultMap result map annotation
-	 */
-	private void processResultMap(Class<?> clazz, ResultMap resultMap)
-			throws ConfigurationException {
-		ResultMapConfig cfg = createResultMapConfig(clazz, null, resultMap);
-		resultMapsConfig.put(cfg.getId(), cfg);
 	}
 
 	/**
@@ -411,16 +407,16 @@ public class InternalConfiguration {
 	 */
 	private ResultMapConfig createResultMapConfig(Method method) throws ConfigurationException {
 		Class<?> mapper = method.getDeclaringClass();
-		
+
 		// FIXME: These three are mutually exclusive! Check this!
 		ResultMap resultMap = method.getAnnotation(ResultMap.class);
 		ResultMapRef ref = method.getAnnotation(ResultMapRef.class);
 		Scalar scalar = method.getAnnotation(Scalar.class);
-		
+
 		if (resultMap != null) {
 			// Use result map
 			return createResultMapConfig(mapper, method, resultMap);
-		} else if(scalar != null) {
+		} else if (scalar != null) {
 			// Use scalar mapping
 			ResultMapConfig config = new ResultMapConfig(mapper.getName() + "#(scalar)");
 			config.setScalar(true);
@@ -438,13 +434,13 @@ public class InternalConfiguration {
 			return resultMapConfig;
 		} else {
 			// Search for default map or automap
-			
+
 			// Search for default map for the mapper (with empty id)
 			// FIXME: Remove this feature?
 			ResultMapConfig resultMapConfig = findResultMap(mapper, "");
 			if (resultMapConfig == null) {
 				// Return automap if no map is defined
-				resultMapConfig = createResultMapConfig(mapper, method, null);
+				resultMapConfig = createAutoResultMapConfig(mapper);
 			}
 			return resultMapConfig;
 		}
@@ -463,51 +459,61 @@ public class InternalConfiguration {
 	 */
 	private ResultMapConfig createResultMapConfig(Class<?> mapper, Method method,
 			ResultMap resultMap) throws ConfigurationException {
+		assert (mapper != null);
+		assert (resultMap != null);
+
 		List<PropertyMappingConfig> mappings = new ArrayList<PropertyMappingConfig>();
-		boolean auto = true;
-		if (resultMap != null) {
 
-			// Set of all properties, for groupBy list validation
-			Set<String> propnames = null;
-			if (resultMap.groupBy().length > 0) {
-				propnames = new HashSet<String>();
-			}
-			for (Property mapping : resultMap.mappings()) {
-				PropertyMappingConfig propMapping = createPropertyMappingConfig(mapper, method,
-						resultMap, mapping);
-				mappings.add(propMapping);
-
-				if (propnames != null) {
-					propnames.add(propMapping.getProperty());
-				}
-			}
-
-			validateGroupBy(mapper, method, resultMap, propnames);
-			auto = resultMap.auto();
+		// Set of all properties, for groupBy list validation
+		Set<String> propnames = null;
+		if (resultMap.groupBy().length > 0) {
+			propnames = new HashSet<String>();
 		}
+		for (Property mapping : resultMap.mappings()) {
+			PropertyMappingConfig propMapping = createPropertyMappingConfig(mapper, method,
+					resultMap, mapping);
+			mappings.add(propMapping);
 
-		String id;
-		if (resultMap != null) {
-			id = mapper.getName() + "#" + resultMap.id();
-		} else {
-			// TODO: Generated!
-			id = mapper.getName() + "#(auto)";
+			// Collect property names for groupBy validation
+			if (propnames != null) {
+				propnames.add(propMapping.getProperty());
+			}
 		}
+		Validation.validateGroupBy(mapper, method, resultMap, propnames);
 
-		ResultMapConfig config = new ResultMapConfig(id);
+		ResultMapConfig config = new ResultMapConfig(mapper.getName() + "#" + resultMap.id());
 		config.setMappings(mappings.toArray(new PropertyMappingConfig[mappings.size()]));
-		config.setAuto(auto);
-		if (resultMap != null) {
-			config.setGroupBy(resultMap.groupBy());
-		}
+		config.setAuto(resultMap.auto());
+		config.setGroupBy(resultMap.groupBy());
+		return config;
+	}
+
+	/**
+	 * Create automatic result mapping config.
+	 * 
+	 * @param mapper mapper
+	 * @return result map config
+	 * @throws ConfigurationException configuration is invalid
+	 */
+	private ResultMapConfig createAutoResultMapConfig(Class<?> mapper)
+			throws ConfigurationException {
+		assert (mapper != null);
+
+		ResultMapConfig config = new ResultMapConfig(mapper.getName() + "#(auto)");
+		config.setMappings(new PropertyMappingConfig[0]);
+		config.setAuto(true);
 		return config;
 	}
 
 	private PropertyMappingConfig createPropertyMappingConfig(Class<?> mapper, Method method,
 			ResultMap resultMap, Property mapping) throws ConfigurationException {
+		assert(mapper != null);
+		assert(resultMap != null);
+		assert(mapping != null);
+		
 		PropertyMappingConfig propMapping = new PropertyMappingConfig();
 
-		validatePropertyMapping(mapping, mapper, resultMap);
+		Validation.validatePropertyMapping(mapping, mapper, resultMap);
 
 		propMapping.setProperty(mapping.value());
 		propMapping.setColumn(mapping.column());
@@ -516,6 +522,8 @@ public class InternalConfiguration {
 				&& (propMapping.getColumn() == null || "".equals(propMapping.getColumn()))) {
 			propMapping.setColumn(propMapping.getProperty());
 		}
+
+		// We have a nested mapping
 		if (!"".equals(mapping.nestedMap().value())) {
 			Class<?> clazz = mapping.nestedMap().declaringClass();
 			if (clazz == Object.class) {
@@ -530,7 +538,8 @@ public class InternalConfiguration {
 
 			propMapping.setNestedMapConfig(nestedMapConfig);
 		}
-		// TODO: Validate method present!
+
+		// We have subselect mapping
 		if (!"".equals(mapping.subselect())) {
 			// TODO: Map it?
 			Class<?> subselectMapper = mapping.subselectMapper() != Object.class ? mapping
@@ -542,9 +551,11 @@ public class InternalConfiguration {
 			StatementKey subselectKey = new StatementKey(subselectMapper, mapping.subselect(), null);
 
 			// Subselect properties requires post-configuration (the referenced
-			// query could be not configured yet, so wait until all queries are processed)
+			// query could be not yet configured, so wait until all queries are
+			// processed)
 			final SubselectConfig subselectInfo = new SubselectConfig(subselectKey, propMapping,
 					mapper, resultMap);
+
 			postConfigureList.add(new Runnable() {
 				public void run() {
 					subselectPostConfigure(subselectInfo);
@@ -561,6 +572,8 @@ public class InternalConfiguration {
 	 * @param subselectInfo
 	 */
 	private void subselectPostConfigure(SubselectConfig subselectInfo) {
+		assert (subselectInfo != null);
+
 		StatementKey key = subselectInfo.getSubselectKey();
 		StatementConfig stConfig = statementsConfig.get(key);
 
@@ -576,12 +589,14 @@ public class InternalConfiguration {
 
 	/**
 	 * Find result map config with given reference id.
-	 * FIXME: Made public for custom project, to get information about the property&lt;-&gt;column. 
+	 * 
+	 * FIXME: Made public for custom project, to get information about the
+	 * mapping between property&lt;-&gt;column.
 	 * 
 	 * @param clazz declaring class
 	 * @param refId reference id
 	 * @return result map config
-	 * @throws ConfigurationException configuration is invalid 
+	 * @throws ConfigurationException configuration is invalid
 	 */
 	public ResultMapConfig findResultMap(Class<?> clazz, String refId)
 			throws ConfigurationException {
@@ -613,78 +628,6 @@ public class InternalConfiguration {
 	/** @return Returns the introspectionFactory. */
 	public IntrospectionFactory getIntrospectionFactory() {
 		return introspectionFactory;
-	}
-
-	/**
-	 * Validate that every property mentioned in the groupBy is explicitly
-	 * configured.
-	 * 
-	 * @param mapper mapper
-	 * @param method mapper method result map is applied to
-	 * @param resultMap result map
-	 * @param propnames configured property names
-	 */
-	private void validateGroupBy(Class<?> mapper, Method method, ResultMap resultMap,
-			Set<String> propnames) throws ConfigurationException {
-
-		for (String prop : resultMap.groupBy()) {
-			if (!propnames.contains(prop)) {
-				throw new ConfigurationException(Messages.groupByPropertyMissing(prop, mapper, method, 
-						resultMap));
-			}
-		}
-	}
-
-	/**
-	 * Validate usage of {@link SelectKey} annotation.
-	 * 
-	 * @param selectKey
-	 * @param mapper
-	 * @param method
-	 */
-	private void validateSelectKey(SelectKey selectKey, Class<?> mapper, Method method)
-			throws ConfigurationException {
-		if (selectKey != null && selectKey.type() == SelectKeyType.BEFORE) {
-			if (selectKey.value().length() == 0) {
-				throw new ConfigurationException(Messages.beforeKeyWithoutSQL(mapper, method));
-			}
-
-			if (selectKey.property().length() == 0) {
-				throw new ConfigurationException(Messages.beforeKeyWithoutProperty(mapper, method));
-			}
-		}
-	}
-
-	/**
-	 * Validate property mapping.
-	 * 
-	 * @param mapping
-	 * @param mapper
-	 * @param resultMap
-	 */
-	private void validatePropertyMapping(Property mapping, Class<?> mapper, ResultMap resultMap)
-			throws ConfigurationException {
-		if (mapping.columnIndex() != 0 && mapping.column().length() > 0) {
-			throw new ConfigurationException(Messages.multipleColumn(mapping, mapper, resultMap));
-		}
-
-		if (mapping.value().length() == 0) {
-			throw new ConfigurationException(Messages.emptyProperty(mapping, mapper, resultMap));
-		}
-
-		if (mapping.nestedMap().value().length() > 0) {
-			if (mapping.subselect().length() > 0) {
-				throw new ConfigurationException(Messages.bothSubselectNested(mapping, mapper,
-						resultMap));
-			}
-
-			for (String prop : resultMap.groupBy()) {
-				if (mapping.value().equals(prop)) {
-					throw new ConfigurationException(Messages.bothNestedGroupBy(mapping, mapper,
-							resultMap));
-				}
-			}
-		}
 	}
 
 	/**
