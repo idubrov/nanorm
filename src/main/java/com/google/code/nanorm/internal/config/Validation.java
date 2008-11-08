@@ -115,9 +115,17 @@ public class Validation {
 		}
 	}
 
+	/**
+	 * Validate annotations that configure mapping ({@link ResultMap},
+	 * {@link ResultMapRef} and {@Scalar}).
+	 * 
+	 * @param mapper mapper interface
+	 * @param method mapper method
+	 */
 	static void validateMapAnnotations(Class<?> mapper, Method method) {
 		Object[] vals = new Object[3];
-		String[] names = {ResultMap.class.getSimpleName(), ResultMapRef.class.getSimpleName(), Scalar.class.getSimpleName() };
+		String[] names = { ResultMap.class.getSimpleName(), ResultMapRef.class.getSimpleName(),
+				Scalar.class.getSimpleName() };
 
 		vals[0] = method.getAnnotation(ResultMap.class);
 		vals[1] = method.getAnnotation(ResultMapRef.class);
