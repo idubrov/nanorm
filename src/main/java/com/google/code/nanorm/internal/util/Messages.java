@@ -298,6 +298,22 @@ public class Messages {
 		return "Type handler not found for type '" + type + '\'';
 	}
 
+	/**
+	 * Generate error message for case when mutually exclusive annotations are
+	 * used on query method.
+	 * 
+	 * @param mapper mapper interface
+	 * @param method query method annotations are applied to
+	 * @param ann1 first annotation name
+	 * @param ann2 second annotation name
+	 * @return message
+	 */
+	public static String mutuallyExclusive(Class<?> mapper, Method method, String ann1, String ann2) {
+		return MessageFormat.format(
+				"''{0}'' annotation and ''{1}'' annotation used in {2} are mutually exclusive",
+				ann1, ann2, location(mapper, method));
+	}
+
 	private static Class<?> mapper(Class<?> override, Class<?> mapper) {
 		return override != Object.class ? override : mapper;
 	}

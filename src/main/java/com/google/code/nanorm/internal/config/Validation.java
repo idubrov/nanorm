@@ -20,6 +20,8 @@ import java.util.Set;
 
 import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
+import com.google.code.nanorm.annotations.ResultMapRef;
+import com.google.code.nanorm.annotations.Scalar;
 import com.google.code.nanorm.annotations.SelectKey;
 import com.google.code.nanorm.annotations.SelectKeyType;
 import com.google.code.nanorm.exceptions.ConfigurationException;
@@ -110,6 +112,22 @@ public class Validation {
 		if (mapping.subselectMapper() != Object.class && "".equals(mapping.subselect())) {
 			throw new ConfigurationException(Messages.subselectMapperWithoutSubselect(mapping,
 					mapper, resultMap));
+		}
+	}
+
+	static void validateMapAnnotations(Class<?> mapper, Method method) {
+		Object[] vals = new Object[3];
+		String[] names = {ResultMap.class.getSimpleName(), ResultMapRef.class.getSimpleName(), Scalar.class.getSimpleName() };
+
+		vals[0] = method.getAnnotation(ResultMap.class);
+		vals[1] = method.getAnnotation(ResultMapRef.class);
+		vals[2] = method.getAnnotation(Scalar.class);
+
+		for (int i = 0; i < 3; ++i) {
+			if (vals[i] != null && vals[(i + 1) % 3] != null) {
+				throw new ConfigurationException(Messages.mutuallyExclusive(mapper, method,
+						names[i], names[(i + 1) % 3]));
+			}
 		}
 	}
 }

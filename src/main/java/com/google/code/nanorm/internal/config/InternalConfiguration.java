@@ -412,6 +412,8 @@ public class InternalConfiguration {
 		ResultMap resultMap = method.getAnnotation(ResultMap.class);
 		ResultMapRef ref = method.getAnnotation(ResultMapRef.class);
 		Scalar scalar = method.getAnnotation(Scalar.class);
+		
+		Validation.validateMapAnnotations(mapper, method);
 
 		if (resultMap != null) {
 			// Use result map
@@ -507,10 +509,10 @@ public class InternalConfiguration {
 
 	private PropertyMappingConfig createPropertyMappingConfig(Class<?> mapper, Method method,
 			ResultMap resultMap, Property mapping) throws ConfigurationException {
-		assert(mapper != null);
-		assert(resultMap != null);
-		assert(mapping != null);
-		
+		assert (mapper != null);
+		assert (resultMap != null);
+		assert (mapping != null);
+
 		PropertyMappingConfig propMapping = new PropertyMappingConfig();
 
 		Validation.validatePropertyMapping(mapping, mapper, resultMap);
