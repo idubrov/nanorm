@@ -40,7 +40,6 @@ import com.google.code.nanorm.annotations.ResultMapRef;
 import com.google.code.nanorm.annotations.Scalar;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.annotations.SelectKey;
-import com.google.code.nanorm.annotations.SelectKeyType;
 import com.google.code.nanorm.annotations.Source;
 import com.google.code.nanorm.annotations.Update;
 import com.google.code.nanorm.exceptions.ConfigurationException;
@@ -125,7 +124,7 @@ public class InternalConfiguration {
 		StatementConfig statementConfig = statementsConfig.get(key);
 
 		if (statementConfig == null) {
-			throw new IllegalArgumentException("Missing configuration for method '" + key + '\'');
+			throw new ConfigurationException(Messages.missingConfiguration(key.getMapper(), key.getName()));
 		}
 		return statementConfig;
 	}

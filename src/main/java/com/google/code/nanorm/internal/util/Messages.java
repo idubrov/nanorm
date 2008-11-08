@@ -344,6 +344,18 @@ public class Messages {
 				"''{0}'' annotation and ''{1}'' annotation used in {2} are mutually exclusive",
 				ann1, ann2, location(mapper, method));
 	}
+	
+	/**
+	 * Generate error message for case when method configuration is missing.
+	 * 
+	 * @param mapper mapper interface
+	 * @param method method
+	 * @return message
+	 */
+	public static String missingConfiguration(Class<?> mapper, String method) {
+		return MessageFormat.format("Method {0} does not have any configuration.", 
+				location(mapper, method));
+	}
 
 	private static Class<?> mapper(Class<?> override, Class<?> mapper) {
 		return override != Object.class ? override : mapper;
