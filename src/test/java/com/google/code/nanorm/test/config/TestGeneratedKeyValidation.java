@@ -75,4 +75,27 @@ public class TestGeneratedKeyValidation {
 		}
 	}
 
+	private interface Mapper3 {
+		@Insert("INSERT INTO table(id) VALUES ${1}")
+		@SelectKey(value = "SELECT 1")
+		void insertSome(int id);
+	}
+
+	/**
+	 * TEST: Try configuring mapper interface with insert method returning void, but
+	 * without property specified in {@link SelectKey} annotation.
+	 * 
+	 * EXPECT: Configuration exception that contains certain information
+	 * strings.
+	 */
+	@Test
+	public void testGeneratedKeyValidation3() {
+		try {
+			new NanormConfiguration().configure(Mapper3.class);
+			Assert.fail();
+		} catch (ConfigurationException e) {
+			assertContains(e, "insertSome", "Mapper3", "property", "void");
+		}
+	}
+
 }

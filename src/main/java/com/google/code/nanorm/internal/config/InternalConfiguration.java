@@ -40,6 +40,7 @@ import com.google.code.nanorm.annotations.ResultMapRef;
 import com.google.code.nanorm.annotations.Scalar;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.annotations.SelectKey;
+import com.google.code.nanorm.annotations.SelectKeyType;
 import com.google.code.nanorm.annotations.Source;
 import com.google.code.nanorm.annotations.Update;
 import com.google.code.nanorm.exceptions.ConfigurationException;
@@ -267,8 +268,20 @@ public class InternalConfiguration {
 						.getGenericParameterTypes(), introspectionFactory));
 			}
 			selectKeySt.setParameterTypes(method.getGenericParameterTypes());
-			selectKeySt.setResultType(method.getGenericReturnType());
-			selectKeySt.setRowMapper(new ScalarRowMapper(method.getGenericReturnType(),
+			
+			
+			// Key type is method return value
+			Type keyType = method.getGenericReturnType();
+			
+			// If return type is void, the key type is deduced from the property type
+			// Validation already checked that in this case property is not empty
+			if(keyType == void.class) {
+				String prop = selectKey.property();
+				keyType = introspectionFactory.getParameterType(method.getGenericParameterTypes(), prop);
+				System.err.println(keyType);
+			}
+			selectKeySt.setResultType(keyType);
+			selectKeySt.setRowMapper(new ScalarRowMapper(keyType,
 					typeHandlerFactory));
 
 			if (selectKey.property().length() > 0) {

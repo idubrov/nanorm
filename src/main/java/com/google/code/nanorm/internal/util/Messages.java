@@ -60,6 +60,19 @@ public class Messages {
 	}
 
 	/**
+	 * Generate error message for case when generated key specified without
+	 * specifying the property and method return type is void.
+	 * 
+	 * @param mapper mapper interface
+	 * @param method method
+	 * @return message
+	 */
+	public static String voidReturnWithoutProperty(Class<?> mapper, Method method) {
+		return "@SelectKey must have non-empty property specified when insert method return value is void, check "
+				+ location(mapper, method);
+	}
+
+	/**
 	 * Generate error message for case when nested result map is not found.
 	 * 
 	 * @param mapper mapper declaring the result map

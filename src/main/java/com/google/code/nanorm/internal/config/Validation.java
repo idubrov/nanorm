@@ -66,13 +66,20 @@ public class Validation {
 	 */
 	static void validateSelectKey(SelectKey selectKey, Class<?> mapper, Method method)
 			throws ConfigurationException {
-		if (selectKey != null && selectKey.type() == SelectKeyType.BEFORE) {
-			if (selectKey.value().length() == 0) {
-				throw new ConfigurationException(Messages.beforeKeyWithoutSQL(mapper, method));
+		if(selectKey != null) {
+			
+			if (selectKey.type() == SelectKeyType.BEFORE) {
+				if (selectKey.value().length() == 0) {
+					throw new ConfigurationException(Messages.beforeKeyWithoutSQL(mapper, method));
+				}
+	
+				if (selectKey.property().length() == 0) {
+					throw new ConfigurationException(Messages.beforeKeyWithoutProperty(mapper, method));
+				}
 			}
-
-			if (selectKey.property().length() == 0) {
-				throw new ConfigurationException(Messages.beforeKeyWithoutProperty(mapper, method));
+		
+			if(method.getGenericReturnType() == void.class && selectKey.property().length() == 0) {
+				throw new ConfigurationException(Messages.voidReturnWithoutProperty(mapper, method));
 			}
 		}
 	}
