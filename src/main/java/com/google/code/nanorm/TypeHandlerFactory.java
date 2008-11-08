@@ -17,7 +17,6 @@ package com.google.code.nanorm;
 
 import java.lang.reflect.Type;
 
-import com.google.code.nanorm.internal.type.TypeHandler;
 
 /**
  * Factory for creating type handlers. Type handlers are responsible for mapping

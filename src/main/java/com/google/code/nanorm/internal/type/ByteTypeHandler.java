@@ -21,6 +21,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import com.google.code.nanorm.TypeHandler;
+
 /**
  * Type handler for <code>byte</code>.
  * 
@@ -30,14 +32,14 @@ import java.sql.Types;
 public class ByteTypeHandler implements TypeHandler<Byte> {
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getValue(java.sql.ResultSet, int)
+     * @see com.google.code.nanorm.TypeHandler#getValue(java.sql.ResultSet, int)
      */
     public Byte getValue(ResultSet rs, int column) throws SQLException {
         return rs.getByte(column);
     }
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getValue(java.sql.ResultSet, java.lang.String)
+     * @see com.google.code.nanorm.TypeHandler#getValue(java.sql.ResultSet, java.lang.String)
      */
     public Byte getValue(ResultSet rs, String column) throws SQLException {
         return rs.getByte(column);

@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.code.nanorm.NanormFactory;
+import com.google.code.nanorm.TypeHandler;
 import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.exceptions.ConfigurationException;
 import com.google.code.nanorm.internal.FactoryImpl;
@@ -29,7 +30,6 @@ import com.google.code.nanorm.internal.config.InternalConfiguration;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.asm.ASMIntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.reflect.ReflectIntrospectionFactory;
-import com.google.code.nanorm.internal.type.TypeHandler;
 import com.google.code.nanorm.internal.type.TypeHandlerFactoryImpl;
 
 /**

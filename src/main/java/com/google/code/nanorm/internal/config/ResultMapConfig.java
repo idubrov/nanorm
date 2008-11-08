@@ -30,6 +30,12 @@ public class ResultMapConfig {
 
 	private boolean auto;
 
+	/**
+	 * Scalar result mapping (row is mapped to the object via appropriate
+	 * {@link com.google.code.nanorm.TypeHandler})
+	 */
+	private boolean scalar;
+
 	private String[] groupBy;
 
 	/**
@@ -72,6 +78,16 @@ public class ResultMapConfig {
 	}
 
 	/**
+	 * Get if this result map is scalar mapping (first column is mapped to the
+	 * object using the {@link com.google.code.nanorm.TypeHandlerFactory}.
+	 * 
+	 * @return boolean if result should be mapped as a scalar
+	 */
+	public boolean isScalar() {
+		return scalar;
+	}
+
+	/**
 	 * Get the list of properties to group results by.
 	 * 
 	 * @return list of properties to group results by.
@@ -99,8 +115,7 @@ public class ResultMapConfig {
 	 */
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this).append("id", id).append("auto", auto)
-				.append("groupBy", groupBy).append("mappings", mappings)
-				.toString();
+		return new ToStringBuilder(this).append("id", id).append("auto", auto).append("groupBy",
+				groupBy).append("mappings", mappings).toString();
 	}
 }

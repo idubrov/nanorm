@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.code.nanorm.internal.type;
+package com.google.code.nanorm;
 
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;

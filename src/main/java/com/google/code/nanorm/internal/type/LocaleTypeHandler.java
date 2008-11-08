@@ -22,7 +22,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Locale;
 
-import com.google.code.nanorm.internal.type.TypeHandler;
+import com.google.code.nanorm.TypeHandler;
 
 /**
  * Type handler for {@link Locale}.

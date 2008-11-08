@@ -21,9 +21,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.google.code.nanorm.DataSink;
+import com.google.code.nanorm.TypeHandler;
 import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.internal.Request;
-import com.google.code.nanorm.internal.type.TypeHandler;
 
 /**
  * Implementation of the {@link RowMapper} that simply returns the first column

@@ -1,3 +1,6 @@
+0.4.2, unreleased
+    * Moved TypeHandler from the internal package to the API package
+
 0.4.1, released 2008-10-19
     * Added two new type handlers, for byte[] and java.util.Locale.
     * Some methods were renamed in public interface DataSink

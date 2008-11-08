@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.code.nanorm.DataSink;
+import com.google.code.nanorm.TypeHandler;
 import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.exceptions.GenericException;
 import com.google.code.nanorm.internal.Key;
@@ -42,7 +43,6 @@ import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectUtils;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.Setter;
-import com.google.code.nanorm.internal.type.TypeHandler;
 
 /**
  * Implementation of the {@link RowMapper} that uses collection of property

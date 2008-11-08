@@ -22,6 +22,8 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Types;
 
+import com.google.code.nanorm.TypeHandler;
+
 /**
  * Type handler for {@link java.sql.Time}
  * 
@@ -30,14 +32,14 @@ import java.sql.Types;
 public class SqlTimeTypeHandler implements TypeHandler<Time> {
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getValue(java.sql.ResultSet, int)
+     * @see com.google.code.nanorm.TypeHandler#getValue(java.sql.ResultSet, int)
      */
     public Time getValue(ResultSet rs, int column) throws SQLException {
         return rs.getTime(column);
     }
 
     /**
-     * @see com.google.code.nanorm.internal.type.TypeHandler#getValue(java.sql.ResultSet, java.lang.String)
+     * @see com.google.code.nanorm.TypeHandler#getValue(java.sql.ResultSet, java.lang.String)
      */
     public Time getValue(ResultSet rs, String column) throws SQLException {
     	return rs.getTime(column);

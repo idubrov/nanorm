@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import com.google.code.nanorm.TypeHandler;
 import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.internal.util.Messages;
 

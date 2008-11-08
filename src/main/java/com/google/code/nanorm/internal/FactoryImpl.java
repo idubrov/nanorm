@@ -159,6 +159,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 			// Auto-create session for single request
 			// TODO: Check if autosession is enabled
 			isAuto = true;
+			// TODO: Check not null!
 			spi = sessionSpiConfig.newSessionSpi();
 		}
 

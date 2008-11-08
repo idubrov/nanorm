@@ -20,9 +20,9 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import com.google.code.nanorm.TypeHandler;
 import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.internal.config.ParameterMappingConfig;
-import com.google.code.nanorm.internal.type.TypeHandler;
 
 /**
  * Parameter mapper. Maps IN/OUT parmaters to {@link PreparedStatement}/

@@ -18,10 +18,10 @@ package com.google.code.nanorm.internal.mapping.result;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import com.google.code.nanorm.TypeHandler;
 import com.google.code.nanorm.internal.Request;
 import com.google.code.nanorm.internal.config.PropertyMappingConfig;
 import com.google.code.nanorm.internal.introspect.Setter;
-import com.google.code.nanorm.internal.type.TypeHandler;
 
 /**
  * Class that maps given column from result set to the property.

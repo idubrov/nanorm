@@ -21,7 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import com.google.code.nanorm.internal.type.TypeHandler;
+import com.google.code.nanorm.TypeHandler;
 
 /**
  * Type handler for <code>byte[]</code>.

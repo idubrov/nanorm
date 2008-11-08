@@ -21,40 +21,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Result map configuration.
- * 
- * FIXME: More elaborated javadoc!
- * 
  * <p>
- * This annotation is mutually exclusive with {@link Scalar} annotation (which has
- * opposite meaning) or with {@link ResultMapRef} annotation (which has similar meaning).
+ * Annotation for marking scalar mapping. Scalar mapping means that row from the
+ * {@link java.sql.ResultSet} is mapped to the object directly via
+ * {@link com.google.code.nanorm.TypeHandler}.
+ * </p>
+ * <p>
+ * This annotation is mutually exclusive with {@link ResultMap} annotation or
+ * {@link ResultMapRef} annotation.
  * </p>
  * 
  * @author Ivan Dubrov
- * @version 1.0 28.05.2008
+ * @version 1.0 8.11.2008
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target( { ElementType.METHOD, ElementType.TYPE })
-public @interface ResultMap {
-
-	/**
-	 * Result map identifier.
-	 */
-	String id() default "";
-
-	/**
-	 * Property mappings.
-	 */
-	Property[] mappings() default {};
-
-	/**
-	 * Properties that will be used for grouping together several rows of the
-	 * results.
-	 */
-	String[] groupBy() default {};
-
-	/**
-	 * Automatically map all columns that were not mapped explicitly.
-	 */
-	boolean auto() default false;
+public @interface Scalar {
+	// Nothing...
 }

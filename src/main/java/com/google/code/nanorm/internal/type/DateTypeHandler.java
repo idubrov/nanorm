@@ -23,6 +23,8 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Date;
 
+import com.google.code.nanorm.TypeHandler;
+
 /**
  * Type handler for {@link java.util.Date}.
  * 
