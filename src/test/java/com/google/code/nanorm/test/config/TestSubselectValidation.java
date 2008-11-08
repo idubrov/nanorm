@@ -16,16 +16,17 @@
 
 package com.google.code.nanorm.test.config;
 
+import static com.google.code.nanorm.test.common.Utils.assertContains;
 import junit.framework.Assert;
 
 import org.junit.Test;
 
 import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
+import com.google.code.nanorm.annotations.Scalar;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.config.NanormConfiguration;
 import com.google.code.nanorm.exceptions.ConfigurationException;
-import static com.google.code.nanorm.test.common.Utils.assertContains;
 
 /**
  * Test subselect validation.
@@ -36,7 +37,7 @@ public class TestSubselectValidation {
 
 	private interface Mapper8 {
 		@Select("SELECT 1")
-		@ResultMap(id = "testmap", mappings = { @Property(value = "dummy", subselect = "selectById") })
+		@ResultMap(id = "testmap", mappings = { @Property(value = "dummy", columnIndex = 1, subselect = "selectById") })
 		int selectSome(int id);
 	}
 
@@ -63,7 +64,7 @@ public class TestSubselectValidation {
 
 	private interface Mapper10 {
 		@Select("SELECT 1")
-		@ResultMap(id = "testmap", mappings = { @Property(value = "dummy", subselect = "selectById", subselectMapper = Mapper9.class) })
+		@ResultMap(id = "testmap", mappings = { @Property(value = "dummy", columnIndex = 1, subselect = "selectById", subselectMapper = Mapper9.class) })
 		int selectSome(int id);
 	}
 
@@ -89,7 +90,7 @@ public class TestSubselectValidation {
 		int selectSome(int id, int id2);
 
 		@Select("SELECT 1")
-		@ResultMap(id = "testmap", mappings = { @Property(value = "dummy", subselect = "selectSome") })
+		@ResultMap(id = "testmap", mappings = { @Property(value = "dummy", columnIndex = 1, subselect = "selectSome") })
 		int selectOther(int id);
 	}
 
@@ -112,7 +113,7 @@ public class TestSubselectValidation {
 
 	private interface Mapper12 {
 		@Select("SELECT 1")
-		@ResultMap(id = "testmap", mappings = { @Property(value = "dummy", subselectMapper = Mapper9.class) })
+		@ResultMap(id = "testmap", mappings = { @Property(value = "dummy", columnIndex = 1, subselectMapper = Mapper9.class) })
 		int selectSome(int id);
 	}
 
@@ -131,6 +132,33 @@ public class TestSubselectValidation {
 		} catch (ConfigurationException e) {
 			assertContains(e, "without specifying subselect", "Mapper9", "Mapper12", "dummy",
 					"testmap", "subselectMapper");
+		}
+	}
+	
+	private interface Mapper13 {
+		@Select("SELECT 1")
+		@Scalar
+		int selectById(int id);
+		
+		@Select("SELECT 1")
+		@ResultMap(id = "testmap", mappings = { @Property(value = "dummy", subselect = "selectById") })
+		int selectSome(int id);
+	}
+
+	/**
+	 * TEST: Configure mapper interface that has a property with subselect which
+	 * do not have explicit column name nor column index specified.
+	 * 
+	 * EXPECT: Configuration exception that contains certain information
+	 * strings.
+	 */
+	@Test
+	public void testSubselectValidation4() {
+		try {
+			new NanormConfiguration().configure(Mapper13.class);
+			Assert.fail();
+		} catch (ConfigurationException e) {
+			assertContains(e, "explicitly", "column", "Mapper13", "dummy", "testmap");
 		}
 	}
 

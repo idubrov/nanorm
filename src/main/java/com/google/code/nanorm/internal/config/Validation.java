@@ -90,7 +90,7 @@ public class Validation {
 		if (mapping.columnIndex() != 0 && mapping.column().length() > 0) {
 			throw new ConfigurationException(Messages.multipleColumn(mapping, mapper, resultMap));
 		}
-
+		
 		if (mapping.value().length() == 0) {
 			throw new ConfigurationException(Messages.emptyProperty(mapping, mapper, resultMap));
 		}
@@ -113,6 +113,12 @@ public class Validation {
 			throw new ConfigurationException(Messages.subselectMapperWithoutSubselect(mapping,
 					mapper, resultMap));
 		}
+		
+		if (!"".equals(mapping.subselect()) && mapping.columnIndex() == 0 && mapping.column().length() == 0) {
+			throw new ConfigurationException(Messages.subselectNoColumn(mapping, mapper, resultMap));
+		}
+
+
 	}
 
 	/**

@@ -150,9 +150,27 @@ public class Messages {
 	public static String multipleColumn(Property mapping, Class<?> mapper, ResultMap resultMap) {
 		return MessageFormat
 				.format(
-						"Both column (''{0}'') and column index ({1}) specified for property ''{2}'' in result map ''{3}'' of mapper ''{4}''",
+						"Both column (''{0}'') and column index ({1}) were specified for property ''{2}'' in result map ''{3}'' of mapper ''{4}''",
 						mapping.column(), mapping.columnIndex(), mapping.value(), resultMap.id(),
 						mapper.getName());
+	}
+
+	/**
+	 * Generate error message for case when none of column or columnIndex are
+	 * specified for subselect property.
+	 * 
+	 * @param mapping mapping annotation
+	 * @param mapper mapper interface
+	 * @param resultMap result map
+	 * @return message
+	 */
+	public static String subselectNoColumn(Property mapping, Class<?> mapper, ResultMap resultMap) {
+		return MessageFormat
+				.format(
+						"Neither column name nor column index were specified for property with subselect "
+								+ "''{0}'' in result map ''{1}'' of mapper ''{2}''. You must explicitly configure column "
+								+ "or column name for properties with subselect.", mapping.value(),
+						resultMap.id(), mapper.getName());
 	}
 
 	/**
