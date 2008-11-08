@@ -20,11 +20,15 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import junit.framework.Assert;
 
 import org.junit.Test;
 
+import com.google.code.nanorm.DataSink;
 import com.google.code.nanorm.NanormFactory;
 import com.google.code.nanorm.Session;
 import com.google.code.nanorm.config.NanormConfiguration;
@@ -78,6 +82,7 @@ public class TestGuide {
 			
 			int key = mapper.insertBook2(book);
 			Assert.assertEquals(100, key);
+			Assert.assertNotNull(mapper.selectBook(100));
 			
 			// Generated keys2
 			book = new Book();
@@ -87,6 +92,49 @@ public class TestGuide {
 			
 			key = mapper.insertBook3(book);
 			Assert.assertEquals(101, key);
+			Assert.assertNotNull(mapper.selectBook(101));			
+			
+			// Generated keys3
+			book = new Book();
+			book.setAuthor("Brain");
+			book.setName("World Domination.");
+			book.setPublished(new java.sql.Date(788922000)); // January 1, 1995
+			
+			mapper.insertBook4(book);
+			Assert.assertEquals(102, book.getId());
+			Assert.assertNotNull(mapper.selectBook(102));
+			
+			// Generated keys3
+			book = new Book();
+			book.setAuthor("Brain");
+			book.setName("World Domination.");
+			book.setPublished(new java.sql.Date(788922000)); // January 1, 1995
+			
+			mapper.insertBook5(book);
+			Assert.assertEquals(103, book.getId());
+			Assert.assertNotNull(mapper.selectBook(103));
+			
+			// List books using array
+			Book[] books = mapper.listBooks();
+			
+			Assert.assertEquals(4, books.length);
+			
+			// using collection
+			List<Book> books2 = mapper.listBooks2();
+			Assert.assertEquals(4, books2.size());
+			
+			// Using data sink
+			final Map<String, Book> map = new HashMap<String, Book>();
+			mapper.listBooks3(new DataSink<Book>() {
+				public void commitData() {
+					// Nothing...
+				}
+
+				public void pushData(Book book) {
+					map.put(book.getName(), book);
+				}
+			});
+			Assert.assertEquals(1, map.size());
 		} finally {
 			session.end();
 		}

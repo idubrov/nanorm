@@ -69,6 +69,16 @@ public class SimpleUpdatesTest extends MapperTestBase {
         @Insert("INSERT INTO articles(id, subject, year) VALUES (${1.id}, ${1.subject}, ${1.year})")
         @SelectKey(value = "SELECT NEXTVAL('ids')", type = SelectKeyType.BEFORE, property = "1.id")
         void insertArticle7(Article article);
+        
+        // Select key via the JDBC and return
+        @Insert("INSERT INTO articles(id, subject, year) VALUES (next value for ids, ${1.subject}, ${1.year})")
+        @SelectKey
+        int insertArticle8(Article article);
+
+        // Select key via the JDBC and set to the property
+        @Insert("INSERT INTO articles(id, subject, year) VALUES (next value for ids, ${1.subject}, ${1.year})")
+        @SelectKey(property = "1.id")
+        void insertArticle9(Article article);
     }
     
     @Test
@@ -224,6 +234,54 @@ public class SimpleUpdatesTest extends MapperTestBase {
         mapper.insertArticle7(article1);
         Assert.assertEquals(7873, article1.getId());
 
+        Article article2 = mapper.getArticleById(article1.getId());
+        Assert.assertEquals(article1.getId(), article2.getId());
+        Assert.assertEquals(article1.getSubject(), article2.getSubject());
+        Assert.assertEquals(article1.getYear(), article2.getYear());
+    }
+    
+    /**
+     * Test automatic result mapping
+     */
+    @Test
+    public void testInsert8() throws Exception {
+        Mapper1 mapper = factory.createMapper(Mapper1.class);
+
+        Article article1 = new Article();
+        article1.setId(456);
+        article1.setSubject("Modello");
+        article1.setYear(2008);
+
+        execute("ALTER SEQUENCE ids RESTART WITH 9089"); 
+        int id = mapper.insertArticle8(article1);
+        // Article has old key, because we didn't specify the "property" on SelectKey. 
+        Assert.assertEquals(456, article1.getId()); 
+        article1.setId(id);
+        Assert.assertEquals(9089, id);
+        
+        Article article2 = mapper.getArticleById(id);
+        Assert.assertEquals(article1.getId(), article2.getId());
+        Assert.assertEquals(article1.getSubject(), article2.getSubject());
+        Assert.assertEquals(article1.getYear(), article2.getYear());
+    }
+    
+    /**
+     * Test automatic result mapping
+     */
+    @Test
+    public void testInsert9() throws Exception {
+        Mapper1 mapper = factory.createMapper(Mapper1.class);
+
+        Article article1 = new Article();
+        article1.setId(456);
+        article1.setSubject("Modello");
+        article1.setYear(2008);
+
+        execute("ALTER SEQUENCE ids RESTART WITH 9854"); 
+        mapper.insertArticle9(article1);
+        // Article has old key, because we didn't specify the "property" on SelectKey. 
+        Assert.assertEquals(9854, article1.getId()); 
+        
         Article article2 = mapper.getArticleById(article1.getId());
         Assert.assertEquals(article1.getId(), article2.getId());
         Assert.assertEquals(article1.getSubject(), article2.getSubject());

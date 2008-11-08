@@ -36,7 +36,7 @@ public class Request {
 
 	private Object result;
 
-	private final Map<ResultCallbackKey, DataSink<Object>> callbacks;
+	private final Map<DataSinkKey, DataSink<Object>> callbacks;
 
 	/**
 	 * Constructor.
@@ -45,7 +45,7 @@ public class Request {
 	 */
 	public Request(QueryDelegate queryDelegate) {
 		this.queryDelegate = queryDelegate;
-		this.callbacks = new HashMap<ResultCallbackKey, DataSink<Object>>();
+		this.callbacks = new HashMap<DataSinkKey, DataSink<Object>>();
 		this.key2Objects = new HashMap<Object, Map<Key, Object>>();
 	}
 
@@ -70,7 +70,8 @@ public class Request {
 	}
 
 	/**
-	 * Search the data sink in the request cache.
+	 * Search the data sink in the request cache. We cache {@link DataSink} instances
+	 * using the {@link DataSinkSource} and target object as a key.
 	 * 
 	 * @param source data sink source
 	 * @param target sink target
@@ -78,7 +79,7 @@ public class Request {
 	 */
 	public DataSink<Object> searchCallback(DataSinkSource source, Object target) {
 		
-		ResultCallbackKey key = new ResultCallbackKey(source, target);
+		DataSinkKey key = new DataSinkKey(source, target);
 		DataSink<Object> callback = callbacks.get(key);
 		
 		if (callback == null) {

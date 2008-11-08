@@ -277,7 +277,6 @@ public class InternalConfiguration {
 			if(keyType == void.class) {
 				String prop = selectKey.property();
 				keyType = introspectionFactory.getParameterType(method.getGenericParameterTypes(), prop);
-				System.err.println(keyType);
 			}
 			selectKeySt.setResultType(keyType);
 			selectKeySt.setRowMapper(new ScalarRowMapper(keyType,
@@ -312,10 +311,11 @@ public class InternalConfiguration {
 			returnType = method.getGenericReturnType();
 		}
 		stConfig.setResultType(returnType);
+		
+		// Create row mapper if return type is not void
 		if (returnType != void.class) {
 			// Create row mapper during post-configuration step, after the
-			// subselects
-			// are configured
+			// subselects are configured
 			postConfigureList.add(new Runnable() {
 				public void run() {
 					// At this time, all subselect properties should be

@@ -23,7 +23,7 @@ import com.google.code.nanorm.internal.mapping.result.DataSinkSource;
  * 
  * @author Ivan Dubrov
  */
-public final class ResultCallbackKey {
+public final class DataSinkKey {
 
 	private final DataSinkSource source;
 
@@ -34,7 +34,7 @@ public final class ResultCallbackKey {
 	 * @param source data sink source
 	 * @param target sink target
 	 */
-	public ResultCallbackKey(DataSinkSource source, Object target) {
+	public DataSinkKey(DataSinkSource source, Object target) {
 		this.source = source;
 		this.target = target;
 	}
@@ -60,10 +60,10 @@ public final class ResultCallbackKey {
 		if (obj == null) {
 			return false;
 		}
-		if (obj.getClass() != ResultCallbackKey.class) {
+		if (obj.getClass() != DataSinkKey.class) {
 			return false;
 		}
-		ResultCallbackKey other = (ResultCallbackKey) obj;
+		DataSinkKey other = (DataSinkKey) obj;
 
 		// Use identity equality
 		return other.source == source && other.target == target;

@@ -16,11 +16,15 @@
 
 package com.google.code.nanorm.test.guide;
 
+import java.util.List;
+
+import com.google.code.nanorm.DataSink;
 import com.google.code.nanorm.annotations.Insert;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapRef;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.annotations.SelectKey;
+import com.google.code.nanorm.annotations.SelectKeyType;
 import com.google.code.nanorm.annotations.Update;
 
 @SuppressWarnings("all")
@@ -50,4 +54,26 @@ public interface BookMapper {
     "VALUES(NEXT VALUE FOR SEQ, ${1.name}, ${1.author}, ${1.published})")
     @SelectKey("SELECT CURRVAL('SEQ')")
     int insertBook3(Book book);
+    
+    @Insert("INSERT INTO books(id, name, author, published) " +
+    "VALUES(NEXT VALUE FOR SEQ, ${1.name}, ${1.author}, ${1.published})")
+    @SelectKey(property = "1.id")
+    void insertBook4(Book book);
+    
+    @Insert("INSERT INTO books(id, name, author, published) " +
+    "VALUES(${1.id}, ${1.name}, ${1.author}, ${1.published})")
+    @SelectKey(value = "SELECT NEXTVAL('SEQ')", property = "1.id", type = SelectKeyType.BEFORE)
+    void insertBook5(Book book);
+    
+    @ResultMapRef("book")
+    @Select("SELECT id, name, author, published FROM books")
+    Book[] listBooks();
+    
+    @ResultMapRef("book")
+    @Select("SELECT id, name, author, published FROM books")
+    List<Book> listBooks2();
+    
+    @ResultMapRef("book")
+    @Select("SELECT id, name, author, published FROM books")
+    void listBooks3(DataSink<Book> sink);
 }

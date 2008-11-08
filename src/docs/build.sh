@@ -31,5 +31,5 @@ OPTS="$OPTS -P doc.lot.show="
 
 #export XML_CATALOG_FILES="file:///usr/share/sgml/docbook/xml-dtd-4.5/catalog.xml"
 #export  XML_DEBUG_CATALOG=1
-dblatex -t tex $OPTS Guide.xml
+#dblatex -t tex $OPTS Guide.xml
 dblatex $OPTS Guide.xml

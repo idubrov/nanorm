@@ -16,19 +16,25 @@
 package com.google.code.nanorm;
 
 /**
+ * <p>
  * Interface for processing the data. Typical implementation puts the data into
  * property of the target (sets to the property, puts into the collection in the
  * property, puts into the array).
- * 
+ * </p>
+ * <p>
  * Instances could push the data to the destination immediately or collect the
- * data and push it when {@link #commitData} is called.
- * 
+ * data and push it when {@link #commitData} is called. After the {@link #commitData()}
+ * is called, no more data is pushed to the sink.
+ * </p>
+ * <p>
  * Instances are not thread-safe.
- * 
+ * </p>
+ * <p>
  * Clients could implement this interface and pass it as a parameter of query
  * method with <code>void</code> return value. In that case, instead of
  * returning the data from the method, framework will push the mapped objects
  * into the provided data sink.
+ * </p>
  * 
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
@@ -37,14 +43,18 @@ package com.google.code.nanorm;
 public interface DataSink<T> {
 
 	/**
+	 * <p>
 	 * Push the data into the sink.
+	 * </p>
 	 * 
 	 * @param obj data
 	 */
 	void pushData(T obj);
 
 	/**
-	 * Commit the data into the destination from the internal caches.
+	 * <p>
+	 * After this method is invoked, no more data will be pushed to this sink.
+	 * </p>
 	 */
 	void commitData();
 }

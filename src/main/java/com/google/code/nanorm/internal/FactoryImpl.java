@@ -229,7 +229,12 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 						if(isJDBCKey) {
 							// If we use getGeneratedKeys, we need to process the result set
 							// with generated keys as regular result set
-							processResultSet(stConfig, args, request, st.getGeneratedKeys());
+							processResultSet(stConfig.getSelectKey(), args, request, st.getGeneratedKeys());
+							
+							// Set the property
+							if (stConfig.getKeySetter() != null) {
+								stConfig.getKeySetter().setValue(args, request.getResult());
+							}
 						} else {
 							// otherwise, simply execute statement that selects a key 
 							selectKey(request, stConfig, true, args);
@@ -283,21 +288,19 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 			ResultSet rs) throws SQLException {
 		
 		try {
-			if (stConfig.getResultType() != void.class) {
-				// Create callback that will receive the mapped objects
-				DataSink<Object> callback = createResultSink(
-						stConfig, args, request);
-		
-				// Iterate through the result set
-				RowMapper rowMapper = stConfig.getRowMapper();
-				while (rs.next()) {
-					rowMapper.processResultSet(request, rs, callback);
-				}
-				callback.commitData();
-				
-				// Commit all callbacks used in the request
-				request.commitCallbacks();
+			// Create callback that will receive the mapped objects
+			DataSink<Object> callback = createResultSink(
+					stConfig, args, request);
+	
+			// Iterate through the result set
+			RowMapper rowMapper = stConfig.getRowMapper();
+			while (rs.next()) {
+				rowMapper.processResultSet(request, rs, callback);
 			}
+			callback.commitData();
+			
+			// Commit all callbacks used in the request
+			request.commitCallbacks();
 		} finally {
 			try {
 				rs.close();
