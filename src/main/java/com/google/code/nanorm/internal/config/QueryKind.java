@@ -13,24 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.code.nanorm.annotations;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package com.google.code.nanorm.internal.config;
 
 /**
- * List of result maps.
+ * Query kind.
  * 
  * @author Ivan Dubrov
- * @version 1.0 28.05.2008
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface ResultMapList {
-	/**
-	 * Result map list.
-	 */
-	ResultMap[] value();
+public enum QueryKind {
+	/** Select statement. */
+	SELECT,
+	
+	/** Insert statement. */
+	INSERT,
+	
+	/** Update statement. */
+	UPDATE,
+	
+	/** Call statement. */
+	CALL;
 }

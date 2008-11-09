@@ -39,11 +39,7 @@ public class StatementConfig {
 
 	private final StatementKey id;
 
-	private boolean update;
-
-	private boolean insert;
-	
-	private boolean call;
+	private QueryKind kind;
 
 	private Fragment fragment;
 
@@ -70,34 +66,14 @@ public class StatementConfig {
 		this.id = id;
 	}
 
-	/** @return Returns the update. */
-	public boolean isUpdate() {
-		return update;
+	/** @return the kind */
+	public QueryKind getKind() {
+		return kind;
 	}
 
-	/** @param update The update to set. */
-	public void setUpdate(boolean update) {
-		this.update = update;
-	}
-
-	/** @return the insert */
-	public boolean isInsert() {
-		return insert;
-	}
-
-	/** @param insert the insert to set */
-	public void setInsert(boolean insert) {
-		this.insert = insert;
-	}
-
-	/** @return the call */
-	public boolean isCall() {
-		return call;
-	}
-
-	/** @param call the call to set */
-	public void setCall(boolean call) {
-		this.call = call;
+	/** @param kind the kind to set */
+	public void setKind(QueryKind kind) {
+		this.kind = kind;
 	}
 
 	/** @return Returns the statementBuilder. */
@@ -204,9 +180,7 @@ public class StatementConfig {
 	public String toString() {
 		return new ToStringBuilder(this)
 			.append("id", id)
-			.append("update", update)
-			.append("insert", insert)
-			.append("call", call)
+			.append("kind", kind)
 			.append("resultType", resultType)
 			.append("rowMapper", rowMapper)
 			.append("fragment", fragment)

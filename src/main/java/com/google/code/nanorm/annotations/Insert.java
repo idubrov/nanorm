@@ -20,17 +20,37 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.google.code.nanorm.SQLSource;
+
 /**
- * Insert statement marker.
+ * <p>
+ * Insert statement marker. Query method marked by this annotation will be
+ * treated as method performing database insert.
+ * </p>
+ * <p>
+ * For static SQL query, set the {@link #value()} property, for dynamic SQL use
+ * the {@link #sqlSource()} (see {@link SQLSource} for more details about the
+ * dynamic SQL). Note that these two properties are mutually exclusive.
+ * </p>
+ * <p>
+ * You can use {@link SelectKey} annotation together with this one for generated
+ * keys feature.
+ * </p>
  * 
  * @author Ivan Dubrov
  * @version 1.0 27.05.2008
  */
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target( { ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Insert {
 	/**
-	 * SQL statement that performs database insert.
+	 * SQL statement that performs database insert. This is mutually exclusive
+	 * with {@link #sqlSource()}.
 	 */
-    String value();
+	String value() default "";
+
+	/**
+	 * SQL generator. This is mutually exclusive with {@link #value()}.
+	 */
+	Class<? extends SQLSource> sqlSource() default SQLSource.class;
 }

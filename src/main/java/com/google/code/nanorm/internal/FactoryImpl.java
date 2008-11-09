@@ -36,6 +36,7 @@ import com.google.code.nanorm.config.SessionConfig;
 import com.google.code.nanorm.exceptions.ConfigurationException;
 import com.google.code.nanorm.exceptions.DataException;
 import com.google.code.nanorm.internal.config.InternalConfiguration;
+import com.google.code.nanorm.internal.config.QueryKind;
 import com.google.code.nanorm.internal.config.StatementConfig;
 import com.google.code.nanorm.internal.config.StatementKey;
 import com.google.code.nanorm.internal.introspect.Getter;
@@ -201,7 +202,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 
 				// Prepare the statement
 				PreparedStatement st;
-				if(stConfig.isCall()) {
+				if(stConfig.getKind() == QueryKind.CALL) {
 					st = conn.prepareCall(sql.toString());
 					
 					// Register OUT parameters
@@ -223,7 +224,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 						mapper.mapParameterIn(config.getTypeHandlerFactory(), st);
 					}
 
-					if (stConfig.isInsert()) {
+					if (stConfig.getKind() == QueryKind.INSERT) {
 						st.executeUpdate();
 						
 						if(isJDBCKey) {
@@ -239,7 +240,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 							// otherwise, simply execute statement that selects a key 
 							selectKey(request, stConfig, true, args);
 						}
-					} else if (stConfig.isUpdate()) {
+					} else if (stConfig.getKind() == QueryKind.UPDATE) {
 						// The result is amount of rows updated
 						request.setResult(st.executeUpdate());
 					} else {
@@ -247,7 +248,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 					}
 					
 					// Map OUT parameters
-					if(stConfig.isCall()) {
+					if(stConfig.getKind() == QueryKind.CALL) {
 						CallableStatement cs = (CallableStatement) st;
 						for (ParameterMapper mapper : parameters) {
 							// TODO: Void.class handling (null parameters)
@@ -350,7 +351,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 			boolean after, Object[] args) {
 		boolean isKeyAfter = stConfig.getSelectKeyType() == SelectKeyType.AFTER;
 		
-		if (stConfig.isInsert() && stConfig.getSelectKey() != null
+		if (stConfig.getKind() == QueryKind.INSERT && stConfig.getSelectKey() != null
 				&& after == isKeyAfter) {
 			
 			if(LOGGER.isDebugEnabled()) {

@@ -25,14 +25,16 @@ import com.google.code.nanorm.SQLSource;
 /**
  * Dynamic SQL configuration.
  * 
+ * @deprecated Use {@link Select#sqlSource()}, {@link Insert#sqlSource()},
+ *             {@link Update#sqlSource()} or {@link Call#sqlSource()} instead.
  * @author Ivan Dubrov
  */
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target( { ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Source
-{
+@Deprecated
+public @interface Source {
 	/**
 	 * Type of the SQL generator.
 	 */
-    Class<? extends SQLSource> value();
+	Class<? extends SQLSource> value();
 }

@@ -19,6 +19,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import com.google.code.nanorm.SQLSource;
 import com.google.code.nanorm.annotations.Insert;
 import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.annotations.SelectKey;
@@ -79,6 +80,24 @@ public class SimpleUpdatesTest extends MapperTestBase {
         @Insert("INSERT INTO articles(id, subject, year) VALUES (next value for ids, ${1.subject}, ${1.year})")
         @SelectKey(property = "1.id")
         void insertArticle9(Article article);
+        
+        // Some dynamic SQL
+        @Insert(sqlSource = DynamicInsert.class)
+        @SelectKey(property = "1.id")
+        void insertArticle10(Article article);
+        
+        class DynamicInsert extends SQLSource {
+        	public void sql(Article article) {
+        		append("INSERT INTO articles(id");
+      			appendNotNull(", subject", article.getSubject());
+      			append(", year");
+      			append(") VALUES (next value for ids");
+      			
+      			appendNotNull(", ${1}", article.getSubject());
+      			append(", ${1}", article.getYear());
+      			append(")");
+        	}
+        }
     }
     
     @Test
@@ -241,7 +260,7 @@ public class SimpleUpdatesTest extends MapperTestBase {
     }
     
     /**
-     * Test automatic result mapping
+     * Test retrieving generated keys via JDBC and returning it.
      */
     @Test
     public void testInsert8() throws Exception {
@@ -266,7 +285,7 @@ public class SimpleUpdatesTest extends MapperTestBase {
     }
     
     /**
-     * Test automatic result mapping
+     * Test retrieving generated keys via JDBC and returning it via property.
      */
     @Test
     public void testInsert9() throws Exception {
@@ -285,6 +304,29 @@ public class SimpleUpdatesTest extends MapperTestBase {
         Article article2 = mapper.getArticleById(article1.getId());
         Assert.assertEquals(article1.getId(), article2.getId());
         Assert.assertEquals(article1.getSubject(), article2.getSubject());
+        Assert.assertEquals(article1.getYear(), article2.getYear());
+    }
+    
+    /**
+     * Test automatic result mapping
+     */
+    @Test
+    public void testInsert10() throws Exception {
+        Mapper1 mapper = factory.createMapper(Mapper1.class);
+
+        Article article1 = new Article();
+        article1.setId(456);
+        article1.setSubject(null);
+        article1.setYear(2008);
+
+        execute("ALTER SEQUENCE ids RESTART WITH 6285"); 
+        mapper.insertArticle10(article1);
+        // Article has old key, because we didn't specify the "property" on SelectKey. 
+        Assert.assertEquals(6285, article1.getId()); 
+        
+        Article article2 = mapper.getArticleById(article1.getId());
+        Assert.assertEquals(article1.getId(), article2.getId());
+        Assert.assertNull(article2.getSubject());
         Assert.assertEquals(article1.getYear(), article2.getYear());
     }
 }

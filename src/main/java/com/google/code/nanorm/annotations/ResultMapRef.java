@@ -24,23 +24,24 @@ import java.lang.annotation.Target;
  * Result map reference.
  * 
  * <p>
- * This annotation is mutually exclusive with {@link Scalar} annotation (which has
- * opposite meaning) or with {@link ResultMap} annotation (which has similar meaning).
+ * This annotation is mutually exclusive with {@link Scalar} annotation (which
+ * has opposite meaning) or with {@link ResultMap} annotation (which has similar
+ * meaning).
  * </p>
  * 
  * @author Ivan Dubrov
  * @version 1.0 28.05.2008
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target( { ElementType.METHOD, ElementType.TYPE })
 public @interface ResultMapRef {
 	/**
 	 * Reference (id of the result map, refer to {@link ResultMap#id()}).
 	 */
-    String value() default "";
-   
-    /**
-     * Result map declaring class.
-     */
-    Class<?> declaringClass() default Object.class;
+	String value() default "";
+
+	/**
+	 * Result map declaring class.
+	 */
+	Class<?> declaringClass() default Object.class;
 }

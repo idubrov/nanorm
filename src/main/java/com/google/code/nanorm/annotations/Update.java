@@ -20,17 +20,38 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.google.code.nanorm.SQLSource;
+
 /**
- * Update statement marker.
+ * <p>
+ * Update statement marker. Query method marked by this annotation will be
+ * treated as method performing database update.
+ * </p>
+ * <p>
+ * For static SQL query, set the {@link #value()} property, for dynamic SQL use
+ * the {@link #sqlSource()} (see {@link SQLSource} for more details about the
+ * dynamic SQL). Note that these two properties are mutually exclusive.
+ * </p>
+ * <p>
+ * Update method can have <code>int</code> return type, in that case the number
+ * of rows updated will be returned. 
+ * </p>
  * 
+ * @see java.sql.PreparedStatement#executeUpdate()
  * @author Ivan Dubrov
  * @version 1.0 27.05.2008
  */
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target( { ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Update {
 	/**
-	 * SQL statement that performs database update (update or delete).
+	 * SQL statement that performs database update (update or delete). This is
+	 * mutually exclusive with {@link #sqlSource()}.
 	 */
-    String value();
+	String value();
+
+	/**
+	 * SQL generator. This is mutually exclusive with {@link #value()}.
+	 */
+	Class<? extends SQLSource> sqlSource() default SQLSource.class;
 }

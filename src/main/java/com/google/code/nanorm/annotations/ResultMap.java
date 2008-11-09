@@ -26,8 +26,9 @@ import java.lang.annotation.Target;
  * FIXME: More elaborated javadoc!
  * 
  * <p>
- * This annotation is mutually exclusive with {@link Scalar} annotation (which has
- * opposite meaning) or with {@link ResultMapRef} annotation (which has similar meaning).
+ * This annotation is mutually exclusive with {@link Scalar} annotation (which
+ * has opposite meaning) or with {@link ResultMapRef} annotation (which has
+ * similar meaning).
  * </p>
  * 
  * @author Ivan Dubrov

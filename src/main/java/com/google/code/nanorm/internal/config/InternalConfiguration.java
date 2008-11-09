@@ -70,6 +70,7 @@ import com.google.code.nanorm.internal.util.ToStringBuilder;
  * @author Ivan Dubrov
  * @version 1.0 29.05.2008
  */
+@SuppressWarnings("deprecation")
 public class InternalConfiguration {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(InternalConfiguration.class);
@@ -221,35 +222,50 @@ public class InternalConfiguration {
 		Insert insert = method.getAnnotation(Insert.class);
 		Call call = method.getAnnotation(Call.class);
 		Source source = method.getAnnotation(Source.class);
+		
+		
 		String sql = null;
-		boolean isUpdate = (update != null);
-		boolean isInsert = (insert != null);
-		boolean isCall = (call != null);
+		Class<? extends SQLSource> sqlSource = null;
+		
+		QueryKind kind = null;
+		
 		if (select != null) {
 			sql = select.value();
+			sqlSource = select.sqlSource();
+			kind = QueryKind.SELECT;
 		} else if (call != null) {
 			sql = call.value();
+			sqlSource = call.sqlSource();
+			kind = QueryKind.CALL;
 		} else if (insert != null) {
 			sql = insert.value();
+			sqlSource = insert.sqlSource();
+			kind = QueryKind.INSERT;
 		} else if (update != null) {
 			sql = update.value();
+			sqlSource = update.sqlSource();
+			kind = QueryKind.UPDATE;
 		} else if (source != null) {
-			Class<? extends SQLSource> sqlSource = source.value();
-			Fragment builder = new DynamicFragment(sqlSource, introspectionFactory);
-			stConfig.setStatementBuilder(builder);
+			// Deprecated case.
+			kind = QueryKind.SELECT;
+			sqlSource = source.value();
 		} else {
 			// Skip method
-			// TODO: Logging!
-			return;
+			LOGGER.info("Skipping method '{}' in mapper '{}' (no configuration).", method.getName(),
+					mapper.getName());
+			return;					
 		}
-		if (sql != null) {
+		stConfig.setKind(kind);
+		
+		// TODO: Check we have exactly one of these!
+		if (sqlSource != SQLSource.class) {
+			Fragment builder = new DynamicFragment(sqlSource, introspectionFactory);
+			stConfig.setStatementBuilder(builder);
+		} else if (sql != null) {
 			// TODO: Batch case!
 			Fragment builder = new TextFragment(sql, method.getGenericParameterTypes(),
 					introspectionFactory);
-			stConfig.setStatementBuilder(builder);
-			stConfig.setUpdate(isUpdate);
-			stConfig.setInsert(isInsert);
-			stConfig.setCall(isCall);
+			stConfig.setStatementBuilder(builder);			
 		}
 		// TODO: Check sql is not empty!
 
@@ -296,7 +312,7 @@ public class InternalConfiguration {
 		// to find DataSink if return type is void
 		// TODO: Should this work for generated keys as well?
 		Type returnType = null;
-		if (select != null && method.getReturnType() == void.class) {
+		if (kind == QueryKind.SELECT && method.getReturnType() == void.class) {
 			int pos = searchResultCallback(method);
 			if (pos == -1) {
 				throw new ConfigurationException(Messages.invalidReturnType(method));
