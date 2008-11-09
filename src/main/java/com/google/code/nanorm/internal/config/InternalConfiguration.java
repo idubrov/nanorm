@@ -133,7 +133,9 @@ public class InternalConfiguration {
 	public StatementConfig getStatementConfig(Class<?> mapper, Method method) {
 		Type[] resolved = TypeOracle.resolveMethodArguments(method, mapper);
 		StatementKey key = new StatementKey(mapper, method.getName(), resolved);
-		return getStatementConfig(key);
+		synchronized(this) {
+			return getStatementConfig(key);
+		}
 	}
 
 	/**
