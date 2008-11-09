@@ -319,6 +319,7 @@ public class InternalConfiguration {
 
 			stConfig.setCallbackIndex(pos);
 
+			// First parameter of DataSink interface
 			ParameterizedType pt = (ParameterizedType) method.getGenericParameterTypes()[pos];
 			returnType = pt.getActualTypeArguments()[0];
 
@@ -333,8 +334,8 @@ public class InternalConfiguration {
 			// subselects are configured
 			postConfigureList.add(new Runnable() {
 				public void run() {
-					// At this time, all subselect properties should be
-					// post-configured already
+					// At this time, all subselect properties for this result
+					// map should be post-configured already
 					stConfig.setRowMapper(createRowMapper(stConfig.getResultType(), mapConfig));
 				}
 			});
@@ -375,6 +376,8 @@ public class InternalConfiguration {
 	 * @return
 	 */
 	private RowMapper createRowMapper(Type type, ResultMapConfig config) {
+		assert (config != null);
+
 		// For explicitly marked by @Scalar, we use scalar row mapper
 		if (config.isScalar()) {
 			if (type instanceof Class<?> && ((Class<?>) type).isArray()) {
@@ -396,7 +399,6 @@ public class InternalConfiguration {
 			}
 		}
 
-		// TODO: If config is null, automap it?
 		return new DefaultRowMapper(type, config, introspectionFactory, typeHandlerFactory);
 	}
 
@@ -435,7 +437,6 @@ public class InternalConfiguration {
 	private ResultMapConfig createResultMapConfig(Method method) throws ConfigurationException {
 		Class<?> mapper = method.getDeclaringClass();
 
-		// FIXME: These three are mutually exclusive! Check this!
 		ResultMap resultMap = method.getAnnotation(ResultMap.class);
 		ResultMapRef ref = method.getAnnotation(ResultMapRef.class);
 		Scalar scalar = method.getAnnotation(Scalar.class);
@@ -478,9 +479,6 @@ public class InternalConfiguration {
 	/**
 	 * Create {@link ResultMapConfig} instance from {@link RowMapper}
 	 * annotation.
-	 * 
-	 * TODO: Validate we don't have nested map with "select" property at the
-	 * same time
 	 * 
 	 * @param clazz
 	 * @param resultMap
@@ -534,6 +532,16 @@ public class InternalConfiguration {
 		return config;
 	}
 
+	/**
+	 * Create configuration bean for property mapping.
+	 * 
+	 * @param mapper mapper interface
+	 * @param method method being mapped
+	 * @param resultMap result map
+	 * @param mapping mapping configuration annotation
+	 * @return mapping configuration
+	 * @throws ConfigurationException configuration is invalid
+	 */
 	private PropertyMappingConfig createPropertyMappingConfig(Class<?> mapper, Method method,
 			ResultMap resultMap, Property mapping) throws ConfigurationException {
 		assert (mapper != null);

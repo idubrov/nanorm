@@ -32,7 +32,6 @@ import com.google.code.nanorm.internal.util.Messages;
  * 
  * @author Ivan Dubrov
  */
-@SuppressWarnings("deprecation")
 public class Validation {
 
 	/**
