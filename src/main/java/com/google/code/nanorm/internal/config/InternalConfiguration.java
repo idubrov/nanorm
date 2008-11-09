@@ -214,14 +214,13 @@ public class InternalConfiguration {
 		final StatementConfig stConfig = new StatementConfig(key);
 		final ResultMapConfig mapConfig = createResultMapConfig(method);
 
-		// TODO: Check we have only one of those!
 		Select select = method.getAnnotation(Select.class);
 		Update update = method.getAnnotation(Update.class);
 		Insert insert = method.getAnnotation(Insert.class);
 		Call call = method.getAnnotation(Call.class);
 		Source source = method.getAnnotation(Source.class);
 
-		Validation.validateQueryAnnotations(mapper, method);
+		Validation.validateExclusive(mapper, method, select, update, insert, call, source);
 
 		String sql = null;
 		Class<? extends SQLSource> sqlSource = null;
@@ -441,7 +440,7 @@ public class InternalConfiguration {
 		ResultMapRef ref = method.getAnnotation(ResultMapRef.class);
 		Scalar scalar = method.getAnnotation(Scalar.class);
 
-		Validation.validateMapAnnotations(mapper, method);
+		Validation.validateExclusive(mapper, method, resultMap, ref, scalar);
 
 		if (resultMap != null) {
 			// Use result map

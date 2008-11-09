@@ -19,17 +19,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Set;
 
-import com.google.code.nanorm.annotations.Call;
-import com.google.code.nanorm.annotations.Insert;
 import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapRef;
-import com.google.code.nanorm.annotations.Scalar;
-import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.annotations.SelectKey;
 import com.google.code.nanorm.annotations.SelectKeyType;
-import com.google.code.nanorm.annotations.Source;
-import com.google.code.nanorm.annotations.Update;
 import com.google.code.nanorm.exceptions.ConfigurationException;
 import com.google.code.nanorm.internal.util.Messages;
 
@@ -137,41 +131,19 @@ public class Validation {
 	}
 
 	/**
-	 * Validate annotations that configure mapping ({@link ResultMap},
-	 * {@link ResultMapRef} and {@link Scalar}).
+	 * Validate given mutually exclusive annotations are not used together (only
+	 * one could be not <code>null</code>).
 	 * 
 	 * @param mapper mapper interface
 	 * @param method mapper method
+	 * @param anns annotations
 	 */
-	static void validateMapAnnotations(Class<?> mapper, Method method) {
-
-		validateExclusive(mapper, method, ResultMap.class, ResultMapRef.class);
-		validateExclusive(mapper, method, ResultMap.class, Scalar.class);
-		validateExclusive(mapper, method, Scalar.class, ResultMapRef.class);
-	}
-
-	/**
-	 * Validate annotations that configure query ({@link Select}, {@link Insert}
-	 * , {@link Update} and {@link Call}) are not used together.
-	 * 
-	 * @param mapper mapper interface
-	 * @param method mapper method
-	 */
-
-	static void validateQueryAnnotations(Class<?> mapper, Method method) {
-		validateExclusive(mapper, method, Select.class, Insert.class);
-		validateExclusive(mapper, method, Select.class, Update.class);
-		validateExclusive(mapper, method, Select.class, Call.class);
-		validateExclusive(mapper, method, Select.class, Source.class);
-
-		validateExclusive(mapper, method, Insert.class, Update.class);
-		validateExclusive(mapper, method, Insert.class, Call.class);
-		validateExclusive(mapper, method, Insert.class, Source.class);
-
-		validateExclusive(mapper, method, Update.class, Call.class);
-		validateExclusive(mapper, method, Update.class, Source.class);
-
-		validateExclusive(mapper, method, Call.class, Source.class);
+	static void validateExclusive(Class<?> mapper, Method method, Annotation... anns) {
+		for (int i = 0; i < anns.length; ++i) {
+			for (int j = i + 1; j < anns.length; ++j) {
+				validateExclusive(mapper, method, anns[i], anns[j]);
+			}
+		}
 	}
 
 	/**
@@ -183,11 +155,10 @@ public class Validation {
 	 * @param ann1 first annotation to check
 	 * @param ann2 second annotation to check
 	 */
-	static void validateExclusive(Class<?> mapper, Method method, Class<? extends Annotation> ann1,
-			Class<? extends Annotation> ann2) {
-		if (method.getAnnotation(ann1) != null && method.getAnnotation(ann2) != null) {
+	static void validateExclusive(Class<?> mapper, Method method, Annotation ann1, Annotation ann2) {
+		if (ann1 != null && ann2 != null) {
 			throw new ConfigurationException(Messages.mutuallyExclusive(mapper, method, ann1
-					.getSimpleName(), ann2.getSimpleName()));
+					.annotationType().getSimpleName(), ann2.annotationType().getSimpleName()));
 		}
 	}
 }
