@@ -15,15 +15,21 @@
  */
 package com.google.code.nanorm.internal.config;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+import com.google.code.nanorm.annotations.Call;
+import com.google.code.nanorm.annotations.Insert;
 import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapRef;
 import com.google.code.nanorm.annotations.Scalar;
+import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.annotations.SelectKey;
 import com.google.code.nanorm.annotations.SelectKeyType;
+import com.google.code.nanorm.annotations.Source;
+import com.google.code.nanorm.annotations.Update;
 import com.google.code.nanorm.exceptions.ConfigurationException;
 import com.google.code.nanorm.internal.util.Messages;
 
@@ -32,6 +38,7 @@ import com.google.code.nanorm.internal.util.Messages;
  * 
  * @author Ivan Dubrov
  */
+@SuppressWarnings("deprecation")
 public class Validation {
 
 	/**
@@ -66,19 +73,20 @@ public class Validation {
 	 */
 	static void validateSelectKey(SelectKey selectKey, Class<?> mapper, Method method)
 			throws ConfigurationException {
-		if(selectKey != null) {
-			
+		if (selectKey != null) {
+
 			if (selectKey.type() == SelectKeyType.BEFORE) {
 				if (selectKey.value().length() == 0) {
 					throw new ConfigurationException(Messages.beforeKeyWithoutSQL(mapper, method));
 				}
-	
+
 				if (selectKey.property().length() == 0) {
-					throw new ConfigurationException(Messages.beforeKeyWithoutProperty(mapper, method));
+					throw new ConfigurationException(Messages.beforeKeyWithoutProperty(mapper,
+							method));
 				}
 			}
-		
-			if(method.getGenericReturnType() == void.class && selectKey.property().length() == 0) {
+
+			if (method.getGenericReturnType() == void.class && selectKey.property().length() == 0) {
 				throw new ConfigurationException(Messages.voidReturnWithoutProperty(mapper, method));
 			}
 		}
@@ -97,7 +105,7 @@ public class Validation {
 		if (mapping.columnIndex() != 0 && mapping.column().length() > 0) {
 			throw new ConfigurationException(Messages.multipleColumn(mapping, mapper, resultMap));
 		}
-		
+
 		if (mapping.value().length() == 0) {
 			throw new ConfigurationException(Messages.emptyProperty(mapping, mapper, resultMap));
 		}
@@ -120,12 +128,50 @@ public class Validation {
 			throw new ConfigurationException(Messages.subselectMapperWithoutSubselect(mapping,
 					mapper, resultMap));
 		}
-		
-		if (!"".equals(mapping.subselect()) && mapping.columnIndex() == 0 && mapping.column().length() == 0) {
+
+		if (!"".equals(mapping.subselect()) && mapping.columnIndex() == 0
+				&& mapping.column().length() == 0) {
 			throw new ConfigurationException(Messages.subselectNoColumn(mapping, mapper, resultMap));
 		}
 
+	}
 
+	/**
+	 * Validate annotations that configure mapping ({@link ResultMap},
+	 * {@link ResultMapRef} and {@link Scalar}).
+	 * 
+	 * @param mapper mapper interface
+	 * @param method mapper method
+	 */
+	static void validateMapAnnotations(Class<?> mapper, Method method) {
+
+		validateExclusive(mapper, method, ResultMap.class, ResultMapRef.class);
+		validateExclusive(mapper, method, ResultMap.class, Scalar.class);
+		validateExclusive(mapper, method, Scalar.class, ResultMapRef.class);
+	}
+
+	/**
+	 * Validate annotations that configure query ({@link Select}, {@link Insert}
+	 * , {@link Update} and {@link Call}) are not used together.
+	 * 
+	 * @param mapper mapper interface
+	 * @param method mapper method
+	 */
+
+	static void validateQueryAnnotations(Class<?> mapper, Method method) {
+		validateExclusive(mapper, method, Select.class, Insert.class);
+		validateExclusive(mapper, method, Select.class, Update.class);
+		validateExclusive(mapper, method, Select.class, Call.class);
+		validateExclusive(mapper, method, Select.class, Source.class);
+
+		validateExclusive(mapper, method, Insert.class, Update.class);
+		validateExclusive(mapper, method, Insert.class, Call.class);
+		validateExclusive(mapper, method, Insert.class, Source.class);
+
+		validateExclusive(mapper, method, Update.class, Call.class);
+		validateExclusive(mapper, method, Update.class, Source.class);
+
+		validateExclusive(mapper, method, Call.class, Source.class);
 	}
 
 	/**
@@ -134,21 +180,14 @@ public class Validation {
 	 * 
 	 * @param mapper mapper interface
 	 * @param method mapper method
+	 * @param ann1 first annotation to check
+	 * @param ann2 second annotation to check
 	 */
-	static void validateMapAnnotations(Class<?> mapper, Method method) {
-		Object[] vals = new Object[3];
-		String[] names = { ResultMap.class.getSimpleName(), ResultMapRef.class.getSimpleName(),
-				Scalar.class.getSimpleName() };
-
-		vals[0] = method.getAnnotation(ResultMap.class);
-		vals[1] = method.getAnnotation(ResultMapRef.class);
-		vals[2] = method.getAnnotation(Scalar.class);
-
-		for (int i = 0; i < 3; ++i) {
-			if (vals[i] != null && vals[(i + 1) % 3] != null) {
-				throw new ConfigurationException(Messages.mutuallyExclusive(mapper, method,
-						names[i], names[(i + 1) % 3]));
-			}
+	static void validateExclusive(Class<?> mapper, Method method, Class<? extends Annotation> ann1,
+			Class<? extends Annotation> ann2) {
+		if (method.getAnnotation(ann1) != null && method.getAnnotation(ann2) != null) {
+			throw new ConfigurationException(Messages.mutuallyExclusive(mapper, method, ann1
+					.getSimpleName(), ann2.getSimpleName()));
 		}
 	}
 }

@@ -56,16 +56,11 @@ import com.google.code.nanorm.internal.util.Messages;
 import com.google.code.nanorm.internal.util.ToStringBuilder;
 
 /**
- * TODO: Merge processing and searching. Maybe, lazy loading (when referenced).
- * 
  * TODO: Thread safety?
  * 
- * TODO: Validate: one map on method, no map + ref at the same time, no maps
- * with same id
+ * TODO: Validate: no maps with same id
  * 
  * TODO: Validate: one data sink and query method is void
- * 
- * TODO: Test on scalar mapping the String.
  * 
  * @author Ivan Dubrov
  * @version 1.0 29.05.2008
@@ -87,8 +82,6 @@ public class InternalConfiguration {
 	 */
 	private final Map<StatementKey, StatementConfig> statementsConfig;
 
-	// private final List<SubselectConfig> postProcessSubselects;
-
 	private final List<Runnable> postConfigureList;
 
 	private final TypeHandlerFactory typeHandlerFactory;
@@ -106,7 +99,6 @@ public class InternalConfiguration {
 		resultMapsConfig = new HashMap<String, ResultMapConfig>();
 		statementsConfig = new HashMap<StatementKey, StatementConfig>();
 		mapped = new HashSet<Class<?>>();
-		// postProcessSubselects = new ArrayList<SubselectConfig>();
 		postConfigureList = new ArrayList<Runnable>();
 
 		// TODO: Should be configurable
@@ -125,7 +117,8 @@ public class InternalConfiguration {
 		StatementConfig statementConfig = statementsConfig.get(key);
 
 		if (statementConfig == null) {
-			throw new ConfigurationException(Messages.missingConfiguration(key.getMapper(), key.getName()));
+			throw new ConfigurationException(Messages.missingConfiguration(key.getMapper(), key
+					.getName()));
 		}
 		return statementConfig;
 	}
@@ -185,33 +178,38 @@ public class InternalConfiguration {
 	/**
 	 * Process given method and generate statement configuration from it.
 	 * 
-	 * TODO: Validate we don't have more than one from insert, select, update
-	 * and delete.
+	 * <p>
+	 * FIXME: Is that ok to just strip generics info (by calling
+	 * <code>method.getParameterType()</code>)? We probably should propagate
+	 * type info from the top mapper class when going down to the interfaces in
+	 * configure method. So, currently, the Nanorm annotations could be applied
+	 * only to methods without unknown generic types. That means you cannot do
+	 * something like this:
 	 * 
+	 * <pre>
+	 * interface Super&lt;T&gt; {
+	 * 	&#064;Select(&quot;SELECT FROM SOME WHERE ID = id&quot;)
+	 * 	Some selectById(T id);
+	 * }
+	 * 
+	 * interface Concrete extends Super&lt;Integer&gt; {
+	 * 	Some selectById(Integer id);
+	 * }
+	 * </pre>
+	 * 
+	 * </p>
+	 * 
+	 * @param mapper mapper interface
 	 * @param method method to gather configuration from
 	 */
 	private void processMethod(Class<?> mapper, Method method) throws ConfigurationException {
-		// FIXME: Is that ok to just strip generics info?
-		// We probably should propagate type info from the top mapper class when
-		// going down to the interfaces in configure method.
-		// So, currently, the Nanorm annotations could be applied only to
-		// methods without
-		// unknown generic types
-		// That means you cannot do something like this:
-		// interface Super<T> {
-		// @Select("SELECT FROM SOME WHERE ID = id")
-		// Some selectById(T id);
-		// }
-		// interface Concrete extends Super<Integer> {
-		// Some selectById(Integer id);
-		// }
+		assert (method != null);
+		assert (mapper != null);
+
 		StatementKey key = new StatementKey(mapper, method.getName(), method.getParameterTypes());
 
-		if (statementsConfig.containsKey(key)) {
-			// TODO: Log debug message "Query method '" + key + "' is already
-			// configured!";
-			return;
-		}
+		// Each method should be configured only once
+		assert (!statementsConfig.containsKey(key));
 
 		final StatementConfig stConfig = new StatementConfig(key);
 		final ResultMapConfig mapConfig = createResultMapConfig(method);
@@ -222,13 +220,14 @@ public class InternalConfiguration {
 		Insert insert = method.getAnnotation(Insert.class);
 		Call call = method.getAnnotation(Call.class);
 		Source source = method.getAnnotation(Source.class);
-		
-		
+
+		Validation.validateQueryAnnotations(mapper, method);
+
 		String sql = null;
 		Class<? extends SQLSource> sqlSource = null;
-		
+
 		QueryKind kind = null;
-		
+
 		if (select != null) {
 			sql = select.value();
 			sqlSource = select.sqlSource();
@@ -251,12 +250,12 @@ public class InternalConfiguration {
 			sqlSource = source.value();
 		} else {
 			// Skip method
-			LOGGER.info("Skipping method '{}' in mapper '{}' (no configuration).", method.getName(),
-					mapper.getName());
-			return;					
+			LOGGER.info("Skipping method '{}' in mapper '{}' (no configuration).",
+					method.getName(), mapper.getName());
+			return;
 		}
 		stConfig.setKind(kind);
-		
+
 		// TODO: Check we have exactly one of these!
 		if (sqlSource != SQLSource.class) {
 			Fragment builder = new DynamicFragment(sqlSource, introspectionFactory);
@@ -265,7 +264,7 @@ public class InternalConfiguration {
 			// TODO: Batch case!
 			Fragment builder = new TextFragment(sql, method.getGenericParameterTypes(),
 					introspectionFactory);
-			stConfig.setStatementBuilder(builder);			
+			stConfig.setStatementBuilder(builder);
 		}
 		// TODO: Check sql is not empty!
 
@@ -283,20 +282,21 @@ public class InternalConfiguration {
 						.getGenericParameterTypes(), introspectionFactory));
 			}
 			selectKeySt.setParameterTypes(method.getGenericParameterTypes());
-			
-			
+
 			// Key type is method return value
 			Type keyType = method.getGenericReturnType();
-			
-			// If return type is void, the key type is deduced from the property type
-			// Validation already checked that in this case property is not empty
-			if(keyType == void.class) {
+
+			// If return type is void, the key type is deduced from the property
+			// type
+			// Validation already checked that in this case property is not
+			// empty
+			if (keyType == void.class) {
 				String prop = selectKey.property();
-				keyType = introspectionFactory.getParameterType(method.getGenericParameterTypes(), prop);
+				keyType = introspectionFactory.getParameterType(method.getGenericParameterTypes(),
+						prop);
 			}
 			selectKeySt.setResultType(keyType);
-			selectKeySt.setRowMapper(new ScalarRowMapper(keyType,
-					typeHandlerFactory));
+			selectKeySt.setRowMapper(new ScalarRowMapper(keyType, typeHandlerFactory));
 
 			if (selectKey.property().length() > 0) {
 				Setter keySetter = introspectionFactory.buildParameterSetter(method
@@ -327,7 +327,7 @@ public class InternalConfiguration {
 			returnType = method.getGenericReturnType();
 		}
 		stConfig.setResultType(returnType);
-		
+
 		// Create row mapper if return type is not void
 		if (returnType != void.class) {
 			// Create row mapper during post-configuration step, after the
@@ -440,7 +440,7 @@ public class InternalConfiguration {
 		ResultMap resultMap = method.getAnnotation(ResultMap.class);
 		ResultMapRef ref = method.getAnnotation(ResultMapRef.class);
 		Scalar scalar = method.getAnnotation(Scalar.class);
-		
+
 		Validation.validateMapAnnotations(mapper, method);
 
 		if (resultMap != null) {
@@ -577,7 +577,8 @@ public class InternalConfiguration {
 
 			// null parameters mean that parameters are not known.
 			// in that case, any matching method will be used
-			// FIXME: Derive parameters from the property type!
+			// FIXME: Derive parameters from the property type! But we need bean
+			// class for this...
 			StatementKey subselectKey = new StatementKey(subselectMapper, mapping.subselect(), null);
 
 			// Subselect properties requires post-configuration (the referenced
