@@ -353,7 +353,7 @@ public class Messages {
 	 * @return message
 	 */
 	public static String missingConfiguration(Class<?> mapper, String method) {
-		return MessageFormat.format("Method {0} does not have any configuration.", 
+		return MessageFormat.format("The {0} does not have any configuration.", 
 				location(mapper, method));
 	}
 
