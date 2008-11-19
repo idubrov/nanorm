@@ -90,6 +90,7 @@ public final class IntrospectUtils {
 			visitor.visitBegin(beanClass, path);
 		} else {
 			// Parameter access
+			// FIXME: Should support indexing! ([)
 			int pos = path.indexOf('.');
 			if (pos == -1) {
 				pos = path.length();
