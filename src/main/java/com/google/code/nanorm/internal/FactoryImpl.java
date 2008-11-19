@@ -105,7 +105,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 	public <T> T createMapper(Class<T> mapperClass) throws ConfigurationException {
 		config.configure(mapperClass);
 
-		// TODO: Check we mapped this class!
+		// TODO: Check we mapped this class and return existing one!
 		return config.getIntrospectionFactory().createMapper(mapperClass,
 				config, this);
 	}
