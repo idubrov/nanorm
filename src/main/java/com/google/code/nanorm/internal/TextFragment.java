@@ -146,6 +146,8 @@ public class TextFragment implements Fragment {
 				
 			String prop = sql.substring(start + 2, end);
 			// TODO: Add support for lists, which should expand into something like (?, ?, ?, ?)
+			// For, example ${prop[]} with prop = int[] { 1, 2, 3} will expand into ?, ?, ? with
+			// parameters 1, 2 and 3.
 			builder.append('?');
 			try {
 				

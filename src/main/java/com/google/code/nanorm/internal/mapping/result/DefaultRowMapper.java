@@ -263,7 +263,6 @@ public class DefaultRowMapper implements RowMapper {
 			Setter setter = introspectionFactory.buildSetter(elementClass,
 					mappingConfig.getProperty());
 
-			// TODO: Check all groupBy's are found!
 			if (groupBy != null && contains(groupBy, mappingConfig.getProperty())) {
 				ValueGetter keyGen = new ValueGetter(typeHandlerFactory
 						.getTypeHandler(propertyType), mappingConfig);

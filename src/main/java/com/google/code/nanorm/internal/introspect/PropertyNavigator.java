@@ -18,7 +18,6 @@ package com.google.code.nanorm.internal.introspect;
 
 import java.util.NoSuchElementException;
 
-
 /**
  * Property path parser.
  * 
@@ -69,6 +68,7 @@ public final class PropertyNavigator {
 
 	/**
 	 * Index value (for indexing access)
+	 * 
 	 * @return index value
 	 */
 	public int getIndex() {
@@ -77,6 +77,7 @@ public final class PropertyNavigator {
 
 	/**
 	 * Property name (for property access)
+	 * 
 	 * @return property name
 	 */
 	public String getProperty() {
@@ -85,6 +86,7 @@ public final class PropertyNavigator {
 
 	/**
 	 * Get position in the property path.
+	 * 
 	 * @return position in the property path.
 	 */
 	public int getPosition() {
@@ -93,6 +95,7 @@ public final class PropertyNavigator {
 
 	/**
 	 * Get type of last parsed property path element.
+	 * 
 	 * @return type of last parsed property path element.
 	 */
 	public int getElementType() {
@@ -101,6 +104,7 @@ public final class PropertyNavigator {
 
 	/**
 	 * Check if property path has next property path element.
+	 * 
 	 * @return if property path has next property path element.
 	 */
 	public boolean hasNext() {
@@ -109,6 +113,7 @@ public final class PropertyNavigator {
 
 	/**
 	 * Get property path.
+	 * 
 	 * @return property path
 	 */
 	public String getPath() {
@@ -117,13 +122,14 @@ public final class PropertyNavigator {
 
 	/**
 	 * Parse next property path element.
+	 * 
 	 * @return element type
 	 */
 	public int next() {
-		if(pos >= path.length()) {
+		if (pos >= path.length()) {
 			throw new NoSuchElementException("Property path " + path + " has no more elements!");
 		}
-		
+
 		// Skip '.' after property access
 		if (elementType == PROPERTY && path.charAt(pos) == '.') {
 			pos++;
@@ -135,8 +141,8 @@ public final class PropertyNavigator {
 		}
 
 		char c = path.charAt(pos);
-		if (c == '[') {
-			index = parseIndex();
+		if (c == '[' || Character.isDigit(c)) {
+			index = parseIndex(c == '[');
 			property = null;
 			elementType = INDEX;
 			return elementType;
@@ -149,30 +155,46 @@ public final class PropertyNavigator {
 		throw unexpected();
 	}
 
-	private int parseIndex() {
-		// Skip '['
-		pos++;
+	/**
+	 * Parse index from the property path. Index could be either with brackets
+	 * (e.g, prop[1]) or without (e.g, prop.2);
+	 * 
+	 * @param brackets if [ and ] are used
+	 * @return
+	 */
+	private int parseIndex(boolean brackets) {
+		if (brackets) {
+			// Skip '['
+			pos++;
+		}
 		int start = pos;
 		while (pos < path.length()) {
 			char c = path.charAt(pos);
-			if (c == ']') {
+			if ((brackets && c == ']') || (!brackets && c == '.')) {
 				int ind = Integer.parseInt(path.substring(start, pos));
 
-				// Skip ']'
-				pos++;
+				if (brackets) {
+					// Skip ']'
+					pos++;
+				}
 				return ind;
 			}
 			if (!Character.isDigit(c)) {
 				// Invalid property path
-				break;
+				throw unexpected();
 			}
 			pos++;
+		}
+		if (!brackets) {
+			int ind = Integer.parseInt(path.substring(start));
+			return ind;
 		}
 		throw unexpected();
 	}
 
 	/**
 	 * Parse property access.
+	 * 
 	 * @return property name
 	 */
 	private String parseProperty() {
@@ -190,10 +212,11 @@ public final class PropertyNavigator {
 
 	/**
 	 * Create exception.
+	 * 
 	 * @return exception
 	 */
 	private IllegalArgumentException unexpected() {
-		return new IllegalArgumentException("Unexpected character at position "
-				+ pos + " in property path '" + path + '\'');
+		return new IllegalArgumentException("Unexpected character at position " + pos
+				+ " in property path '" + path + '\'');
 	}
 }
