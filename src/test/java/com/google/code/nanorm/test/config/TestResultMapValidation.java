@@ -21,6 +21,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapRef;
 import com.google.code.nanorm.annotations.Scalar;
@@ -128,6 +129,37 @@ public class TestResultMapValidation {
 			Assert.fail();
 		} catch (ConfigurationException e) {
 			assertContains(e, "'ResultMap' annotation", "'Scalar' annotation", "mutually exclusive", "Mapper5");
+		}
+	}
+	
+	public static class Bean {
+		public String getSome() { return "some"; }
+		public void setSome(String arg) { }
+	}
+	
+	private interface Mapper6 {
+		@Select("SELECT 1")
+		@ResultMap(id = "somemap", mappings = {
+			@Property("some"),
+			@Property("some")
+		})
+		Bean selectSome(int id);
+	}
+
+	/**
+	 * TEST: Try configuring mapper interface with method having {@link ResultMap} with
+	 * property 'some' mapped two times.
+	 * 
+	 * EXPECT: Configuration exception is thrown that contains certain
+	 * information strings.
+	 */
+	@Test
+	public void testResultMap4() {
+		try {
+			new NanormConfiguration().configure(Mapper6.class);
+			Assert.fail();
+		} catch (ConfigurationException e) {
+			assertContains(e, "property", "mapped", "twice", "Mapper6", "somemap");
 		}
 	}
 }
