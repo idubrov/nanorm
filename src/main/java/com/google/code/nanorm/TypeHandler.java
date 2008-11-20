@@ -24,8 +24,6 @@ import java.sql.SQLException;
  * Performs mapping data from {@link ResultSet} to Java objects and from Java
  * objects to {@link PreparedStatement} parameters.
  * 
- * TODO: Move to public package!
- * 
  * @author Ivan Dubrov
  * @version 1.0 31.05.2008
  * @param <T> type this type handler works for

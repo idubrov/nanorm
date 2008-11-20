@@ -19,6 +19,8 @@ package com.google.code.nanorm.internal.introspect;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import com.google.code.nanorm.internal.util.ToStringBuilder;
+
 /**
  * Simple implementation of {@link ParameterizedType}.
  * 
@@ -73,6 +75,15 @@ public class ParameterizedTypeImpl implements ParameterizedType {
         return rawType;
     }
     
-    // TODO: toString!
+    /**
+	 * {@inheritDoc}
+	 */
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).
+            append("rawType", rawType).
+            append("actualTypeArguments", actualTypeArguments).
+            toString();
+    }
     
 }

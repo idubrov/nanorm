@@ -50,6 +50,8 @@ public class NanormConfiguration {
 	private final IntrospectionFactory introspectionFactory;
 
 	private final InternalConfiguration config;
+	
+	private boolean autoSessionEnabled = false;
 
 	private SessionConfig sessionConfig;
 
@@ -92,6 +94,24 @@ public class NanormConfiguration {
 	public void setSessionConfig(SessionConfig sessionConfig) {
 		this.sessionConfig = sessionConfig;
 	}
+	
+	/**
+	 * <p>
+	 * Enable or disable auto-session feature. With this feature set to true,
+	 * if session was not created when executing the query, it will be automatically
+	 * created and closed when query finishes. If auto-session is disabled, factory
+	 * will throw an exception if query is executed and session is not explicitly opened
+	 * for current thread beforeahead. 
+	 * </p>
+	 * <p>
+	 * Auto-session is off by default (to force user to create session).
+	 * </p>
+	 * 
+	 * @param autoSessionEnabled true to enable auto-session, false to disable
+	 */
+	public void setAutoSessionEnabled(boolean autoSessionEnabled) {
+		this.autoSessionEnabled = autoSessionEnabled;
+	}
 
 	/**
 	 * Build factory.
@@ -99,7 +119,11 @@ public class NanormConfiguration {
 	 * @return factory.
 	 */
 	public NanormFactory buildFactory() {
-		return new FactoryImpl(config, sessionConfig);
+		if(autoSessionEnabled && sessionConfig == null) {
+			throw new IllegalArgumentException("Auto-session feature requires sessionConfig to be set");
+		}
+
+		return new FactoryImpl(config, sessionConfig, autoSessionEnabled);
 	}
 	
 	private IntrospectionFactory detectFactory() {

@@ -105,8 +105,10 @@ public final class IntrospectUtils {
 			} else {
 				throw new IllegalStateException("Unexpected parameter property path: " + path);
 			}
-			// TODO: Bounds check!
-
+			if(parameter < 0 || parameter >= types.length) {
+				throw new ArrayIndexOutOfBoundsException(parameter);
+			}
+			
 			// Emulate parameters as Object[] as the instance type
 			visitor.visitBegin(Object[].class, path);
 
@@ -122,7 +124,6 @@ public final class IntrospectUtils {
 
 			int token = nav.next();
 			if (token == PropertyNavigator.INDEX) {
-				// TODO: Could be generic array!
 				if (!beanClass.isArray()) {
 					throw new IllegalArgumentException("Array expected at property "
 							+ path.substring(0, pos) + "(full property is '" + path
@@ -194,7 +195,6 @@ public final class IntrospectUtils {
 				LOGGER.debug("Getter for property " + property + " not found in class " + clazz);
 			}
 		}
-		// TODO: Refer to result map or something.
 		throw new IntrospectionException("Cannot find getter method for property " + property
 				+ " of bean class " + clazz);
 	}
@@ -215,7 +215,6 @@ public final class IntrospectUtils {
 				return m;
 			}
 		}
-		// TODO: Describe the context!
 		throw new IntrospectionException("Cannot find getter method for property " + property
 				+ " of bean class " + clazz);
 	}

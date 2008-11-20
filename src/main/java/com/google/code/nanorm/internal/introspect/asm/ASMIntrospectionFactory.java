@@ -26,7 +26,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.code.nanorm.exceptions.IntrospectionException;
+import com.google.code.nanorm.internal.FactoryImpl;
 import com.google.code.nanorm.internal.QueryDelegate;
 import com.google.code.nanorm.internal.config.InternalConfiguration;
 import com.google.code.nanorm.internal.config.StatementConfig;
@@ -56,7 +60,7 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
 	private final AtomicInteger counter = new AtomicInteger(0);
 
 	private final Object lock = new Object();
-
+	
 	/**
 	 * Constructor.
 	 * 

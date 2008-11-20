@@ -20,6 +20,7 @@ import java.lang.reflect.Type;
 
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.Setter;
+import com.google.code.nanorm.internal.util.ToStringBuilder;
 
 /**
  * Parameter mapping configuration.
@@ -62,5 +63,15 @@ public final class ParameterMappingConfig {
 		return setter;
 	}
 
-	// TODO: toString
+	/**
+	 * {@inheritDoc}
+	 */
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).
+            append("type", type).
+            append("getter", getter).
+            append("setter", setter).
+            toString();
+    }
 }

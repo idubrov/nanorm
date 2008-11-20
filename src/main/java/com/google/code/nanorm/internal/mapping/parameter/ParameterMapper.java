@@ -82,11 +82,9 @@ public final class ParameterMapper {
 			throws SQLException {
 		// OUT parameter
 		if (config.getSetter() != null) {
-			// TODO: Use typeHandler
-			// TypeHandler<?> typeHandler =
-			// factory.getTypeHandler(config.getType());
-
-			Object value = cs.getObject(index); // TODO: Use type handler;
+			TypeHandler<?> typeHandler = factory.getTypeHandler(config.getType());
+			
+			Object value = typeHandler.getValue(cs, index);
 			config.getSetter().setValue(args, value);
 		}
 	}

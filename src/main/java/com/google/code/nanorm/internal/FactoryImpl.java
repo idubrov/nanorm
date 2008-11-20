@@ -68,28 +68,34 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 
 	private final SessionConfig sessionSpiConfig;
 
+	private final boolean autoSessionEnabled;
+
 	/**
 	 * Logger for logging the SQL statements.
 	 */
-	private static final Logger LOGGER_SQL = LoggerFactory
-			.getLogger(FactoryImpl.class.getPackage().getName() + ".SQL");
+	private static final Logger LOGGER_SQL = LoggerFactory.getLogger(FactoryImpl.class.getPackage()
+			.getName()
+			+ ".SQL");
 
 	/**
 	 * Logger for logging all other events.
 	 */
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(FactoryImpl.class.getName());
+	private static final Logger LOGGER = LoggerFactory.getLogger(FactoryImpl.class.getName());
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param internalConfig factory configuration
 	 * @param sessionConfig session configuration
+	 * @param autoSessionEnabled true if autosession feature is enabled (session
+	 *            is created automatically when query is executed). Otherwise,
+	 *            an exception is thrown.
 	 */
-	public FactoryImpl(InternalConfiguration internalConfig,
-			SessionConfig sessionConfig) {
+	public FactoryImpl(InternalConfiguration internalConfig, SessionConfig sessionConfig,
+			boolean autoSessionEnabled) {
 		this.config = internalConfig;
 		this.sessionSpiConfig = sessionConfig;
+		this.autoSessionEnabled = autoSessionEnabled;
 	}
 
 	/**
@@ -106,8 +112,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 		config.configure(mapperClass);
 
 		// TODO: Check we mapped this class and return existing one!
-		return config.getIntrospectionFactory().createMapper(mapperClass,
-				config, this);
+		return config.getIntrospectionFactory().createMapper(mapperClass, config, this);
 	}
 
 	/**
@@ -118,8 +123,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 			throw new IllegalArgumentException("Session SPI is not configured!");
 		}
 		if (sessions.get() != null) {
-			throw new IllegalStateException(
-					"Session was already started for this thread!");
+			throw new IllegalStateException("Session was already started for this thread!");
 		}
 
 		final SessionSpi spi = sessionSpiConfig.newSessionSpi();
@@ -135,8 +139,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 			throw new IllegalArgumentException("Connection must not be null!");
 		}
 		if (sessions.get() != null) {
-			throw new IllegalStateException(
-					"Session was already started for this thread!");
+			throw new IllegalStateException("Session was already started for this thread!");
 		}
 
 		final SessionSpi spi = new SingleConnSessionSpi(connection);
@@ -157,10 +160,12 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 		SessionSpi spi = sessions.get();
 		boolean isAuto = false;
 		if (spi == null) {
+			if (!autoSessionEnabled) {
+				throw new IllegalStateException(
+						"Session is not opened for current thread, but auto-session is disabled for this factory.");
+			}
 			// Auto-create session for single request
-			// TODO: Check if autosession is enabled
 			isAuto = true;
-			// TODO: Check not null!
 			spi = sessionSpiConfig.newSessionSpi();
 		}
 
@@ -171,8 +176,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 			selectKey(request, stConfig, false, args);
 
 			// Bind fragment to arguments
-			BoundFragment fragment = stConfig.getStatementBuilder()
-					.bindParameters(args);
+			BoundFragment fragment = stConfig.getStatementBuilder().bindParameters(args);
 
 			// SQL, parameters and their types
 			StringBuilder sql = new StringBuilder();
@@ -191,20 +195,19 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 				if (LOGGER_SQL.isDebugEnabled()) {
 					LOGGER_SQL.debug(sql.toString());
 					if (LOGGER_SQL.isTraceEnabled()) {
-						LOGGER_SQL
-								.trace("Parameters: " + parameters.toString());
+						LOGGER_SQL.trace("Parameters: " + parameters.toString());
 					}
 				}
-				
+
 				// Should we get key using JDBC getGeneratedKeys
-				boolean isJDBCKey = stConfig.getSelectKeyType() == SelectKeyType.AFTER &&
-						stConfig.getSelectKey().getStatementBuilder() == null;
+				boolean isJDBCKey = stConfig.getSelectKeyType() == SelectKeyType.AFTER
+						&& stConfig.getSelectKey().getStatementBuilder() == null;
 
 				// Prepare the statement
 				PreparedStatement st;
-				if(stConfig.getKind() == QueryKind.CALL) {
+				if (stConfig.getKind() == QueryKind.CALL) {
 					st = conn.prepareCall(sql.toString());
-					
+
 					// Register OUT parameters
 					CallableStatement cs = (CallableStatement) st;
 					for (ParameterMapper mapper : parameters) {
@@ -212,9 +215,9 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 						mapper.registerOutParameter(config.getTypeHandlerFactory(), cs);
 					}
 				} else {
-					st = isJDBCKey ? 
-						conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS) :
-						conn.prepareStatement(sql.toString());
+					st = isJDBCKey ? conn.prepareStatement(sql.toString(),
+							Statement.RETURN_GENERATED_KEYS) : conn
+							.prepareStatement(sql.toString());
 				}
 				// Close statement after this try
 				try {
@@ -226,18 +229,21 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 
 					if (stConfig.getKind() == QueryKind.INSERT) {
 						st.executeUpdate();
-						
-						if(isJDBCKey) {
-							// If we use getGeneratedKeys, we need to process the result set
+
+						if (isJDBCKey) {
+							// If we use getGeneratedKeys, we need to process
+							// the result set
 							// with generated keys as regular result set
-							processResultSet(stConfig.getSelectKey(), args, request, st.getGeneratedKeys());
-							
+							processResultSet(stConfig.getSelectKey(), args, request, st
+									.getGeneratedKeys());
+
 							// Set the property
 							if (stConfig.getKeySetter() != null) {
 								stConfig.getKeySetter().setValue(args, request.getResult());
 							}
 						} else {
-							// otherwise, simply execute statement that selects a key 
+							// otherwise, simply execute statement that selects
+							// a key
 							selectKey(request, stConfig, true, args);
 						}
 					} else if (stConfig.getKind() == QueryKind.UPDATE) {
@@ -246,9 +252,9 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 					} else {
 						processResultSet(stConfig, args, request, st.executeQuery());
 					}
-					
+
 					// Map OUT parameters
-					if(stConfig.getKind() == QueryKind.CALL) {
+					if (stConfig.getKind() == QueryKind.CALL) {
 						CallableStatement cs = (CallableStatement) st;
 						for (ParameterMapper mapper : parameters) {
 							// TODO: Void.class handling (null parameters)
@@ -259,15 +265,14 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 					st.close();
 				}
 			} catch (SQLException e) {
-				throw new DataException(
-						"SQL exception occured while executing the query!", e);
+				throw new DataException("SQL exception occured while executing the query!", e);
 			} finally {
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("Releasing the connection " + conn);
 				}
 				try {
 					spi.releaseConnection(conn);
-				} catch(DataException e) {
+				} catch (DataException e) {
 					LOGGER.error("Failed to release the connection.", e);
 				}
 			}
@@ -287,32 +292,31 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 
 	private void processResultSet(StatementConfig stConfig, Object[] args, Request request,
 			ResultSet rs) throws SQLException {
-		
+
 		try {
 			// Create callback that will receive the mapped objects
-			DataSink<Object> callback = createResultSink(
-					stConfig, args, request);
-	
+			DataSink<Object> callback = createResultSink(stConfig, args, request);
+
 			// Iterate through the result set
 			RowMapper rowMapper = stConfig.getRowMapper();
 			while (rs.next()) {
 				rowMapper.processResultSet(request, rs, callback);
 			}
 			callback.commitData();
-			
+
 			// Commit all callbacks used in the request
 			request.commitCallbacks();
 		} finally {
 			try {
 				rs.close();
-			} catch(SQLException e) {
+			} catch (SQLException e) {
 				LOGGER.error("Failed to close ResultSet", e);
 			}
 		}
 	}
-	
-	private DataSink<Object> createResultSink(
-			StatementConfig stConfig, Object[] args, Request request) {
+
+	private DataSink<Object> createResultSink(StatementConfig stConfig, Object[] args,
+			Request request) {
 
 		// If we have DataSink in mapper method parameters -- use it,
 		// otherwise create callback which will set result to the request.
@@ -321,13 +325,11 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 			// This is OK, since we deduced result type exactly
 			// from this parameter
 			@SuppressWarnings("unchecked")
-			DataSink<Object> temp = (DataSink<Object>) args[stConfig
-					.getCallbackIndex()];
+			DataSink<Object> temp = (DataSink<Object>) args[stConfig.getCallbackIndex()];
 			sink = temp;
 		} else {
 			// Prepare data sink and process results
-			ResultGetterSetter rgs = new ResultGetterSetter(stConfig
-					.getResultType());
+			ResultGetterSetter rgs = new ResultGetterSetter(stConfig.getResultType());
 			DataSinkSource sinkSource = ResultCollectorUtil
 					.createDataSinkSource(rgs, rgs, stConfig);
 
@@ -338,28 +340,27 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 
 	private void checkNotPrimitive(StatementConfig stConfig) {
 		Type type = stConfig.getResultType();
-		
-		if (type instanceof Class<?> && ((Class<?>) type).isPrimitive()
-				&& type != void.class) {
-			
+
+		if (type instanceof Class<?> && ((Class<?>) type).isPrimitive() && type != void.class) {
+
 			StatementKey key = stConfig.getId();
-			throw new DataException(Messages.nullResult(key.getMapper(), key.getName(), (Class<?>) type));
+			throw new DataException(Messages.nullResult(key.getMapper(), key.getName(),
+					(Class<?>) type));
 		}
 	}
 
-	private void selectKey(Request request, StatementConfig stConfig,
-			boolean after, Object[] args) {
+	private void selectKey(Request request, StatementConfig stConfig, boolean after, Object[] args) {
 		boolean isKeyAfter = stConfig.getSelectKeyType() == SelectKeyType.AFTER;
-		
+
 		if (stConfig.getKind() == QueryKind.INSERT && stConfig.getSelectKey() != null
 				&& after == isKeyAfter) {
-			
-			if(LOGGER.isDebugEnabled()) {
+
+			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Generating the key for statement " + stConfig.getId());
 			}
 			Object result = query(stConfig.getSelectKey(), args);
-			
-			if(LOGGER.isDebugEnabled()) {
+
+			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Generated key is " + result);
 			}
 			if (stConfig.getKeySetter() != null) {
@@ -407,8 +408,6 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 		}
 	}
 
-	// TODO: toString
-
 	/**
 	 * {@link Session} implementation.
 	 */
@@ -454,8 +453,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 
 		private void checkThread() {
 			if (sessions.get() != spi) {
-				throw new IllegalStateException(
-						"This transaction is not bound to this thread!");
+				throw new IllegalStateException("This transaction is not bound to this thread!");
 			}
 		}
 	}

@@ -52,7 +52,7 @@ import com.google.code.nanorm.internal.introspect.Setter;
  * @version 1.0 28.05.2008
  */
 public class DefaultRowMapper implements RowMapper {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultRowMapper.class);
 
 	private final Class<?> elementClass;
@@ -76,16 +76,14 @@ public class DefaultRowMapper implements RowMapper {
 	 * @param typeHandlerFactory type handler factory
 	 */
 	public DefaultRowMapper(Type resultType, ResultMapConfig config,
-			IntrospectionFactory introspectionFactory,
-			TypeHandlerFactory typeHandlerFactory) {
+			IntrospectionFactory introspectionFactory, TypeHandlerFactory typeHandlerFactory) {
 		this.config = config;
 		this.introspectionFactory = introspectionFactory;
 		this.typeHandlerFactory = typeHandlerFactory;
 		this.elementClass = ResultCollectorUtil.resultClass(resultType);
 
 		if (!config.isAuto()) {
-			List<PropertyMappingConfig> list = Arrays
-					.asList(config.getMappings());
+			List<PropertyMappingConfig> list = Arrays.asList(config.getMappings());
 			finDynamicConfig = generatePropertyMappers(list);
 		} else {
 			finDynamicConfig = null;
@@ -95,14 +93,13 @@ public class DefaultRowMapper implements RowMapper {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void processResultSet(Request request, ResultSet rs,
-			DataSink<Object> callback) throws SQLException {
+	public void processResultSet(Request request, ResultSet rs, DataSink<Object> callback)
+			throws SQLException {
 		DynamicConfig dc;
 		if (config.isAuto()) {
 			synchronized (this) {
 				if (dynamicConfig == null) {
-					List<PropertyMappingConfig> configs = generateAutoConfig(rs
-							.getMetaData());
+					List<PropertyMappingConfig> configs = generateAutoConfig(rs.getMetaData());
 					dynamicConfig = generatePropertyMappers(configs);
 				}
 				dc = dynamicConfig;
@@ -146,13 +143,14 @@ public class DefaultRowMapper implements RowMapper {
 		}
 	}
 
-	private Object createResult(Request request, PropertyMapper[] mappers,
-			ResultSet rs) throws SQLException {
+	private Object createResult(Request request, PropertyMapper[] mappers, ResultSet rs)
+			throws SQLException {
 		Object result;
 		try {
 			result = elementClass.newInstance();
 		} catch (Exception e) {
-			throw new GenericException("Failed to create result instance of class " + elementClass, e);
+			throw new GenericException("Failed to create result instance of class " + elementClass,
+					e);
 		}
 
 		// TODO: We, probably, can bulk set those...
@@ -170,8 +168,7 @@ public class DefaultRowMapper implements RowMapper {
 	 * @return key that identifies current result row.
 	 * @throws SQLException propagated from result set operations
 	 */
-	private Key generateRowKey(DynamicConfig dc, ResultSet rs)
-			throws SQLException {
+	private Key generateRowKey(DynamicConfig dc, ResultSet rs) throws SQLException {
 		String[] groupBy = config.getGroupBy();
 		if (groupBy != null && groupBy.length > 0) {
 			Object[] key = new Object[dc.valueGetters.length];
@@ -196,12 +193,10 @@ public class DefaultRowMapper implements RowMapper {
 
 		configs.addAll(Arrays.asList(config.getMappings()));
 
-		Set<String> usedColumns = config.isAuto() ? new HashSet<String>()
-				: null;
+		Set<String> usedColumns = config.isAuto() ? new HashSet<String>() : null;
 		for (PropertyMappingConfig mappingConfig : config.getMappings()) {
 			if (mappingConfig.getColumnIndex() != 0) {
-				usedColumns.add(meta.getColumnName(
-						mappingConfig.getColumnIndex()).toLowerCase());
+				usedColumns.add(meta.getColumnName(mappingConfig.getColumnIndex()).toLowerCase());
 			} else {
 				usedColumns.add(mappingConfig.getColumn().toLowerCase());
 			}
@@ -215,23 +210,19 @@ public class DefaultRowMapper implements RowMapper {
 				mappingConfig.setColumn(column);
 
 				// Find property with case-insensitive search
-				Method getter = IntrospectUtils.findGetterCaseInsensitive(
-						elementClass, column);
+				Method getter = IntrospectUtils.findGetterCaseInsensitive(elementClass, column);
 				if (getter.getName().startsWith("get")) {
-					String prop = Character.toLowerCase(getter.getName()
-							.charAt(3))
+					String prop = Character.toLowerCase(getter.getName().charAt(3))
 							+ getter.getName().substring(4);
 					mappingConfig.setProperty(prop);
 				} else if (getter.getName().startsWith("is")) {
-					String prop = Character.toLowerCase(getter.getName()
-							.charAt(2))
+					String prop = Character.toLowerCase(getter.getName().charAt(2))
 							+ getter.getName().substring(3);
 					mappingConfig.setProperty(prop);
 				}
 				if (mappingConfig.getProperty() == null) {
 					LOGGER.info("No matching property for column '" + column
-							+ "' was found when auto-mapping the bean "
-							+ elementClass);
+							+ "' was found when auto-mapping the bean " + elementClass);
 				}
 				configs.add(mappingConfig);
 			}
@@ -246,8 +237,7 @@ public class DefaultRowMapper implements RowMapper {
 	 * @param configs
 	 * @return dynamic configuration
 	 */
-	private DynamicConfig generatePropertyMappers(
-			List<PropertyMappingConfig> configs) {
+	private DynamicConfig generatePropertyMappers(List<PropertyMappingConfig> configs) {
 
 		String[] groupBy = config.getGroupBy();
 
@@ -255,13 +245,16 @@ public class DefaultRowMapper implements RowMapper {
 		List<NestedMapPropertyMapper> nestedMappers = new ArrayList<NestedMapPropertyMapper>();
 		List<ValueGetter> keyGenerators = new ArrayList<ValueGetter>();
 
-		// TODO: Check we haven't mapped one property twice!
+		// Iterate through the properties configuration and fill mappers array
+		// (classes that perform mapping for property), nested mappers (nested
+		// mapping support) and key generators (properties that build a key for
+		// groupBy support).
 		for (PropertyMappingConfig mappingConfig : configs) {
-			Type propertyType = introspectionFactory.getPropertyType(
-					elementClass, mappingConfig.getProperty());
+			Type propertyType = introspectionFactory.getPropertyType(elementClass, mappingConfig
+					.getProperty());
 
-			Setter setter = introspectionFactory.buildSetter(elementClass,
-					mappingConfig.getProperty());
+			Setter setter = introspectionFactory.buildSetter(elementClass, mappingConfig
+					.getProperty());
 
 			if (groupBy != null && contains(groupBy, mappingConfig.getProperty())) {
 				ValueGetter keyGen = new ValueGetter(typeHandlerFactory
@@ -271,38 +264,29 @@ public class DefaultRowMapper implements RowMapper {
 
 			if (mappingConfig.getSubselect() != null) {
 				// Validated during configuration time
-				Type[] parameterTypes = mappingConfig.getSubselect()
-						.getParameterTypes();
-				
-				TypeHandler<?> typeHandler = typeHandlerFactory
-						.getTypeHandler(parameterTypes[0]);
-				mappers.add(new PropertyMapper(mappingConfig, setter,
-						typeHandler));
-			} else if (mappingConfig.getNestedMapConfig() != null) {
-				// TODO: Hacky? Why?
-				Getter getter = introspectionFactory.buildGetter(elementClass,
-						mappingConfig.getProperty());
+				Type[] parameterTypes = mappingConfig.getSubselect().getParameterTypes();
 
-				RowMapper nestedMap = new DefaultRowMapper(propertyType,
-						mappingConfig.getNestedMapConfig(),
-						introspectionFactory, typeHandlerFactory);
-				nestedMappers.add(new NestedMapPropertyMapper(getter, setter,
-						nestedMap, mappingConfig));
+				TypeHandler<?> typeHandler = typeHandlerFactory.getTypeHandler(parameterTypes[0]);
+				mappers.add(new PropertyMapper(mappingConfig, setter, typeHandler));
+			} else if (mappingConfig.getNestedMapConfig() != null) {
+				Getter getter = introspectionFactory.buildGetter(elementClass, mappingConfig
+						.getProperty());
+
+				RowMapper nestedMap = new DefaultRowMapper(propertyType, mappingConfig
+						.getNestedMapConfig(), introspectionFactory, typeHandlerFactory);
+				nestedMappers.add(new NestedMapPropertyMapper(getter, setter, nestedMap,
+						mappingConfig));
 			} else {
 				// TODO: This will fail if collection property is not mapped as
 				// nested map!
-				TypeHandler<?> typeHandler = typeHandlerFactory
-						.getTypeHandler(propertyType);
-				mappers.add(new PropertyMapper(mappingConfig, setter,
-						typeHandler));
+				TypeHandler<?> typeHandler = typeHandlerFactory.getTypeHandler(propertyType);
+				mappers.add(new PropertyMapper(mappingConfig, setter, typeHandler));
 			}
 		}
 		DynamicConfig dc = new DynamicConfig();
 		dc.mappers = mappers.toArray(new PropertyMapper[mappers.size()]);
-		dc.nestedMappers = nestedMappers
-				.toArray(new NestedMapPropertyMapper[nestedMappers.size()]);
-		dc.valueGetters = keyGenerators.toArray(new ValueGetter[keyGenerators
-				.size()]);
+		dc.nestedMappers = nestedMappers.toArray(new NestedMapPropertyMapper[nestedMappers.size()]);
+		dc.valueGetters = keyGenerators.toArray(new ValueGetter[keyGenerators.size()]);
 		return dc;
 	}
 

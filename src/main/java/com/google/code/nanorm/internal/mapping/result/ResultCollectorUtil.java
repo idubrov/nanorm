@@ -59,7 +59,6 @@ public class ResultCollectorUtil {
 	public static DataSinkSource createDataSinkSource(
 			Getter getter, Setter setter, Object mappingSource) {
 		Type type = getter.getType();
-		// TODO: Generic arrays!
 		if(isGenericCollection(type)) {
 			return new ArrayListDataSinkSource(getter, setter);
 		} else if(type instanceof Class<?> && ((Class<?>) type).isArray()) {

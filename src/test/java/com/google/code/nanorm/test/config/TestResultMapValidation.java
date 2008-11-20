@@ -31,10 +31,11 @@ import com.google.code.nanorm.exceptions.ConfigurationException;
 
 /**
  * Test result map configurations.
+ * 
  * @author Ivan Dubrov
  */
 public class TestResultMapValidation {
-	
+
 	private interface Mapper1 {
 		// Nothing...
 	}
@@ -57,7 +58,7 @@ public class TestResultMapValidation {
 			assertContains(e, "result map", "not found", "refmap", "Mapper1", "Mapper2");
 		}
 	}
-	
+
 	@ResultMap(id = "refmap")
 	private interface Mapper3 {
 		@Select("SELECT 1")
@@ -67,8 +68,8 @@ public class TestResultMapValidation {
 	}
 
 	/**
-	 * TEST: Try configuring mapper interface with method having both {@link ResultMap} and
-	 * {@link ResultMapRef} specified.
+	 * TEST: Try configuring mapper interface with method having both
+	 * {@link ResultMap} and {@link ResultMapRef} specified.
 	 * 
 	 * EXPECT: Configuration exception is thrown that contains certain
 	 * information strings.
@@ -79,10 +80,11 @@ public class TestResultMapValidation {
 			new NanormConfiguration().configure(Mapper3.class);
 			Assert.fail();
 		} catch (ConfigurationException e) {
-			assertContains(e, "'ResultMap' annotation", "'ResultMapRef' annotation", "mutually exclusive", "Mapper3");
+			assertContains(e, "'ResultMap' annotation", "'ResultMapRef' annotation",
+					"mutually exclusive", "Mapper3");
 		}
 	}
-	
+
 	@ResultMap(id = "refmap")
 	private interface Mapper4 {
 		@Select("SELECT 1")
@@ -92,8 +94,8 @@ public class TestResultMapValidation {
 	}
 
 	/**
-	 * TEST: Try configuring mapper interface with method having both {@link Scalar} and
-	 * {@link ResultMapRef} specified.
+	 * TEST: Try configuring mapper interface with method having both
+	 * {@link Scalar} and {@link ResultMapRef} specified.
 	 * 
 	 * EXPECT: Configuration exception is thrown that contains certain
 	 * information strings.
@@ -104,10 +106,11 @@ public class TestResultMapValidation {
 			new NanormConfiguration().configure(Mapper4.class);
 			Assert.fail();
 		} catch (ConfigurationException e) {
-			assertContains(e, "'Scalar' annotation", "'ResultMapRef' annotation", "mutually exclusive", "Mapper4");
+			assertContains(e, "'Scalar' annotation", "'ResultMapRef' annotation",
+					"mutually exclusive", "Mapper4");
 		}
 	}
-	
+
 	private interface Mapper5 {
 		@Select("SELECT 1")
 		@Scalar
@@ -116,8 +119,8 @@ public class TestResultMapValidation {
 	}
 
 	/**
-	 * TEST: Try configuring mapper interface with method having both {@link ResultMap} and
-	 * {@link Scalar} specified.
+	 * TEST: Try configuring mapper interface with method having both
+	 * {@link ResultMap} and {@link Scalar} specified.
 	 * 
 	 * EXPECT: Configuration exception is thrown that contains certain
 	 * information strings.
@@ -128,27 +131,30 @@ public class TestResultMapValidation {
 			new NanormConfiguration().configure(Mapper5.class);
 			Assert.fail();
 		} catch (ConfigurationException e) {
-			assertContains(e, "'ResultMap' annotation", "'Scalar' annotation", "mutually exclusive", "Mapper5");
+			assertContains(e, "'ResultMap' annotation", "'Scalar' annotation",
+					"mutually exclusive", "Mapper5");
 		}
 	}
-	
-	public static class Bean {
-		public String getSome() { return "some"; }
-		public void setSome(String arg) { }
+
+	private static class Bean {
+		public String getSome() {
+			return "some";
+		}
+
+		public void setSome(String arg) {
+			// Nothing...
+		}
 	}
-	
+
 	private interface Mapper6 {
 		@Select("SELECT 1")
-		@ResultMap(id = "somemap", mappings = {
-			@Property("some"),
-			@Property("some")
-		})
+		@ResultMap(id = "somemap", mappings = { @Property("some"), @Property("some") })
 		Bean selectSome(int id);
 	}
 
 	/**
-	 * TEST: Try configuring mapper interface with method having {@link ResultMap} with
-	 * property 'some' mapped two times.
+	 * TEST: Try configuring mapper interface with method having
+	 * {@link ResultMap} with property 'some' mapped two times.
 	 * 
 	 * EXPECT: Configuration exception is thrown that contains certain
 	 * information strings.

@@ -18,10 +18,14 @@ package com.google.code.nanorm.internal.mapping.result;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.code.nanorm.TypeHandler;
 import com.google.code.nanorm.internal.Request;
 import com.google.code.nanorm.internal.config.PropertyMappingConfig;
 import com.google.code.nanorm.internal.introspect.Setter;
+import com.google.code.nanorm.internal.introspect.asm.ASMIntrospectionFactory;
 
 /**
  * Class that maps given column from result set to the property.
@@ -30,6 +34,7 @@ import com.google.code.nanorm.internal.introspect.Setter;
  * @version 1.0 04.06.2008
  */
 public class PropertyMapper {
+	private static final Logger LOGGER = LoggerFactory.getLogger(PropertyMapper.class);
 
 	private final PropertyMappingConfig config;
 
@@ -44,8 +49,7 @@ public class PropertyMapper {
 	 * @param setter property setter
 	 * @param typeHandler type handler for property
 	 */
-	public PropertyMapper(PropertyMappingConfig config, Setter setter,
-			TypeHandler<?> typeHandler) {
+	public PropertyMapper(PropertyMappingConfig config, Setter setter, TypeHandler<?> typeHandler) {
 		this.config = config;
 		this.setter = setter;
 		this.typeHandler = typeHandler;
@@ -59,8 +63,7 @@ public class PropertyMapper {
 	 * @param rs result set
 	 * @throws SQLException SQL exception from result set
 	 */
-	public final void mapResult(Request request, Object result, ResultSet rs)
-			throws SQLException {
+	public final void mapResult(Request request, Object result, ResultSet rs) throws SQLException {
 		Object value;
 
 		if (config.getColumnIndex() != 0) {
@@ -69,10 +72,12 @@ public class PropertyMapper {
 			value = typeHandler.getValue(rs, config.getColumn());
 		}
 		if (config.getSubselect() != null) {
-			value = request.getQueryDelegate().query(config.getSubselect(),
-					new Object[] { value });
+			value = request.getQueryDelegate().query(config.getSubselect(), new Object[] { value });
 		}
 		// TODO: Log property being mapped
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Mapped property {} to value {}", config.getProperty(), value);
+		}
 		setter.setValue(result, value);
 	}
 }

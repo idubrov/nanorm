@@ -250,7 +250,6 @@ public class TypeOracle {
 			ParameterizedType pt = (ParameterizedType) type;
 
 			// First resolve raw type
-			// TODO: Pass context?
 			Class<?> resolvedRawType = resolveClass(pt.getRawType());
 
 			// Recursively resolve actual type arguments
