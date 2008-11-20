@@ -1,3 +1,9 @@
+0.4.3, (unreleased)
+    * Added ability to enable/disable auto-session support. Note that auto-session
+      is disabled by default starting from this version (so you should open session
+      explicitly or turn it on via call NanormConfiguration#setAutoSessionEnabled(boolean)).
+    * Minor code style impromevents and JavaDoc updates
+
 0.4.2, released 2008-11-08
     * Moved TypeHandler from the internal package to the API package
     * Added support for mapping result set directly via TypeHandler (@Scalar annotation)
