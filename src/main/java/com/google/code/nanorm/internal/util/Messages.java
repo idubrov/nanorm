@@ -344,7 +344,7 @@ public class Messages {
 				"''{0}'' annotation and ''{1}'' annotation used in {2} are mutually exclusive",
 				ann1, ann2, location(mapper, method));
 	}
-	
+
 	/**
 	 * Generate error message for case when method configuration is missing.
 	 * 
@@ -353,8 +353,25 @@ public class Messages {
 	 * @return message
 	 */
 	public static String missingConfiguration(Class<?> mapper, String method) {
-		return MessageFormat.format("The {0} does not have any configuration.", 
-				location(mapper, method));
+		return MessageFormat.format("The {0} does not have any configuration.", location(mapper,
+				method));
+	}
+
+	/**
+	 * Generate error message for case when property is mapped twice in the same
+	 * result map.
+	 * 
+	 * @param mapper mapper interface
+	 * @param method method result map applied to
+	 * @param resultMap result map
+	 * @param prop property
+	 * @return message
+	 */
+	public static String propertyMappedTwice(String prop, Class<?> mapper, Method method,
+			ResultMap resultMap) {
+		return MessageFormat.format(
+				"Property ''{0}'' was mapped twice in the result map ''{1}'' of {2}.", prop,
+				resultMap.id(), location(mapper, method));
 	}
 
 	private static Class<?> mapper(Class<?> override, Class<?> mapper) {

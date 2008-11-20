@@ -133,7 +133,7 @@ public class InternalConfiguration {
 	public StatementConfig getStatementConfig(Class<?> mapper, Method method) {
 		Type[] resolved = TypeOracle.resolveMethodArguments(method, mapper);
 		StatementKey key = new StatementKey(mapper, method.getName(), resolved);
-		synchronized(this) {
+		synchronized (this) {
 			return getStatementConfig(key);
 		}
 	}
@@ -493,19 +493,18 @@ public class InternalConfiguration {
 
 		List<PropertyMappingConfig> mappings = new ArrayList<PropertyMappingConfig>();
 
-		// Set of all properties, for groupBy list validation
-		Set<String> propnames = null;
-		if (resultMap.groupBy().length > 0) {
-			propnames = new HashSet<String>();
-		}
+		// Set of all properties, for validating groupBy list and validating the
+		// fact each property is mapped only once
+		Set<String> propnames = new HashSet<String>();
 		for (Property mapping : resultMap.mappings()) {
 			PropertyMappingConfig propMapping = createPropertyMappingConfig(mapper, method,
 					resultMap, mapping);
 			mappings.add(propMapping);
 
 			// Collect property names for groupBy validation
-			if (propnames != null) {
-				propnames.add(propMapping.getProperty());
+			if (!propnames.add(propMapping.getProperty())) {
+				throw new ConfigurationException(Messages.propertyMappedTwice(propMapping
+						.getProperty(), mapper, method, resultMap));
 			}
 		}
 		Validation.validateGroupBy(mapper, method, resultMap, propnames);

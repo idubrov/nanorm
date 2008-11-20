@@ -55,7 +55,7 @@ public class Validation {
 			}
 		}
 	}
-
+	
 	/**
 	 * Validate usage of {@link SelectKey} annotation.
 	 * 
