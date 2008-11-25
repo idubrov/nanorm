@@ -19,194 +19,263 @@ package com.google.code.nanorm.test.introspect;
 import static com.google.code.nanorm.internal.introspect.PropertyNavigator.INDEX;
 import static com.google.code.nanorm.internal.introspect.PropertyNavigator.PROPERTY;
 
+import java.util.NoSuchElementException;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.code.nanorm.internal.introspect.PropertyNavigator;
 
 /**
- *
+ * 
  * @author Ivan Dubrov
  * @version 1.0 21.06.2008
  */
 @SuppressWarnings("all")
 public class TestPropNavigator {
+	/**
+	 * TEST: Navigate property &ldquo;prop1.prop2.prop3&rdquo; up to the end.
+	 * 
+	 * EXPECT: First &ldquo;prop1&rdquo;, then &ldquo;prop2&rdquo; and finally
+	 * &ldquo;prop3&rdquo; are parsed. The {@link PropertyNavigator#hasNext()}
+	 * returns <code>false</code> after this.
+	 */
+	@Test
+	public void testPath1() {
+		PropertyNavigator nav = new PropertyNavigator("prop1.prop2.prop3");
 
-    @Test
-    public void testPath1() {
-        PropertyNavigator nav = new PropertyNavigator("prop1.prop2.prop3");
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(PROPERTY, nav.next());
-        Assert.assertEquals("prop1", nav.getProperty());
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(PROPERTY, nav.next());
-        Assert.assertEquals("prop2", nav.getProperty());
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(PROPERTY, nav.next());
-        Assert.assertEquals("prop3", nav.getProperty());
-        
-        Assert.assertFalse(nav.hasNext());
-    }
-    
-    @Test
-    public void testPath2() {
-        PropertyNavigator nav = new PropertyNavigator("prop1.prop2[5].prop3");
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(PROPERTY, nav.next());
-        Assert.assertEquals("prop1", nav.getProperty());
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(PROPERTY, nav.next());
-        Assert.assertEquals("prop2", nav.getProperty());
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(INDEX, nav.next());
-        Assert.assertEquals(5, nav.getIndex());
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(PROPERTY, nav.next());
-        Assert.assertEquals("prop3", nav.getProperty());
-        
-        Assert.assertFalse(nav.hasNext());
-    }
-    
-    @Test
-    public void testPath3() {
-        PropertyNavigator nav = new PropertyNavigator("prop1.prop2.prop3[7]");
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(PROPERTY, nav.next());
-        Assert.assertEquals("prop1", nav.getProperty());
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(PROPERTY, nav.next());
-        Assert.assertEquals("prop2", nav.getProperty());
-        
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(PROPERTY, nav.next());
-        Assert.assertEquals("prop3", nav.getProperty());
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(INDEX, nav.next());
-        Assert.assertEquals(7, nav.getIndex());
-        
-        Assert.assertFalse(nav.hasNext());
-    }
-    
-    @Test
-    public void testPath4() {
-        PropertyNavigator nav = new PropertyNavigator("[2].prop1.prop2.prop3");
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(INDEX, nav.next());
-        Assert.assertEquals(2, nav.getIndex());
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(PROPERTY, nav.next());
-        Assert.assertEquals("prop1", nav.getProperty());
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(PROPERTY, nav.next());
-        Assert.assertEquals("prop2", nav.getProperty());
-        
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(PROPERTY, nav.next());
-        Assert.assertEquals("prop3", nav.getProperty());
-        
-        Assert.assertFalse(nav.hasNext());
-    }
-    
-    @Test
-    public void testPath5() {
-        PropertyNavigator nav = new PropertyNavigator("prop1.prop2[5a].prop3");
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(PROPERTY, nav.next());
-        Assert.assertEquals("prop1", nav.getProperty());
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(PROPERTY, nav.next());
-        Assert.assertEquals("prop2", nav.getProperty());
-        
-        Assert.assertTrue(nav.hasNext());
-        try {
-            nav.next();
-            Assert.fail();
-        } catch(IllegalArgumentException e) {
-            // Nothing.
-        }
-    }
-    
-    @Test
-    public void testPath6() {
-        PropertyNavigator nav = new PropertyNavigator("prop1.prop2[5]b.prop3");
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(PROPERTY, nav.next());
-        Assert.assertEquals("prop1", nav.getProperty());
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(PROPERTY, nav.next());
-        Assert.assertEquals("prop2", nav.getProperty());
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(INDEX, nav.next());
-        Assert.assertEquals(5, nav.getIndex());
-        
-        Assert.assertTrue(nav.hasNext());
-        try {
-            nav.next();
-            Assert.fail();
-        } catch(IllegalArgumentException e) {
-            // Nothing.
-        }
-    }
-    
-    @Test
-    public void testPath7() {
-        PropertyNavigator nav = new PropertyNavigator("prop1.prop2]5].prop3");
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(PROPERTY, nav.next());
-        Assert.assertEquals("prop1", nav.getProperty());
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(PROPERTY, nav.next());
-        Assert.assertEquals("prop2", nav.getProperty());
-        
-        Assert.assertTrue(nav.hasNext());
-        try {
-            nav.next();
-            Assert.fail();
-        } catch(IllegalArgumentException e) {
-            // Nothing.
-        }
-    }
-    
-    @Test
-    public void testPath8() {
-        PropertyNavigator nav = new PropertyNavigator("prop1.prop2.^prop3");
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(PROPERTY, nav.next());
-        Assert.assertEquals("prop1", nav.getProperty());
-        
-        Assert.assertTrue(nav.hasNext());
-        Assert.assertEquals(PROPERTY, nav.next());
-        Assert.assertEquals("prop2", nav.getProperty());
-        
-        Assert.assertTrue(nav.hasNext());
-        try {
-            nav.next();
-            Assert.fail();
-        } catch(IllegalArgumentException e) {
-            // Nothing.
-        }
-    }
+		assertProperty(nav, "prop1");
+		assertProperty(nav, "prop2");
+		assertProperty(nav, "prop3");
+
+		Assert.assertFalse(nav.hasNext());
+	}
+
+	/**
+	 * TEST: Navigate property &ldquo;prop1.prop2[5].prop3&rdquo; up to the end.
+	 * 
+	 * EXPECT: First &ldquo;prop1&rdquo;, then &ldquo;prop2&rdquo;, then index
+	 * &ldquo;5&rdquo; and finally &ldquo;prop3&rdquo; are parsed. The
+	 * {@link PropertyNavigator#hasNext()} returns <code>false</code> after
+	 * this.
+	 */
+	@Test
+	public void testPath2() {
+		PropertyNavigator nav = new PropertyNavigator("prop1.prop2[5].prop3");
+
+		assertProperty(nav, "prop1");
+		assertProperty(nav, "prop2");
+		assertIndex(nav, 5);
+		assertProperty(nav, "prop3");
+
+		Assert.assertFalse(nav.hasNext());
+	}
+
+	/**
+	 * TEST: Navigate property &ldquo;prop1.prop2.prop3[7]&rdquo; up to the end.
+	 * 
+	 * EXPECT: First &ldquo;prop1&rdquo;, then &ldquo;prop2&rdquo;, then
+	 * &ldquo;prop3&rdquo; and finally index &ldquo;7&rdquo; are parsed. The
+	 * {@link PropertyNavigator#hasNext()} returns <code>false</code> after
+	 * this.
+	 */
+	@Test
+	public void testPath3() {
+		PropertyNavigator nav = new PropertyNavigator("prop1.prop2.prop3[7]");
+
+		assertProperty(nav, "prop1");
+		assertProperty(nav, "prop2");
+		assertProperty(nav, "prop3");
+		assertIndex(nav, 7);
+
+		Assert.assertFalse(nav.hasNext());
+	}
+
+	/**
+	 * TEST: Navigate property &ldquo;prop1.prop2.7.prop3&rdquo; up to the end.
+	 * 
+	 * EXPECT: First &ldquo;prop1&rdquo;, then &ldquo;prop2&rdquo;, then index
+	 * &ldquo;7&rdquo; and finally &ldquo;prop3&rdquo; are parsed. The
+	 * {@link PropertyNavigator#hasNext()} returns <code>false</code> after
+	 * this.
+	 */
+	@Test
+	public void testPath4() {
+		PropertyNavigator nav = new PropertyNavigator("prop1.prop2.7.prop3");
+
+		assertProperty(nav, "prop1");
+		assertProperty(nav, "prop2");
+		assertIndex(nav, 7);
+		assertProperty(nav, "prop3");
+
+		Assert.assertFalse(nav.hasNext());
+	}
+
+	/**
+	 * TEST: Navigate property &ldquo;[2].prop1.prop2.prop3&rdquo; up to the
+	 * end.
+	 * 
+	 * EXPECT: First index &ldquo;2&rdquo;, then &ldquo;prop1&rdquo;, then
+	 * &ldquo;prop2&rdquo; and finally &ldquo;prop3&rdquo; are parsed. The
+	 * {@link PropertyNavigator#hasNext()} returns <code>false</code> after
+	 * this.
+	 */
+	@Test
+	public void testPath5() {
+		PropertyNavigator nav = new PropertyNavigator("[2].prop1.prop2.prop3");
+
+		assertIndex(nav, 2);
+		assertProperty(nav, "prop1");
+		assertProperty(nav, "prop2");
+		assertProperty(nav, "prop3");
+
+		Assert.assertFalse(nav.hasNext());
+	}
+
+	/**
+	 * TEST: Navigate property &ldquo;prop1.prop2[5a].prop3&rdquo; up to the
+	 * end.
+	 * 
+	 * EXPECT: First &ldquo;prop1&rdquo;, then &ldquo;prop2&rdquo; are parsed.
+	 * Then exception is thrown due to invalid property path.
+	 */
+	@Test
+	public void testPath6() {
+		PropertyNavigator nav = new PropertyNavigator("prop1.prop2[5a].prop3");
+
+		assertProperty(nav, "prop1");
+		assertProperty(nav, "prop2");
+
+		Assert.assertTrue(nav.hasNext());
+		try {
+			nav.next();
+			Assert.fail();
+		} catch (IllegalArgumentException e) {
+			// Nothing.
+		}
+	}
+
+	/**
+	 * TEST: Navigate property &ldquo;prop1.prop2[5a].prop3&rdquo; up to the
+	 * end.
+	 * 
+	 * EXPECT: First &ldquo;prop1&rdquo;, then &ldquo;prop2&rdquo; and finally
+	 * index &ldquo;5&rdquo; are parsed. Then exception is thrown due to invalid
+	 * property path.
+	 */
+	@Test
+	public void testPath7() {
+		PropertyNavigator nav = new PropertyNavigator("prop1.prop2[5]b.prop3");
+
+		assertProperty(nav, "prop1");
+		assertProperty(nav, "prop2");
+		assertIndex(nav, 5);
+
+		Assert.assertTrue(nav.hasNext());
+		try {
+			nav.next();
+			Assert.fail();
+		} catch (IllegalArgumentException e) {
+			// Nothing.
+		}
+	}
+
+	/**
+	 * TEST: Navigate property &ldquo;prop1.prop2]5].prop3&rdquo; up to the end.
+	 * 
+	 * EXPECT: First &ldquo;prop1&rdquo;, then &ldquo;prop2&rdquo; are parsed.
+	 * Then exception is thrown due to invalid property path.
+	 */
+	@Test
+	public void testPath8() {
+		PropertyNavigator nav = new PropertyNavigator("prop1.prop2]5].prop3");
+
+		assertProperty(nav, "prop1");
+		assertProperty(nav, "prop2");
+
+		Assert.assertTrue(nav.hasNext());
+		try {
+			nav.next();
+			Assert.fail();
+		} catch (IllegalArgumentException e) {
+			// Nothing.
+		}
+	}
+
+	/**
+	 * TEST: Navigate property &ldquo;prop1.prop2.^prop3&rdquo; up to the end.
+	 * 
+	 * EXPECT: First &ldquo;prop1&rdquo;, then &ldquo;prop2&rdquo; are parsed.
+	 * Then exception is thrown due to invalid property path.
+	 */
+	@Test
+	public void testPath9() {
+		PropertyNavigator nav = new PropertyNavigator("prop1.prop2.^prop3");
+
+		assertProperty(nav, "prop1");
+		assertProperty(nav, "prop2");
+
+		Assert.assertTrue(nav.hasNext());
+		try {
+			nav.next();
+			Assert.fail();
+		} catch (IllegalArgumentException e) {
+			// Nothing.
+		}
+	}
+
+	/**
+	 * TEST: Navigate property &ldquo;prop1.prop2&rdquo; up to the end. Try to
+	 * retrieve next element after {@link PropertyNavigator#hasNext()} returned
+	 * <code>false</code>.
+	 * 
+	 * EXPECT: First &ldquo;prop1&rdquo;, then &ldquo;prop2&rdquo; are parsed.
+	 * Then {@link NoSuchElementException} is thrown due to invalid property
+	 * path.
+	 */
+	@Test
+	public void testPath10() {
+		PropertyNavigator nav = new PropertyNavigator("prop1.prop2");
+
+		assertProperty(nav, "prop1");
+		assertProperty(nav, "prop2");
+
+		Assert.assertFalse(nav.hasNext());
+		try {
+			nav.next();
+			Assert.fail();
+		} catch (NoSuchElementException e) {
+			// Nothing.
+		}
+	}
+
+	/**
+	 * Helper method to validate that property navigator has more elements in
+	 * the path, then navigate the path and validate that next element has type
+	 * of <code>PROPERTY</code>. Finally, validate the property name.
+	 * 
+	 * @param nav property path
+	 * @param expected property name
+	 */
+	private void assertProperty(PropertyNavigator nav, String expected) {
+		Assert.assertTrue(nav.hasNext());
+		Assert.assertEquals(PROPERTY, nav.next());
+		Assert.assertEquals(PROPERTY, nav.getElementType());
+		Assert.assertEquals(expected, nav.getProperty());
+	}
+
+	/**
+	 * Helper method to validate that property navigator has more elements in
+	 * the path, then navigate the path and validate that next element has type
+	 * of <code>INDEX</code>. Finally, validate that index equal to the expected.
+	 * 
+	 * @param nav property path
+	 * @param expected expected index
+	 */
+	private void assertIndex(PropertyNavigator nav, int expected) {
+		Assert.assertTrue(nav.hasNext());
+		Assert.assertEquals(INDEX, nav.next());
+		Assert.assertEquals(INDEX, nav.getElementType());
+		Assert.assertEquals(expected, nav.getIndex());
+	}
 }
