@@ -22,6 +22,7 @@ import java.util.List;
 import com.google.code.nanorm.internal.config.ParameterMappingConfig;
 import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
+import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.util.ToStringBuilder;
 
 /**
@@ -74,12 +75,12 @@ public class TextFragment implements Fragment {
 	 * Construct text SQL fragment, configured for given parameter types.
 	 * 
 	 * Introspects parameter types and creates getters for given types.
+	 * 
 	 * @param sql SQL fragment
-	 * @param types  parameter types
-	 * @param introspectionFactory introspection factory 
+	 * @param types parameter types
+	 * @param introspectionFactory introspection factory
 	 */
-	public TextFragment(String sql, Type[] types,
-			IntrospectionFactory introspectionFactory) {
+	public TextFragment(String sql, Type[] types, IntrospectionFactory introspectionFactory) {
 		this.sqlBuilder = new StringBuilder(sql.length());
 		this.sql = sql;
 		this.introspectionFactory = introspectionFactory;
@@ -93,13 +94,11 @@ public class TextFragment implements Fragment {
 		if (paramMappers == null) {
 			StringBuilder builder = new StringBuilder();
 
-			List<ParameterMappingConfig> mappers = configureTypes(typesFromParameters(parameters), 
+			List<ParameterMappingConfig> mappers = configureTypes(typesFromParameters(parameters),
 					builder);
-			return new BoundFragmentImpl(builder.toString(), mappers,
-					parameters);
+			return new BoundFragmentImpl(builder.toString(), mappers, parameters);
 		}
-		return new BoundFragmentImpl(sqlBuilder.toString(), paramMappers,
-				parameters);
+		return new BoundFragmentImpl(sqlBuilder.toString(), paramMappers, parameters);
 	}
 
 	/**
@@ -111,8 +110,7 @@ public class TextFragment implements Fragment {
 	private Type[] typesFromParameters(Object[] parameters) {
 		Type[] types = new Type[parameters.length];
 		for (int i = 0; i < types.length; ++i) {
-			types[i] = parameters[i] == null ? Void.class : parameters[i]
-					.getClass();
+			types[i] = parameters[i] == null ? Void.class : parameters[i].getClass();
 		}
 		return types;
 	}
@@ -127,40 +125,66 @@ public class TextFragment implements Fragment {
 	 */
 	private List<ParameterMappingConfig> configureTypes(Type[] types, StringBuilder builder) {
 		List<ParameterMappingConfig> mappers = new ArrayList<ParameterMappingConfig>();
-		
+
 		int pos = 0;
 		while (pos < sql.length()) {
 			// TODO: Add support for out parameters!
 			int start = sql.indexOf("${", pos);
-			if(start == -1) {
+			if (start == -1) {
 				builder.append(sql.substring(pos));
 				break;
-			} 
-			
+			}
+
 			int end = sql.indexOf("}", start + 2);
-			if(end == -1) {
+			if (end == -1) {
 				builder.append(sql.substring(pos));
 				break;
 			}
 			builder.append(sql.substring(pos, start));
-				
-			String prop = sql.substring(start + 2, end);
-			// TODO: Add support for lists, which should expand into something like (?, ?, ?, ?)
-			// For, example ${prop[]} with prop = int[] { 1, 2, 3} will expand into ?, ?, ? with
+
+			String parameter = sql.substring(start + 2, end);
+			// TODO: Add support for lists, which should expand into something
+			// like (?, ?, ?, ?)
+			// For, example ${prop[]} with prop = int[] { 1, 2, 3} will expand
+			// into ?, ?, ? with
 			// parameters 1, 2 and 3.
 			builder.append('?');
 			try {
-				
+
+				// TODO: Remove this code to separate class (parameter config?)
+				boolean in = true;
+				boolean out = false;
+				String prop;
+
+				int comma = parameter.indexOf(',');
+				if (comma != -1) {
+					prop = parameter.substring(0, comma);
+					String type = parameter.substring(comma + 1);
+					if ("type=IN".equals(type)) {
+						// Nothing, the default
+					} else if ("type=INOUT".equals(type)) {
+						out = true;
+					} else if ("type=OUT".equals(type)) {
+						out = true;
+						in = false;
+					} else {
+						throw new IllegalArgumentException("Invalid parameter: " + parameter);
+					}
+				} else {
+					prop = parameter;
+				}
+
 				Getter getter = introspectionFactory.buildParameterGetter(types, prop);
 				Type type = getter.getType();
-				
-				ParameterMappingConfig paramMapper = new ParameterMappingConfig(type, getter, null);
+				Setter setter = out ? introspectionFactory.buildParameterSetter(types, prop) : null;
+
+				ParameterMappingConfig paramMapper = new ParameterMappingConfig(type, in ? getter
+						: null, setter);
 				mappers.add(paramMapper);
-			} catch(IllegalArgumentException e) {
+			} catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException("Failed to create parameter getter for "
-						+ " (failed property marked by $[]): "
-						+ sql.substring(0, start) + "$["
-						+ prop + ']' + sql.substring(end), e);
+						+ " (failed property marked by $[]): " + sql.substring(0, start) + "$["
+						+ parameter + ']' + sql.substring(end), e);
 			}
 			pos = end + 1;
 		}
@@ -172,7 +196,6 @@ public class TextFragment implements Fragment {
 	 */
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this).append("sql",
-				sql).toString();
+		return new ToStringBuilder(this).append("sql", sql).toString();
 	}
 }

@@ -117,6 +117,7 @@ public class MapperTestBase {
 		
 		// Some functions to invoke
 		execute("CREATE ALIAS myConcat FOR \"com.google.code.nanorm.test.common.Funcs.concat\"");
+		execute("CREATE ALIAS myConcat2 FOR \"com.google.code.nanorm.test.common.Funcs.concat2\"");
 
 		conn.commit();
 

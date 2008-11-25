@@ -196,13 +196,13 @@ public class DefaultRowMapper implements RowMapper {
 		Set<String> usedColumns = config.isAuto() ? new HashSet<String>() : null;
 		for (PropertyMappingConfig mappingConfig : config.getMappings()) {
 			if (mappingConfig.getColumnIndex() != 0) {
-				usedColumns.add(meta.getColumnName(mappingConfig.getColumnIndex()).toLowerCase());
+				usedColumns.add(meta.getColumnLabel(mappingConfig.getColumnIndex()).toLowerCase());
 			} else {
 				usedColumns.add(mappingConfig.getColumn().toLowerCase());
 			}
 		}
 		for (int i = 0; i < meta.getColumnCount(); ++i) {
-			String column = meta.getColumnName(i + 1).toLowerCase();
+			String column = meta.getColumnLabel(i + 1).toLowerCase();
 
 			// If column is not in the mapping config, try to automap it
 			if (!usedColumns.contains(column)) {
