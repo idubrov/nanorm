@@ -25,7 +25,6 @@ import com.google.code.nanorm.TypeHandler;
 import com.google.code.nanorm.internal.Request;
 import com.google.code.nanorm.internal.config.PropertyMappingConfig;
 import com.google.code.nanorm.internal.introspect.Setter;
-import com.google.code.nanorm.internal.introspect.asm.ASMIntrospectionFactory;
 
 /**
  * Class that maps given column from result set to the property.
