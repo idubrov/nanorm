@@ -31,8 +31,24 @@ import com.google.code.nanorm.internal.introspect.PropertyNavigator;
  * @author Ivan Dubrov
  * @version 1.0 21.06.2008
  */
-@SuppressWarnings("all")
 public class TestPropNavigator {
+
+	/**
+	 * TEST: Create proprety navigators.
+	 * 
+	 * EXPECT: Validate getters return expected values.
+	 */
+	@Test
+	public void testPropertyNavigator() {
+		PropertyNavigator nav = new PropertyNavigator("prop1.prop2");
+		Assert.assertEquals("prop1.prop2", nav.getPath());
+		Assert.assertEquals(0, nav.getPosition());
+
+		nav = new PropertyNavigator("prop2.prop3", 6);
+		Assert.assertEquals("prop2.prop3", nav.getPath());
+		Assert.assertEquals(6, nav.getPosition());
+	}
+
 	/**
 	 * TEST: Navigate property &ldquo;prop1.prop2.prop3&rdquo; up to the end.
 	 * 
@@ -112,6 +128,26 @@ public class TestPropNavigator {
 	}
 
 	/**
+	 * TEST: Navigate property &ldquo;prop1.prop2.7.prop3&rdquo; up to the end.
+	 * 
+	 * EXPECT: First &ldquo;prop1&rdquo;, then &ldquo;prop2&rdquo;, then
+	 * &ldquo;prop3&rdquo; and finally index &ldquo;9&rdquo; are parsed. The
+	 * {@link PropertyNavigator#hasNext()} returns <code>false</code> after
+	 * this.
+	 */
+	@Test
+	public void testPath5() {
+		PropertyNavigator nav = new PropertyNavigator("prop1.prop2.prop3.9");
+
+		assertProperty(nav, "prop1");
+		assertProperty(nav, "prop2");
+		assertProperty(nav, "prop3");
+		assertIndex(nav, 9);
+
+		Assert.assertFalse(nav.hasNext());
+	}
+
+	/**
 	 * TEST: Navigate property &ldquo;[2].prop1.prop2.prop3&rdquo; up to the
 	 * end.
 	 * 
@@ -121,7 +157,7 @@ public class TestPropNavigator {
 	 * this.
 	 */
 	@Test
-	public void testPath5() {
+	public void testPath6() {
 		PropertyNavigator nav = new PropertyNavigator("[2].prop1.prop2.prop3");
 
 		assertIndex(nav, 2);
@@ -140,7 +176,7 @@ public class TestPropNavigator {
 	 * Then exception is thrown due to invalid property path.
 	 */
 	@Test
-	public void testPath6() {
+	public void testPath7() {
 		PropertyNavigator nav = new PropertyNavigator("prop1.prop2[5a].prop3");
 
 		assertProperty(nav, "prop1");
@@ -164,7 +200,7 @@ public class TestPropNavigator {
 	 * property path.
 	 */
 	@Test
-	public void testPath7() {
+	public void testPath8() {
 		PropertyNavigator nav = new PropertyNavigator("prop1.prop2[5]b.prop3");
 
 		assertProperty(nav, "prop1");
@@ -187,8 +223,30 @@ public class TestPropNavigator {
 	 * Then exception is thrown due to invalid property path.
 	 */
 	@Test
-	public void testPath8() {
+	public void testPath9() {
 		PropertyNavigator nav = new PropertyNavigator("prop1.prop2]5].prop3");
+
+		assertProperty(nav, "prop1");
+		assertProperty(nav, "prop2");
+
+		Assert.assertTrue(nav.hasNext());
+		try {
+			nav.next();
+			Assert.fail();
+		} catch (IllegalArgumentException e) {
+			// Nothing.
+		}
+	}
+	
+	/**
+	 * TEST: Navigate property &ldquo;prop1.prop2[5&rdquo; up to the end.
+	 * 
+	 * EXPECT: First &ldquo;prop1&rdquo;, then &ldquo;prop2&rdquo; are parsed.
+	 * Then exception is thrown due to invalid property path.
+	 */
+	@Test
+	public void testPath10() {
+		PropertyNavigator nav = new PropertyNavigator("prop1.prop2[5");
 
 		assertProperty(nav, "prop1");
 		assertProperty(nav, "prop2");
@@ -209,7 +267,7 @@ public class TestPropNavigator {
 	 * Then exception is thrown due to invalid property path.
 	 */
 	@Test
-	public void testPath9() {
+	public void testPath11() {
 		PropertyNavigator nav = new PropertyNavigator("prop1.prop2.^prop3");
 
 		assertProperty(nav, "prop1");
@@ -234,7 +292,7 @@ public class TestPropNavigator {
 	 * path.
 	 */
 	@Test
-	public void testPath10() {
+	public void testPath12() {
 		PropertyNavigator nav = new PropertyNavigator("prop1.prop2");
 
 		assertProperty(nav, "prop1");
@@ -267,7 +325,8 @@ public class TestPropNavigator {
 	/**
 	 * Helper method to validate that property navigator has more elements in
 	 * the path, then navigate the path and validate that next element has type
-	 * of <code>INDEX</code>. Finally, validate that index equal to the expected.
+	 * of <code>INDEX</code>. Finally, validate that index equal to the
+	 * expected.
 	 * 
 	 * @param nav property path
 	 * @param expected expected index
