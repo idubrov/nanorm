@@ -15,6 +15,8 @@
  */
 package com.google.code.nanorm.test.resultmap;
 
+import static com.google.code.nanorm.test.common.Utils.assertContains;
+
 import java.util.List;
 
 import org.junit.Assert;
@@ -36,7 +38,7 @@ import com.google.code.nanorm.test.common.MapperTestBase;
  * @version 1.0 27.05.2008
  */
 @SuppressWarnings("all")
-public class NestedResultMapTest extends MapperTestBase {
+public class TestNestedResultMap extends MapperTestBase {
     @ResultMapList({
         @ResultMap(id = "article", mappings = {
         	@Property(value = "id"),
@@ -84,8 +86,19 @@ public class NestedResultMapTest extends MapperTestBase {
             @Property(value = "year"),
             @Property(value = "article", nestedMap = @ResultMapRef("article")) 
         })
-        @Select("SELECT id, subject as title, subject, body, year FROM articles WHERE ID = ${1}")
+        @Select("SELECT id, subject as title, subject, body, year FROM articles WHERE id = ${1}")
         Publication getPublicationById(int id);
+        
+        // Test 1-N mapping with nested result map expecting single value
+        @ResultMap(groupBy = "id", mappings = {
+            @Property("id"),
+            @Property("title"),
+            @Property("year"),
+            @Property(value = "article", nestedMap = @ResultMapRef("article")) 
+        })
+        // Fixed variant should include ON articles.id = publications.article_id
+        @Select("SELECT p.id, p.title, p.year, a.subject, a.body FROM publications p LEFT JOIN articles a WHERE p.id = ${1}")
+        Publication getPublicationById2(int id);
         
         // Test 1-1 mapping with nested result map, the property type is List
         @ResultMap(mappings = {
@@ -110,7 +123,7 @@ public class NestedResultMapTest extends MapperTestBase {
         		"FROM categories c " +
                 "INNER JOIN articles a ON c.id = a.category_id WHERE c.id = ${1}" +
                 "ORDER BY c.id, a.id")
-        Category getPublicationById3(int id);
+        Category getCategoryById3(int id);
         
         // Test 1-N-M mapping with two nested result map, the property type is List
         @ResultMap(groupBy = "id", mappings = {
@@ -185,6 +198,18 @@ public class NestedResultMapTest extends MapperTestBase {
     }
     
     @Test
+    public void testNestedOneToOne3() throws Exception {
+    	try {
+    		Mapper mapper = factory.createMapper(Mapper.class);
+    		Publication publication = mapper.getPublicationById2(543);
+    		Assert.fail("Must fail because nested mapping expects single value, but multiple rows matched");
+    	} catch(IllegalStateException e) {
+    		e.printStackTrace();
+    		assertContains(e, "mapping", "property", "article", "single");
+    	}
+    }
+    
+    @Test
     public void testNestedOneToOneExternal() throws Exception {
     	factory.createMapper(Mapper.class); // Force it to be configured
         Mapper2 mapper = factory.createMapper(Mapper2.class);
@@ -209,7 +234,7 @@ public class NestedResultMapTest extends MapperTestBase {
     @Test
     public void testNestedOneToMany() throws Exception {
         Mapper mapper = factory.createMapper(Mapper.class);
-        Category cat = mapper.getPublicationById3(1);
+        Category cat = mapper.getCategoryById3(1);
         Assert.assertEquals(1, cat.getId());
         Assert.assertEquals(2006, cat.getYear());
         Assert.assertEquals(2, cat.getArticles().size());

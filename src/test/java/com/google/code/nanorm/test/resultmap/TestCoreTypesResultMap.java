@@ -36,7 +36,7 @@ import com.google.code.nanorm.test.common.MapperTestBase;
  * @version 1.0 27.05.2008
  */
 @SuppressWarnings("all")
-public class CoreTypesResultMapTest extends MapperTestBase {
+public class TestCoreTypesResultMap extends MapperTestBase {
 	public interface Mapper {
 		@ResultMap(mappings = { @Property(value = "id", column = "id"),
 				@Property(value = "primByte", column = "primByte"),

@@ -32,7 +32,7 @@ import com.google.code.nanorm.test.common.StringHolder;
  * @version 1.0 27.05.2008
  */
 @SuppressWarnings("all")
-public class CallTest extends MapperTestBase {
+public class TestCall extends MapperTestBase {
 
 	public interface Mapper1 {
 		@ResultMap(auto = true, mappings = { @Property(value = "value", columnIndex = 1) })

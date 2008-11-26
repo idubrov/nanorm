@@ -35,7 +35,7 @@ import com.google.code.nanorm.test.common.MapperTestBase;
  * @version 1.0 27.05.2008
  */
 @SuppressWarnings("all")
-public class SubselectResultMapTest extends MapperTestBase {
+public class TestSubselectResultMap extends MapperTestBase {
     public interface Mapper {
         
         @ResultMap(mappings = {

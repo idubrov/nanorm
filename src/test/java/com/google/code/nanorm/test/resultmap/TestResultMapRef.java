@@ -34,7 +34,7 @@ import com.google.code.nanorm.test.common.MapperTestBase;
  * @version 1.0 27.05.2008
  */
 @SuppressWarnings("all")
-public class ResultMapRefTest extends MapperTestBase {
+public class TestResultMapRef extends MapperTestBase {
     @ResultMapList({
         @ResultMap(id = "pub0", mappings = {
             @Property(value = "article.subject", column = "subject"),

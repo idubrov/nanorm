@@ -34,7 +34,7 @@ import com.google.code.nanorm.test.common.MapperTestBase;
  * @version 1.0 27.05.2008
  */
 @SuppressWarnings("all")
-public class SimpleUpdatesTest extends MapperTestBase {
+public class TestSimpleUpdates extends MapperTestBase {
     public interface Mapper1 {
         // No result map -- automatic mapping
         @Select("SELECT id, subject, year FROM articles WHERE ID = ${1}")

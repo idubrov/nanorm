@@ -23,6 +23,7 @@ import java.text.MessageFormat;
 import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapRef;
+import com.google.code.nanorm.internal.config.PropertyMappingConfig;
 import com.google.code.nanorm.internal.config.StatementConfig;
 import com.google.code.nanorm.internal.config.StatementKey;
 import com.google.code.nanorm.internal.config.SubselectConfig;
@@ -301,9 +302,13 @@ public class Messages {
 			StatementConfig stConfig = (StatementConfig) location;
 			String method = stConfig.getId().getName();
 			Class<?> mapper = stConfig.getId().getMapper();
-			location = location(mapper, method);
+			return "Single result expected while executing " + location(mapper, method);
+		} else if (location instanceof PropertyMappingConfig) {
+			PropertyMappingConfig config = (PropertyMappingConfig) location;
+			location = "Single row expected while mapping property '" + config.getProperty()
+					+ "' with nested mapping";
 		}
-		return "Single result expected while executing " + location + '.';
+		return "Single result expected. Location details: " + location;
 	}
 
 	/**
@@ -383,9 +388,13 @@ public class Messages {
 	}
 
 	private static String location(Class<?> mapper, String method) {
-		if (method != null) {
-			return "method '" + method + "' of mapper '" + mapper.getName() + '\'';
-		}
-		return "mapper '" + mapper.getName() + '\'';
+		return "method '" + method + "' of mapper '" + mapper.getName() + '\'';
+	}
+
+	/**
+	 * Private costructor.
+	 */
+	private Messages() {
+		assert (false);
 	}
 }
