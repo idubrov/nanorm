@@ -35,21 +35,24 @@ public class BooleanTypeHandler implements TypeHandler<Boolean> {
      * {@inheritDoc}
      */
     public Boolean getValue(ResultSet rs, int column) throws SQLException {
-        return rs.wasNull() ? null : rs.getBoolean(column);
+        final boolean aBoolean = rs.getBoolean(column);
+        return rs.wasNull()?null:aBoolean;
     }
 
     /**
      * {@inheritDoc}
      */
     public Boolean getValue(ResultSet rs, String column) throws SQLException {
-        return rs.wasNull() ? null : rs.getBoolean(column);
+        final boolean aBoolean = rs.getBoolean(column);
+        return rs.wasNull()?null:aBoolean;
     }
     
     /**
      * {@inheritDoc}
      */
     public Boolean getValue(CallableStatement cs, int index) throws SQLException {
-        return cs.wasNull() ? null : cs.getBoolean(index);
+        final boolean aBoolean = cs.getBoolean(index);
+        return cs.wasNull()?null:aBoolean;
     }
 
     /**

@@ -35,21 +35,24 @@ public class LongTypeHandler implements TypeHandler<Long> {
      * {@inheritDoc}
      */
     public Long getValue(ResultSet rs, int column) throws SQLException {
-        return rs.wasNull() ? null : rs.getLong(column);
+        final long aLong = rs.getLong(column);
+        return rs.wasNull()?null:aLong;
     }
 
     /**
      * {@inheritDoc}
      */
     public Long getValue(ResultSet rs, String column) throws SQLException {
-        return rs.wasNull() ? null : rs.getLong(column);
+        final long aLong = rs.getLong(column);
+        return rs.wasNull()?null:aLong;
     }
     
     /**
      * {@inheritDoc}
      */
     public Long getValue(CallableStatement cs, int index) throws SQLException {
-        return cs.wasNull() ? null : cs.getLong(index);
+        final long aLong = cs.getLong(index);
+        return cs.wasNull()?null:aLong;
     }
     
     /**
