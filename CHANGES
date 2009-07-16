@@ -1,7 +1,8 @@
-0.4.3, (unreleased)
+0.4.3, released 2009-07-16
     * Added ability to enable/disable auto-session support. Note that auto-session
       is disabled by default starting from this version (so you should open session
       explicitly or turn it on via call NanormConfiguration#setAutoSessionEnabled(boolean)).
+    * Fixed issue #18
     * Minor code style impromevents and JavaDoc updates
 
 0.4.2, released 2008-11-08
