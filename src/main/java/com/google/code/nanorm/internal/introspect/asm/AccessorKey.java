@@ -32,17 +32,21 @@ public class AccessorKey {
 	private final String path;
 
 	private final Type[] types;
+	
+	private final boolean isSetter;
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param beanClass bean class
 	 * @param path property path
+	 * @param isSetter if accessor is setter
 	 */
-	public AccessorKey(Class<?> beanClass, String path) {
+	public AccessorKey(Class<?> beanClass, String path, boolean isSetter) {
 		this.beanClass = beanClass;
 		this.types = null;
 		this.path = path;
+		this.isSetter = isSetter;
 	}
 
 	/**
@@ -50,55 +54,64 @@ public class AccessorKey {
 	 * 
 	 * @param types types this property getter is generated for.
 	 * @param path property path
+	 * @param isSetter if accessor is setter
 	 */
-	public AccessorKey(Type[] types, String path) {
+	public AccessorKey(Type[] types, String path, boolean isSetter) {
 		this.beanClass = null;
 		this.types = types.clone();
 		this.path = path;
+		this.isSetter = isSetter;
 	}
 
 	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((beanClass == null) ? 0 : beanClass.hashCode());
-		result = prime * result + ((path == null) ? 0 : path.hashCode());
-		result = prime * result + Arrays.hashCode(types);
-		return result;
-	}
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((beanClass == null) ? 0 : beanClass.hashCode());
+        result = prime * result + (isSetter ? 1231 : 1237);
+        result = prime * result + ((path == null) ? 0 : path.hashCode());
+        result = prime * result + Arrays.hashCode(types);
+        return result;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final AccessorKey other = (AccessorKey) obj;
-		if (beanClass != other.beanClass) {
-			return false;
-		}
-		if (path == null) {
-			if (other.path != null) {
-				return false;
-			}
-		} else if (!path.equals(other.path)) {
-			return false;
-		}
-		if (!Arrays.equals(types, other.types)) {
-			return false;
-		}
-		return true;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        AccessorKey other = (AccessorKey) obj;
+        if (beanClass == null) {
+            if (other.beanClass != null) {
+                return false;
+            }
+        } else if (!beanClass.equals(other.beanClass)) {
+            return false;
+        }
+        if (isSetter != other.isSetter) {
+            return false;
+        }
+        if (path == null) {
+            if (other.path != null) {
+                return false;
+            }
+        } else if (!path.equals(other.path)) {
+            return false;
+        }
+        if (!Arrays.equals(types, other.types)) {
+            return false;
+        }
+        return true;
+    }
 }

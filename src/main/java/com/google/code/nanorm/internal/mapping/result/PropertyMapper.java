@@ -15,6 +15,7 @@
  */
 package com.google.code.nanorm.internal.mapping.result;
 
+import java.lang.reflect.Type;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -77,6 +78,11 @@ public class PropertyMapper {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Mapped property {} to value {}", config.getProperty(), value);
 		}
-		setter.setValue(result, value);
+		Type type = setter.getType();
+		if(value == null && type instanceof Class<?> && ((Class<?>) type).isPrimitive()) {
+		    // FIXME: Set default value!
+		} else { 
+		    setter.setValue(result, value);
+		}
 	}
 }

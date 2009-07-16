@@ -37,9 +37,9 @@ public interface Constants {
 					+ "com.google.code.nanorm.internal.config.StatementConfig[])");
 
 	/**
-	 * Getter constructor.
+	 * Accessor constructor.
 	 */
-	static final Method GETTER_CTOR = Method
+	static final Method ACCESSOR_CTOR = Method
 			.getMethod("void <init>(java.lang.reflect.Type)");
 
 	/**

@@ -15,6 +15,8 @@
  */
 package com.google.code.nanorm.internal.introspect;
 
+import java.lang.reflect.Type;
+
 /**
  * Property setter.
  * 
@@ -28,4 +30,12 @@ public interface Setter {
 	 * @param value value to set
 	 */
 	void setValue(Object instance, Object value);
+	
+	/**
+     * Get property type.
+     * 
+     * TODO: Should take instance as a parameter?
+     * @return property type
+     */
+    Type getType();
 }

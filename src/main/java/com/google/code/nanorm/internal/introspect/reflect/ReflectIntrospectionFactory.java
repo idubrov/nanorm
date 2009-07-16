@@ -98,7 +98,7 @@ public class ReflectIntrospectionFactory extends AbstractIntrospectionFactory {
 	 * @return setter method
 	 */
 	Method lookupSetter(Class<?> clazz, String property) {
-		AccessorKey key = new AccessorKey(clazz, property);
+		AccessorKey key = new AccessorKey(clazz, property, true);
 		Method setter = setters.get(key);
 		if (setter == null) {
 			setter = IntrospectUtils.findSetter(clazz, property);

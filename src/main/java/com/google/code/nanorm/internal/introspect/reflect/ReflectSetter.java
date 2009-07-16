@@ -20,6 +20,7 @@ import java.lang.reflect.Type;
 import com.google.code.nanorm.internal.introspect.IntrospectUtils;
 import com.google.code.nanorm.internal.introspect.PropertyVisitor;
 import com.google.code.nanorm.internal.introspect.Setter;
+import com.google.code.nanorm.internal.introspect.VoidPropertyVisitor;
 
 /**
  * Reflection-based nested property setter.
@@ -64,4 +65,17 @@ public class ReflectSetter implements Setter {
 			IntrospectUtils.visitPath(path, beanClass, visitor, null);
 		}
 	}
+	
+	/**
+     * {@inheritDoc}
+     */
+    public Type getType() {
+        Type[] type = new Type[1];
+        if(types != null) {
+            IntrospectUtils.visitPath(path, types, VoidPropertyVisitor.INSTANCE, type);
+        } else {
+            IntrospectUtils.visitPath(path, beanClass, VoidPropertyVisitor.INSTANCE, type);
+        }
+        return type[0];
+    }
 }
