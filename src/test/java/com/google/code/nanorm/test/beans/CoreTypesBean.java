@@ -21,6 +21,8 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Locale;
 
+import com.google.code.nanorm.internal.util.ToStringBuilder;
+
 /**
  * 
  * @author Ivan Dubrov
@@ -455,5 +457,35 @@ public class CoreTypesBean {
 		} else if (!wrapShort.equals(other.wrapShort))
 			return false;
 		return true;
+	}
+	
+	@Override
+	public String toString() {
+	    return new ToStringBuilder(this)
+            .append("id", id)
+            .append("primByte", primByte)
+            .append("wrapByte", wrapByte)
+            .append("primShort", primShort)
+            .append("wrapShort", wrapShort)
+            .append("primInt", primInt)
+            .append("wrapInt", wrapInt)
+            .append("primLong", primLong)
+            .append("wrapLong", wrapLong)
+            .append("primBoolean", primBoolean)
+            .append("wrapBoolean", wrapBoolean)
+            .append("primChar", primChar)
+            .append("wrapChar", wrapChar)
+            .append("primFloat", primFloat)
+            .append("wrapFloat", wrapFloat)
+            .append("primDouble", primDouble)
+            .append("wrapDouble", wrapDouble)
+            .append("string", string)
+            .append("sqlDate", sqlDate)
+            .append("sqlTime", sqlTime)
+            .append("sqlTimestamp", sqlTimestamp)
+            .append("date", date)
+            .append("bytearr", bytearr)
+            .append("locale", locale)
+            .toString();
 	}
 }
