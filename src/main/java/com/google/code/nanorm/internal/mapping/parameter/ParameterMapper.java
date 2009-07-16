@@ -23,7 +23,6 @@ import java.sql.SQLException;
 import com.google.code.nanorm.TypeHandler;
 import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.internal.config.ParameterMappingConfig;
-import com.google.code.nanorm.internal.util.ToStringBuilder;
 
 /**
  * Parameter mapper. Maps IN/OUT parmaters to {@link PreparedStatement}/

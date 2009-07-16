@@ -16,8 +16,9 @@
 
 package com.google.code.nanorm.test.config;
 
-import junit.framework.Assert;
+import static com.google.code.nanorm.test.common.Utils.assertContains;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.code.nanorm.annotations.Insert;
@@ -25,7 +26,6 @@ import com.google.code.nanorm.annotations.SelectKey;
 import com.google.code.nanorm.annotations.SelectKeyType;
 import com.google.code.nanorm.config.NanormConfiguration;
 import com.google.code.nanorm.exceptions.ConfigurationException;
-import static com.google.code.nanorm.test.common.Utils.assertContains;
 
 /**
  * Test validation for generated keys.

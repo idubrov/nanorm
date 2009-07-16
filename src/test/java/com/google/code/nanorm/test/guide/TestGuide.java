@@ -23,9 +23,9 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.code.nanorm.DataSink;
@@ -40,6 +40,8 @@ public class TestGuide {
 	public void testGuide() throws Exception {
 		NanormFactory factory = new NanormConfiguration().buildFactory();
 		BookMapper mapper = factory.createMapper(BookMapper.class);
+		
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		
 		Class.forName("org.h2.Driver");
 		Connection conn = DriverManager.getConnection("jdbc:h2:mem:", "sa", "");

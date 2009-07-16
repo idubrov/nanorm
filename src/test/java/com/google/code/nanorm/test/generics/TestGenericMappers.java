@@ -16,8 +16,7 @@
 
 package com.google.code.nanorm.test.generics;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.code.nanorm.annotations.Select;

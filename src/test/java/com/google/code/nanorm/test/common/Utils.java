@@ -16,7 +16,7 @@
 
 package com.google.code.nanorm.test.common;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 /**
  * Utility methods for tests.

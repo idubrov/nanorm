@@ -16,8 +16,8 @@
 
 package com.google.code.nanorm.internal.introspect.asm;
 
-import static com.google.code.nanorm.internal.introspect.asm.Constants.CONCAT;
 import static com.google.code.nanorm.internal.introspect.asm.Constants.ACCESSOR_CTOR;
+import static com.google.code.nanorm.internal.introspect.asm.Constants.CONCAT;
 import static com.google.code.nanorm.internal.introspect.asm.Constants.CTOR;
 import static com.google.code.nanorm.internal.introspect.asm.Constants.GET_VALUE;
 import static com.google.code.nanorm.internal.introspect.asm.Constants.JL_REFLECT_TYPE_TYPE;

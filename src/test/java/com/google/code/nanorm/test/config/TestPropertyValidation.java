@@ -16,8 +16,9 @@
 
 package com.google.code.nanorm.test.config;
 
-import junit.framework.Assert;
+import static com.google.code.nanorm.test.common.Utils.assertContains;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.code.nanorm.annotations.Property;
@@ -26,7 +27,6 @@ import com.google.code.nanorm.annotations.Select;
 import com.google.code.nanorm.config.NanormConfiguration;
 import com.google.code.nanorm.exceptions.ConfigurationException;
 import com.google.code.nanorm.test.beans.Publication;
-import static com.google.code.nanorm.test.common.Utils.assertContains;
 
 
 /**

@@ -15,8 +15,7 @@
  */
 package com.google.code.nanorm.test.call;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 

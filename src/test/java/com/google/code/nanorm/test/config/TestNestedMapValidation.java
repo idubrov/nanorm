@@ -17,8 +17,8 @@
 package com.google.code.nanorm.test.config;
 
 import static com.google.code.nanorm.test.common.Utils.assertContains;
-import junit.framework.Assert;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.code.nanorm.annotations.Property;

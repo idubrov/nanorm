@@ -17,8 +17,7 @@ package com.google.code.nanorm.test.resultmap;
 
 import java.util.List;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.code.nanorm.Block;

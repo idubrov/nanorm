@@ -57,8 +57,8 @@ public class MapperTestBase {
 	 */
 	@BeforeClass
 	public static void beforeClass() throws Exception {
-		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-		
+	    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+	    
 		Class.forName("org.h2.Driver");
 		conn = DriverManager.getConnection("jdbc:h2:mem:", "sa", "");
 
