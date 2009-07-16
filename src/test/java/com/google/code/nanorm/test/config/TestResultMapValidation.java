@@ -136,11 +136,23 @@ public class TestResultMapValidation {
 		}
 	}
 
-	private static class Bean {
+	/**
+	 * Mapped bean.
+	 * @author Ivan Dubrov
+	 */
+	public static class Bean {
+		/**
+		 * Getter.
+		 * @return value 
+		 */
 		public String getSome() {
 			return "some";
 		}
 
+		/**
+		 * Setter.
+		 * @param arg value
+		 */
 		public void setSome(String arg) {
 			// Nothing...
 		}

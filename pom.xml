@@ -309,4 +309,11 @@
       <url>dav:https://nanorm.googlecode.com/svn/maven2/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
+  <repositories>
+    <repository>
+      <id>nanorm-repo</id>
+      <url>http://code.google.com/p/nanorm/source/browse/maven2/reseases</url>
+      <snapshots><enabled>false</enabled></snapshots>
+    </repository>
+  </repositories>
 </project>

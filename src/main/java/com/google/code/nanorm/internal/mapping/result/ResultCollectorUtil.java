@@ -106,7 +106,7 @@ public class ResultCollectorUtil {
 	private static boolean isGenericCollection(Type type) {
 		if (type instanceof ParameterizedType) {
 			ParameterizedType pt = (ParameterizedType) type;
-			if (pt.getRawType() instanceof Class) {
+			if (pt.getRawType() instanceof Class<?>) {
 				Class<?> rawClass = (Class<?>) pt.getRawType();
 				if (rawClass == Collection.class || rawClass == List.class
 						|| rawClass == ArrayList.class) {
