@@ -35,21 +35,21 @@ public class DoubleTypeHandler implements TypeHandler<Double> {
      * {@inheritDoc}
      */
     public Double getValue(ResultSet rs, int column) throws SQLException {
-        return rs.getDouble(column);
+        return rs.wasNull() ? null : rs.getDouble(column);
     }
 
     /**
      * {@inheritDoc}
      */
     public Double getValue(ResultSet rs, String column) throws SQLException {
-        return rs.getDouble(column);
+        return rs.wasNull() ? null : rs.getDouble(column);
     }
     
     /**
      * {@inheritDoc}
      */
     public Double getValue(CallableStatement cs, int index) throws SQLException {
-        return cs.getDouble(index);
+        return cs.wasNull() ? null : cs.getDouble(index);
     }
     
     /**

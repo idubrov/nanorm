@@ -35,21 +35,21 @@ public class ByteTypeHandler implements TypeHandler<Byte> {
      * @see com.google.code.nanorm.TypeHandler#getValue(java.sql.ResultSet, int)
      */
     public Byte getValue(ResultSet rs, int column) throws SQLException {
-        return rs.getByte(column);
+        return rs.wasNull() ? null : rs.getByte(column);
     }
 
     /**
      * @see com.google.code.nanorm.TypeHandler#getValue(java.sql.ResultSet, java.lang.String)
      */
     public Byte getValue(ResultSet rs, String column) throws SQLException {
-        return rs.getByte(column);
+        return rs.wasNull() ? null : rs.getByte(column);
     }
     
     /**
      * {@inheritDoc}
      */
     public Byte getValue(CallableStatement cs, int index) throws SQLException {
-        return cs.getByte(index);
+        return cs.wasNull() ? null : cs.getByte(index);
     }
     
     /**

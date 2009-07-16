@@ -35,21 +35,21 @@ public class FloatTypeHandler implements TypeHandler<Float> {
      * {@inheritDoc}
      */
     public Float getValue(ResultSet rs, int column) throws SQLException {
-        return rs.getFloat(column);
+        return rs.wasNull() ? null : rs.getFloat(column);
     }
 
     /**
      * {@inheritDoc}
      */
     public Float getValue(ResultSet rs, String column) throws SQLException {
-        return rs.getFloat(column);
+        return rs.wasNull() ? null : rs.getFloat(column);
     }
     
     /**
      * {@inheritDoc}
      */
     public Float getValue(CallableStatement cs, int index) throws SQLException {
-        return cs.getFloat(index);
+        return cs.wasNull() ? null : cs.getFloat(index);
     }
     
     /**
