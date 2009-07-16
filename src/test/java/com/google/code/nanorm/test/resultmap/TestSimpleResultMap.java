@@ -220,11 +220,11 @@ public class TestSimpleResultMap extends MapperTestBase {
 	public void testScalarMapping() throws Exception {
 		Mapper1 mapper = factory.createMapper(Mapper1.class);
 		Timestamp stamp = mapper.selectTimestamp();
-		Assert.assertEquals(new Timestamp(1244388214000L), stamp);
+		Assert.assertEquals(new Timestamp(1244388214000L).getTime(), stamp.getTime());
 		
 		Timestamp[] arr = mapper.selectTimestampArray();
 		Assert.assertEquals(2, arr.length);
-		Assert.assertEquals(new Timestamp(1244388214000L), arr[0]);
-		Assert.assertEquals(new Timestamp(1262499474000L), arr[1]);
+		Assert.assertEquals(new Timestamp(1244388214000L).getTime(), arr[0].getTime());
+		Assert.assertEquals(new Timestamp(1262499474000L).getTime(), arr[1].getTime());
 	}
 }
