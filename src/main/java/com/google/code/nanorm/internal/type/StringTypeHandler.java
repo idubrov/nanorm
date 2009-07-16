@@ -44,29 +44,29 @@ public class StringTypeHandler implements TypeHandler<String> {
     public String getValue(ResultSet rs, String column) throws SQLException {
         return rs.getString(column);
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public String getValue(CallableStatement cs, int index) throws SQLException {
         return cs.getString(index);
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
-        if(value == null) {
+        if (value == null) {
             st.setNull(column, Types.VARCHAR);
         } else {
             st.setString(column, (String) value);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public int getSqlType() {
-    	return Types.VARCHAR;
+        return Types.VARCHAR;
     }
 }

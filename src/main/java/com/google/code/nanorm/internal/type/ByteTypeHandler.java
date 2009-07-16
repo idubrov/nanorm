@@ -35,41 +35,42 @@ public class ByteTypeHandler implements TypeHandler<Byte> {
      * @see com.google.code.nanorm.TypeHandler#getValue(java.sql.ResultSet, int)
      */
     public Byte getValue(ResultSet rs, int column) throws SQLException {
-        final byte aByte = rs.getByte(column);
-        return rs.wasNull()?null:aByte;
+        final byte value = rs.getByte(column);
+        return rs.wasNull() ? null : value;
     }
 
     /**
-     * @see com.google.code.nanorm.TypeHandler#getValue(java.sql.ResultSet, java.lang.String)
+     * @see com.google.code.nanorm.TypeHandler#getValue(java.sql.ResultSet,
+     * java.lang.String)
      */
     public Byte getValue(ResultSet rs, String column) throws SQLException {
-        final byte aByte = rs.getByte(column);
-        return rs.wasNull()?null:aByte;
+        final byte value = rs.getByte(column);
+        return rs.wasNull() ? null : value;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public Byte getValue(CallableStatement cs, int index) throws SQLException {
-        final byte aByte = cs.getByte(index);
-        return cs.wasNull()?null:aByte;
+        final byte value = cs.getByte(index);
+        return cs.wasNull() ? null : value;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
-        if(value == null) {
+        if (value == null) {
             st.setNull(column, Types.TINYINT);
         } else {
             st.setByte(column, (Byte) value);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public int getSqlType() {
-    	return Types.TINYINT;
+        return Types.TINYINT;
     }
 }

@@ -35,16 +35,16 @@ import com.google.code.nanorm.internal.util.Messages;
  * @version 1.0 31.05.2008
  */
 public final class TypeHandlerFactoryImpl implements TypeHandlerFactory {
-    
+
     private final Map<Type, TypeHandler<?>> typeHandlers = new HashMap<Type, TypeHandler<?>>();
-    
+
     /**
      * Constructor. Registers default type handlers.
      */
     public TypeHandlerFactoryImpl() {
         register(byte.class, new ByteTypeHandler());
         register(Byte.class, new ByteTypeHandler());
-        
+
         register(short.class, new ShortTypeHandler());
         register(Short.class, new ShortTypeHandler());
 
@@ -56,7 +56,7 @@ public final class TypeHandlerFactoryImpl implements TypeHandlerFactory {
 
         register(boolean.class, new BooleanTypeHandler());
         register(Boolean.class, new BooleanTypeHandler());
-        
+
         register(char.class, new CharTypeHandler());
         register(Character.class, new CharTypeHandler());
 
@@ -65,15 +65,15 @@ public final class TypeHandlerFactoryImpl implements TypeHandlerFactory {
 
         register(double.class, new DoubleTypeHandler());
         register(Double.class, new DoubleTypeHandler());
-        
+
         register(String.class, new StringTypeHandler());
-        
+
         register(java.util.Date.class, new DateTypeHandler());
-        
+
         register(Date.class, new SqlDateTypeHandler());
         register(Time.class, new SqlTimeTypeHandler());
         register(Timestamp.class, new SqlTimestampTypeHandler());
-        
+
         register(byte[].class, new ByteArrayTypeHandler());
         register(Locale.class, new LocaleTypeHandler());
     }
@@ -83,13 +83,13 @@ public final class TypeHandlerFactoryImpl implements TypeHandlerFactory {
      */
     public TypeHandler<?> getTypeHandler(Type type) {
         TypeHandler<?> typeHandler = typeHandlers.get(type);
-        
-        if(typeHandler == null) {
-        	throw new IllegalArgumentException(Messages.typeHandlerNotFound(type));
+
+        if (typeHandler == null) {
+            throw new IllegalArgumentException(Messages.typeHandlerNotFound(type));
         }
         return typeHandler;
     }
-    
+
     /**
      * {@inheritDoc}
      */

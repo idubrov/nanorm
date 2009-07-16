@@ -29,22 +29,22 @@ import com.google.code.nanorm.TypeHandler;
  * 
  * @author Ivan Dubrov
  */
-public class LocaleTypeHandler implements TypeHandler<Locale>{
+public class LocaleTypeHandler implements TypeHandler<Locale> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Locale getValue(ResultSet rs, String column) throws SQLException {
-		return valueOf(rs.getString(column));
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public Locale getValue(ResultSet rs, String column) throws SQLException {
+        return valueOf(rs.getString(column));
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Locale getValue(ResultSet rs, int column) throws SQLException {
-		return valueOf(rs.getString(column));
-	}
-	
+    /**
+     * {@inheritDoc}
+     */
+    public Locale getValue(ResultSet rs, int column) throws SQLException {
+        return valueOf(rs.getString(column));
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -52,30 +52,30 @@ public class LocaleTypeHandler implements TypeHandler<Locale>{
         return valueOf(cs.getString(index));
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setParameter(PreparedStatement st, int column, Object parameter)
-			throws SQLException {
-		
-		Locale locale = (Locale) parameter;
-		if(parameter == null) {
-			st.setNull(column, Types.VARCHAR);
-		} else {
-			st.setString(column, locale.toString());
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void setParameter(PreparedStatement st, int column, Object parameter)
+            throws SQLException {
 
-	private Locale valueOf(String s) {
-        if(s == null) {
+        Locale locale = (Locale) parameter;
+        if (parameter == null) {
+            st.setNull(column, Types.VARCHAR);
+        } else {
+            st.setString(column, locale.toString());
+        }
+    }
+
+    private Locale valueOf(String s) {
+        if (s == null) {
             return null;
         }
-        
+
         String[] tokens = s.split("_");
         Locale locale;
-        if(tokens.length == 1) {
+        if (tokens.length == 1) {
             locale = new Locale(tokens[0]);
-        } else if(tokens.length == 2) {
+        } else if (tokens.length == 2) {
             locale = new Locale(tokens[0], tokens[1]);
         } else {
             locale = new Locale(tokens[0], tokens[1], tokens[2]);
@@ -83,10 +83,10 @@ public class LocaleTypeHandler implements TypeHandler<Locale>{
         return locale;
     }
 
-	/**
+    /**
      * {@inheritDoc}
      */
     public int getSqlType() {
-    	return Types.VARCHAR;
+        return Types.VARCHAR;
     }
 }

@@ -37,40 +37,40 @@ public class DateTypeHandler implements TypeHandler<Date> {
      */
     public Date getValue(ResultSet rs, int column) throws SQLException {
         Timestamp timestamp = rs.getTimestamp(column);
-        return timestamp == null ? null : new Date(timestamp.getTime()); 
+        return timestamp == null ? null : new Date(timestamp.getTime());
     }
 
     /**
      * {@inheritDoc}
      */
     public Date getValue(ResultSet rs, String column) throws SQLException {
-    	Timestamp timestamp = rs.getTimestamp(column);
+        Timestamp timestamp = rs.getTimestamp(column);
         return timestamp == null ? null : new Date(timestamp.getTime());
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public Date getValue(CallableStatement cs, int index) throws SQLException {
-    	Timestamp timestamp = cs.getTimestamp(index);
+        Timestamp timestamp = cs.getTimestamp(index);
         return timestamp == null ? null : new Date(timestamp.getTime());
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
-        if(value == null) {
+        if (value == null) {
             st.setNull(column, Types.TIMESTAMP);
         } else {
             st.setTimestamp(column, new Timestamp(((Date) value).getTime()));
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public int getSqlType() {
-    	return Types.TIMESTAMP;
+        return Types.TIMESTAMP;
     }
 }

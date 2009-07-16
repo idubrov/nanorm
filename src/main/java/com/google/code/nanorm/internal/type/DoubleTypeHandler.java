@@ -35,41 +35,41 @@ public class DoubleTypeHandler implements TypeHandler<Double> {
      * {@inheritDoc}
      */
     public Double getValue(ResultSet rs, int column) throws SQLException {
-        final double aDouble = rs.getDouble(column);
-        return rs.wasNull()?null:aDouble;
+        final double value = rs.getDouble(column);
+        return rs.wasNull() ? null : value;
     }
 
     /**
      * {@inheritDoc}
      */
     public Double getValue(ResultSet rs, String column) throws SQLException {
-        final double aDouble = rs.getDouble(column);
-        return rs.wasNull()?null:aDouble;
+        final double value = rs.getDouble(column);
+        return rs.wasNull() ? null : value;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public Double getValue(CallableStatement cs, int index) throws SQLException {
-        final double aDouble = cs.getDouble(index);
-        return cs.wasNull()?null:aDouble;
+        final double value = cs.getDouble(index);
+        return cs.wasNull() ? null : value;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
-        if(value == null) {
+        if (value == null) {
             st.setNull(column, Types.DOUBLE);
         } else {
             st.setDouble(column, (Double) value);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public int getSqlType() {
-    	return Types.DOUBLE;
+        return Types.DOUBLE;
     }
 }

@@ -30,38 +30,38 @@ import com.google.code.nanorm.TypeHandler;
  */
 public class ByteArrayTypeHandler implements TypeHandler<byte[]> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public byte[] getValue(ResultSet rs, String column) throws SQLException {
-		return rs.getBytes(column);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public byte[] getValue(ResultSet rs, String column) throws SQLException {
+        return rs.getBytes(column);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public byte[] getValue(ResultSet rs, int column) throws SQLException {
-		return rs.getBytes(column);
-	}
-	
-	/**
+    /**
+     * {@inheritDoc}
+     */
+    public byte[] getValue(ResultSet rs, int column) throws SQLException {
+        return rs.getBytes(column);
+    }
+
+    /**
      * {@inheritDoc}
      */
     public byte[] getValue(CallableStatement cs, int index) throws SQLException {
         return cs.getBytes(index);
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
-		st.setBytes(column, (byte[]) value);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
+        st.setBytes(column, (byte[]) value);
+    }
 
-	/**
+    /**
      * {@inheritDoc}
      */
     public int getSqlType() {
-    	return Types.BINARY;
+        return Types.BINARY;
     }
 }

@@ -39,30 +39,31 @@ public class SqlTimestampTypeHandler implements TypeHandler<Timestamp> {
     }
 
     /**
-     * @see com.google.code.nanorm.TypeHandler#getValue(java.sql.ResultSet, java.lang.String)
+     * @see com.google.code.nanorm.TypeHandler#getValue(java.sql.ResultSet,
+     * java.lang.String)
      */
     public Timestamp getValue(ResultSet rs, String column) throws SQLException {
-    	return rs.getTimestamp(column);
+        return rs.getTimestamp(column);
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public Timestamp getValue(CallableStatement cs, int index) throws SQLException {
         return cs.getTimestamp(index);
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
         st.setTimestamp(column, (Timestamp) value);
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public int getSqlType() {
-    	return Types.TIMESTAMP;
+        return Types.TIMESTAMP;
     }
 }

@@ -31,9 +31,9 @@ import com.google.code.nanorm.TypeHandler;
  */
 public class CharTypeHandler implements TypeHandler<Character> {
 
-	/**
-	 * {@inheritDoc}
-	 */
+    /**
+     * {@inheritDoc}
+     */
     public Character getValue(ResultSet rs, int column) throws SQLException {
         return getFromString(rs.getString(column));
     }
@@ -44,39 +44,40 @@ public class CharTypeHandler implements TypeHandler<Character> {
     public Character getValue(ResultSet rs, String column) throws SQLException {
         return getFromString(rs.getString(column));
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public Character getValue(CallableStatement cs, int index) throws SQLException {
         return getFromString(cs.getString(index));
     }
-    
+
     private Character getFromString(String str) {
-        if(str == null) {
+        if (str == null) {
             return null;
         }
-        if(str.length() == 1) {
+        if (str.length() == 1) {
             return str.charAt(0);
         }
-        throw new IllegalArgumentException("String '" + str + "' is too long to be converted to single character!");
+        throw new IllegalArgumentException("String '" + str
+                + "' is too long to be converted to single character!");
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
-        if(value == null) {
+        if (value == null) {
             st.setNull(column, Types.CHAR);
         } else {
             st.setString(column, ((Character) value).toString());
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public int getSqlType() {
-    	return Types.CHAR;
+        return Types.CHAR;
     }
 }

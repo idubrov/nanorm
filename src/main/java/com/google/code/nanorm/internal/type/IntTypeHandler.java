@@ -35,41 +35,41 @@ public class IntTypeHandler implements TypeHandler<Integer> {
      * {@inheritDoc}
      */
     public Integer getValue(ResultSet rs, int column) throws SQLException {
-        final int anInt = rs.getInt(column);
-        return rs.wasNull()?null:anInt;
+        final int value = rs.getInt(column);
+        return rs.wasNull() ? null : value;
     }
 
     /**
      * {@inheritDoc}
      */
     public Integer getValue(ResultSet rs, String column) throws SQLException {
-        final int anInt = rs.getInt(column);
-        return rs.wasNull()?null:anInt;
+        final int value = rs.getInt(column);
+        return rs.wasNull() ? null : value;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public Integer getValue(CallableStatement cs, int index) throws SQLException {
-        final int anInt = cs.getInt(index);
-        return cs.wasNull()?null:anInt;
+        final int value = cs.getInt(index);
+        return cs.wasNull() ? null : value;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
-        if(value == null) {
+        if (value == null) {
             st.setNull(column, Types.INTEGER);
         } else {
             st.setInt(column, (Integer) value);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public int getSqlType() {
-    	return Types.INTEGER;
+        return Types.INTEGER;
     }
 }

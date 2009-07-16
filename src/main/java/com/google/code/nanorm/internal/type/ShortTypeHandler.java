@@ -35,41 +35,41 @@ public class ShortTypeHandler implements TypeHandler<Short> {
      * {@inheritDoc}
      */
     public Short getValue(ResultSet rs, int column) throws SQLException {
-        final short aShort = rs.getShort(column);
-        return rs.wasNull()?null:aShort;
+        final short value = rs.getShort(column);
+        return rs.wasNull() ? null : value;
     }
 
     /**
      * {@inheritDoc}
      */
     public Short getValue(ResultSet rs, String column) throws SQLException {
-        final short aShort = rs.getShort(column);
-        return rs.wasNull()?null:aShort;
+        final short value = rs.getShort(column);
+        return rs.wasNull() ? null : value;
     }
 
     /**
      * {@inheritDoc}
      */
     public Short getValue(CallableStatement cs, int index) throws SQLException {
-        final short aShort = cs.getShort(index);
-        return cs.wasNull()?null:aShort;
+        final short value = cs.getShort(index);
+        return cs.wasNull() ? null : value;
     }
 
     /**
      * {@inheritDoc}
      */
     public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
-        if(value == null) {
+        if (value == null) {
             st.setNull(column, Types.SMALLINT);
         } else {
             st.setShort(column, (Short) value);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public int getSqlType() {
-    	return Types.SMALLINT;
+        return Types.SMALLINT;
     }
 }

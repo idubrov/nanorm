@@ -39,30 +39,31 @@ public class SqlTimeTypeHandler implements TypeHandler<Time> {
     }
 
     /**
-     * @see com.google.code.nanorm.TypeHandler#getValue(java.sql.ResultSet, java.lang.String)
+     * @see com.google.code.nanorm.TypeHandler#getValue(java.sql.ResultSet,
+     * java.lang.String)
      */
     public Time getValue(ResultSet rs, String column) throws SQLException {
-    	return rs.getTime(column);
+        return rs.getTime(column);
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public Time getValue(CallableStatement cs, int index) throws SQLException {
         return cs.getTime(index);
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
         st.setTime(column, (Time) value);
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public int getSqlType() {
-    	return Types.TIME;
+        return Types.TIME;
     }
 }

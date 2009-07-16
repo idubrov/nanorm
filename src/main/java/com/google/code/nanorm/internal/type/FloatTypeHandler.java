@@ -35,41 +35,41 @@ public class FloatTypeHandler implements TypeHandler<Float> {
      * {@inheritDoc}
      */
     public Float getValue(ResultSet rs, int column) throws SQLException {
-        final float aFloat = rs.getFloat(column);
-        return rs.wasNull()?null:aFloat;
+        final float value = rs.getFloat(column);
+        return rs.wasNull() ? null : value;
     }
 
     /**
      * {@inheritDoc}
      */
     public Float getValue(ResultSet rs, String column) throws SQLException {
-        final float aFloat = rs.getFloat(column);
-        return rs.wasNull()?null:aFloat;
+        final float value = rs.getFloat(column);
+        return rs.wasNull() ? null : value;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public Float getValue(CallableStatement cs, int index) throws SQLException {
-        final float aFloat = cs.getFloat(index);
-        return cs.wasNull()?null:aFloat;
+        final float value = cs.getFloat(index);
+        return cs.wasNull() ? null : value;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
-        if(value == null) {
+        if (value == null) {
             st.setNull(column, Types.REAL);
         } else {
             st.setFloat(column, (Float) value);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public int getSqlType() {
-    	return Types.REAL;
+        return Types.REAL;
     }
 }

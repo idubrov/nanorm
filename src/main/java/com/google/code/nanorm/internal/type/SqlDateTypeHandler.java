@@ -42,27 +42,27 @@ public class SqlDateTypeHandler implements TypeHandler<Date> {
      * {@inheritDoc}
      */
     public Date getValue(ResultSet rs, String column) throws SQLException {
-    	return rs.getDate(column);
+        return rs.getDate(column);
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public Date getValue(CallableStatement cs, int index) throws SQLException {
         return cs.getDate(index);
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
         st.setDate(column, (Date) value);
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public int getSqlType() {
-    	return Types.DATE;
+        return Types.DATE;
     }
 }

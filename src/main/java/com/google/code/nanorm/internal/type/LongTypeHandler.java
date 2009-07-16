@@ -35,41 +35,41 @@ public class LongTypeHandler implements TypeHandler<Long> {
      * {@inheritDoc}
      */
     public Long getValue(ResultSet rs, int column) throws SQLException {
-        final long aLong = rs.getLong(column);
-        return rs.wasNull()?null:aLong;
+        final long value = rs.getLong(column);
+        return rs.wasNull() ? null : value;
     }
 
     /**
      * {@inheritDoc}
      */
     public Long getValue(ResultSet rs, String column) throws SQLException {
-        final long aLong = rs.getLong(column);
-        return rs.wasNull()?null:aLong;
+        final long value = rs.getLong(column);
+        return rs.wasNull() ? null : value;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public Long getValue(CallableStatement cs, int index) throws SQLException {
-        final long aLong = cs.getLong(index);
-        return cs.wasNull()?null:aLong;
+        final long value = cs.getLong(index);
+        return cs.wasNull() ? null : value;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public void setParameter(PreparedStatement st, int column, Object value) throws SQLException {
-        if(value == null) {
+        if (value == null) {
             st.setNull(column, Types.BIGINT);
         } else {
             st.setLong(column, (Long) value);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public int getSqlType() {
-    	return Types.BIGINT;
+        return Types.BIGINT;
     }
 }
