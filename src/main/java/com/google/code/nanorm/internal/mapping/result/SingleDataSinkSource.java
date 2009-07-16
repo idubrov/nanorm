@@ -20,18 +20,18 @@ import com.google.code.nanorm.internal.introspect.Setter;
 import com.google.code.nanorm.internal.util.Messages;
 
 /**
- * Implementation of {@link DataSinkSource} that sets the result
- * to the property using the setter provided.
+ * Implementation of {@link DataSinkSource} that sets the result to the property
+ * using the setter provided.
  * 
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
  */
 public class SingleDataSinkSource implements DataSinkSource {
-    
+
     private final Setter setter;
-    
+
     private final Object location;
-    
+
     /**
      * Constructor.
      * 
@@ -49,21 +49,21 @@ public class SingleDataSinkSource implements DataSinkSource {
     public DataSink<Object> forInstance(final Object instance) {
         return new DataSink<Object>() {
             private boolean set;
-            
+
             /**
              * {@inheritDoc}
              */
             public void pushData(Object obj) {
-                if(set) {
+                if (set) {
                     throw new IllegalStateException(Messages.singleResultExpected(location));
                 }
                 setter.setValue(instance, obj);
                 set = true;
             }
 
-			public void commitData() {
-				// Nothing to do, we set data when it came.
-			}
+            public void commitData() {
+                // Nothing to do, we set data when it came.
+            }
         };
     }
 }

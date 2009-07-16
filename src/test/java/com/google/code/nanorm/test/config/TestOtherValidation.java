@@ -33,55 +33,56 @@ import com.google.code.nanorm.exceptions.ConfigurationException;
  */
 public class TestOtherValidation {
 
-	private interface Mapper1 {
-		@Select("SELECT 1")
-		int selectSome(int id);
+    private interface Mapper1 {
+        @Select("SELECT 1")
+        int selectSome(int id);
 
-		int selectOther(int id);
-	}
+        int selectOther(int id);
+    }
 
-	/**
-	 * TEST: Configure mapper interface that has a method without configuration,
-	 * create mapper and invoke the method.
-	 * 
-	 * EXPECT: Configuration exception that contains certain information
-	 * strings.
-	 */
-	@Test
-	public void testMissingConfig() {
-		try {
-			NanormConfiguration config = new NanormConfiguration();
-			config.configure(Mapper1.class);
-			Mapper1 mapper = config.buildFactory().createMapper(Mapper1.class);
+    /**
+     * TEST: Configure mapper interface that has a method without configuration,
+     * create mapper and invoke the method.
+     * 
+     * EXPECT: Configuration exception that contains certain information
+     * strings.
+     */
+    @Test
+    public void testMissingConfig() {
+        try {
+            NanormConfiguration config = new NanormConfiguration();
+            config.configure(Mapper1.class);
+            Mapper1 mapper = config.buildFactory().createMapper(Mapper1.class);
 
-			mapper.selectOther(111);
-			Assert.fail();
-		} catch (ConfigurationException e) {
-			assertContains(e, "method", "does not have", "configuration", "Mapper1", "selectOther");
-		}
-	}
+            mapper.selectOther(111);
+            Assert.fail();
+        } catch (ConfigurationException e) {
+            assertContains(e, "method", "does not have", "configuration", "Mapper1",
+                    "selectOther");
+        }
+    }
 
-	private interface Mapper2 {
-		@Select("SELECT 1")
-		@Insert("INSERT")
-		int selectSome(int id);
-	}
+    private interface Mapper2 {
+        @Select("SELECT 1")
+        @Insert("INSERT")
+        int selectSome(int id);
+    }
 
-	/**
-	 * TEST: Try configuring mapper interface with method having both
-	 * {@link Select} and {@link Insert} specified.
-	 * 
-	 * EXPECT: Configuration exception is thrown that contains certain
-	 * information strings.
-	 */
-	@Test
-	public void testExclusiveAnnotations() {
-		try {
-			new NanormConfiguration().configure(Mapper2.class);
-			Assert.fail();
-		} catch (ConfigurationException e) {
-			assertContains(e, "'Select' annotation", "'Insert' annotation", "mutually exclusive",
-					"Mapper2");
-		}
-	}
+    /**
+     * TEST: Try configuring mapper interface with method having both
+     * {@link Select} and {@link Insert} specified.
+     * 
+     * EXPECT: Configuration exception is thrown that contains certain
+     * information strings.
+     */
+    @Test
+    public void testExclusiveAnnotations() {
+        try {
+            new NanormConfiguration().configure(Mapper2.class);
+            Assert.fail();
+        } catch (ConfigurationException e) {
+            assertContains(e, "'Select' annotation", "'Insert' annotation", "mutually exclusive",
+                    "Mapper2");
+        }
+    }
 }

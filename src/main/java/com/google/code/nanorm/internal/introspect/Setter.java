@@ -24,14 +24,14 @@ import java.lang.reflect.Type;
  * @version 1.0 27.05.2008
  */
 public interface Setter {
-	/**
-	 * Set value of the property.
-	 * @param instance instance
-	 * @param value value to set
-	 */
-	void setValue(Object instance, Object value);
-	
-	/**
+    /**
+     * Set value of the property.
+     * @param instance instance
+     * @param value value to set
+     */
+    void setValue(Object instance, Object value);
+
+    /**
      * Get property type.
      * 
      * TODO: Should take instance as a parameter?

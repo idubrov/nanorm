@@ -50,7 +50,8 @@ public class SingleConnSessionSpi implements SessionSpi {
     /**
      * Constructor.
      * @param connection connection to use for this session.
-     * @param isAllowMultiple allow running multiple queries at the same time in the single session.
+     * @param isAllowMultiple allow running multiple queries at the same time in
+     * the single session.
      */
     public SingleConnSessionSpi(Connection connection, boolean isAllowMultiple) {
         this.connection = connection;
@@ -91,11 +92,11 @@ public class SingleConnSessionSpi implements SessionSpi {
     }
 
     /**
-     * This method does nothing. We use single connection for all requests. 
+     * This method does nothing. We use single connection for all requests.
      * @param conn not used
      */
     public void releaseConnection(Connection conn) {
-        // Nothing. 
+        // Nothing.
     }
 
     /**

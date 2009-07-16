@@ -33,24 +33,24 @@ import com.google.code.nanorm.internal.Request;
  */
 public class ScalarRowMapper implements RowMapper {
 
-	private final TypeHandler<?> typeHandler;
+    private final TypeHandler<?> typeHandler;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param type result type
-	 * @param typeHandlerFactory type handler factory
-	 */
-	public ScalarRowMapper(Type type, TypeHandlerFactory typeHandlerFactory) {
-		this.typeHandler = typeHandlerFactory.getTypeHandler(type);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param type result type
+     * @param typeHandlerFactory type handler factory
+     */
+    public ScalarRowMapper(Type type, TypeHandlerFactory typeHandlerFactory) {
+        this.typeHandler = typeHandlerFactory.getTypeHandler(type);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void processResultSet(Request request, ResultSet rs,
-			DataSink<Object> callback) throws SQLException {
-		// TODO: Check we have only one column?
-		callback.pushData(typeHandler.getValue(rs, 1));
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void processResultSet(Request request, ResultSet rs, DataSink<Object> callback)
+            throws SQLException {
+        // TODO: Check we have only one column?
+        callback.pushData(typeHandler.getValue(rs, 1));
+    }
 }

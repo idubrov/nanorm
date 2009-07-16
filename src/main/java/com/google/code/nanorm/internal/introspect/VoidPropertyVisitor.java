@@ -25,12 +25,12 @@ import java.lang.reflect.Method;
  * @version 1.0 22.06.2008
  */
 public final class VoidPropertyVisitor implements PropertyVisitor<Void> {
-    
-	/**
-	 * Empty visitor instance. Does nothing.
-	 */
+
+    /**
+     * Empty visitor instance. Does nothing.
+     */
     public static final VoidPropertyVisitor INSTANCE = new VoidPropertyVisitor();
-    
+
     private VoidPropertyVisitor() {
         // Nothing.
     }
@@ -53,7 +53,7 @@ public final class VoidPropertyVisitor implements PropertyVisitor<Void> {
      * {@inheritDoc}
      */
     public Class<?> visitIndex(int pos, int index, boolean hasNext, Class<?> beanClass) {
-    	return null;
+        return null;
     }
 
     /**

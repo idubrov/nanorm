@@ -30,34 +30,34 @@ import com.google.code.nanorm.internal.mapping.parameter.ParameterMapper;
  */
 public class BoundFragmentImpl implements BoundFragment {
 
-	private final String sql;
+    private final String sql;
 
-	private final List<ParameterMappingConfig> paramMappers;
+    private final List<ParameterMappingConfig> paramMappers;
 
-	private final Object[] parameters;
+    private final Object[] parameters;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param sql sql fragment
-	 * @param paramMappers list of unbound parameter mappers
-	 * @param parameters parameters
-	 */
-	public BoundFragmentImpl(String sql, List<ParameterMappingConfig> paramMappers,
-			Object[] parameters) {
-		this.sql = sql;
-		this.paramMappers = paramMappers;
-		this.parameters = parameters;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param sql sql fragment
+     * @param paramMappers list of unbound parameter mappers
+     * @param parameters parameters
+     */
+    public BoundFragmentImpl(String sql, List<ParameterMappingConfig> paramMappers,
+            Object[] parameters) {
+        this.sql = sql;
+        this.paramMappers = paramMappers;
+        this.parameters = parameters;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void generate(StringBuilder builder, List<ParameterMapper> params) {
-		builder.append(sql);
-		for (ParameterMappingConfig config : paramMappers) {
-			params.add(new ParameterMapper(config, params.size() + 1, parameters));
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void generate(StringBuilder builder, List<ParameterMapper> params) {
+        builder.append(sql);
+        for (ParameterMappingConfig config : paramMappers) {
+            params.add(new ParameterMapper(config, params.size() + 1, parameters));
+        }
+    }
 
 }

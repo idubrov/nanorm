@@ -25,11 +25,11 @@ package com.google.code.nanorm;
  * @param <T> parameter type
  */
 public interface ParamBlock<T> {
-	/**
-	 * Apply block generator to given parameter. Typically this method will
-	 * invoke generator methods of {@link SQLSource} instance.
-	 * 
-	 * @param parameter parameter value.
-	 */
-	void generate(T parameter);
+    /**
+     * Apply block generator to given parameter. Typically this method will
+     * invoke generator methods of {@link SQLSource} instance.
+     * 
+     * @param parameter parameter value.
+     */
+    void generate(T parameter);
 }

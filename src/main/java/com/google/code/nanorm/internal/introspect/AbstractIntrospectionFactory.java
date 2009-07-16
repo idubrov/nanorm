@@ -24,7 +24,7 @@ import java.lang.reflect.Type;
  * @version 1.0 22.06.2008
  */
 public abstract class AbstractIntrospectionFactory implements IntrospectionFactory {
-    
+
     /**
      * {@inheritDoc}
      */

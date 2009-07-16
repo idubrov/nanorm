@@ -29,49 +29,47 @@ import com.google.code.nanorm.internal.util.ToStringBuilder;
  */
 public final class ParameterMappingConfig {
 
-	private final Type type;
+    private final Type type;
 
-	private final Getter getter;
+    private final Getter getter;
 
-	private final Setter setter;
+    private final Setter setter;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param type parameter type
-	 * @param getter getter for retrieving parameter value from array of arguments
-	 * @param setter setter for setting parameter value
-	 */
-	public ParameterMappingConfig(Type type, Getter getter, Setter setter) {
-		this.type = type;
-		this.getter = getter;
-		this.setter = setter;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param type parameter type
+     * @param getter getter for retrieving parameter value from array of
+     * arguments
+     * @param setter setter for setting parameter value
+     */
+    public ParameterMappingConfig(Type type, Getter getter, Setter setter) {
+        this.type = type;
+        this.getter = getter;
+        this.setter = setter;
+    }
 
-	/** @return the getter */
-	public Getter getGetter() {
-		return getter;
-	}
+    /** @return the getter */
+    public Getter getGetter() {
+        return getter;
+    }
 
-	/** @return the type */
-	public Type getType() {
-		return type;
-	}
+    /** @return the type */
+    public Type getType() {
+        return type;
+    }
 
-	/** @return the setter */
-	public Setter getSetter() {
-		return setter;
-	}
+    /** @return the setter */
+    public Setter getSetter() {
+        return setter;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
-        return new ToStringBuilder(this).
-            append("type", type).
-            append("getter", getter).
-            append("setter", setter).
-            toString();
+        return new ToStringBuilder(this).append("type", type).append("getter", getter).append(
+                "setter", setter).toString();
     }
 }

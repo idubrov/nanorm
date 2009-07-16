@@ -34,20 +34,16 @@ import com.google.code.nanorm.test.common.MapperTestBase;
  */
 @SuppressWarnings("all")
 public class TestResultMapRef extends MapperTestBase {
-    @ResultMapList({
-        @ResultMap(id = "pub0", mappings = {
-            @Property(value = "article.subject", column = "subject"),
-            @Property(value = "article.body", column = "body")
-        }),
-        @ResultMap(id = "pub1", auto = true, mappings = {
-            @Property(value = "article.subject", column = "subject"),
-            @Property(value = "article.body", column = "body")
-        }) 
-    })
+    @ResultMapList( {
+            @ResultMap(id = "pub0", mappings = {
+                    @Property(value = "article.subject", column = "subject"),
+                    @Property(value = "article.body", column = "body") }),
+            @ResultMap(id = "pub1", auto = true, mappings = {
+                    @Property(value = "article.subject", column = "subject"),
+                    @Property(value = "article.body", column = "body") }) })
     @ResultMap(id = "pub2", auto = true, mappings = {
-        @Property(value = "article.subject", column = "subject"),
-        @Property(value = "article.body", column = "body")
-    })
+            @Property(value = "article.subject", column = "subject"),
+            @Property(value = "article.body", column = "body") })
     public interface Mapper1 {
 
         // Reference to the item in the list on the interface
@@ -88,7 +84,7 @@ public class TestResultMapRef extends MapperTestBase {
         @Select("SELECT id, subject FROM articles WHERE ID = ${1}")
         Publication getPublicationByIdRef6(int id);
     }
-    
+
     @Test
     public void testResultMapRef1() throws Exception {
         Mapper1 mapper = factory.createMapper(Mapper1.class);
@@ -116,7 +112,7 @@ public class TestResultMapRef extends MapperTestBase {
             // That's ok, result map reference is missing
         }
     }
-    
+
     @Test
     public void testResultMapRef4() throws Exception {
         Mapper3 mapper = factory.createMapper(Mapper3.class);
@@ -130,7 +126,7 @@ public class TestResultMapRef extends MapperTestBase {
         Publication pub = mapper.getPublicationByIdRef5(1);
         Assert.assertEquals(1, pub.getId());
     }
-    
+
     @Test
     /**
      * Test no automatic result mapping by default

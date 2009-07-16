@@ -34,9 +34,9 @@ import com.google.code.nanorm.test.beans.Publication;
  */
 public class TestIntrospectionASM extends TestIntrospectionBase {
 
-	/**
-	 * {@inheritDoc}
-	 */
+    /**
+     * {@inheritDoc}
+     */
     protected IntrospectionFactory provideIntrospectionFactory() {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         return new ASMIntrospectionFactory(cl);

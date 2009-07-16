@@ -26,9 +26,9 @@ import java.lang.reflect.Type;
  * @author Ivan Dubrov
  */
 public class GenericArrayTypeImpl implements GenericArrayType {
-    
+
     private final Type componentType;
-    
+
     /**
      * Constructor.
      * 

@@ -25,70 +25,70 @@ import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.Setter;
 
 /**
- * Implementation of {@link DataSinkSource} that pushes the result into
- * the array in the property, identified by given getter/setter.
+ * Implementation of {@link DataSinkSource} that pushes the result into the
+ * array in the property, identified by given getter/setter.
  * 
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
  */
 public class ArrayDataSinkSource implements DataSinkSource {
 
-	private final Getter getter;
+    private final Getter getter;
 
-	private final Setter setter;
-	
-	private final Class<?> componentClass;
+    private final Setter setter;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param getter property getter
-	 * @param setter property setter
-	 * @param componentClass array component type
-	 */
-	public ArrayDataSinkSource(Getter getter, Setter setter, Class<?> componentClass) {
-		this.getter = getter;
-		this.setter = setter;
-		this.componentClass = componentClass;
-	}
+    private final Class<?> componentClass;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@SuppressWarnings("unchecked")
-	public DataSink forInstance(final Object instance) {
-		return new DataSink() {
-			private final List<Object> list = new ArrayList<Object>();
-			{
-				// Populate from property
-				Object[] data = (Object[]) getter.getValue(instance);
-				if(data != null) {
-					Collections.addAll(list, data);
-				}
-			}
-			
-			/**
-			 * {@inheritDoc}
-			 */
-			public void pushData(Object obj) {
-				list.add(obj);
-			}
+    /**
+     * Constructor.
+     * 
+     * @param getter property getter
+     * @param setter property setter
+     * @param componentClass array component type
+     */
+    public ArrayDataSinkSource(Getter getter, Setter setter, Class<?> componentClass) {
+        this.getter = getter;
+        this.setter = setter;
+        this.componentClass = componentClass;
+    }
 
-			/**
-			 * {@inheritDoc}
-			 */
-			public void commitData() {
-				Object array = Array.newInstance(componentClass, list.size());
-				if(componentClass.isPrimitive()) {
-					int i = 0;
-					for(Object obj : list) {
-						Array.set(array, i++, obj);
-					}
-				} else {
-					array = list.toArray((Object[]) array);
-				}
-				setter.setValue(instance, array);
-			}
-		};
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public DataSink forInstance(final Object instance) {
+        return new DataSink() {
+            private final List<Object> list = new ArrayList<Object>();
+            {
+                // Populate from property
+                Object[] data = (Object[]) getter.getValue(instance);
+                if (data != null) {
+                    Collections.addAll(list, data);
+                }
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            public void pushData(Object obj) {
+                list.add(obj);
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            public void commitData() {
+                Object array = Array.newInstance(componentClass, list.size());
+                if (componentClass.isPrimitive()) {
+                    int i = 0;
+                    for (Object obj : list) {
+                        Array.set(array, i++, obj);
+                    }
+                } else {
+                    array = list.toArray((Object[]) array);
+                }
+                setter.setValue(instance, array);
+            }
+        };
+    }
 }

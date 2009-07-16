@@ -23,43 +23,48 @@ package com.google.code.nanorm.exceptions;
  */
 public class ConfigurationException extends GenericException {
 
-	/**
-	 * Serial version.
-	 */
-	private static final long serialVersionUID = -8730647955287796474L;
+    /**
+     * Serial version.
+     */
+    private static final long serialVersionUID = -8730647955287796474L;
 
-	/**
-	 * Constructor.
-	 */
-	public ConfigurationException() {
-		super();
-	}
+    /**
+     * Constructor.
+     */
+    public ConfigurationException() {
+        super();
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param message message
-	 * @param cause cause
-	 */
-	public ConfigurationException(String message, Throwable cause) { // NOPMD by Ivan Dubrov on 22.08.08 18:46
-		super(message, cause);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param message message
+     * @param cause cause
+     */
+    public ConfigurationException(String message, Throwable cause) { // NOPMD by
+                                                                     // Ivan
+                                                                     // Dubrov
+                                                                     // on
+                                                                     // 22.08.08
+                                                                     // 18:46
+        super(message, cause);
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param message message
-	 */
-	public ConfigurationException(String message) {
-		super(message);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param message message
+     */
+    public ConfigurationException(String message) {
+        super(message);
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param cause cause.
-	 */
-	public ConfigurationException(Throwable cause) {
-		super(cause);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param cause cause.
+     */
+    public ConfigurationException(Throwable cause) {
+        super(cause);
+    }
 }

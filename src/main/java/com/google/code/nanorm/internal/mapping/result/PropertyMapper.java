@@ -99,7 +99,7 @@ public class PropertyMapper {
                 value = (float) 0.0f;
             } else if (type == double.class) {
                 value = (double) 0.0;
-            } else if(type == char.class) {
+            } else if (type == char.class) {
                 value = (char) 0;
             }
         }

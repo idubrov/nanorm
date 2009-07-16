@@ -17,13 +17,13 @@
 package com.google.code.nanorm.test.generics;
 
 /**
- *
+ * 
  * @author Ivan Dubrov
  * @version 1.0 20.06.2008
  */
 @SuppressWarnings("all")
 public class Wrapper3<T> {
-    
+
     private T[] value;
 
     public T[] getValue() {

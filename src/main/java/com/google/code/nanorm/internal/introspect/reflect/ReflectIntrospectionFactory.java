@@ -38,120 +38,121 @@ import com.google.code.nanorm.internal.introspect.asm.AccessorKey;
  */
 public class ReflectIntrospectionFactory extends AbstractIntrospectionFactory {
 
-	//private final Map<AccessorKey, Method> getters = new ConcurrentHashMap<AccessorKey, Method>();
+    // private final Map<AccessorKey, Method> getters = new
+    // ConcurrentHashMap<AccessorKey, Method>();
 
-	private final Map<AccessorKey, Method> setters = new ConcurrentHashMap<AccessorKey, Method>();
+    private final Map<AccessorKey, Method> setters = new ConcurrentHashMap<AccessorKey, Method>();
 
-	/**
-	 * @see com.google.code.nanorm.internal.introspect.IntrospectionFactory#buildGetter(java.lang.Class,
-	 *      java.lang.String)
-	 */
-	public Getter buildGetter(Class<?> beanClass, String path) {
-		return new ReflectGetter(this, beanClass, null, path);
-	}
+    /**
+     * @see com.google.code.nanorm.internal.introspect.IntrospectionFactory#buildGetter(java.lang.Class,
+     * java.lang.String)
+     */
+    public Getter buildGetter(Class<?> beanClass, String path) {
+        return new ReflectGetter(this, beanClass, null, path);
+    }
 
-	/**
-	 * @see com.google.code.nanorm.internal.introspect.IntrospectionFactory#buildSetter(java.lang.Class,
-	 *      java.lang.String)
-	 */
-	public Setter buildSetter(Class<?> beanClass, String path) {
-		return new ReflectSetter(this, beanClass, null, path);
-	}
+    /**
+     * @see com.google.code.nanorm.internal.introspect.IntrospectionFactory#buildSetter(java.lang.Class,
+     * java.lang.String)
+     */
+    public Setter buildSetter(Class<?> beanClass, String path) {
+        return new ReflectSetter(this, beanClass, null, path);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Getter buildParameterGetter(Type[] types, String path) {
-		return new ReflectGetter(this, null, types, path);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public Getter buildParameterGetter(Type[] types, String path) {
+        return new ReflectGetter(this, null, types, path);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Setter buildParameterSetter(Type[] types, String path) {
-		return new ReflectSetter(this, null, types, path);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public Setter buildParameterSetter(Type[] types, String path) {
+        return new ReflectSetter(this, null, types, path);
+    }
 
-// FIXME: Temporarily not used
-//	/**
-//	 * Lookup getter method for given bean property.
-//	 * 
-//	 * @param clazz bean class
-//	 * @param property bean property
-//	 * @return getter method
-//	 */
-//	Method lookupGetter(Class<?> clazz, String property) {
-//		AccessorKey key = new AccessorKey(clazz, property);
-//		Method getter = getters.get(key);
-//		if (getter == null) {
-//			getter = IntrospectUtils.findGetter(clazz, property);
-//			getters.put(key, getter);
-//		}
-//		return getter;
-//	}
+    // FIXME: Temporarily not used
+    // /**
+    // * Lookup getter method for given bean property.
+    // *
+    // * @param clazz bean class
+    // * @param property bean property
+    // * @return getter method
+    // */
+    // Method lookupGetter(Class<?> clazz, String property) {
+    // AccessorKey key = new AccessorKey(clazz, property);
+    // Method getter = getters.get(key);
+    // if (getter == null) {
+    // getter = IntrospectUtils.findGetter(clazz, property);
+    // getters.put(key, getter);
+    // }
+    // return getter;
+    // }
 
-	/**
-	 * Lookup setter method for given bean property.
-	 * 
-	 * @param clazz bean class
-	 * @param property bean property
-	 * @return setter method
-	 */
-	Method lookupSetter(Class<?> clazz, String property) {
-		AccessorKey key = new AccessorKey(clazz, property, true);
-		Method setter = setters.get(key);
-		if (setter == null) {
-			setter = IntrospectUtils.findSetter(clazz, property);
-			setters.put(key, setter);
-		}
-		return setter;
-	}
+    /**
+     * Lookup setter method for given bean property.
+     * 
+     * @param clazz bean class
+     * @param property bean property
+     * @return setter method
+     */
+    Method lookupSetter(Class<?> clazz, String property) {
+        AccessorKey key = new AccessorKey(clazz, property, true);
+        Method setter = setters.get(key);
+        if (setter == null) {
+            setter = IntrospectUtils.findSetter(clazz, property);
+            setters.put(key, setter);
+        }
+        return setter;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public <T> T createMapper(Class<T> interfaze, InternalConfiguration config,
-			QueryDelegate delegate) {
-		return interfaze.cast(Proxy.newProxyInstance(getClass()
-				.getClassLoader(), new Class<?>[] { interfaze },
-				new MapperInvocationHandler(interfaze, config, delegate)));
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public <T> T createMapper(Class<T> interfaze, InternalConfiguration config,
+            QueryDelegate delegate) {
+        return interfaze.cast(Proxy.newProxyInstance(getClass().getClassLoader(),
+                new Class<?>[] {interfaze }, new MapperInvocationHandler(interfaze, config,
+                        delegate)));
+    }
 
-	/**
-	 * Invocation handler for mapper interface implementation.
-	 * 
-	 * @author Ivan Dubrov
-	 * @version 1.0 19.06.2008
-	 */
-	private static class MapperInvocationHandler implements InvocationHandler {
-		private final InternalConfiguration config;
+    /**
+     * Invocation handler for mapper interface implementation.
+     * 
+     * @author Ivan Dubrov
+     * @version 1.0 19.06.2008
+     */
+    private static class MapperInvocationHandler implements InvocationHandler {
+        private final InternalConfiguration config;
 
-		private final QueryDelegate delegate;
+        private final QueryDelegate delegate;
 
-		private final Class<?> mapper;
+        private final Class<?> mapper;
 
-		/**
-		 * Constructor.
-		 * 
-		 * @param mapper mapper interface
-		 * @param config internal configuration
-		 * @param delegate query delegate
-		 */
-		private MapperInvocationHandler(Class<?> mapper,
-				InternalConfiguration config, QueryDelegate delegate) {
-			this.mapper = mapper;
-			this.config = config;
-			this.delegate = delegate;
-		}
+        /**
+         * Constructor.
+         * 
+         * @param mapper mapper interface
+         * @param config internal configuration
+         * @param delegate query delegate
+         */
+        private MapperInvocationHandler(Class<?> mapper, InternalConfiguration config,
+                QueryDelegate delegate) {
+            this.mapper = mapper;
+            this.config = config;
+            this.delegate = delegate;
+        }
 
-		/**
-		 * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object,
-		 *      java.lang.reflect.Method, java.lang.Object[])
-		 */
-		public Object invoke(Object proxy, Method method, Object[] args) {
-			StatementConfig stConfig = config.getStatementConfig(mapper, method);
-			return delegate.query(stConfig, args);
-		}
-	}
+        /**
+         * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object,
+         * java.lang.reflect.Method, java.lang.Object[])
+         */
+        public Object invoke(Object proxy, Method method, Object[] args) {
+            StatementConfig stConfig = config.getStatementConfig(mapper, method);
+            return delegate.query(stConfig, args);
+        }
+    }
 
 }

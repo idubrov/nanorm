@@ -28,51 +28,51 @@ import com.google.code.nanorm.test.beans.Publication;
 @SuppressWarnings("all")
 public class TestTypeOracle {
 
-	public interface Mapper1<S, T> {
+    public interface Mapper1<S, T> {
         T method(S id);
     }
-	
-	public interface Mapper2 extends Mapper1<Integer, Publication> {
+
+    public interface Mapper2 extends Mapper1<Integer, Publication> {
         Publication method(Integer id);
-	}
-    
+    }
+
     @Test
     /**
      * Test resolving method parameters.
      */
     public void testMethodParameters() throws Exception {
-    	Method m = Mapper1.class.getDeclaredMethod("method", Object.class);
-    	Assert.assertNotNull(m);
-    	
-    	Type[] params = TypeOracle.resolveMethodArguments(m, Mapper2.class);
-    	
-    	Assert.assertEquals(1, params.length);
-    	Assert.assertEquals(Integer.class, params[0]);
+        Method m = Mapper1.class.getDeclaredMethod("method", Object.class);
+        Assert.assertNotNull(m);
+
+        Type[] params = TypeOracle.resolveMethodArguments(m, Mapper2.class);
+
+        Assert.assertEquals(1, params.length);
+        Assert.assertEquals(Integer.class, params[0]);
     }
-    
+
     public interface Mapper3<S, T> {
         T method(S id);
     }
-	
-	public interface Mapper4<S, T> extends Mapper3<S, T> {
-		// Nothing...
-	}
-	
-	public interface Mapper5 extends Mapper4<Integer, Publication> {
+
+    public interface Mapper4<S, T> extends Mapper3<S, T> {
+        // Nothing...
+    }
+
+    public interface Mapper5 extends Mapper4<Integer, Publication> {
         Publication method(Integer id);
-	}
-    
+    }
+
     @Test
     /**
      * Test resolving method parameters with longer hierarchy.
      */
     public void testMethodParameters2() throws Exception {
-    	Method m = Mapper3.class.getDeclaredMethod("method", Object.class);
-    	Assert.assertNotNull(m);
-    	
-    	Type[] params = TypeOracle.resolveMethodArguments(m, Mapper5.class);
-    	
-    	Assert.assertEquals(1, params.length);
-    	Assert.assertEquals(Integer.class, params[0]);
+        Method m = Mapper3.class.getDeclaredMethod("method", Object.class);
+        Assert.assertNotNull(m);
+
+        Type[] params = TypeOracle.resolveMethodArguments(m, Mapper5.class);
+
+        Assert.assertEquals(1, params.length);
+        Assert.assertEquals(Integer.class, params[0]);
     }
 }

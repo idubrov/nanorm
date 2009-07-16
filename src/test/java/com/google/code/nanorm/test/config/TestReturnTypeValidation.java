@@ -32,21 +32,21 @@ import com.google.code.nanorm.exceptions.ConfigurationException;
  */
 public class TestReturnTypeValidation {
 
-	private interface Mapper1 {
-		@Select("SELECT 1")
-		void selectSome(int id);
-	}
+    private interface Mapper1 {
+        @Select("SELECT 1")
+        void selectSome(int id);
+    }
 
-	/**
-	 * Test missing method result type (and no callback).
-	 */
-	@Test
-	public void testResultTypeValidation() {
-		try {
-			new NanormConfiguration().configure(Mapper1.class);
-			Assert.fail();
-		} catch (ConfigurationException e) {
-			assertContains(e, "return", "type", "selectSome", "Mapper1");
-		}
-	}
+    /**
+     * Test missing method result type (and no callback).
+     */
+    @Test
+    public void testResultTypeValidation() {
+        try {
+            new NanormConfiguration().configure(Mapper1.class);
+            Assert.fail();
+        } catch (ConfigurationException e) {
+            assertContains(e, "return", "type", "selectSome", "Mapper1");
+        }
+    }
 }

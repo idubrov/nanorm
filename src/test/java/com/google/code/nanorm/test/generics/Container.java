@@ -17,21 +17,21 @@
 package com.google.code.nanorm.test.generics;
 
 /**
- *
+ * 
  * @author Ivan Dubrov
  * @version 1.0 20.06.2008
  */
 @SuppressWarnings("all")
 public class Container {
-    
+
     private Wrapper<Wrapper<Thing>> item;
-    
+
     private Wrapper2<Thing> item2;
-    
+
     private Wrapper<? extends Thing> item3;
-    
+
     private Wrapper3<Thing> item5;
-    
+
     private Wrapper<Thing[]> item6;
 
     public Wrapper<Wrapper<Thing>> getItem() {
@@ -41,7 +41,7 @@ public class Container {
     public void setItem(Wrapper<Wrapper<Thing>> item) {
         this.item = item;
     }
-    
+
     public Wrapper2<Thing> getItem2() {
         return item2;
     }
@@ -65,7 +65,7 @@ public class Container {
     public void setItem5(Wrapper3<Thing> item5) {
         this.item5 = item5;
     }
-    
+
     public Wrapper<Thing[]> getItem6() {
         return item6;
     }

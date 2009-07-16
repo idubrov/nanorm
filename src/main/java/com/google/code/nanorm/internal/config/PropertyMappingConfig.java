@@ -24,17 +24,17 @@ import com.google.code.nanorm.internal.util.ToStringBuilder;
  * @version 1.0 28.05.2008
  */
 public final class PropertyMappingConfig {
-    
+
     private String property;
-    
+
     private String column;
-    
+
     private int columnIndex;
-    
+
     private ResultMapConfig nestedMapConfig;
-    
+
     private StatementConfig subselect;
-    
+
     /** @return Returns the property. */
     public String getProperty() {
         return property;
@@ -74,28 +74,24 @@ public final class PropertyMappingConfig {
     public void setNestedMapConfig(ResultMapConfig nestedMapConfig) {
         this.nestedMapConfig = nestedMapConfig;
     }
-    
+
     /** @return Returns the subselect. */
     public StatementConfig getSubselect() {
         return subselect;
     }
-    
+
     /** @param subselect The subselect to set. */
     public void setSubselect(StatementConfig subselect) {
         this.subselect = subselect;
     }
-    
+
     /**
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
-        return new ToStringBuilder(this).
-            append("property", property).
-            append("column", column).
-            append("columnIndex", columnIndex).
-            append("nestedMapConfig", nestedMapConfig).
-            append("subselect", subselect).
-            toString();
+        return new ToStringBuilder(this).append("property", property).append("column", column)
+                .append("columnIndex", columnIndex).append("nestedMapConfig", nestedMapConfig)
+                .append("subselect", subselect).toString();
     }
 }

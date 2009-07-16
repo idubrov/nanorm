@@ -34,24 +34,24 @@ import com.google.code.nanorm.SQLSource;
  * </p>
  * <p>
  * Update method can have <code>int</code> return type, in that case the number
- * of rows updated will be returned. 
+ * of rows updated will be returned.
  * </p>
  * 
  * @see java.sql.PreparedStatement#executeUpdate()
  * @author Ivan Dubrov
  * @version 1.0 27.05.2008
  */
-@Target( { ElementType.METHOD, ElementType.TYPE })
+@Target( {ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Update {
-	/**
-	 * SQL statement that performs database update (update or delete). This is
-	 * mutually exclusive with {@link #sqlSource()}.
-	 */
-	String value();
+    /**
+     * SQL statement that performs database update (update or delete). This is
+     * mutually exclusive with {@link #sqlSource()}.
+     */
+    String value();
 
-	/**
-	 * SQL generator. This is mutually exclusive with {@link #value()}.
-	 */
-	Class<? extends SQLSource> sqlSource() default SQLSource.class;
+    /**
+     * SQL generator. This is mutually exclusive with {@link #value()}.
+     */
+    Class<? extends SQLSource> sqlSource() default SQLSource.class;
 }

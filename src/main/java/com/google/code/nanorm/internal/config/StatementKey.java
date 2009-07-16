@@ -27,93 +27,93 @@ import com.google.code.nanorm.internal.util.ToStringBuilder;
  */
 public class StatementKey {
 
-	private final Class<?> mapper;
+    private final Class<?> mapper;
 
-	private final String name;
+    private final String name;
 
-	private final Type[] parameters;
+    private final Type[] parameters;
 
-	/**
-	 * Constructor.
-	 * @param mapper mapper interface
-	 * @param name statement name (method name)
-	 * @param parameters statement parameter types
-	 */
-	public StatementKey(Class<?> mapper, String name, Type[] parameters) {
-		this.mapper = mapper;
-		this.name = name;
-		this.parameters = parameters;
-	}
+    /**
+     * Constructor.
+     * @param mapper mapper interface
+     * @param name statement name (method name)
+     * @param parameters statement parameter types
+     */
+    public StatementKey(Class<?> mapper, String name, Type[] parameters) {
+        this.mapper = mapper;
+        this.name = name;
+        this.parameters = parameters;
+    }
 
-	/** @return the mapper */
-	public Class<?> getMapper() {
-		return mapper;
-	}
+    /** @return the mapper */
+    public Class<?> getMapper() {
+        return mapper;
+    }
 
-	/** @return the name */
-	public String getName() {
-		return name;
-	}
+    /** @return the name */
+    public String getName() {
+        return name;
+    }
 
-	/** @return the parameters */
-	public Type[] getParameters() {
-		return parameters;
-	}
+    /** @return the parameters */
+    public Type[] getParameters() {
+        return parameters;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((mapper == null) ? 0 : mapper.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + Arrays.hashCode(parameters);
-		return result;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((mapper == null) ? 0 : mapper.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + Arrays.hashCode(parameters);
+        return result;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {			
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		StatementKey other = (StatementKey) obj;
-		if (mapper == null) {
-			if (other.mapper != null) {
-				return false;
-			}
-		} else if (!mapper.equals(other.mapper)) {
-			return false;
-		}
-		if (name == null) {
-			if (other.name != null) {
-				return false;
-			}
-		} else if (!name.equals(other.name)) {
-			return false;
-		}
-		if (!Arrays.equals(parameters, other.parameters)) {
-			return false;
-		}
-		return true;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        StatementKey other = (StatementKey) obj;
+        if (mapper == null) {
+            if (other.mapper != null) {
+                return false;
+            }
+        } else if (!mapper.equals(other.mapper)) {
+            return false;
+        }
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
+        if (!Arrays.equals(parameters, other.parameters)) {
+            return false;
+        }
+        return true;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this).append("mapper", mapper).append(
-				"name", name).append("parameters", parameters).toString();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("mapper", mapper).append("name", name).append(
+                "parameters", parameters).toString();
+    }
 }

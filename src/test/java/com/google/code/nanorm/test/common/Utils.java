@@ -24,14 +24,15 @@ import org.junit.Assert;
  */
 public class Utils {
 
-	/**
-	 * Check that exception message contains given keywords.
-	 * @param e exception
-	 * @param keywords keywords
-	 */
-	public static void assertContains(Exception e, String... keywords) {
-		for(String keyword : keywords) {
-			Assert.assertTrue("Exception must contain keyword '" + keyword + '\'', e.getMessage().toLowerCase().contains(keyword.toLowerCase()));
-		}
-	}
+    /**
+     * Check that exception message contains given keywords.
+     * @param e exception
+     * @param keywords keywords
+     */
+    public static void assertContains(Exception e, String... keywords) {
+        for (String keyword : keywords) {
+            Assert.assertTrue("Exception must contain keyword '" + keyword + '\'', e.getMessage()
+                    .toLowerCase().contains(keyword.toLowerCase()));
+        }
+    }
 }

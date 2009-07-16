@@ -27,45 +27,45 @@ import java.lang.reflect.Method;
  */
 public interface PropertyVisitor<T> {
 
-	/**
-	 * Property path beginning for case when property path is applied to the
-	 * regular instance.
-	 * 
-	 * @param beanClass type this property path is applied to.
-	 * @param path property path
-	 */
-	void visitBegin(Class<?> beanClass, String path);
+    /**
+     * Property path beginning for case when property path is applied to the
+     * regular instance.
+     * 
+     * @param beanClass type this property path is applied to.
+     * @param path property path
+     */
+    void visitBegin(Class<?> beanClass, String path);
 
-	/**
-	 * Visit property access.
-	 * 
-	 * @param pos position in the property path (for better error reporting).
-	 * @param property property name
-	 * @param getter property getter
-	 * @param hasNext are there more elements in the property path
-	 * @param beanClass instance type
-	 * @return hint to the caller, type of the visited property. Could be null
-	 *         (if no information is available).
-	 */
-	Class<?> visitProperty(int pos, String property, Method getter,
-			boolean hasNext, Class<?> beanClass);
+    /**
+     * Visit property access.
+     * 
+     * @param pos position in the property path (for better error reporting).
+     * @param property property name
+     * @param getter property getter
+     * @param hasNext are there more elements in the property path
+     * @param beanClass instance type
+     * @return hint to the caller, type of the visited property. Could be null
+     * (if no information is available).
+     */
+    Class<?> visitProperty(int pos, String property, Method getter, boolean hasNext,
+            Class<?> beanClass);
 
-	/**
-	 * Visit indexing operator.
-	 * 
-	 * @param pos position in the property path (for better error reporting)
-	 * @param index position in the array
-	 * @param hasNext are there more elements in the property path
-	 * @param beanClass instance type
-	 * @return hint to the caller, type of the visited array element. Could be
-	 *         null (if no information is available).
-	 */
-	Class<?> visitIndex(int pos, int index, boolean hasNext, Class<?> beanClass);
+    /**
+     * Visit indexing operator.
+     * 
+     * @param pos position in the property path (for better error reporting)
+     * @param index position in the array
+     * @param hasNext are there more elements in the property path
+     * @param beanClass instance type
+     * @return hint to the caller, type of the visited array element. Could be
+     * null (if no information is available).
+     */
+    Class<?> visitIndex(int pos, int index, boolean hasNext, Class<?> beanClass);
 
-	/**
-	 * Finish the property path visiting and return the result.
-	 * 
-	 * @return result
-	 */
-	T visitEnd();
+    /**
+     * Finish the property path visiting and return the result.
+     * 
+     * @return result
+     */
+    T visitEnd();
 }

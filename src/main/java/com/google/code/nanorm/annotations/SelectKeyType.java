@@ -21,20 +21,20 @@ package com.google.code.nanorm.annotations;
  * @author Ivan Dubrov
  */
 public enum SelectKeyType {
-	/**
-	 * This type means that select key statement generates new key that should
-	 * be used for inserting the row. This type makes the mapper to invoke the
-	 * select key statement before executing the insert query, then to set the
-	 * result of this query to the key property and after that to invoke the
-	 * actual insert query.
-	 */
-	BEFORE,
+    /**
+     * This type means that select key statement generates new key that should
+     * be used for inserting the row. This type makes the mapper to invoke the
+     * select key statement before executing the insert query, then to set the
+     * result of this query to the key property and after that to invoke the
+     * actual insert query.
+     */
+    BEFORE,
 
-	/**
-	 * This type means that select key statement returns the key generated for
-	 * the last insert statement. This types makes the mapper to invoke the
-	 * insert statement first, then to invoke select key statement, set the
-	 * generated key to the key property and return it.
-	 */
-	AFTER
+    /**
+     * This type means that select key statement returns the key generated for
+     * the last insert statement. This types makes the mapper to invoke the
+     * insert statement first, then to invoke select key statement, set the
+     * generated key to the key property and return it.
+     */
+    AFTER
 }

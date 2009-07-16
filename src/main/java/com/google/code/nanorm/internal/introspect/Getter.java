@@ -24,13 +24,13 @@ import java.lang.reflect.Type;
  * @version 1.0 27.05.2008
  */
 public interface Getter {
-	/**
-	 * Get value of the property for given bean instance.
-	 * @param instance bean instance
-	 * @return property value
-	 */
+    /**
+     * Get value of the property for given bean instance.
+     * @param instance bean instance
+     * @return property value
+     */
     Object getValue(Object instance);
-    
+
     /**
      * Get property type.
      * 

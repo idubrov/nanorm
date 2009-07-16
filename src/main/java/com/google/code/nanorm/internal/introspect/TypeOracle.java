@@ -79,230 +79,230 @@ import com.google.code.nanorm.exceptions.IntrospectionException;
  */
 public class TypeOracle {
 
-	/**
-	 * Resolve type in given context. Replaces all {@link TypeVariable}
-	 * instances using the actual parameters of the context type.
-	 * 
-	 * Propagates as much type information as possible from the context
-	 * parameter (which is usually the specialization of the declaring class) to
-	 * the given type parameter (which is any type used inside the generic
-	 * declaring class) and returns it as {@link ParameterizedType}.
-	 * 
-	 * @param type type to resolve
-	 * @param context context type (specialized generic or concrete class)
-	 * @return resolved type
-	 */
-	public static Type resolve(Type type, Type context) {
-		// First, we wrap context into ParameterizedType for simplicity
-		// In fact, it should be only concrete type ({@link Class}) or
-		// parameterized type ({@link ParameterizedType}).
-		Type resolved;
-		if (context instanceof Class<?>) {
-			Class<?> clazz = (Class<?>) context;
-			resolved = resolveImpl(type, new ParameterizedTypeImpl(clazz));
-		} else if (context instanceof ParameterizedType) {
-			resolved = resolveImpl(type, (ParameterizedType) context);
-		} else {
-			throw new IllegalArgumentException("Illegal context argument: " + context
-					+ ". Context type could be only java.lang.Class or "
-					+ "java.lang.reflect.ParameterizedType instance.");
-		}
-		return resolved;
-	}
+    /**
+     * Resolve type in given context. Replaces all {@link TypeVariable}
+     * instances using the actual parameters of the context type.
+     * 
+     * Propagates as much type information as possible from the context
+     * parameter (which is usually the specialization of the declaring class) to
+     * the given type parameter (which is any type used inside the generic
+     * declaring class) and returns it as {@link ParameterizedType}.
+     * 
+     * @param type type to resolve
+     * @param context context type (specialized generic or concrete class)
+     * @return resolved type
+     */
+    public static Type resolve(Type type, Type context) {
+        // First, we wrap context into ParameterizedType for simplicity
+        // In fact, it should be only concrete type ({@link Class}) or
+        // parameterized type ({@link ParameterizedType}).
+        Type resolved;
+        if (context instanceof Class<?>) {
+            Class<?> clazz = (Class<?>) context;
+            resolved = resolveImpl(type, new ParameterizedTypeImpl(clazz));
+        } else if (context instanceof ParameterizedType) {
+            resolved = resolveImpl(type, (ParameterizedType) context);
+        } else {
+            throw new IllegalArgumentException("Illegal context argument: " + context
+                    + ". Context type could be only java.lang.Class or "
+                    + "java.lang.reflect.ParameterizedType instance.");
+        }
+        return resolved;
+    }
 
-	/**
-	 * Resolve {@link Class} instance from given {@link Type}, which could be
-	 * either {@link Class} instance, {@link ParameterizedType} instance or
-	 * {@link GenericArrayType} instance.
-	 * 
-	 * @param type type to resolve
-	 * @return resolved {@link Class} instance
-	 */
-	public static Class<?> resolveClass(Type type) {
-		if (type instanceof Class<?>) {
-			return (Class<?>) type;
-		} else if (type instanceof ParameterizedType) {
-			ParameterizedType pt = (ParameterizedType) type;
-			if (pt.getRawType() instanceof Class<?>) {
-				return (Class<?>) pt.getRawType();
-			}
-			throw new IllegalArgumentException("Illegal raw type of parameterized type: "
-					+ pt.getRawType() + ". Raw type could be only java.lang.Class instance.");
-		} else if (type instanceof GenericArrayType) {
-			GenericArrayType arr = (GenericArrayType) type;
+    /**
+     * Resolve {@link Class} instance from given {@link Type}, which could be
+     * either {@link Class} instance, {@link ParameterizedType} instance or
+     * {@link GenericArrayType} instance.
+     * 
+     * @param type type to resolve
+     * @return resolved {@link Class} instance
+     */
+    public static Class<?> resolveClass(Type type) {
+        if (type instanceof Class<?>) {
+            return (Class<?>) type;
+        } else if (type instanceof ParameterizedType) {
+            ParameterizedType pt = (ParameterizedType) type;
+            if (pt.getRawType() instanceof Class<?>) {
+                return (Class<?>) pt.getRawType();
+            }
+            throw new IllegalArgumentException("Illegal raw type of parameterized type: "
+                    + pt.getRawType() + ". Raw type could be only java.lang.Class instance.");
+        } else if (type instanceof GenericArrayType) {
+            GenericArrayType arr = (GenericArrayType) type;
 
-			Class<?> clazz = resolveClass(arr.getGenericComponentType());
-			return Array.newInstance(clazz, 0).getClass();
-		} else {
-			throw new IllegalArgumentException("Illegal type argument: " + type
-					+ ". Type could be only java.lang.Class instance or "
-					+ "java.lang.reflect.ParameterizedType instance.");
-		}
-	}
+            Class<?> clazz = resolveClass(arr.getGenericComponentType());
+            return Array.newInstance(clazz, 0).getClass();
+        } else {
+            throw new IllegalArgumentException("Illegal type argument: " + type
+                    + ". Type could be only java.lang.Class instance or "
+                    + "java.lang.reflect.ParameterizedType instance.");
+        }
+    }
 
-	/**
-	 * Resolve type arguments of the method starting from given context type.
-	 * 
-	 * First it searches for the path from the contextCls to the class which
-	 * declares the method. Then it propagates all type information from the
-	 * context type to the class that declares the method. Finally, it uses the
-	 * propagated type information to resolve method arguments.
-	 * 
-	 * @param method method to resolve parameters for
-	 * @param contextCls context type
-	 * @return resolved method arguments
-	 */
-	public static Type[] resolveMethodArguments(Method method, Type contextCls) {
-		Class<?> methodCls = method.getDeclaringClass();
+    /**
+     * Resolve type arguments of the method starting from given context type.
+     * 
+     * First it searches for the path from the contextCls to the class which
+     * declares the method. Then it propagates all type information from the
+     * context type to the class that declares the method. Finally, it uses the
+     * propagated type information to resolve method arguments.
+     * 
+     * @param method method to resolve parameters for
+     * @param contextCls context type
+     * @return resolved method arguments
+     */
+    public static Type[] resolveMethodArguments(Method method, Type contextCls) {
+        Class<?> methodCls = method.getDeclaringClass();
 
-		Type context = null;
-		
-		if(methodCls == contextCls) {
-			// Quick path, nothing to resolve
-			context = contextCls;
-		} else {		 
-			List<Type> path = new ArrayList<Type>();
-			if (!findPath(path, contextCls, methodCls)) {
-				throw new IllegalArgumentException("Class " + methodCls + " which declares method "
-						+ method.getName() + " does not belong to the hierarchy of " + contextCls);
-			}
-	
-			
-			for (Type type : path) {
-				if (context == null) {
-					context = type;
-				} else {
-					context = resolve(type, context);
-				}
-			}
-		} 
+        Type context = null;
 
-		// Now we propagated all type information from the contextCls to the
-		// method class
-		// Let's resolve generic parameters
-		Type[] params = method.getGenericParameterTypes();
-		for (int i = 0; i < params.length; ++i) {
-			params[i] = resolveClass(resolve(params[i], context));
-		}
-		return params;
-	}
+        if (methodCls == contextCls) {
+            // Quick path, nothing to resolve
+            context = contextCls;
+        } else {
+            List<Type> path = new ArrayList<Type>();
+            if (!findPath(path, contextCls, methodCls)) {
+                throw new IllegalArgumentException("Class " + methodCls
+                        + " which declares method " + method.getName()
+                        + " does not belong to the hierarchy of " + contextCls);
+            }
 
-	/**
-	 * Depth-first search for the path to the target interface
-	 * 
-	 * @param path
-	 * @param from
-	 * @param to
-	 * @return
-	 */
-	private static boolean findPath(List<Type> path, Type from, Type to) {
-		path.add(from);
+            for (Type type : path) {
+                if (context == null) {
+                    context = type;
+                } else {
+                    context = resolve(type, context);
+                }
+            }
+        }
 
-		// Resolve generic class prior to comparing, since target class is
-		// non-generic one
-		Class<?> current = resolveClass(from);
-		if (current == to) {
-			return true;
-		}
+        // Now we propagated all type information from the contextCls to the
+        // method class
+        // Let's resolve generic parameters
+        Type[] params = method.getGenericParameterTypes();
+        for (int i = 0; i < params.length; ++i) {
+            params[i] = resolveClass(resolve(params[i], context));
+        }
+        return params;
+    }
 
-		Type sup = current.getGenericSuperclass();
-		if (sup != null) {
-			if (findPath(path, sup, to)) {
-				return true;
-			}
-		}
+    /**
+     * Depth-first search for the path to the target interface
+     * 
+     * @param path
+     * @param from
+     * @param to
+     * @return
+     */
+    private static boolean findPath(List<Type> path, Type from, Type to) {
+        path.add(from);
 
-		for (Type iface : current.getGenericInterfaces()) {
-			if (findPath(path, iface, to)) {
-				return true;
-			}
-		}
-		path.remove(path.size() - 1);
-		return false;
-	}
+        // Resolve generic class prior to comparing, since target class is
+        // non-generic one
+        Class<?> current = resolveClass(from);
+        if (current == to) {
+            return true;
+        }
 
-	/**
-	 * Resolve type using the given context.
-	 * 
-	 * Returns {@link Class} instances as is. Resolves {@link TypeVariable}
-	 * using {@link #resolveTypeVariable(TypeVariable, ParameterizedType)}.
-	 * Resolves {@link ParameterizedType} recursively.
-	 * 
-	 * TODO: Implement support for wildcards.
-	 * 
-	 * @see #resolve(Type, Type)
-	 * @see #resolveTypeVariable(TypeVariable, ParameterizedType)
-	 * @param type type to resolve.
-	 * @param context context type
-	 * @return resolved type
-	 */
-	private static Type resolveImpl(Type type, ParameterizedType context) {
-		if (type instanceof Class<?>) {
-			// If type is concrete class -- nothing to resolve, all type info is
-			// known
-			return type;
-		} else if (type instanceof TypeVariable<?>) {
-			// If type is type variable -- resolve it
-			TypeVariable<?> tv = (TypeVariable<?>) type;
+        Type sup = current.getGenericSuperclass();
+        if (sup != null) {
+            if (findPath(path, sup, to)) {
+                return true;
+            }
+        }
 
-			return resolveTypeVariable(tv, context);
-		} else if (type instanceof ParameterizedType) {
-			ParameterizedType pt = (ParameterizedType) type;
+        for (Type iface : current.getGenericInterfaces()) {
+            if (findPath(path, iface, to)) {
+                return true;
+            }
+        }
+        path.remove(path.size() - 1);
+        return false;
+    }
 
-			// First resolve raw type
-			Class<?> resolvedRawType = resolveClass(pt.getRawType());
+    /**
+     * Resolve type using the given context.
+     * 
+     * Returns {@link Class} instances as is. Resolves {@link TypeVariable}
+     * using {@link #resolveTypeVariable(TypeVariable, ParameterizedType)}.
+     * Resolves {@link ParameterizedType} recursively.
+     * 
+     * TODO: Implement support for wildcards.
+     * 
+     * @see #resolve(Type, Type)
+     * @see #resolveTypeVariable(TypeVariable, ParameterizedType)
+     * @param type type to resolve.
+     * @param context context type
+     * @return resolved type
+     */
+    private static Type resolveImpl(Type type, ParameterizedType context) {
+        if (type instanceof Class<?>) {
+            // If type is concrete class -- nothing to resolve, all type info is
+            // known
+            return type;
+        } else if (type instanceof TypeVariable<?>) {
+            // If type is type variable -- resolve it
+            TypeVariable<?> tv = (TypeVariable<?>) type;
 
-			// Recursively resolve actual type arguments
-			Type[] arguments = pt.getActualTypeArguments();
-			Type[] res = new Type[arguments.length];
-			for (int i = 0; i < res.length; ++i) {
-				res[i] = resolveImpl(arguments[i], context);
-			}
-			return new ParameterizedTypeImpl(resolvedRawType, res);
-		} else if (type instanceof WildcardType) {
-			WildcardType wildcard = (WildcardType) type;
+            return resolveTypeVariable(tv, context);
+        } else if (type instanceof ParameterizedType) {
+            ParameterizedType pt = (ParameterizedType) type;
 
-			Type[] bounds = wildcard.getUpperBounds();
-			if (bounds.length == 0) {
-				// TODO: Log!
-				return Object.class;
-			}
+            // First resolve raw type
+            Class<?> resolvedRawType = resolveClass(pt.getRawType());
 
-			// Currently only one bound is possible
-			// TODO: Should we resolve it as well?
-			return bounds[0];
-		} else if (type instanceof GenericArrayType) {
-			GenericArrayType array = (GenericArrayType) type;
+            // Recursively resolve actual type arguments
+            Type[] arguments = pt.getActualTypeArguments();
+            Type[] res = new Type[arguments.length];
+            for (int i = 0; i < res.length; ++i) {
+                res[i] = resolveImpl(arguments[i], context);
+            }
+            return new ParameterizedTypeImpl(resolvedRawType, res);
+        } else if (type instanceof WildcardType) {
+            WildcardType wildcard = (WildcardType) type;
 
-			Type resolvedComponent = resolveImpl(array.getGenericComponentType(), context);
-			return new GenericArrayTypeImpl(resolvedComponent);
-		} else {
-			throw new IllegalArgumentException("Type " + type + " is not supported!");
-		}
-	}
+            Type[] bounds = wildcard.getUpperBounds();
+            if (bounds.length == 0) {
+                // TODO: Log!
+                return Object.class;
+            }
 
-	/**
-	 * Resolve {@link TypeVariable} using given context. Finds the actual
-	 * argument for given {@link TypeVariable} and returns it.
-	 * 
-	 * TODO: Try to get type information from bounds in corner cases.
-	 * 
-	 * @param tv
-	 * @param context
-	 * @return resolved type variable
-	 */
-	private static Type resolveTypeVariable(TypeVariable<?> tv, ParameterizedType context) {
-		Class<?> ownerRaw = resolveClass(context.getRawType());
-		TypeVariable<?>[] params = ownerRaw.getTypeParameters();
-		for (int i = 0; i < params.length; ++i) {
-			if (params[i].equals(tv)) {
-				Type argument = context.getActualTypeArguments()[i];
-				// TODO: This probably could be TypeVariable, in that case we
-				// need to get information from bounds.
-				return argument;
-			}
-		}
-		throw new IntrospectionException("Could not resolve type variable " + tv + " in context "
-				+ context + '!');
-	}
+            // Currently only one bound is possible
+            // TODO: Should we resolve it as well?
+            return bounds[0];
+        } else if (type instanceof GenericArrayType) {
+            GenericArrayType array = (GenericArrayType) type;
+
+            Type resolvedComponent = resolveImpl(array.getGenericComponentType(), context);
+            return new GenericArrayTypeImpl(resolvedComponent);
+        } else {
+            throw new IllegalArgumentException("Type " + type + " is not supported!");
+        }
+    }
+
+    /**
+     * Resolve {@link TypeVariable} using given context. Finds the actual
+     * argument for given {@link TypeVariable} and returns it.
+     * 
+     * TODO: Try to get type information from bounds in corner cases.
+     * 
+     * @param tv
+     * @param context
+     * @return resolved type variable
+     */
+    private static Type resolveTypeVariable(TypeVariable<?> tv, ParameterizedType context) {
+        Class<?> ownerRaw = resolveClass(context.getRawType());
+        TypeVariable<?>[] params = ownerRaw.getTypeParameters();
+        for (int i = 0; i < params.length; ++i) {
+            if (params[i].equals(tv)) {
+                Type argument = context.getActualTypeArguments()[i];
+                // TODO: This probably could be TypeVariable, in that case we
+                // need to get information from bounds.
+                return argument;
+            }
+        }
+        throw new IntrospectionException("Could not resolve type variable " + tv + " in context "
+                + context + '!');
+    }
 }

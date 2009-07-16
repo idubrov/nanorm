@@ -33,60 +33,60 @@ import com.google.code.nanorm.test.common.StringHolder;
 @SuppressWarnings("all")
 public class TestCall extends MapperTestBase {
 
-	public interface Mapper1 {
-		@ResultMap(auto = true, mappings = { @Property(value = "value", columnIndex = 1) })
-		@Call("{call myConcat(${1}, ${2})}")
-		StringHolder concat(String a, String b);
+    public interface Mapper1 {
+        @ResultMap(auto = true, mappings = {@Property(value = "value", columnIndex = 1) })
+        @Call("{call myConcat(${1}, ${2})}")
+        StringHolder concat(String a, String b);
 
-		@Call("{call myConcat(${1}, ${2})}")
-		String concat2(String a, String b);
+        @Call("{call myConcat(${1}, ${2})}")
+        String concat2(String a, String b);
 
-		@Call("{call myConcat2(${1}, ${2}, ${3.value,type=OUT})}")
-		String concat3(String a, String b, StringHolder c);
-	}
+        @Call("{call myConcat2(${1}, ${2}, ${3.value,type=OUT})}")
+        String concat3(String a, String b, StringHolder c);
+    }
 
-	/**
-	 * TEST: Invoke {@link Mapper1#concat(String, String)} method with
-	 * parameters.
-	 * 
-	 * EXPECT: &ldquo;Hello, World!&rdquo; is returned in {@link StringHolder}
-	 * instance.
-	 */
-	@Test
-	public void testCall1() throws Exception {
-		Mapper1 mapper = factory.createMapper(Mapper1.class);
+    /**
+     * TEST: Invoke {@link Mapper1#concat(String, String)} method with
+     * parameters.
+     * 
+     * EXPECT: &ldquo;Hello, World!&rdquo; is returned in {@link StringHolder}
+     * instance.
+     */
+    @Test
+    public void testCall1() throws Exception {
+        Mapper1 mapper = factory.createMapper(Mapper1.class);
 
-		Assert.assertEquals("Hello, World!", mapper.concat("Hello", ", World!").getValue());
-	}
+        Assert.assertEquals("Hello, World!", mapper.concat("Hello", ", World!").getValue());
+    }
 
-	/**
-	 * TEST: Invoke {@link Mapper1#concat2(String, String)} method with
-	 * parameters.
-	 * 
-	 * EXPECT: &ldquo;World, Hello!&rdquo; is returned.
-	 */
-	@Test
-	public void testCall2() throws Exception {
-		Mapper1 mapper = factory.createMapper(Mapper1.class);
+    /**
+     * TEST: Invoke {@link Mapper1#concat2(String, String)} method with
+     * parameters.
+     * 
+     * EXPECT: &ldquo;World, Hello!&rdquo; is returned.
+     */
+    @Test
+    public void testCall2() throws Exception {
+        Mapper1 mapper = factory.createMapper(Mapper1.class);
 
-		Assert.assertEquals("World, Hello!", mapper.concat2("World", ", Hello!"));
-	}
+        Assert.assertEquals("World, Hello!", mapper.concat2("World", ", Hello!"));
+    }
 
-	/**
-	 * TEST: Invoke {@link Mapper1#concat3(String, String, StringHolder)} method
-	 * with parameters.
-	 * 
-	 * EXPECT: &ldquo;World, Hello!&rdquo; is returned. {@link StringHolder}
-	 * instance has the same in the <code>value</code> property.
-	 */
-	@Test
-	@Ignore("H2 does not support OUT parameters yet")
-	public void testCall3() throws Exception {
-		Mapper1 mapper = factory.createMapper(Mapper1.class);
+    /**
+     * TEST: Invoke {@link Mapper1#concat3(String, String, StringHolder)} method
+     * with parameters.
+     * 
+     * EXPECT: &ldquo;World, Hello!&rdquo; is returned. {@link StringHolder}
+     * instance has the same in the <code>value</code> property.
+     */
+    @Test
+    @Ignore("H2 does not support OUT parameters yet")
+    public void testCall3() throws Exception {
+        Mapper1 mapper = factory.createMapper(Mapper1.class);
 
-		StringHolder bean = new StringHolder();
-		Assert.assertNull(bean.getValue());
-		Assert.assertEquals("World, Hello!", mapper.concat3("World", ", Hello!", bean));
-		Assert.assertEquals("World, Hello!", bean.getValue());
-	}
+        StringHolder bean = new StringHolder();
+        Assert.assertNull(bean.getValue());
+        Assert.assertEquals("World, Hello!", mapper.concat3("World", ", Hello!", bean));
+        Assert.assertEquals("World, Hello!", bean.getValue());
+    }
 }

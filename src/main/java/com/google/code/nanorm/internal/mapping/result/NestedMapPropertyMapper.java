@@ -32,40 +32,39 @@ import com.google.code.nanorm.internal.introspect.Setter;
  */
 public class NestedMapPropertyMapper {
 
-	private final RowMapper resultMap;
+    private final RowMapper resultMap;
 
-	private final DataSinkSource callbackSource;
+    private final DataSinkSource callbackSource;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param getter property getter
-	 * @param setter property setter
-	 * @param resultMap nested result map
-	 * @param source any object that identifies the mapping source. Used for
-	 *            messages generation.
-	 */
-	public NestedMapPropertyMapper(Getter getter, Setter setter,
-			RowMapper resultMap, Object source) {
-		this.resultMap = resultMap;
-		this.callbackSource = ResultCollectorUtil.createDataSinkSource(getter,
-				setter, source);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param getter property getter
+     * @param setter property setter
+     * @param resultMap nested result map
+     * @param source any object that identifies the mapping source. Used for
+     * messages generation.
+     */
+    public NestedMapPropertyMapper(Getter getter, Setter setter, RowMapper resultMap,
+            Object source) {
+        this.resultMap = resultMap;
+        this.callbackSource = ResultCollectorUtil.createDataSinkSource(getter, setter, source);
+    }
 
-	/**
-	 * Map the current result set row onto the property. Invokes the nested
-	 * result map and pushes the result into the property.
-	 * 
-	 * @param request request variables
-	 * @param result result object
-	 * @param rs result set 
-	 * @throws SQLException propagated from result set invocations
-	 */
-	public final void mapResult(Request request, final Object result,
-			ResultSet rs) throws SQLException {
+    /**
+     * Map the current result set row onto the property. Invokes the nested
+     * result map and pushes the result into the property.
+     * 
+     * @param request request variables
+     * @param result result object
+     * @param rs result set
+     * @throws SQLException propagated from result set invocations
+     */
+    public final void mapResult(Request request, final Object result, ResultSet rs)
+            throws SQLException {
 
-		// Get the data sink from the request cache
-		DataSink<Object> callback = request.searchCallback(callbackSource, result);
-		resultMap.processResultSet(request, rs, callback);		
-	}
+        // Get the data sink from the request cache
+        DataSink<Object> callback = request.searchCallback(callbackSource, result);
+        resultMap.processResultSet(request, rs, callback);
+    }
 }

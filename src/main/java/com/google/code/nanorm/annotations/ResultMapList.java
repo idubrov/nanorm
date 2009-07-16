@@ -29,8 +29,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface ResultMapList {
-	/**
-	 * Result map list.
-	 */
-	ResultMap[] value();
+    /**
+     * Result map list.
+     */
+    ResultMap[] value();
 }

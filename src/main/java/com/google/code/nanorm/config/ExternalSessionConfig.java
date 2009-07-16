@@ -21,28 +21,28 @@ import com.google.code.nanorm.internal.session.ExternalSessionSpi;
 import com.google.code.nanorm.internal.session.SessionSpi;
 
 /**
- * Configuration for external session/transaction management.
- * TODO: Elaborate javadoc
+ * Configuration for external session/transaction management. TODO: Elaborate
+ * javadoc
  * 
  * @author Ivan Dubrov
  */
 public class ExternalSessionConfig implements SessionConfig {
-	
-	private final DataSource dataSource;
-	
-	/**
-	 * Constructor.
-	 * 
-	 * @param dataSource data source
-	 */
-	public ExternalSessionConfig(DataSource dataSource) {
-		this.dataSource = dataSource;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	public SessionSpi newSessionSpi() {
-		return new ExternalSessionSpi(dataSource);
-	}
+
+    private final DataSource dataSource;
+
+    /**
+     * Constructor.
+     * 
+     * @param dataSource data source
+     */
+    public ExternalSessionConfig(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public SessionSpi newSessionSpi() {
+        return new ExternalSessionSpi(dataSource);
+    }
 }

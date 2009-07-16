@@ -40,17 +40,17 @@ import com.google.code.nanorm.SQLSource;
  * @author Ivan Dubrov
  * @version 1.0 27.05.2008
  */
-@Target( { ElementType.METHOD, ElementType.TYPE })
+@Target( {ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Insert {
-	/**
-	 * SQL statement that performs database insert. This is mutually exclusive
-	 * with {@link #sqlSource()}.
-	 */
-	String value() default "";
+    /**
+     * SQL statement that performs database insert. This is mutually exclusive
+     * with {@link #sqlSource()}.
+     */
+    String value() default "";
 
-	/**
-	 * SQL generator. This is mutually exclusive with {@link #value()}.
-	 */
-	Class<? extends SQLSource> sqlSource() default SQLSource.class;
+    /**
+     * SQL generator. This is mutually exclusive with {@link #value()}.
+     */
+    Class<? extends SQLSource> sqlSource() default SQLSource.class;
 }

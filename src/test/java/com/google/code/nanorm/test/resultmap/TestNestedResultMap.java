@@ -39,151 +39,108 @@ import com.google.code.nanorm.test.common.MapperTestBase;
  */
 @SuppressWarnings("all")
 public class TestNestedResultMap extends MapperTestBase {
-    @ResultMapList({
-        @ResultMap(id = "article", mappings = {
-        	@Property(value = "id"),
-            @Property(value = "subject"),
-            @Property(value = "body")
-        }),
-        @ResultMap(id = "article2", mappings = {
-        	@Property(value = "id", column = "article_id"),
-            @Property(value = "subject"),
-            @Property(value = "body")
-        }),
-        @ResultMap(id = "comment", mappings = {
-        	@Property(value = "id", column = "id"),
-        	@Property(value = "comment", column = "comment"),
-            @Property(value = "year", column = "year")
-        }),
-        @ResultMap(id = "comment2", mappings = {
-        	@Property(value = "id", column = "comment_id"),
-        	@Property(value = "comment", column = "comment"),
-            @Property(value = "year", column = "year")
-        }),
-        // groupBy is the name of the property
-        @ResultMap(id = "article3", groupBy = "id", mappings = {
-            @Property(value = "id", column = "article_id"),
-            @Property(value = "subject"),
-            @Property(value = "body"),
-            @Property(value = "comments", nestedMap = @ResultMapRef("comment2"))
-        }),
-        @ResultMap(id = "label", groupBy = "id", mappings = {
-        	@Property(value = "id", column = "label_id"),
-        	@Property(value = "label")
-        }),
-        @ResultMap(id = "comment3", groupBy = "id", mappings = {
-            @Property(value = "id", column = "comment_id"),
-            @Property(value = "comment", column = "comment"),
-            @Property(value = "year", column = "year")
-        })
-    })
+    @ResultMapList( {
+            @ResultMap(id = "article", mappings = {@Property(value = "id"),
+                    @Property(value = "subject"), @Property(value = "body") }),
+            @ResultMap(id = "article2", mappings = {
+                    @Property(value = "id", column = "article_id"), @Property(value = "subject"),
+                    @Property(value = "body") }),
+            @ResultMap(id = "comment", mappings = {@Property(value = "id", column = "id"),
+                    @Property(value = "comment", column = "comment"),
+                    @Property(value = "year", column = "year") }),
+            @ResultMap(id = "comment2", mappings = {
+                    @Property(value = "id", column = "comment_id"),
+                    @Property(value = "comment", column = "comment"),
+                    @Property(value = "year", column = "year") }),
+            // groupBy is the name of the property
+            @ResultMap(id = "article3", groupBy = "id", mappings = {
+                    @Property(value = "id", column = "article_id"), @Property(value = "subject"),
+                    @Property(value = "body"),
+                    @Property(value = "comments", nestedMap = @ResultMapRef("comment2")) }),
+            @ResultMap(id = "label", groupBy = "id", mappings = {
+                    @Property(value = "id", column = "label_id"), @Property(value = "label") }),
+            @ResultMap(id = "comment3", groupBy = "id", mappings = {
+                    @Property(value = "id", column = "comment_id"),
+                    @Property(value = "comment", column = "comment"),
+                    @Property(value = "year", column = "year") }) })
     public interface Mapper {
-        
+
         // Test 1-1 mapping with nested result map
-        @ResultMap(mappings = {
-            @Property(value = "id"),
-            @Property(value = "title"),
-            @Property(value = "year"),
-            @Property(value = "article", nestedMap = @ResultMapRef("article")) 
-        })
+        @ResultMap(mappings = {@Property(value = "id"), @Property(value = "title"),
+                @Property(value = "year"),
+                @Property(value = "article", nestedMap = @ResultMapRef("article")) })
         @Select("SELECT id, subject as title, subject, body, year FROM articles WHERE id = ${1}")
         Publication getPublicationById(int id);
-        
+
         // Test 1-N mapping with nested result map expecting single value
-        @ResultMap(groupBy = "id", mappings = {
-            @Property("id"),
-            @Property("title"),
-            @Property("year"),
-            @Property(value = "article", nestedMap = @ResultMapRef("article")) 
-        })
+        @ResultMap(groupBy = "id", mappings = {@Property("id"), @Property("title"),
+                @Property("year"),
+                @Property(value = "article", nestedMap = @ResultMapRef("article")) })
         // Fixed variant should include ON articles.id = publications.article_id
         @Select("SELECT p.id, p.title, p.year, a.subject, a.body FROM publications p LEFT JOIN articles a WHERE p.id = ${1}")
         Publication getPublicationById2(int id);
-        
+
         // Test 1-1 mapping with nested result map, the property type is List
-        @ResultMap(mappings = {
-            @Property(value = "id"),
-            @Property(value = "title"),
-            @Property(value = "year"),
-            @Property(value = "articles", nestedMap = @ResultMapRef("article")) 
-        })
-        @Select("SELECT id, title, year, 'Dummy Subject' as subject, 'Dummy Body' as body " +
-        		"FROM categories WHERE ID = ${1}")
+        @ResultMap(mappings = {@Property(value = "id"), @Property(value = "title"),
+                @Property(value = "year"),
+                @Property(value = "articles", nestedMap = @ResultMapRef("article")) })
+        @Select("SELECT id, title, year, 'Dummy Subject' as subject, 'Dummy Body' as body "
+                + "FROM categories WHERE ID = ${1}")
         Category getCategoryById2(int id);
-        
+
         // Test 1-N mapping with nested result map, the property type is List
-        @ResultMap(groupBy = "id", mappings = {
-            @Property(value = "id"),
-            @Property(value = "title"),
-            @Property(value = "year"),
-            @Property(value = "articles", nestedMap = @ResultMapRef("article2")) 
-        })
-        @Select("SELECT c.id, c.title, c.year, " +
-        		"a.id as article_id, a.subject, a.body " +
-        		"FROM categories c " +
-                "INNER JOIN articles a ON c.id = a.category_id WHERE c.id = ${1}" +
-                "ORDER BY c.id, a.id")
+        @ResultMap(groupBy = "id", mappings = {@Property(value = "id"),
+                @Property(value = "title"), @Property(value = "year"),
+                @Property(value = "articles", nestedMap = @ResultMapRef("article2")) })
+        @Select("SELECT c.id, c.title, c.year, " + "a.id as article_id, a.subject, a.body "
+                + "FROM categories c "
+                + "INNER JOIN articles a ON c.id = a.category_id WHERE c.id = ${1}"
+                + "ORDER BY c.id, a.id")
         Category getCategoryById3(int id);
-        
-        // Test 1-N-M mapping with two nested result map, the property type is List
-        @ResultMap(groupBy = "id", mappings = {
-            @Property(value = "id"),
-            @Property(value = "title"),
-            @Property(value = "year"),
-            @Property(value = "articles", nestedMap = @ResultMapRef("article3")) 
-        })
-        @Select("SELECT c.id, c.title, c.year, " +
-                "a.id as article_id, a.subject, a.body, " +
-                "cm.id as comment_id, cm.comment " +
-                "FROM categories c " +
-                "INNER JOIN articles a ON c.id = a.category_id " +
-                "INNER JOIN comments cm ON a.id = cm.article_id " +
-                "WHERE c.id = ${1} " +
-                "ORDER BY c.id, a.id, cm.id")
+
+        // Test 1-N-M mapping with two nested result map, the property type is
+        // List
+        @ResultMap(groupBy = "id", mappings = {@Property(value = "id"),
+                @Property(value = "title"), @Property(value = "year"),
+                @Property(value = "articles", nestedMap = @ResultMapRef("article3")) })
+        @Select("SELECT c.id, c.title, c.year, " + "a.id as article_id, a.subject, a.body, "
+                + "cm.id as comment_id, cm.comment " + "FROM categories c "
+                + "INNER JOIN articles a ON c.id = a.category_id "
+                + "INNER JOIN comments cm ON a.id = cm.article_id " + "WHERE c.id = ${1} "
+                + "ORDER BY c.id, a.id, cm.id")
         Category getCategoriesById4(int id);
-        
+
         // Test 1-N mapping, the property type is array
-        @ResultMap(groupBy = "id", mappings = {
-        	@Property(value = "id"),
-            @Property(value = "subject"),
-            @Property(value = "body"),
-            @Property(value = "labels", nestedMap = @ResultMapRef("label"))
-        })
-        @Select("SELECT a.id, a.subject, a.body, l.id as label_id, l.label " +
-        		"FROM articles a " +
-        		"INNER JOIN labels l ON l.article_id = a.id " +
-        		"ORDER BY a.id, l.id")
+        @ResultMap(groupBy = "id", mappings = {@Property(value = "id"),
+                @Property(value = "subject"), @Property(value = "body"),
+                @Property(value = "labels", nestedMap = @ResultMapRef("label")) })
+        @Select("SELECT a.id, a.subject, a.body, l.id as label_id, l.label " + "FROM articles a "
+                + "INNER JOIN labels l ON l.article_id = a.id " + "ORDER BY a.id, l.id")
         List<Article> listArticles();
-        
+
         // Test two 1-N mapping, one nested property is array and other is list
-        @ResultMap(groupBy = "id", mappings = {
-        	@Property(value = "id"),
-            @Property(value = "subject"),
-            @Property(value = "body"),
-            @Property(value = "labels", nestedMap = @ResultMapRef("label")),
-            @Property(value = "comments", nestedMap = @ResultMapRef("comment3"))
-        })
-        @Select("SELECT a.id, a.subject, a.body, l.id as label_id, l.label, " +
-        		"c.id as comment_id, c.comment, c.year " +
-        		"FROM articles a " +
-        		"INNER JOIN labels l ON l.article_id = a.id " +
-        		"INNER JOIN comments c ON c.article_id = a.id " +
-        		"ORDER BY a.id, l.id, c.id")
+        @ResultMap(groupBy = "id", mappings = {@Property(value = "id"),
+                @Property(value = "subject"), @Property(value = "body"),
+                @Property(value = "labels", nestedMap = @ResultMapRef("label")),
+                @Property(value = "comments", nestedMap = @ResultMapRef("comment3")) })
+        @Select("SELECT a.id, a.subject, a.body, l.id as label_id, l.label, "
+                + "c.id as comment_id, c.comment, c.year " + "FROM articles a "
+                + "INNER JOIN labels l ON l.article_id = a.id "
+                + "INNER JOIN comments c ON c.article_id = a.id " + "ORDER BY a.id, l.id, c.id")
         List<Article> listArticles2();
     }
-    
+
     /**
      * Refer to nested map from different class.
      * @author Ivan Dubrov
      */
     public interface Mapper2 {
-    	// Test 1-1 mapping with nested result map
+        // Test 1-1 mapping with nested result map
         @ResultMap(mappings = {
-            @Property(value = "id"),
-            @Property(value = "title"),
-            @Property(value = "year"),
-            @Property(value = "article", nestedMap = @ResultMapRef(value = "article", declaringClass = Mapper.class)) 
-        })
+                @Property(value = "id"),
+                @Property(value = "title"),
+                @Property(value = "year"),
+                @Property(value = "article", nestedMap = @ResultMapRef(value = "article", declaringClass = Mapper.class)) })
         @Select("SELECT id, subject as title, subject, body, year FROM articles WHERE ID = ${1}")
         Publication getPublicationById(int id);
     }
@@ -196,29 +153,30 @@ public class TestNestedResultMap extends MapperTestBase {
         Assert.assertEquals("World Domination", publication.getArticle().getSubject());
         Assert.assertEquals(2007, publication.getYear());
     }
-    
+
     @Test
     public void testNestedOneToOne3() throws Exception {
-    	try {
-    		Mapper mapper = factory.createMapper(Mapper.class);
-    		Publication publication = mapper.getPublicationById2(543);
-    		Assert.fail("Must fail because nested mapping expects single value, but multiple rows matched");
-    	} catch(IllegalStateException e) {
-    		e.printStackTrace();
-    		assertContains(e, "mapping", "property", "article", "single");
-    	}
+        try {
+            Mapper mapper = factory.createMapper(Mapper.class);
+            Publication publication = mapper.getPublicationById2(543);
+            Assert
+                    .fail("Must fail because nested mapping expects single value, but multiple rows matched");
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+            assertContains(e, "mapping", "property", "article", "single");
+        }
     }
-    
+
     @Test
     public void testNestedOneToOneExternal() throws Exception {
-    	factory.createMapper(Mapper.class); // Force it to be configured
+        factory.createMapper(Mapper.class); // Force it to be configured
         Mapper2 mapper = factory.createMapper(Mapper2.class);
         Publication publication = mapper.getPublicationById(1);
         Assert.assertEquals(1, publication.getId());
         Assert.assertEquals("World Domination", publication.getArticle().getSubject());
         Assert.assertEquals(2007, publication.getYear());
     }
-    
+
     @Test
     public void testNestedOneToOne2() throws Exception {
         Mapper mapper = factory.createMapper(Mapper.class);
@@ -230,7 +188,7 @@ public class TestNestedResultMap extends MapperTestBase {
         Assert.assertEquals("World", car.getTitle());
         Assert.assertEquals(2006, car.getYear());
     }
-    
+
     @Test
     public void testNestedOneToMany() throws Exception {
         Mapper mapper = factory.createMapper(Mapper.class);
@@ -238,48 +196,51 @@ public class TestNestedResultMap extends MapperTestBase {
         Assert.assertEquals(1, cat.getId());
         Assert.assertEquals(2006, cat.getYear());
         Assert.assertEquals(2, cat.getArticles().size());
-        
+
         Assert.assertEquals(1, cat.getArticles().get(0).getId());
         Assert.assertEquals("World Domination", cat.getArticles().get(0).getSubject());
-        Assert.assertEquals("Everybody thinks of world domination.", cat.getArticles().get(0).getBody());
-        
+        Assert.assertEquals("Everybody thinks of world domination.", cat.getArticles().get(0)
+                .getBody());
+
         Assert.assertEquals(2, cat.getArticles().get(1).getId());
         Assert.assertEquals("Saving the Earth", cat.getArticles().get(1).getSubject());
         Assert.assertEquals("To save the earth you need...", cat.getArticles().get(1).getBody());
-        
-        
+
     }
-    
+
     @Test
     public void testNestedOneToMany2() throws Exception {
         Mapper mapper = factory.createMapper(Mapper.class);
         Category cat = mapper.getCategoriesById4(1);
         Assert.assertEquals(1, cat.getId());
         Assert.assertEquals(2006, cat.getYear());
-        
+
         // Second is not selected (we use INNER JOIN)
         Assert.assertEquals(1, cat.getArticles().size());
-        
+
         Assert.assertEquals(1, cat.getArticles().get(0).getId());
         Assert.assertEquals("World Domination", cat.getArticles().get(0).getSubject());
-        Assert.assertEquals("Everybody thinks of world domination.", cat.getArticles().get(0).getBody());
+        Assert.assertEquals("Everybody thinks of world domination.", cat.getArticles().get(0)
+                .getBody());
         Assert.assertEquals(2, cat.getArticles().get(0).getComments().size());
-        
+
         Assert.assertEquals(101, cat.getArticles().get(0).getComments().get(0).getId());
         Assert.assertEquals("Great!", cat.getArticles().get(0).getComments().get(0).getComment());
-        
+
         Assert.assertEquals(102, cat.getArticles().get(0).getComments().get(1).getId());
-        Assert.assertEquals("Always wanted to world-dominate!", cat.getArticles().get(0).getComments().get(1).getComment());
-        
+        Assert.assertEquals("Always wanted to world-dominate!", cat.getArticles().get(0)
+                .getComments().get(1).getComment());
+
         // Second owner
         /*
-        Assert.assertEquals(2, car.getArticles().get(1).getId());
-        Assert.assertEquals("Jimmy", car.getArticles().get(1).getFirstName());
-        Assert.assertEquals("Green", car.getArticles().get(1).getLastName());
-        Assert.assertEquals(0, car.getArticles().get(1).getCrashes().size());
-        */
+         * Assert.assertEquals(2, car.getArticles().get(1).getId());
+         * Assert.assertEquals("Jimmy",
+         * car.getArticles().get(1).getFirstName());
+         * Assert.assertEquals("Green", car.getArticles().get(1).getLastName());
+         * Assert.assertEquals(0, car.getArticles().get(1).getCrashes().size());
+         */
     }
-    
+
     /**
      * Test 1-N mapping with nested maps where collection type is array.
      * @throws Exception
@@ -288,50 +249,52 @@ public class TestNestedResultMap extends MapperTestBase {
     public void testNestedOneToManyArray() throws Exception {
         Mapper mapper = factory.createMapper(Mapper.class);
         List<Article> articles = mapper.listArticles();
-        
+
         // One article, because we use inner join
         Assert.assertEquals(1, articles.size());
-        
+
         Assert.assertEquals(1, articles.get(0).getId());
         Assert.assertEquals("World Domination", articles.get(0).getSubject());
         Assert.assertEquals("Everybody thinks of world domination.", articles.get(0).getBody());
         Assert.assertEquals(2, articles.get(0).getLabels().length);
-        
+
         Assert.assertEquals(1231, articles.get(0).getLabels()[0].getId());
         Assert.assertEquals("World", articles.get(0).getLabels()[0].getLabel());
-        
+
         Assert.assertEquals(1232, articles.get(0).getLabels()[1].getId());
         Assert.assertEquals("Dominate", articles.get(0).getLabels()[1].getLabel());
     }
-    
+
     /**
-     * est two 1-N mapping with nested maps where one collection type is list and other is array.
+     * est two 1-N mapping with nested maps where one collection type is list
+     * and other is array.
      * @throws Exception
      */
     @Test
     public void testNestedOneToManyArrayList() throws Exception {
         Mapper mapper = factory.createMapper(Mapper.class);
         List<Article> articles = mapper.listArticles2();
-        
+
         // One article, because we use inner join
         Assert.assertEquals(1, articles.size());
-        
+
         Assert.assertEquals(1, articles.get(0).getId());
         Assert.assertEquals("World Domination", articles.get(0).getSubject());
         Assert.assertEquals("Everybody thinks of world domination.", articles.get(0).getBody());
         Assert.assertEquals(2, articles.get(0).getLabels().length);
         Assert.assertEquals(2, articles.get(0).getComments().size());
-        
+
         Assert.assertEquals(1231, articles.get(0).getLabels()[0].getId());
         Assert.assertEquals("World", articles.get(0).getLabels()[0].getLabel());
-        
+
         Assert.assertEquals(1232, articles.get(0).getLabels()[1].getId());
         Assert.assertEquals("Dominate", articles.get(0).getLabels()[1].getLabel());
-        
+
         Assert.assertEquals(101, articles.get(0).getComments().get(0).getId());
         Assert.assertEquals("Great!", articles.get(0).getComments().get(0).getComment());
-        
+
         Assert.assertEquals(102, articles.get(0).getComments().get(1).getId());
-        Assert.assertEquals("Always wanted to world-dominate!", articles.get(0).getComments().get(1).getComment());
+        Assert.assertEquals("Always wanted to world-dominate!", articles.get(0).getComments()
+                .get(1).getComment());
     }
 }

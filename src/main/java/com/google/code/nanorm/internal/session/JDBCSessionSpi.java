@@ -55,7 +55,8 @@ public class JDBCSessionSpi implements SessionSpi {
      * Constructor.
      * 
      * @param dataSource {@link DataSource} to use for this session.
-     * @param isAllowMultiple allow running multiple queries at the same time in the single session.
+     * @param isAllowMultiple allow running multiple queries at the same time in
+     * the single session.
      */
     public JDBCSessionSpi(DataSource dataSource, boolean isAllowMultiple) {
         try {

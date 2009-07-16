@@ -31,14 +31,14 @@ import com.google.code.nanorm.internal.Request;
  */
 public interface RowMapper {
 
-	/**
-	 * Process the result set row.
-	 * 
-	 * @param request request variables
-	 * @param rs result set
-	 * @param callback callback used for pushing the result object
-	 * @throws SQLException any exception from the result set
-	 */
-	void processResultSet(Request request, ResultSet rs,
-			DataSink<Object> callback) throws SQLException;
+    /**
+     * Process the result set row.
+     * 
+     * @param request request variables
+     * @param rs result set
+     * @param callback callback used for pushing the result object
+     * @throws SQLException any exception from the result set
+     */
+    void processResultSet(Request request, ResultSet rs, DataSink<Object> callback)
+            throws SQLException;
 }

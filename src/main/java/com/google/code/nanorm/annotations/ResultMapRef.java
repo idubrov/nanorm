@@ -33,15 +33,15 @@ import java.lang.annotation.Target;
  * @version 1.0 28.05.2008
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.METHOD, ElementType.TYPE })
+@Target( {ElementType.METHOD, ElementType.TYPE })
 public @interface ResultMapRef {
-	/**
-	 * Reference (id of the result map, refer to {@link ResultMap#id()}).
-	 */
-	String value() default "";
+    /**
+     * Reference (id of the result map, refer to {@link ResultMap#id()}).
+     */
+    String value() default "";
 
-	/**
-	 * Result map declaring class.
-	 */
-	Class<?> declaringClass() default Object.class;
+    /**
+     * Result map declaring class.
+     */
+    Class<?> declaringClass() default Object.class;
 }

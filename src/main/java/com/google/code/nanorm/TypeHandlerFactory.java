@@ -17,7 +17,6 @@ package com.google.code.nanorm;
 
 import java.lang.reflect.Type;
 
-
 /**
  * Factory for creating type handlers. Type handlers are responsible for mapping
  * data from {@link java.sql.ResultSet} to Java objects and from Java objects to
@@ -31,19 +30,19 @@ import java.lang.reflect.Type;
  */
 public interface TypeHandlerFactory {
 
-	/**
-	 * Get type handler for given type.
-	 * 
-	 * @param type type
-	 * @return type handler.
-	 */
-	TypeHandler<?> getTypeHandler(Type type);
+    /**
+     * Get type handler for given type.
+     * 
+     * @param type type
+     * @return type handler.
+     */
+    TypeHandler<?> getTypeHandler(Type type);
 
-	/**
-	 * Register new type handler.
-	 * 
-	 * @param type type
-	 * @param handler type handler
-	 */
-	void register(Type type, TypeHandler<?> handler);
+    /**
+     * Register new type handler.
+     * 
+     * @param type type
+     * @param handler type handler
+     */
+    void register(Type type, TypeHandler<?> handler);
 }

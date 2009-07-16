@@ -31,162 +31,158 @@ import com.google.code.nanorm.internal.util.ToStringBuilder;
  */
 public class StatementConfig {
 
-	/**
-	 * Special value for callback index meaning we have no callback, but should
-	 * return result instead.
-	 */
-	public static final int RETURN_VALUE = -1;
+    /**
+     * Special value for callback index meaning we have no callback, but should
+     * return result instead.
+     */
+    public static final int RETURN_VALUE = -1;
 
-	private final StatementKey id;
+    private final StatementKey id;
 
-	private QueryKind kind;
+    private QueryKind kind;
 
-	private Fragment fragment;
+    private Fragment fragment;
 
-	private RowMapper rowMapper;
+    private RowMapper rowMapper;
 
-	private Type resultType;
+    private Type resultType;
 
-	private Type[] parameterTypes;
+    private Type[] parameterTypes;
 
-	private int callbackIndex = RETURN_VALUE;
+    private int callbackIndex = RETURN_VALUE;
 
-	private StatementConfig selectKey;
+    private StatementConfig selectKey;
 
-	private SelectKeyType selectKeyType;
-	
-	private Setter keySetter;
+    private SelectKeyType selectKeyType;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param id id
-	 */
-	public StatementConfig(StatementKey id) {
-		this.id = id;
-	}
+    private Setter keySetter;
 
-	/** @return the kind */
-	public QueryKind getKind() {
-		return kind;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param id id
+     */
+    public StatementConfig(StatementKey id) {
+        this.id = id;
+    }
 
-	/** @param kind the kind to set */
-	public void setKind(QueryKind kind) {
-		this.kind = kind;
-	}
+    /** @return the kind */
+    public QueryKind getKind() {
+        return kind;
+    }
 
-	/** @return Returns the statementBuilder. */
-	public Fragment getStatementBuilder() {
-		return fragment;
-	}
+    /** @param kind the kind to set */
+    public void setKind(QueryKind kind) {
+        this.kind = kind;
+    }
 
-	/** @param statementBuilder The statementBuilder to set. */
-	public void setStatementBuilder(Fragment statementBuilder) {
-		this.fragment = statementBuilder;
-	}
+    /** @return Returns the statementBuilder. */
+    public Fragment getStatementBuilder() {
+        return fragment;
+    }
 
-	/** @return Returns the rowMapper. */
-	public RowMapper getRowMapper() {
-		return rowMapper;
-	}
+    /** @param statementBuilder The statementBuilder to set. */
+    public void setStatementBuilder(Fragment statementBuilder) {
+        this.fragment = statementBuilder;
+    }
 
-	/** @param rowMapper The rowMapper to set. */
-	public void setRowMapper(RowMapper rowMapper) {
-		this.rowMapper = rowMapper;
-	}
+    /** @return Returns the rowMapper. */
+    public RowMapper getRowMapper() {
+        return rowMapper;
+    }
 
-	/** @return Returns the resultType. */
-	public Type getResultType() {
-		return resultType;
-	}
+    /** @param rowMapper The rowMapper to set. */
+    public void setRowMapper(RowMapper rowMapper) {
+        this.rowMapper = rowMapper;
+    }
 
-	/** @param resultType The resultType to set. */
-	public void setResultType(Type resultType) {
-		this.resultType = resultType;
-	}
+    /** @return Returns the resultType. */
+    public Type getResultType() {
+        return resultType;
+    }
 
-	/** @return Returns the parameterTypes. */
-	public Type[] getParameterTypes() {
-		return parameterTypes;
-	}
+    /** @param resultType The resultType to set. */
+    public void setResultType(Type resultType) {
+        this.resultType = resultType;
+    }
 
-	/** @param parameterTypes The parameterTypes to set. */
-	public void setParameterTypes(Type[] parameterTypes) {
-		this.parameterTypes = parameterTypes;
-	}
+    /** @return Returns the parameterTypes. */
+    public Type[] getParameterTypes() {
+        return parameterTypes;
+    }
 
-	/** @return the selectKey */
-	public StatementConfig getSelectKey() {
-		return selectKey;
-	}
+    /** @param parameterTypes The parameterTypes to set. */
+    public void setParameterTypes(Type[] parameterTypes) {
+        this.parameterTypes = parameterTypes;
+    }
 
-	/** @param selectKey the selectKey to set */
-	public void setSelectKey(StatementConfig selectKey) {
-		this.selectKey = selectKey;
-	}
-	
-	/** @return the selectKeyType */
-	public SelectKeyType getSelectKeyType() {
-		return selectKeyType;
-	}
+    /** @return the selectKey */
+    public StatementConfig getSelectKey() {
+        return selectKey;
+    }
 
-	/** @param selectKeyType the selectKeyType to set */
-	public void setSelectKeyType(SelectKeyType selectKeyType) {
-		this.selectKeyType = selectKeyType;
-	}
-	
-	/** @return the keySetter */
-	public Setter getKeySetter() {
-		return keySetter;
-	}
+    /** @param selectKey the selectKey to set */
+    public void setSelectKey(StatementConfig selectKey) {
+        this.selectKey = selectKey;
+    }
 
-	/** @param keySetter the keySetter to set */
-	public void setKeySetter(Setter keySetter) {
-		this.keySetter = keySetter;
-	}
+    /** @return the selectKeyType */
+    public SelectKeyType getSelectKeyType() {
+        return selectKeyType;
+    }
 
-	/** @return Returns the id. */
-	public StatementKey getId() {
-		return id;
-	}
+    /** @param selectKeyType the selectKeyType to set */
+    public void setSelectKeyType(SelectKeyType selectKeyType) {
+        this.selectKeyType = selectKeyType;
+    }
 
-	/**
-	 * Get index of the parameter that is instance of {@link com.google.code.nanorm.DataSink},
-	 * which will be used for processing the results.
-	 * 
-	 * @see #RETURN_VALUE
-	 * @return callback parameter index.
-	 */
-	public int getCallbackIndex() {
-		return callbackIndex;
-	}
+    /** @return the keySetter */
+    public Setter getKeySetter() {
+        return keySetter;
+    }
 
-	/**
-	 * Set index of the parameter that is instance of {@link com.google.code.nanorm.DataSink},
-	 * which will be used for processing the results.
-	 * 
-	 * @see #RETURN_VALUE
-	 * @param callbackIndex callback parameter index.
-	 */
-	public void setCallbackIndex(int callbackIndex) {
-		this.callbackIndex = callbackIndex;
-	}
+    /** @param keySetter the keySetter to set */
+    public void setKeySetter(Setter keySetter) {
+        this.keySetter = keySetter;
+    }
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this)
-			.append("id", id)
-			.append("kind", kind)
-			.append("resultType", resultType)
-			.append("rowMapper", rowMapper)
-			.append("fragment", fragment)
-			.append("parameterTypes", parameterTypes)
-			.append("selectKey", selectKey)
-			.append("selectKeyType", selectKeyType)
-			.toString();
-	}
+    /** @return Returns the id. */
+    public StatementKey getId() {
+        return id;
+    }
+
+    /**
+     * Get index of the parameter that is instance of
+     * {@link com.google.code.nanorm.DataSink}, which will be used for
+     * processing the results.
+     * 
+     * @see #RETURN_VALUE
+     * @return callback parameter index.
+     */
+    public int getCallbackIndex() {
+        return callbackIndex;
+    }
+
+    /**
+     * Set index of the parameter that is instance of
+     * {@link com.google.code.nanorm.DataSink}, which will be used for
+     * processing the results.
+     * 
+     * @see #RETURN_VALUE
+     * @param callbackIndex callback parameter index.
+     */
+    public void setCallbackIndex(int callbackIndex) {
+        this.callbackIndex = callbackIndex;
+    }
+
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("id", id).append("kind", kind).append(
+                "resultType", resultType).append("rowMapper", rowMapper).append("fragment",
+                fragment).append("parameterTypes", parameterTypes).append("selectKey", selectKey)
+                .append("selectKeyType", selectKeyType).toString();
+    }
 }

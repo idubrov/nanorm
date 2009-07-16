@@ -24,107 +24,107 @@ import com.google.code.nanorm.internal.util.ToStringBuilder;
  */
 public class ResultMapConfig {
 
-	private final String id;
+    private final String id;
 
-	private PropertyMappingConfig[] mappings;
+    private PropertyMappingConfig[] mappings;
 
-	private boolean auto;
+    private boolean auto;
 
-	/**
-	 * Scalar result mapping (row is mapped to the object via appropriate
-	 * {@link com.google.code.nanorm.TypeHandler})
-	 */
-	private boolean scalar;
+    /**
+     * Scalar result mapping (row is mapped to the object via appropriate
+     * {@link com.google.code.nanorm.TypeHandler})
+     */
+    private boolean scalar;
 
-	private String[] groupBy;
+    private String[] groupBy;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param id result map config
-	 */
-	public ResultMapConfig(String id) {
-		this.id = id;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param id result map config
+     */
+    public ResultMapConfig(String id) {
+        this.id = id;
+    }
 
-	/** @return Returns the resultMappingsConfigs. */
-	public PropertyMappingConfig[] getMappings() {
-		return mappings;
-	}
+    /** @return Returns the resultMappingsConfigs. */
+    public PropertyMappingConfig[] getMappings() {
+        return mappings;
+    }
 
-	/** @param resultMappingsConfigs The resultMappingsConfigs to set. */
-	public void setMappings(PropertyMappingConfig[] resultMappingsConfigs) {
-		this.mappings = resultMappingsConfigs;
-	}
+    /** @param resultMappingsConfigs The resultMappingsConfigs to set. */
+    public void setMappings(PropertyMappingConfig[] resultMappingsConfigs) {
+        this.mappings = resultMappingsConfigs;
+    }
 
-	/**
-	 * Get if this result map should auto map the columns not specified in the
-	 * mapping explicitly.
-	 * 
-	 * @return auto map mode.
-	 */
-	public boolean isAuto() {
-		return auto;
-	}
+    /**
+     * Get if this result map should auto map the columns not specified in the
+     * mapping explicitly.
+     * 
+     * @return auto map mode.
+     */
+    public boolean isAuto() {
+        return auto;
+    }
 
-	/**
-	 * Set if this result map should auto map the columns not specified in the
-	 * mapping explicitly.
-	 * 
-	 * @param auto auto map mode
-	 */
-	public void setAuto(boolean auto) {
-		this.auto = auto;
-	}
+    /**
+     * Set if this result map should auto map the columns not specified in the
+     * mapping explicitly.
+     * 
+     * @param auto auto map mode
+     */
+    public void setAuto(boolean auto) {
+        this.auto = auto;
+    }
 
-	/**
-	 * Get if this result map is scalar mapping (first column is mapped to the
-	 * object using the {@link com.google.code.nanorm.TypeHandlerFactory}.
-	 * 
-	 * @return boolean if result should be mapped as a scalar
-	 */
-	public boolean isScalar() {
-		return scalar;
-	}
-	
-	/**
-	 * Mark this result map configuration as scalar mapping.
-	 * 
-	 * @param scalar scalar mapping flag
-	 */
-	public void setScalar(boolean scalar) {
-		this.scalar = scalar;
-	}
+    /**
+     * Get if this result map is scalar mapping (first column is mapped to the
+     * object using the {@link com.google.code.nanorm.TypeHandlerFactory}.
+     * 
+     * @return boolean if result should be mapped as a scalar
+     */
+    public boolean isScalar() {
+        return scalar;
+    }
 
-	/**
-	 * Get the list of properties to group results by.
-	 * 
-	 * @return list of properties to group results by.
-	 */
-	public String[] getGroupBy() {
-		return groupBy;
-	}
+    /**
+     * Mark this result map configuration as scalar mapping.
+     * 
+     * @param scalar scalar mapping flag
+     */
+    public void setScalar(boolean scalar) {
+        this.scalar = scalar;
+    }
 
-	/**
-	 * Set the list of properties to group results by.
-	 * 
-	 * @param groupBy list of properties to group results by.
-	 */
-	public void setGroupBy(String[] groupBy) {
-		this.groupBy = groupBy;
-	}
+    /**
+     * Get the list of properties to group results by.
+     * 
+     * @return list of properties to group results by.
+     */
+    public String[] getGroupBy() {
+        return groupBy;
+    }
 
-	/** @return Returns the id. */
-	public String getId() {
-		return id;
-	}
+    /**
+     * Set the list of properties to group results by.
+     * 
+     * @param groupBy list of properties to group results by.
+     */
+    public void setGroupBy(String[] groupBy) {
+        this.groupBy = groupBy;
+    }
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this).append("id", id).append("auto", auto).append("groupBy",
-				groupBy).append("mappings", mappings).toString();
-	}
+    /** @return Returns the id. */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("id", id).append("auto", auto).append("groupBy",
+                groupBy).append("mappings", mappings).toString();
+    }
 }

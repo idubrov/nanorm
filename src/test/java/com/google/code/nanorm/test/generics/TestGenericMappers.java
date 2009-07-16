@@ -25,16 +25,16 @@ import com.google.code.nanorm.test.common.MapperTestBase;
 
 @SuppressWarnings("all")
 public class TestGenericMappers extends MapperTestBase {
-	
-	public interface Mapper1<S, T> {
+
+    public interface Mapper1<S, T> {
         T getPublicationById1(S id);
     }
-	
-	public interface Mapper2 extends Mapper1<Integer, Publication> {
-		@Select("SELECT id, subject as title, year FROM articles WHERE ID = ${1}")
+
+    public interface Mapper2 extends Mapper1<Integer, Publication> {
+        @Select("SELECT id, subject as title, year FROM articles WHERE ID = ${1}")
         Publication getPublicationById1(Integer id);
-	}
-    
+    }
+
     @Test
     /**
      * Test automatic result mapping
@@ -47,6 +47,5 @@ public class TestGenericMappers extends MapperTestBase {
         Assert.assertEquals(null, pub.getArticle().getSubject());
         Assert.assertEquals(null, pub.getArticle().getBody());
     }
-    
-    
+
 }

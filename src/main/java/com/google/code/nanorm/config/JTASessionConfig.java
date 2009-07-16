@@ -29,36 +29,36 @@ import com.google.code.nanorm.internal.session.SessionSpi;
  * @author Ivan Dubrov
  */
 public class JTASessionConfig implements SessionConfig {
-	
-	private final DataSource dataSource;
-	
-	private final UserTransaction userTransaction;
-	
-	/**
-	 * Constructor.
-	 * @param dataSource data source
-	 * @param utName user transaction JNDI name
-	 */
-	public JTASessionConfig(DataSource dataSource, String utName) {
-		this.dataSource = dataSource;
-		try {
-			InitialContext initCtx = new InitialContext();
-			this.userTransaction = (UserTransaction) initCtx.lookup(utName);
-		} catch (NamingException e) {
-			throw new SessionException("Failed to get JTA transaction!", e);
-		}
 
-		if (this.userTransaction == null) {
-			throw new IllegalArgumentException(
-					"JTA Transaction could not be found under name " + utName);
-		}
+    private final DataSource dataSource;
 
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	public SessionSpi newSessionSpi() {
-		return new JTASessionSpi(dataSource, userTransaction);
-	}
+    private final UserTransaction userTransaction;
+
+    /**
+     * Constructor.
+     * @param dataSource data source
+     * @param utName user transaction JNDI name
+     */
+    public JTASessionConfig(DataSource dataSource, String utName) {
+        this.dataSource = dataSource;
+        try {
+            InitialContext initCtx = new InitialContext();
+            this.userTransaction = (UserTransaction) initCtx.lookup(utName);
+        } catch (NamingException e) {
+            throw new SessionException("Failed to get JTA transaction!", e);
+        }
+
+        if (this.userTransaction == null) {
+            throw new IllegalArgumentException("JTA Transaction could not be found under name "
+                    + utName);
+        }
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public SessionSpi newSessionSpi() {
+        return new JTASessionSpi(dataSource, userTransaction);
+    }
 }

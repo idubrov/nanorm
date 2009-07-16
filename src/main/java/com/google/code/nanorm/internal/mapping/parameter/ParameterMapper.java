@@ -84,6 +84,7 @@ public final class ParameterMapper {
         if (config.getSetter() != null) {
             TypeHandler<?> typeHandler = factory.getTypeHandler(config.getType());
 
+            // XXX: NULL handling for primitive types?
             Object value = typeHandler.getValue(cs, index);
             config.getSetter().setValue(args, value);
         }

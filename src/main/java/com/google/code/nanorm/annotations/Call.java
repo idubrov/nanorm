@@ -24,8 +24,8 @@ import com.google.code.nanorm.SQLSource;
 
 /**
  * <p>
- * Stored procedure call statement marker. Query method marked by this annotation will be
- * treated as method performing stored procedure invocation.
+ * Stored procedure call statement marker. Query method marked by this
+ * annotation will be treated as method performing stored procedure invocation.
  * </p>
  * <p>
  * For static SQL query, set the {@link #value()} property, for dynamic SQL use
@@ -38,16 +38,16 @@ import com.google.code.nanorm.SQLSource;
  * @author Ivan Dubrov
  * @version 1.0 27.05.2008
  */
-@Target( { ElementType.METHOD, ElementType.TYPE })
+@Target( {ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Call {
-	/**
-	 * SQL statement. This is mutually exclusive with {@link #sqlSource()}.
-	 */
-	String value();
+    /**
+     * SQL statement. This is mutually exclusive with {@link #sqlSource()}.
+     */
+    String value();
 
-	/**
-	 * SQL generator. This is mutually exclusive with {@link #value()}.
-	 */
-	Class<? extends SQLSource> sqlSource() default SQLSource.class;
+    /**
+     * SQL generator. This is mutually exclusive with {@link #value()}.
+     */
+    Class<? extends SQLSource> sqlSource() default SQLSource.class;
 }

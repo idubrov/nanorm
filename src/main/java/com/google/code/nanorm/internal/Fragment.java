@@ -16,7 +16,8 @@
 package com.google.code.nanorm.internal;
 
 /**
- * SQL fragment not bound to any parameters. Instances of this interface are thread-safe.
+ * SQL fragment not bound to any parameters. Instances of this interface are
+ * thread-safe.
  * 
  * Can be bound to parameters to get {@link BoundFragment} instance.
  * 
@@ -25,10 +26,10 @@ package com.google.code.nanorm.internal;
  * @version 1.0 27.05.2008
  */
 public interface Fragment {
-	/**
-	 * Bind parameters to the SQL fragment.
-	 * @param parameters parameters
-	 * @return SQL fragment, bound to the concrete parameters
-	 */
+    /**
+     * Bind parameters to the SQL fragment.
+     * @param parameters parameters
+     * @return SQL fragment, bound to the concrete parameters
+     */
     BoundFragment bindParameters(Object[] parameters);
 }

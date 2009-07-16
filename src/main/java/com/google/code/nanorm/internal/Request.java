@@ -30,82 +30,81 @@ import com.google.code.nanorm.internal.util.ToStringBuilder;
  */
 public class Request {
 
-	private final QueryDelegate queryDelegate;
+    private final QueryDelegate queryDelegate;
 
-	private final Map<Object, Map<Key, Object>> key2Objects;
+    private final Map<Object, Map<Key, Object>> key2Objects;
 
-	private Object result;
+    private Object result;
 
-	private final Map<DataSinkKey, DataSink<Object>> callbacks;
+    private final Map<DataSinkKey, DataSink<Object>> callbacks;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param queryDelegate query delegate instance
-	 */
-	public Request(QueryDelegate queryDelegate) {
-		this.queryDelegate = queryDelegate;
-		this.callbacks = new HashMap<DataSinkKey, DataSink<Object>>();
-		this.key2Objects = new HashMap<Object, Map<Key, Object>>();
-	}
+    /**
+     * Constructor.
+     * 
+     * @param queryDelegate query delegate instance
+     */
+    public Request(QueryDelegate queryDelegate) {
+        this.queryDelegate = queryDelegate;
+        this.callbacks = new HashMap<DataSinkKey, DataSink<Object>>();
+        this.key2Objects = new HashMap<Object, Map<Key, Object>>();
+    }
 
-	/** @return Returns the result. */
-	public Object getResult() {
-		return result;
-	}
+    /** @return Returns the result. */
+    public Object getResult() {
+        return result;
+    }
 
-	/** @param result The result to set. */
-	public void setResult(Object result) {
-		this.result = result;
-	}
+    /** @param result The result to set. */
+    public void setResult(Object result) {
+        this.result = result;
+    }
 
-	/** @return Returns the key. */
-	public Map<Object, Map<Key, Object>> getKey2Objects() {
-		return key2Objects;
-	}
+    /** @return Returns the key. */
+    public Map<Object, Map<Key, Object>> getKey2Objects() {
+        return key2Objects;
+    }
 
-	/** @return Returns the queryDelegate. */
-	public QueryDelegate getQueryDelegate() {
-		return queryDelegate;
-	}
+    /** @return Returns the queryDelegate. */
+    public QueryDelegate getQueryDelegate() {
+        return queryDelegate;
+    }
 
-	/**
-	 * Search the data sink in the request cache. We cache {@link DataSink} instances
-	 * using the {@link DataSinkSource} and target object as a key.
-	 * 
-	 * @param source data sink source
-	 * @param target sink target
-	 * @return data sink
-	 */
-	public DataSink<Object> searchCallback(DataSinkSource source, Object target) {
-		
-		DataSinkKey key = new DataSinkKey(source, target);
-		DataSink<Object> callback = callbacks.get(key);
-		
-		if (callback == null) {
-			callback = source.forInstance(target);
-			callbacks.put(key, callback);
-		}
-		return callback;
-	}
-	
-	/**
-	 * Commit all data sinks and clear the cache.
-	 */
-	public void commitCallbacks() {
-		for(DataSink<Object> c : callbacks.values()) {
-			c.commitData();
-		}
-		callbacks.clear();
-	}
+    /**
+     * Search the data sink in the request cache. We cache {@link DataSink}
+     * instances using the {@link DataSinkSource} and target object as a key.
+     * 
+     * @param source data sink source
+     * @param target sink target
+     * @return data sink
+     */
+    public DataSink<Object> searchCallback(DataSinkSource source, Object target) {
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this).append("result", result)
-				.append("key2Objects", key2Objects).append("queryDelegate", queryDelegate)
-				.toString();
-	}
+        DataSinkKey key = new DataSinkKey(source, target);
+        DataSink<Object> callback = callbacks.get(key);
+
+        if (callback == null) {
+            callback = source.forInstance(target);
+            callbacks.put(key, callback);
+        }
+        return callback;
+    }
+
+    /**
+     * Commit all data sinks and clear the cache.
+     */
+    public void commitCallbacks() {
+        for (DataSink<Object> c : callbacks.values()) {
+            c.commitData();
+        }
+        callbacks.clear();
+    }
+
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("result", result).append("key2Objects",
+                key2Objects).append("queryDelegate", queryDelegate).toString();
+    }
 }

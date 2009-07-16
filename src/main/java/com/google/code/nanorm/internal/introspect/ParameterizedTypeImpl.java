@@ -28,11 +28,11 @@ import com.google.code.nanorm.internal.util.ToStringBuilder;
  * @author Ivan Dubrov
  */
 public class ParameterizedTypeImpl implements ParameterizedType {
-    
+
     private final Type rawType;
-    
+
     private final Type[] actualTypeArguments;
-    
+
     /**
      * Constructor.
      * 
@@ -42,11 +42,11 @@ public class ParameterizedTypeImpl implements ParameterizedType {
         this.rawType = rawType;
         this.actualTypeArguments = new Type[0];
     }
-    
+
     /**
      * Constructor.
      * @param rawType raw type
-     * @param actualTypeArguments actual type arguments 
+     * @param actualTypeArguments actual type arguments
      * 
      */
     public ParameterizedTypeImpl(Class<?> rawType, Type[] actualTypeArguments) {
@@ -74,16 +74,14 @@ public class ParameterizedTypeImpl implements ParameterizedType {
     public Type getRawType() {
         return rawType;
     }
-    
+
     /**
-	 * {@inheritDoc}
-	 */
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
-        return new ToStringBuilder(this).
-            append("rawType", rawType).
-            append("actualTypeArguments", actualTypeArguments).
-            toString();
+        return new ToStringBuilder(this).append("rawType", rawType).append("actualTypeArguments",
+                actualTypeArguments).toString();
     }
-    
+
 }

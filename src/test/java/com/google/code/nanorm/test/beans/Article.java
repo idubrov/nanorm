@@ -18,121 +18,121 @@ package com.google.code.nanorm.test.beans;
 import java.util.List;
 
 /**
- *
+ * 
  * @author Ivan Dubrov
  * @version 1.0 27.05.2008
  */
 public class Article {
-    
+
     private int id;
-    
+
     private String subject;
-    
+
     private String body;
-    
+
     private int year;
-    
+
     private List<Comment> comments;
-    
+
     private Label[] labels;
-    
-    private int[] updates; 
 
-	/**
-	 * @return the id
-	 */
-	public int getId() {
-		return id;
-	}
+    private int[] updates;
 
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(int id) {
-		this.id = id;
-	}
+    /**
+     * @return the id
+     */
+    public int getId() {
+        return id;
+    }
 
-	/**
-	 * @return the subject
-	 */
-	public String getSubject() {
-		return subject;
-	}
+    /**
+     * @param id the id to set
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	/**
-	 * @param subject the subject to set
-	 */
-	public void setSubject(String subject) {
-		this.subject = subject;
-	}
+    /**
+     * @return the subject
+     */
+    public String getSubject() {
+        return subject;
+    }
 
-	/**
-	 * @return the body
-	 */
-	public String getBody() {
-		return body;
-	}
+    /**
+     * @param subject the subject to set
+     */
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
 
-	/**
-	 * @param body the body to set
-	 */
-	public void setBody(String body) {
-		this.body = body;
-	}
+    /**
+     * @return the body
+     */
+    public String getBody() {
+        return body;
+    }
 
-	/**
-	 * @return the year
-	 */
-	public int getYear() {
-		return year;
-	}
+    /**
+     * @param body the body to set
+     */
+    public void setBody(String body) {
+        this.body = body;
+    }
 
-	/**
-	 * @param year the year to set
-	 */
-	public void setYear(int year) {
-		this.year = year;
-	}
+    /**
+     * @return the year
+     */
+    public int getYear() {
+        return year;
+    }
 
-	/**
-	 * @return the comments
-	 */
-	public List<Comment> getComments() {
-		return comments;
-	}
+    /**
+     * @param year the year to set
+     */
+    public void setYear(int year) {
+        this.year = year;
+    }
 
-	/**
-	 * @param comments the comments to set
-	 */
-	public void setComments(List<Comment> comments) {
-		this.comments = comments;
-	}
+    /**
+     * @return the comments
+     */
+    public List<Comment> getComments() {
+        return comments;
+    }
 
-	/**
-	 * @return the labels
-	 */
-	public Label[] getLabels() {
-		return labels;
-	}
+    /**
+     * @param comments the comments to set
+     */
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
 
-	/**
-	 * @param labels the labels to set
-	 */
-	public void setLabels(Label[] labels) {
-		this.labels = labels;
-	}
+    /**
+     * @return the labels
+     */
+    public Label[] getLabels() {
+        return labels;
+    }
 
-	/**
-	 * @return the updates
-	 */
-	public int[] getUpdates() {
-		return updates;
-	}
+    /**
+     * @param labels the labels to set
+     */
+    public void setLabels(Label[] labels) {
+        this.labels = labels;
+    }
 
-	/**
-	 * @param updates the updates to set
-	 */
-	public void setUpdates(int[] updates) {
-		this.updates = updates;
-	}
+    /**
+     * @return the updates
+     */
+    public int[] getUpdates() {
+        return updates;
+    }
+
+    /**
+     * @param updates the updates to set
+     */
+    public void setUpdates(int[] updates) {
+        this.updates = updates;
+    }
 }

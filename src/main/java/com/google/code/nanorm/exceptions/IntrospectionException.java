@@ -24,27 +24,27 @@ package com.google.code.nanorm.exceptions;
  */
 public class IntrospectionException extends GenericException {
 
-	/**
-	 * Serial version.
-	 */
-	private static final long serialVersionUID = -6918018667566461927L;
+    /**
+     * Serial version.
+     */
+    private static final long serialVersionUID = -6918018667566461927L;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param message message
-	 */
-	public IntrospectionException(String message) {
-		super(message);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param message message
+     */
+    public IntrospectionException(String message) {
+        super(message);
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param message message
-	 * @param cause cause
-	 */
-	public IntrospectionException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param message message
+     * @param cause cause
+     */
+    public IntrospectionException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

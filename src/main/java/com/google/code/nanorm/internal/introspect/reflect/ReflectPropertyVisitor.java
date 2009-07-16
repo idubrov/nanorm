@@ -29,95 +29,91 @@ import com.google.code.nanorm.internal.introspect.PropertyVisitor;
  */
 public class ReflectPropertyVisitor implements PropertyVisitor<Object> {
 
-	private final ReflectIntrospectionFactory factory;
+    private final ReflectIntrospectionFactory factory;
 
-	private final boolean isSetter;
+    private final boolean isSetter;
 
-	private final Object value;
+    private final Object value;
 
-	private String path;
+    private String path;
 
-	private Object instance;
+    private Object instance;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param factory factory
-	 * @param instance instance
-	 */
-	public ReflectPropertyVisitor(ReflectIntrospectionFactory factory,
-			Object instance) {
-		this.instance = instance;
-		this.factory = factory;
-		this.isSetter = false;
-		this.value = null;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param factory factory
+     * @param instance instance
+     */
+    public ReflectPropertyVisitor(ReflectIntrospectionFactory factory, Object instance) {
+        this.instance = instance;
+        this.factory = factory;
+        this.isSetter = false;
+        this.value = null;
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param factory factory
-	 * @param instance instance
-	 * @param value value to set
-	 */
-	public ReflectPropertyVisitor(ReflectIntrospectionFactory factory,
-			Object instance, Object value) {
-		this.instance = instance;
-		this.factory = factory;
-		this.isSetter = true;
-		this.value = value;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param factory factory
+     * @param instance instance
+     * @param value value to set
+     */
+    public ReflectPropertyVisitor(ReflectIntrospectionFactory factory, Object instance,
+            Object value) {
+        this.instance = instance;
+        this.factory = factory;
+        this.isSetter = true;
+        this.value = value;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visitBegin(Class<?> beanClass, String p) {
-		this.path = p;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void visitBegin(Class<?> beanClass, String p) {
+        this.path = p;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Object visitEnd() {
-		return instance;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public Object visitEnd() {
+        return instance;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Class<?> visitIndex(int pos, int index, boolean hasNext,
-			Class<?> beanClass) {
-		if (!hasNext && isSetter) {
-			Array.set(instance, index, value);
-		} else {
-			instance = Array.get(instance, index);
-		}
-		return instance != null ? instance.getClass() : null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public Class<?> visitIndex(int pos, int index, boolean hasNext, Class<?> beanClass) {
+        if (!hasNext && isSetter) {
+            Array.set(instance, index, value);
+        } else {
+            instance = Array.get(instance, index);
+        }
+        return instance != null ? instance.getClass() : null;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Class<?> visitProperty(int pos, String property, Method getter,
-			boolean hasNext, Class<?> beanClass) {
-		if (!hasNext && isSetter) {
-			Method setter = factory.lookupSetter(instance.getClass(), property);
-			try {
-				setter.invoke(instance, value);
-			} catch (Exception e) {
-				throw new IntrospectionException("Failed to set property "
-						+ path.substring(0, pos) + " of property path " + path,
-						e);
-			}
-		} else {
-			try {
-				instance = getter.invoke(instance);
-			} catch (Exception e) {
-				throw new IntrospectionException("Failed to get property "
-						+ path.substring(0, pos) + " of property path " + path,
-						e);
-			}
-		}
-		return instance != null ? instance.getClass() : null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public Class<?> visitProperty(int pos, String property, Method getter, boolean hasNext,
+            Class<?> beanClass) {
+        if (!hasNext && isSetter) {
+            Method setter = factory.lookupSetter(instance.getClass(), property);
+            try {
+                setter.invoke(instance, value);
+            } catch (Exception e) {
+                throw new IntrospectionException("Failed to set property "
+                        + path.substring(0, pos) + " of property path " + path, e);
+            }
+        } else {
+            try {
+                instance = getter.invoke(instance);
+            } catch (Exception e) {
+                throw new IntrospectionException("Failed to get property "
+                        + path.substring(0, pos) + " of property path " + path, e);
+            }
+        }
+        return instance != null ? instance.getClass() : null;
+    }
 }

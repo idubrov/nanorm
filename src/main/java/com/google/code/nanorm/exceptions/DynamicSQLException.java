@@ -22,23 +22,23 @@ package com.google.code.nanorm.exceptions;
  */
 public class DynamicSQLException extends GenericException {
 
-	/** Serial version. */
-	private static final long serialVersionUID = -2082442157349215702L;
+    /** Serial version. */
+    private static final long serialVersionUID = -2082442157349215702L;
 
-	/**
-	 * Constructor.
-	 * @param message message
-	 */
-	public DynamicSQLException(String message) {
-		super(message);
-	}
+    /**
+     * Constructor.
+     * @param message message
+     */
+    public DynamicSQLException(String message) {
+        super(message);
+    }
 
-	/**
-	 * Constructor.
-	 * @param message message
-	 * @param cause cause
-	 */
-	public DynamicSQLException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    /**
+     * Constructor.
+     * @param message message
+     * @param cause cause
+     */
+    public DynamicSQLException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

@@ -29,52 +29,52 @@ import com.google.code.nanorm.internal.introspect.VoidPropertyVisitor;
  * @version 1.0 27.05.2008
  */
 public class ReflectGetter implements Getter {
-	
-	private final String path;
 
-	private final Class<?> beanClass;
-	
-	private final Type[] types;
-	
-	private final ReflectIntrospectionFactory factory;
+    private final String path;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param factory factory
-	 * @param beanClass bean class (for regular getter)
-	 * @param types palameter types (for parameter getter)
-	 * @param path property path
-	 */
-	public ReflectGetter(ReflectIntrospectionFactory factory, Class<?> beanClass, Type[] types,
-			String path) {
-		this.factory = factory;
-		this.beanClass = beanClass;
-		this.types = types;
-		this.path = path;
-	}
+    private final Class<?> beanClass;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Object getValue(final Object instance) {
-		PropertyVisitor<Object> visitor = new ReflectPropertyVisitor(factory, instance);
-		if(types != null) {
-			return IntrospectUtils.visitPath(path, types, visitor, null);
-		}
-		return IntrospectUtils.visitPath(path, beanClass, visitor, null);
-	}
+    private final Type[] types;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Type getType() {
-		Type[] type = new Type[1];
-		if(types != null) {
-			IntrospectUtils.visitPath(path, types, VoidPropertyVisitor.INSTANCE, type);
-		} else {
-			IntrospectUtils.visitPath(path, beanClass, VoidPropertyVisitor.INSTANCE, type);
-		}
-		return type[0];
-	}
+    private final ReflectIntrospectionFactory factory;
+
+    /**
+     * Constructor.
+     * 
+     * @param factory factory
+     * @param beanClass bean class (for regular getter)
+     * @param types palameter types (for parameter getter)
+     * @param path property path
+     */
+    public ReflectGetter(ReflectIntrospectionFactory factory, Class<?> beanClass, Type[] types,
+            String path) {
+        this.factory = factory;
+        this.beanClass = beanClass;
+        this.types = types;
+        this.path = path;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Object getValue(final Object instance) {
+        PropertyVisitor<Object> visitor = new ReflectPropertyVisitor(factory, instance);
+        if (types != null) {
+            return IntrospectUtils.visitPath(path, types, visitor, null);
+        }
+        return IntrospectUtils.visitPath(path, beanClass, visitor, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Type getType() {
+        Type[] type = new Type[1];
+        if (types != null) {
+            IntrospectUtils.visitPath(path, types, VoidPropertyVisitor.INSTANCE, type);
+        } else {
+            IntrospectUtils.visitPath(path, beanClass, VoidPropertyVisitor.INSTANCE, type);
+        }
+        return type[0];
+    }
 }

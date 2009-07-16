@@ -22,8 +22,8 @@ package com.google.code.nanorm;
  * @author Ivan Dubrov
  */
 public interface Block {
-	/**
-	 * Generate SQL fragment.
-	 */
-	void generate();
+    /**
+     * Generate SQL fragment.
+     */
+    void generate();
 }

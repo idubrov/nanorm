@@ -33,44 +33,45 @@ import com.google.code.nanorm.exceptions.ConfigurationException;
  * @author Ivan Dubrov
  */
 public class TestGroupByValidation {
-	
-	@ResultMap(id = "nestedmap")
-	private interface Mapper1 {
-		@Select("SELECT 1")
-		@ResultMap(id = "samplemap", groupBy = "prop1", mappings = { @Property(value = "prop1", 
-				nestedMap = @ResultMapRef("nestedmap")) })
-		int selectSome(int id);
-	}
 
-	/**
-	 * Test that properties marked by groupBy do not have a nested map specified.
-	 */
-	@Test
-	public void testGroupByNested() {
-		try {
-			new NanormConfiguration().configure(Mapper1.class);
-			Assert.fail();
-		} catch (ConfigurationException e) {
-			assertContains(e, "groupBy", "prop1", "nestedmap", "samplemap");
-		}
-	}
+    @ResultMap(id = "nestedmap")
+    private interface Mapper1 {
+        @Select("SELECT 1")
+        @ResultMap(id = "samplemap", groupBy = "prop1", mappings = {@Property(value = "prop1", nestedMap = @ResultMapRef("nestedmap")) })
+        int selectSome(int id);
+    }
 
-	private interface Mapper2 {
-		@Select("SELECT 1")
-		@ResultMap(id = "samplemap", groupBy = { "prop1", "prop3" }, mappings = { @Property(value = "prop1") })
-		int selectSome(int id);
-	}
+    /**
+     * Test that properties marked by groupBy do not have a nested map
+     * specified.
+     */
+    @Test
+    public void testGroupByNested() {
+        try {
+            new NanormConfiguration().configure(Mapper1.class);
+            Assert.fail();
+        } catch (ConfigurationException e) {
+            assertContains(e, "groupBy", "prop1", "nestedmap", "samplemap");
+        }
+    }
 
-	/**
-	 * Test that properties marked by groupBy do not have a nested map specified.
-	 */
-	@Test
-	public void testGroupByPropertyNotFound() {
-		try {
-			new NanormConfiguration().configure(Mapper2.class);
-			Assert.fail();
-		} catch (ConfigurationException e) {
-			assertContains(e, "selectSome", "groupBy", "prop3", "not", "configured", "samplemap");
-		}
-	}
+    private interface Mapper2 {
+        @Select("SELECT 1")
+        @ResultMap(id = "samplemap", groupBy = {"prop1", "prop3" }, mappings = {@Property(value = "prop1") })
+        int selectSome(int id);
+    }
+
+    /**
+     * Test that properties marked by groupBy do not have a nested map
+     * specified.
+     */
+    @Test
+    public void testGroupByPropertyNotFound() {
+        try {
+            new NanormConfiguration().configure(Mapper2.class);
+            Assert.fail();
+        } catch (ConfigurationException e) {
+            assertContains(e, "selectSome", "groupBy", "prop3", "not", "configured", "samplemap");
+        }
+    }
 }

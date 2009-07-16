@@ -26,11 +26,11 @@ import java.util.List;
 public class Category {
 
     private int id;
-    
+
     private String title;
-    
+
     private List<Article> articles = new ArrayList<Article>();
-    
+
     private int year;
 
     /** @return Returns the id. */
@@ -68,10 +68,10 @@ public class Category {
         return articles;
     }
 
-	/**
-	 * @param articles the articles to set
-	 */
-	public void setArticles(List<Article> articles) {
-		this.articles = articles;
-	}
+    /**
+     * @param articles the articles to set
+     */
+    public void setArticles(List<Article> articles) {
+        this.articles = articles;
+    }
 }

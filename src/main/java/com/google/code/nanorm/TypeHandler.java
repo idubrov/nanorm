@@ -30,51 +30,50 @@ import java.sql.SQLException;
  */
 public interface TypeHandler<T> {
 
-	/**
-	 * Get column mapped value.
-	 * 
-	 * @param rs {@link ResultSet} instance
-	 * @param column column
-	 * @return mapped value.
-	 * @throws SQLException any SQL error
-	 */
-	T getValue(ResultSet rs, int column) throws SQLException;
+    /**
+     * Get column mapped value.
+     * 
+     * @param rs {@link ResultSet} instance
+     * @param column column
+     * @return mapped value.
+     * @throws SQLException any SQL error
+     */
+    T getValue(ResultSet rs, int column) throws SQLException;
 
-	/**
-	 * Get column mapped value.
-	 * 
-	 * @param rs {@link ResultSet} instance
-	 * @param column column
-	 * @return mapped value.
-	 * @throws SQLException any SQL error
-	 */
-	T getValue(ResultSet rs, String column) throws SQLException;
-	
-	/**
-	 * Get OUT parameter.
-	 * 
-	 * @param cs {@link CallableStatement} instance
-	 * @param index parameter index
-	 * @return mapped value.
-	 * @throws SQLException any SQL error
-	 */
-	T getValue(CallableStatement cs, int index) throws SQLException;
+    /**
+     * Get column mapped value.
+     * 
+     * @param rs {@link ResultSet} instance
+     * @param column column
+     * @return mapped value.
+     * @throws SQLException any SQL error
+     */
+    T getValue(ResultSet rs, String column) throws SQLException;
 
-	/**
-	 * Set parameter for given {@link PreparedStatement}.
-	 * 
-	 * @param st {@link PreparedStatement} instance.
-	 * @param column column to set parameter to.
-	 * @param value parameter value
-	 * @throws SQLException any SQL error
-	 */
-	void setParameter(PreparedStatement st, int column, Object value)
-			throws SQLException;
-	
-	/**
-	 * Get SQL type.
-	 * 
-	 * @return SQL type
-	 */
-	int getSqlType();
+    /**
+     * Get OUT parameter.
+     * 
+     * @param cs {@link CallableStatement} instance
+     * @param index parameter index
+     * @return mapped value.
+     * @throws SQLException any SQL error
+     */
+    T getValue(CallableStatement cs, int index) throws SQLException;
+
+    /**
+     * Set parameter for given {@link PreparedStatement}.
+     * 
+     * @param st {@link PreparedStatement} instance.
+     * @param column column to set parameter to.
+     * @param value parameter value
+     * @throws SQLException any SQL error
+     */
+    void setParameter(PreparedStatement st, int column, Object value) throws SQLException;
+
+    /**
+     * Get SQL type.
+     * 
+     * @return SQL type
+     */
+    int getSqlType();
 }

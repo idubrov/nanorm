@@ -35,7 +35,7 @@ import java.lang.annotation.Target;
  * @version 1.0 8.11.2008
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.METHOD, ElementType.TYPE })
+@Target( {ElementType.METHOD, ElementType.TYPE })
 public @interface Scalar {
-	// Nothing...
+    // Nothing...
 }

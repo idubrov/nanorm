@@ -22,16 +22,16 @@ package com.google.code.nanorm.test.common;
  * @author Ivan Dubrov
  */
 public class StringHolder {
-	private String value;
+    private String value;
 
-	/** @return the value */
-	public String getValue() {
-		return value;
-	}
+    /** @return the value */
+    public String getValue() {
+        return value;
+    }
 
-	/** @param value the value to set */
-	public void setValue(String value) {
-		this.value = value;
-	}
+    /** @param value the value to set */
+    public void setValue(String value) {
+        this.value = value;
+    }
 
 }

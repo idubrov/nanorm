@@ -27,11 +27,11 @@ import com.google.code.nanorm.internal.config.StatementConfig;
  */
 public interface QueryDelegate {
 
-	/**
-	 * Query the database using the given statement configuration and arguments
-	 * @param config query statement configuration
-	 * @param args query arguments
-	 * @return mapped query result
-	 */
-	Object query(StatementConfig config, Object[] args);
+    /**
+     * Query the database using the given statement configuration and arguments
+     * @param config query statement configuration
+     * @param args query arguments
+     * @return mapped query result
+     */
+    Object query(StatementConfig config, Object[] args);
 }

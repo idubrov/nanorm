@@ -39,7 +39,7 @@ public class ExternalSessionSpi implements SessionSpi {
     /**
      * Constructor.
      * 
-     * @param dataSource {@link DataSource} to use for the session. 
+     * @param dataSource {@link DataSource} to use for the session.
      */
     public ExternalSessionSpi(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -65,14 +65,14 @@ public class ExternalSessionSpi implements SessionSpi {
     public Connection getConnection() {
         try {
             return dataSource.getConnection();
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             throw new DataException("Failed to get new connection from data source!", e);
         }
     }
 
     /**
-     * {@inheritDoc}
-     * Always returns true, since we return new connection for every request.
+     * {@inheritDoc} Always returns true, since we return new connection for
+     * every request.
      */
     public boolean isAllowMultipleQueries() {
         return true;
@@ -84,7 +84,7 @@ public class ExternalSessionSpi implements SessionSpi {
     public void releaseConnection(Connection conn) {
         try {
             conn.close();
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             throw new DataException("Failed to release the connection!", e);
         }
     }

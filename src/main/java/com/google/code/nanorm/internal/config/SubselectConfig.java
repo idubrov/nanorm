@@ -24,57 +24,58 @@ import com.google.code.nanorm.annotations.ResultMap;
  * @author Ivan Dubrov
  */
 public class SubselectConfig {
-	private final StatementKey subselectKey;
-	
-	private final PropertyMappingConfig propertyMapping;
-	
-	private final Class<?> mapper;
-	
-	private final ResultMap resultMap;
-	
-	/**
-	 * Constructor.
-	 * @param subselectKey subselect statement key
-	 * @param propertyMapping property mapping that uses the subselect
-	 * @param mapper mapper declaring the result map
-	 * @param resultMap result map declaring the property mapping
-	 */
-	public SubselectConfig(StatementKey subselectKey, PropertyMappingConfig propertyMapping, Class<?> mapper, ResultMap resultMap) {
-		this.subselectKey = subselectKey;
-		this.propertyMapping = propertyMapping;
-		this.mapper = mapper;
-		this.resultMap = resultMap;
-	}
-	
-	/**
-	 * Getter for statement key.
-	 * @return statement key
-	 */
-	public StatementKey getSubselectKey() {
-		return subselectKey;
-	}
-	
-	/**
-	 * Getter for property subselectPostConfiguremapping.
-	 * @return property mapping;
-	 */
-	public PropertyMappingConfig getPropertyMapping() {
-		return propertyMapping;
-	}
-	
-	/**
-	 * Getter for mapper.
-	 * @return mapper
-	 */
-	public Class<?> getMapper() {
-		return mapper;
-	}
-	
-	/**
-	 * Getter for result map that declares the property with subselect.
-	 * @return result map that declares the property with subselect. 
-	 */
-	public ResultMap getResultMap() {
-		return resultMap;
-	}
+    private final StatementKey subselectKey;
+
+    private final PropertyMappingConfig propertyMapping;
+
+    private final Class<?> mapper;
+
+    private final ResultMap resultMap;
+
+    /**
+     * Constructor.
+     * @param subselectKey subselect statement key
+     * @param propertyMapping property mapping that uses the subselect
+     * @param mapper mapper declaring the result map
+     * @param resultMap result map declaring the property mapping
+     */
+    public SubselectConfig(StatementKey subselectKey, PropertyMappingConfig propertyMapping,
+            Class<?> mapper, ResultMap resultMap) {
+        this.subselectKey = subselectKey;
+        this.propertyMapping = propertyMapping;
+        this.mapper = mapper;
+        this.resultMap = resultMap;
+    }
+
+    /**
+     * Getter for statement key.
+     * @return statement key
+     */
+    public StatementKey getSubselectKey() {
+        return subselectKey;
+    }
+
+    /**
+     * Getter for property subselectPostConfiguremapping.
+     * @return property mapping;
+     */
+    public PropertyMappingConfig getPropertyMapping() {
+        return propertyMapping;
+    }
+
+    /**
+     * Getter for mapper.
+     * @return mapper
+     */
+    public Class<?> getMapper() {
+        return mapper;
+    }
+
+    /**
+     * Getter for result map that declares the property with subselect.
+     * @return result map that declares the property with subselect.
+     */
+    public ResultMap getResultMap() {
+        return resultMap;
+    }
 }

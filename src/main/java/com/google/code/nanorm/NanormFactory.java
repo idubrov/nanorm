@@ -37,50 +37,50 @@ import com.google.code.nanorm.internal.config.InternalConfiguration;
  * @author Ivan Dubrov
  */
 public interface NanormFactory {
-	/**
-	 * Create mapper for given interface. Note that mappers are intrinsically
-	 * bound to the factory that created it.
-	 * 
-	 * Mapper instances are thread-safe, though, they use session opened on the
-	 * current thread they are invoked on. The session should be opened using
-	 * the factory that created the mapper. In other words, mapper uses the
-	 * session that was opened on the current thread by the mapper factory.
-	 * 
-	 * Note that mappers created by separate factories are completely isolated
-	 * from each other.
-	 * 
-	 * @param <T> mapper type
-	 * @param iface iface with mapper configuration
-	 * @return mapper
-	 * @throws ConfigurationException mapper configuration is invalid
-	 */
-	<T> T createMapper(Class<T> iface) throws ConfigurationException;
+    /**
+     * Create mapper for given interface. Note that mappers are intrinsically
+     * bound to the factory that created it.
+     * 
+     * Mapper instances are thread-safe, though, they use session opened on the
+     * current thread they are invoked on. The session should be opened using
+     * the factory that created the mapper. In other words, mapper uses the
+     * session that was opened on the current thread by the mapper factory.
+     * 
+     * Note that mappers created by separate factories are completely isolated
+     * from each other.
+     * 
+     * @param <T> mapper type
+     * @param iface iface with mapper configuration
+     * @return mapper
+     * @throws ConfigurationException mapper configuration is invalid
+     */
+    <T> T createMapper(Class<T> iface) throws ConfigurationException;
 
-	/**
-	 * Open session on current thread.
-	 * 
-	 * @return session
-	 */
-	Session openSession();
+    /**
+     * Open session on current thread.
+     * 
+     * @return session
+     */
+    Session openSession();
 
-	/**
-	 * Open session on current thread. The session will use the connection
-	 * provided as a parameter. No transaction management will be performed on
-	 * this session, the transactions should be managed externally.
-	 * 
-	 * @param conn connection
-	 * @return session
-	 */
-	Session openSession(Connection conn);
+    /**
+     * Open session on current thread. The session will use the connection
+     * provided as a parameter. No transaction management will be performed on
+     * this session, the transactions should be managed externally.
+     * 
+     * @param conn connection
+     * @return session
+     */
+    Session openSession(Connection conn);
 
-	/**
-	 * Get internal factory configuration. Internal method that should not be
-	 * used by clients.
-	 * 
-	 * TODO: Remove it. Provide other way to get the mapping data from the
-	 * Nanorm.
-	 * 
-	 * @return internal factory configuration.
-	 */
-	InternalConfiguration getInternalConfiguration();
+    /**
+     * Get internal factory configuration. Internal method that should not be
+     * used by clients.
+     * 
+     * TODO: Remove it. Provide other way to get the mapping data from the
+     * Nanorm.
+     * 
+     * @return internal factory configuration.
+     */
+    InternalConfiguration getInternalConfiguration();
 }

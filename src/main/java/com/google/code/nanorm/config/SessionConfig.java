@@ -26,9 +26,9 @@ import com.google.code.nanorm.internal.session.SessionSpi;
  */
 public interface SessionConfig {
 
-	/**
-	 * Create new session SPI from this configuration.
-	 * @return session SPI
-	 */
-	SessionSpi newSessionSpi();
+    /**
+     * Create new session SPI from this configuration.
+     * @return session SPI
+     */
+    SessionSpi newSessionSpi();
 }

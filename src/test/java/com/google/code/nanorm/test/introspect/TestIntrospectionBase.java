@@ -35,11 +35,11 @@ import com.google.code.nanorm.test.beans.Publication;
  */
 public abstract class TestIntrospectionBase {
 
-	/**
-	 * Introspection factory.
-	 */
+    /**
+     * Introspection factory.
+     */
     protected IntrospectionFactory factory;
-    
+
     /**
      * Method which will create concrete introspection factory.
      * @return introspection factory
@@ -68,7 +68,7 @@ public abstract class TestIntrospectionBase {
         Assert.assertEquals("World Domination", getter.getValue(publication));
         Assert.assertEquals(String.class, getter.getType());
     }
-    
+
     /**
      * Test setter generation.
      */
@@ -82,7 +82,7 @@ public abstract class TestIntrospectionBase {
         setter.setValue(publication, "Domination");
         Assert.assertEquals("Domination", publication.getArticle().getSubject());
     }
-    
+
     /**
      * Test parameter getter generation.
      */
@@ -94,26 +94,27 @@ public abstract class TestIntrospectionBase {
         publication.setArticle(article);
         Publication[] arr = new Publication[4];
         arr[1] = publication;
-        Type[] types = new Type[] { Publication.class, Publication.class, Publication.class, Publication.class }; 
+        Type[] types = new Type[] {Publication.class, Publication.class, Publication.class,
+                Publication.class };
         Getter getter = factory.buildParameterGetter(types, "2.article.subject");
 
         Assert.assertEquals("World", getter.getValue(arr));
         Assert.assertEquals(String.class, getter.getType());
     }
-    
+
     /**
      * Test parameter getter generation.
      */
     @Test
     public void testParameterGetter2() {
-        String[] arr = new String[] { "one", "two", "three", "four" };
-        Type[] types = new Type[] { String.class, String.class, String.class, String.class }; 
+        String[] arr = new String[] {"one", "two", "three", "four" };
+        Type[] types = new Type[] {String.class, String.class, String.class, String.class };
         Getter getter = factory.buildParameterGetter(types, "2");
-        
+
         Assert.assertEquals("two", getter.getValue(arr));
         Assert.assertEquals(String.class, getter.getType());
     }
-    
+
     /**
      * Test getter with arrays.
      */
@@ -127,13 +128,13 @@ public abstract class TestIntrospectionBase {
         article.setLabels(labels);
         Publication publication = new Publication();
         publication.setArticle(article);
-            
+
         Getter getter = factory.buildGetter(Publication.class, "article.labels[3].label");
 
         Assert.assertEquals("world", getter.getValue(publication));
         Assert.assertEquals(String.class, getter.getType());
     }
-    
+
     /**
      * Test getter with arrays.
      */
@@ -145,14 +146,14 @@ public abstract class TestIntrospectionBase {
         article.setUpdates(updates);
         Publication publication = new Publication();
         publication.setArticle(article);
-            
+
         Getter getter = factory.buildGetter(Publication.class, "article.updates[2]");
 
         Assert.assertEquals(2006, getter.getValue(publication));
     }
-    
+
     /**
-     * Test setter with arrays. 
+     * Test setter with arrays.
      */
     @Test
     public void testSetterArray() {
@@ -163,13 +164,13 @@ public abstract class TestIntrospectionBase {
         article.setLabels(labels);
         Publication publication = new Publication();
         publication.setArticle(article);
-            
+
         Setter setter = factory.buildSetter(Publication.class, "article.labels[3].label");
 
         setter.setValue(publication, "domination");
         Assert.assertEquals("domination", publication.getArticle().getLabels()[3].getLabel());
     }
-    
+
     /**
      * Test setter with arrays.
      */
@@ -180,13 +181,13 @@ public abstract class TestIntrospectionBase {
         article.setUpdates(updates);
         Publication publication = new Publication();
         publication.setArticle(article);
-            
+
         Setter setter = factory.buildSetter(Publication.class, "article.updates[2]");
 
         setter.setValue(publication, 2002);
         Assert.assertEquals(2002, publication.getArticle().getUpdates()[2]);
     }
-    
+
     /**
      * Test getter with arrays.
      */
@@ -196,40 +197,40 @@ public abstract class TestIntrospectionBase {
         publication.setYear(2008);
         Publication[] publications = new Publication[5];
         publications[3] = publication;
-            
+
         Getter getter = factory.buildGetter(Publication[].class, "[3].year");
 
         Assert.assertEquals(2008, getter.getValue(publications));
     }
-    
+
     /**
      * Test parameter setter generation.
      */
     @Test
     public void testParameterSetter() {
-        Article article = new Article();        
+        Article article = new Article();
         Publication publication = new Publication();
         publication.setArticle(article);
         Publication[] arr = new Publication[4];
         arr[1] = publication;
-        Type[] types = new Type[] { Publication.class, Publication.class, Publication.class, Publication.class }; 
+        Type[] types = new Type[] {Publication.class, Publication.class, Publication.class,
+                Publication.class };
         Setter setter = factory.buildParameterSetter(types, "2.article.subject");
 
         setter.setValue(arr, "World");
         Assert.assertEquals("World", article.getSubject());
     }
-    
+
     /**
      * Test parameter getter generation.
      */
     @Test
     public void testParameterSetter2() {
-        String[] arr = new String[] { "one", "nottwo", "three", "four" };
-        Type[] types = new Type[] { String.class, String.class, String.class, String.class }; 
+        String[] arr = new String[] {"one", "nottwo", "three", "four" };
+        Type[] types = new Type[] {String.class, String.class, String.class, String.class };
         Setter setter = factory.buildParameterSetter(types, "2");
-        
+
         setter.setValue(arr, "two");
         Assert.assertEquals("two", arr[1]);
     }
 }
-

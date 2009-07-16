@@ -35,131 +35,132 @@ import com.google.code.nanorm.exceptions.ConfigurationException;
  */
 public class TestSubselectValidation {
 
-	private interface Mapper8 {
-		@Select("SELECT 1")
-		@ResultMap(id = "testmap", mappings = { @Property(value = "dummy", columnIndex = 1, subselect = "selectById") })
-		int selectSome(int id);
-	}
+    private interface Mapper8 {
+        @Select("SELECT 1")
+        @ResultMap(id = "testmap", mappings = {@Property(value = "dummy", columnIndex = 1, subselect = "selectById") })
+        int selectSome(int id);
+    }
 
-	/**
-	 * TEST: Configure mapper interface that has a property with subselect which
-	 * refers to unexistent query method.
-	 * 
-	 * EXPECT: Configuration exception that contains certain information
-	 * strings.
-	 */
-	@Test
-	public void testSubselectValidation1() {
-		try {
-			new NanormConfiguration().configure(Mapper8.class);
-			Assert.fail();
-		} catch (ConfigurationException e) {
-			assertContains(e, "not found", "Mapper8", "dummy", "testmap", "selectById");
-		}
-	}
+    /**
+     * TEST: Configure mapper interface that has a property with subselect which
+     * refers to unexistent query method.
+     * 
+     * EXPECT: Configuration exception that contains certain information
+     * strings.
+     */
+    @Test
+    public void testSubselectValidation1() {
+        try {
+            new NanormConfiguration().configure(Mapper8.class);
+            Assert.fail();
+        } catch (ConfigurationException e) {
+            assertContains(e, "not found", "Mapper8", "dummy", "testmap", "selectById");
+        }
+    }
 
-	private interface Mapper9 {
-		// Nothing...
-	}
+    private interface Mapper9 {
+        // Nothing...
+    }
 
-	private interface Mapper10 {
-		@Select("SELECT 1")
-		@ResultMap(id = "testmap", mappings = { @Property(value = "dummy", columnIndex = 1, subselect = "selectById", subselectMapper = Mapper9.class) })
-		int selectSome(int id);
-	}
+    private interface Mapper10 {
+        @Select("SELECT 1")
+        @ResultMap(id = "testmap", mappings = {@Property(value = "dummy", columnIndex = 1, subselect = "selectById", subselectMapper = Mapper9.class) })
+        int selectSome(int id);
+    }
 
-	/**
-	 * TEST: Configure mapper interface that has a property with subselect which
-	 * refers to unexistent query method.
-	 * 
-	 * EXPECT: Configuration exception that contains certain information
-	 * strings.
-	 */
-	@Test
-	public void testSubselectValidation2() {
-		try {
-			new NanormConfiguration().configure(Mapper9.class, Mapper10.class);
-			Assert.fail();
-		} catch (ConfigurationException e) {
-			assertContains(e, "not found", "Mapper9", "Mapper10", "dummy", "testmap", "selectById");
-		}
-	}
+    /**
+     * TEST: Configure mapper interface that has a property with subselect which
+     * refers to unexistent query method.
+     * 
+     * EXPECT: Configuration exception that contains certain information
+     * strings.
+     */
+    @Test
+    public void testSubselectValidation2() {
+        try {
+            new NanormConfiguration().configure(Mapper9.class, Mapper10.class);
+            Assert.fail();
+        } catch (ConfigurationException e) {
+            assertContains(e, "not found", "Mapper9", "Mapper10", "dummy", "testmap",
+                    "selectById");
+        }
+    }
 
-	private interface Mapper11 {
-		@Select("SELECT 1")
-		int selectSome(int id, int id2);
+    private interface Mapper11 {
+        @Select("SELECT 1")
+        int selectSome(int id, int id2);
 
-		@Select("SELECT 1")
-		@ResultMap(id = "testmap", mappings = { @Property(value = "dummy", columnIndex = 1, subselect = "selectSome") })
-		int selectOther(int id);
-	}
+        @Select("SELECT 1")
+        @ResultMap(id = "testmap", mappings = {@Property(value = "dummy", columnIndex = 1, subselect = "selectSome") })
+        int selectOther(int id);
+    }
 
-	/**
-	 * TEST: Configure mapper interface with subselect query having more than
-	 * one parameter.
-	 * 
-	 * EXPECT: Configuration exception is thrown that contains certain
-	 * information strings.
-	 */
-	@Test
-	public void testSubselectParameters1() {
-		try {
-			new NanormConfiguration().configure(Mapper11.class);
-			Assert.fail();
-		} catch (ConfigurationException e) {
-			assertContains(e, "subselect", "exactly one", "Mapper11", "selectSome", "dummy");
-		}
-	}
+    /**
+     * TEST: Configure mapper interface with subselect query having more than
+     * one parameter.
+     * 
+     * EXPECT: Configuration exception is thrown that contains certain
+     * information strings.
+     */
+    @Test
+    public void testSubselectParameters1() {
+        try {
+            new NanormConfiguration().configure(Mapper11.class);
+            Assert.fail();
+        } catch (ConfigurationException e) {
+            assertContains(e, "subselect", "exactly one", "Mapper11", "selectSome", "dummy");
+        }
+    }
 
-	private interface Mapper12 {
-		@Select("SELECT 1")
-		@ResultMap(id = "testmap", mappings = { @Property(value = "dummy", columnIndex = 1, subselectMapper = Mapper9.class) })
-		int selectSome(int id);
-	}
+    private interface Mapper12 {
+        @Select("SELECT 1")
+        @ResultMap(id = "testmap", mappings = {@Property(value = "dummy", columnIndex = 1, subselectMapper = Mapper9.class) })
+        int selectSome(int id);
+    }
 
-	/**
-	 * TEST: Configure mapper interface that has a property with subselectMapper
-	 * specified, but without subselect specified.
-	 * 
-	 * EXPECT: Configuration exception is thrown that contains certain
-	 * information strings.
-	 */
-	@Test
-	public void testSubselectValidation3() {
-		try {
-			new NanormConfiguration().configure(Mapper9.class, Mapper12.class);
-			Assert.fail();
-		} catch (ConfigurationException e) {
-			assertContains(e, "without specifying subselect", "Mapper9", "Mapper12", "dummy",
-					"testmap", "subselectMapper");
-		}
-	}
-	
-	private interface Mapper13 {
-		@Select("SELECT 1")
-		@Scalar
-		int selectById(int id);
-		
-		@Select("SELECT 1")
-		@ResultMap(id = "testmap", mappings = { @Property(value = "dummy", subselect = "selectById") })
-		int selectSome(int id);
-	}
+    /**
+     * TEST: Configure mapper interface that has a property with subselectMapper
+     * specified, but without subselect specified.
+     * 
+     * EXPECT: Configuration exception is thrown that contains certain
+     * information strings.
+     */
+    @Test
+    public void testSubselectValidation3() {
+        try {
+            new NanormConfiguration().configure(Mapper9.class, Mapper12.class);
+            Assert.fail();
+        } catch (ConfigurationException e) {
+            assertContains(e, "without specifying subselect", "Mapper9", "Mapper12", "dummy",
+                    "testmap", "subselectMapper");
+        }
+    }
 
-	/**
-	 * TEST: Configure mapper interface that has a property with subselect which
-	 * do not have explicit column name nor column index specified.
-	 * 
-	 * EXPECT: Configuration exception that contains certain information
-	 * strings.
-	 */
-	@Test
-	public void testSubselectValidation4() {
-		try {
-			new NanormConfiguration().configure(Mapper13.class);
-			Assert.fail();
-		} catch (ConfigurationException e) {
-			assertContains(e, "explicitly", "column", "Mapper13", "dummy", "testmap");
-		}
-	}
+    private interface Mapper13 {
+        @Select("SELECT 1")
+        @Scalar
+        int selectById(int id);
+
+        @Select("SELECT 1")
+        @ResultMap(id = "testmap", mappings = {@Property(value = "dummy", subselect = "selectById") })
+        int selectSome(int id);
+    }
+
+    /**
+     * TEST: Configure mapper interface that has a property with subselect which
+     * do not have explicit column name nor column index specified.
+     * 
+     * EXPECT: Configuration exception that contains certain information
+     * strings.
+     */
+    @Test
+    public void testSubselectValidation4() {
+        try {
+            new NanormConfiguration().configure(Mapper13.class);
+            Assert.fail();
+        } catch (ConfigurationException e) {
+            assertContains(e, "explicitly", "column", "Mapper13", "dummy", "testmap");
+        }
+    }
 
 }

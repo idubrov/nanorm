@@ -20,15 +20,15 @@ import com.google.code.nanorm.internal.introspect.IntrospectionFactory;
 import com.google.code.nanorm.internal.introspect.reflect.ReflectIntrospectionFactory;
 
 /**
- *
+ * 
  * @author Ivan Dubrov
  * @version 1.0 22.06.2008
  */
 public class TestIntrospectionReflection extends TestIntrospectionBase {
 
-	/**
-	 * {@inheritDoc}
-	 */
+    /**
+     * {@inheritDoc}
+     */
     protected IntrospectionFactory provideIntrospectionFactory() {
         return new ReflectIntrospectionFactory();
     }

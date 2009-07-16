@@ -26,18 +26,18 @@ package com.google.code.nanorm;
  */
 public interface Session {
 
-	/**
-	 * Commit transaction.
-	 */
-	void commit();
+    /**
+     * Commit transaction.
+     */
+    void commit();
 
-	/**
-	 * Rollback transaction.
-	 */
-	void rollback();
+    /**
+     * Rollback transaction.
+     */
+    void rollback();
 
-	/**
-	 * End session.
-	 */
-	void end();
+    /**
+     * End session.
+     */
+    void end();
 }

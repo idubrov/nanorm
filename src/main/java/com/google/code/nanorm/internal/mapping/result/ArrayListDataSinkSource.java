@@ -23,55 +23,55 @@ import com.google.code.nanorm.internal.introspect.Getter;
 import com.google.code.nanorm.internal.introspect.Setter;
 
 /**
- * Implementation of {@link DataSinkSource} that pushes the result into
- * the array list in the property, identified by given getter/setter.
+ * Implementation of {@link DataSinkSource} that pushes the result into the
+ * array list in the property, identified by given getter/setter.
  * 
  * @author Ivan Dubrov
  * @version 1.0 05.06.2008
  */
 public class ArrayListDataSinkSource implements DataSinkSource {
 
-	private final Getter getter;
+    private final Getter getter;
 
-	private final Setter setter;
+    private final Setter setter;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param getter property getter
-	 * @param setter property setter
-	 */
-	public ArrayListDataSinkSource(Getter getter, Setter setter) {
-		this.getter = getter;
-		this.setter = setter;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param getter property getter
+     * @param setter property setter
+     */
+    public ArrayListDataSinkSource(Getter getter, Setter setter) {
+        this.getter = getter;
+        this.setter = setter;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@SuppressWarnings("unchecked")
-	public DataSink forInstance(final Object instance) {
-		return new DataSink() {
-			private List<Object> list;
-			{
-				// Check the list in the property and if null, create it and set
-				list = (List<Object>) getter.getValue(instance);
-				if (list == null) {
-					list = new ArrayList<Object>();
-					setter.setValue(instance, list);
-				}
-			}
-			
-			/**
-			 * {@inheritDoc}
-			 */
-			public void pushData(Object obj) {
-				list.add(obj);
-			}
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public DataSink forInstance(final Object instance) {
+        return new DataSink() {
+            private List<Object> list;
+            {
+                // Check the list in the property and if null, create it and set
+                list = (List<Object>) getter.getValue(instance);
+                if (list == null) {
+                    list = new ArrayList<Object>();
+                    setter.setValue(instance, list);
+                }
+            }
 
-			public void commitData() {
-				// Nothing. We populate array list immediately in pushData
-			}
-		};
-	}
+            /**
+             * {@inheritDoc}
+             */
+            public void pushData(Object obj) {
+                list.add(obj);
+            }
+
+            public void commitData() {
+                // Nothing. We populate array list immediately in pushData
+            }
+        };
+    }
 }

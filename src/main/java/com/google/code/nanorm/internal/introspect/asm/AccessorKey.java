@@ -27,43 +27,43 @@ import java.util.Arrays;
  * @version 1.0 20.06.2008
  */
 public class AccessorKey {
-	private final Class<?> beanClass;
+    private final Class<?> beanClass;
 
-	private final String path;
+    private final String path;
 
-	private final Type[] types;
-	
-	private final boolean isSetter;
+    private final Type[] types;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param beanClass bean class
-	 * @param path property path
-	 * @param isSetter if accessor is setter
-	 */
-	public AccessorKey(Class<?> beanClass, String path, boolean isSetter) {
-		this.beanClass = beanClass;
-		this.types = null;
-		this.path = path;
-		this.isSetter = isSetter;
-	}
+    private final boolean isSetter;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param types types this property getter is generated for.
-	 * @param path property path
-	 * @param isSetter if accessor is setter
-	 */
-	public AccessorKey(Type[] types, String path, boolean isSetter) {
-		this.beanClass = null;
-		this.types = types.clone();
-		this.path = path;
-		this.isSetter = isSetter;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param beanClass bean class
+     * @param path property path
+     * @param isSetter if accessor is setter
+     */
+    public AccessorKey(Class<?> beanClass, String path, boolean isSetter) {
+        this.beanClass = beanClass;
+        this.types = null;
+        this.path = path;
+        this.isSetter = isSetter;
+    }
 
-	/**
+    /**
+     * Constructor.
+     * 
+     * @param types types this property getter is generated for.
+     * @param path property path
+     * @param isSetter if accessor is setter
+     */
+    public AccessorKey(Type[] types, String path, boolean isSetter) {
+        this.beanClass = null;
+        this.types = types.clone();
+        this.path = path;
+        this.isSetter = isSetter;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override

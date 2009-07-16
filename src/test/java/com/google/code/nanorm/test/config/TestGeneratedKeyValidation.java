@@ -33,69 +33,69 @@ import com.google.code.nanorm.exceptions.ConfigurationException;
  * @author Ivan Dubrov
  */
 public class TestGeneratedKeyValidation {
-	private interface Mapper1 {
-		@Insert("INSERT INTO table(id) VALUES ${1}")
-		@SelectKey(type = SelectKeyType.BEFORE, property = "dummy")
-		void insertSome(int id);
-	}
+    private interface Mapper1 {
+        @Insert("INSERT INTO table(id) VALUES ${1}")
+        @SelectKey(type = SelectKeyType.BEFORE, property = "dummy")
+        void insertSome(int id);
+    }
 
-	/**
-	 * Test SQL is specified for BEFORE generated key.
-	 */
-	@Test
-	public void testGeneratedKeyValidation1() {
-		try {
-			new NanormConfiguration().configure(Mapper1.class);
-			Assert.fail();
-		} catch (ConfigurationException e) {
-			assertContains(e, "SQL");
-			assertContains(e, "insertSome");
-			assertContains(e, "Mapper1");
-		}
-	}
+    /**
+     * Test SQL is specified for BEFORE generated key.
+     */
+    @Test
+    public void testGeneratedKeyValidation1() {
+        try {
+            new NanormConfiguration().configure(Mapper1.class);
+            Assert.fail();
+        } catch (ConfigurationException e) {
+            assertContains(e, "SQL");
+            assertContains(e, "insertSome");
+            assertContains(e, "Mapper1");
+        }
+    }
 
-	private interface Mapper2 {
-		@Insert("INSERT INTO table(id) VALUES ${1}")
-		@SelectKey(type = SelectKeyType.BEFORE, value = "SELECT 1")
-		void insertSome(int id);
-	}
+    private interface Mapper2 {
+        @Insert("INSERT INTO table(id) VALUES ${1}")
+        @SelectKey(type = SelectKeyType.BEFORE, value = "SELECT 1")
+        void insertSome(int id);
+    }
 
-	/**
-	 * Test property name is specified for BEFORE generated key.
-	 */
-	@Test
-	public void testGeneratedKeyValidation2() {
-		try {
-			new NanormConfiguration().configure(Mapper2.class);
-			Assert.fail();
-		} catch (ConfigurationException e) {
-			assertContains(e, "insertSome");
-			assertContains(e, "Mapper2");
-			assertContains(e, "property");
-		}
-	}
+    /**
+     * Test property name is specified for BEFORE generated key.
+     */
+    @Test
+    public void testGeneratedKeyValidation2() {
+        try {
+            new NanormConfiguration().configure(Mapper2.class);
+            Assert.fail();
+        } catch (ConfigurationException e) {
+            assertContains(e, "insertSome");
+            assertContains(e, "Mapper2");
+            assertContains(e, "property");
+        }
+    }
 
-	private interface Mapper3 {
-		@Insert("INSERT INTO table(id) VALUES ${1}")
-		@SelectKey(value = "SELECT 1")
-		void insertSome(int id);
-	}
+    private interface Mapper3 {
+        @Insert("INSERT INTO table(id) VALUES ${1}")
+        @SelectKey(value = "SELECT 1")
+        void insertSome(int id);
+    }
 
-	/**
-	 * TEST: Try configuring mapper interface with insert method returning void, but
-	 * without property specified in {@link SelectKey} annotation.
-	 * 
-	 * EXPECT: Configuration exception that contains certain information
-	 * strings.
-	 */
-	@Test
-	public void testGeneratedKeyValidation3() {
-		try {
-			new NanormConfiguration().configure(Mapper3.class);
-			Assert.fail();
-		} catch (ConfigurationException e) {
-			assertContains(e, "insertSome", "Mapper3", "property", "void");
-		}
-	}
+    /**
+     * TEST: Try configuring mapper interface with insert method returning void,
+     * but without property specified in {@link SelectKey} annotation.
+     * 
+     * EXPECT: Configuration exception that contains certain information
+     * strings.
+     */
+    @Test
+    public void testGeneratedKeyValidation3() {
+        try {
+            new NanormConfiguration().configure(Mapper3.class);
+            Assert.fail();
+        } catch (ConfigurationException e) {
+            assertContains(e, "insertSome", "Mapper3", "property", "void");
+        }
+    }
 
 }

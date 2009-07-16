@@ -35,27 +35,27 @@ import java.lang.annotation.Target;
  * @version 1.0 28.05.2008
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.METHOD, ElementType.TYPE })
+@Target( {ElementType.METHOD, ElementType.TYPE })
 public @interface ResultMap {
 
-	/**
-	 * Result map identifier.
-	 */
-	String id() default "";
+    /**
+     * Result map identifier.
+     */
+    String id() default "";
 
-	/**
-	 * Property mappings.
-	 */
-	Property[] mappings() default {};
+    /**
+     * Property mappings.
+     */
+    Property[] mappings() default {};
 
-	/**
-	 * Properties that will be used for grouping together several rows of the
-	 * results.
-	 */
-	String[] groupBy() default {};
+    /**
+     * Properties that will be used for grouping together several rows of the
+     * results.
+     */
+    String[] groupBy() default {};
 
-	/**
-	 * Automatically map all columns that were not mapped explicitly.
-	 */
-	boolean auto() default false;
+    /**
+     * Automatically map all columns that were not mapped explicitly.
+     */
+    boolean auto() default false;
 }

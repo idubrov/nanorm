@@ -24,28 +24,28 @@ package com.google.code.nanorm.exceptions;
  */
 public class DataException extends GenericException {
 
-	/**
-	 * Serial version.
-	 */
-	private static final long serialVersionUID = 4502054067418456999L;
+    /**
+     * Serial version.
+     */
+    private static final long serialVersionUID = 4502054067418456999L;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param message message
-	 * @param cause cause
-	 */
-	public DataException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param message message
+     * @param cause cause
+     */
+    public DataException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param message message
-	 */
-	public DataException(String message) {
-		super(message);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param message message
+     */
+    public DataException(String message) {
+        super(message);
+    }
 
 }

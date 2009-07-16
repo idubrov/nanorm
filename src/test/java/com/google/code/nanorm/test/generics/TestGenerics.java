@@ -36,58 +36,62 @@ import com.google.code.nanorm.internal.introspect.asm.ASMIntrospectionFactory;
  */
 @SuppressWarnings("all")
 public class TestGenerics {
-    
+
     private static IntrospectionFactory factory;
-    
+
     @BeforeClass
     public static void prepareFactory() {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         factory = new ASMIntrospectionFactory(loader);
     }
-    
+
     @Test
     public void testGenericTypes() throws Exception {
-        Assert.assertEquals(String.class, factory.getPropertyType(Container.class, "item.value.value.name"));
-        Assert.assertEquals(String.class, factory.getPropertyType(Container.class, "item2.value.value.name"));
-        Assert.assertEquals(String.class, factory.getPropertyType(Container.class, "item3.value.name"));
-        Assert.assertEquals(String.class, factory.getPropertyType(Container.class, "item5.value[0].name"));
-        Assert.assertEquals(String.class, factory.getPropertyType(Container.class, "item6.value[0].name"));
+        Assert.assertEquals(String.class, factory.getPropertyType(Container.class,
+                "item.value.value.name"));
+        Assert.assertEquals(String.class, factory.getPropertyType(Container.class,
+                "item2.value.value.name"));
+        Assert.assertEquals(String.class, factory.getPropertyType(Container.class,
+                "item3.value.name"));
+        Assert.assertEquals(String.class, factory.getPropertyType(Container.class,
+                "item5.value[0].name"));
+        Assert.assertEquals(String.class, factory.getPropertyType(Container.class,
+                "item6.value[0].name"));
     }
-    
+
     @Test
     public void testGenericAccess() throws Exception {
         Container owner = new Container();
         owner.setItem(new Wrapper<Wrapper<Thing>>());
         owner.getItem().setValue(new Wrapper<Thing>());
         owner.getItem().getValue().setValue(new Thing());
-        
+
         // Test
         owner.getItem().getValue().getValue().setName("Lada");
         Getter getter = factory.buildGetter(Container.class, "item.value.value.name");
         Assert.assertEquals("Lada", getter.getValue(owner));
-        
+
         Setter setter = factory.buildSetter(Container.class, "item.value.value.name");
         setter.setValue(owner, "Kalina");
         Assert.assertEquals("Kalina", owner.getItem().getValue().getValue().getName());
     }
-    
+
     @Test
     public void testGenericAccess2() throws Exception {
         Container owner = new Container();
         owner.setItem2(new Wrapper2<Thing>());
         owner.getItem2().setValue(new Wrapper<Thing>());
         owner.getItem2().getValue().setValue(new Thing());
-        
+
         // Test
         owner.getItem2().getValue().getValue().setName("Lada");
         Getter getter = factory.buildGetter(Container.class, "item2.value.value.name");
         Assert.assertEquals("Lada", getter.getValue(owner));
-        
+
         Setter setter = factory.buildSetter(Container.class, "item2.value.value.name");
         setter.setValue(owner, "Kalina");
         Assert.assertEquals("Kalina", owner.getItem2().getValue().getValue().getName());
-        
-        
+
     }
 
     @Test
@@ -96,17 +100,17 @@ public class TestGenerics {
         Wrapper<Thing> w = new Wrapper<Thing>();
         owner.setItem3(w);
         w.setValue(new Thing());
-        
+
         // Test
         owner.getItem3().getValue().setName("Lada");
         Getter getter = factory.buildGetter(Container.class, "item3.value.name");
         Assert.assertEquals("Lada", getter.getValue(owner));
-        
+
         Setter setter = factory.buildSetter(Container.class, "item3.value.name");
         setter.setValue(owner, "Kalina");
         Assert.assertEquals("Kalina", owner.getItem3().getValue().getName());
     }
-    
+
     @Test
     public void testGenericAccess5() throws Exception {
         Container owner = new Container();
@@ -114,17 +118,17 @@ public class TestGenerics {
         w.setValue(new Thing[10]);
         w.getValue()[4] = new Thing();
         owner.setItem5(w);
-        
+
         // Test
         owner.getItem5().getValue()[4].setName("Something");
         Getter getter = factory.buildGetter(Container.class, "item5.value[4].name");
         Assert.assertEquals("Something", getter.getValue(owner));
-        
+
         Setter setter = factory.buildSetter(Container.class, "item5.value[4].name");
         setter.setValue(owner, "Different");
         Assert.assertEquals("Different", owner.getItem5().getValue()[4].getName());
     }
-    
+
     @Test
     public void testGenericAccess6() throws Exception {
         Container owner = new Container();
@@ -132,18 +136,17 @@ public class TestGenerics {
         w.setValue(new Thing[10]);
         w.getValue()[4] = new Thing();
         owner.setItem6(w);
-        
+
         // Test
         owner.getItem6().getValue()[4].setName("Something");
         Getter getter = factory.buildGetter(Container.class, "item6.value[4].name");
         Assert.assertEquals("Something", getter.getValue(owner));
-        
+
         Setter setter = factory.buildSetter(Container.class, "item6.value[4].name");
         setter.setValue(owner, "Different");
         Assert.assertEquals("Different", owner.getItem6().getValue()[4].getName());
     }
 
-    
     @Test
     public void testSome() throws Exception {
         Type type = Container.class;
@@ -167,14 +170,14 @@ public class TestGenerics {
         Class<?> clazz = SampleBean.class;
         Type returnType = clazz.getMethod("getItem").getGenericReturnType();
         Type type = clazz;
-         
+
         // Resolve return type of getItem method
         type = TypeOracle.resolve(returnType, type);
-        
+
         // Resolve return type of getValue method
         returnType = Wrapper.class.getMethod("getValue").getGenericReturnType();
         type = TypeOracle.resolve(returnType, type);
-        
+
         Assert.assertEquals(String.class, TypeOracle.resolveClass(type));
-    }    
+    }
 }

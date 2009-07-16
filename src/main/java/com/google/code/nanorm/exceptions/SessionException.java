@@ -25,11 +25,11 @@ package com.google.code.nanorm.exceptions;
 public class SessionException extends GenericException {
 
     /**
-	 * Serial version.
-	 */
-	private static final long serialVersionUID = 3094885509211954375L;
+     * Serial version.
+     */
+    private static final long serialVersionUID = 3094885509211954375L;
 
-	/**
+    /**
      * Constructor.
      * 
      * @param message message
@@ -38,5 +38,5 @@ public class SessionException extends GenericException {
     public SessionException(String message, Throwable cause) {
         super(message, cause);
     }
-    
+
 }

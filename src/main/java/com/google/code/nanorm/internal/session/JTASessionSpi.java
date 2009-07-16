@@ -37,116 +37,113 @@ import com.google.code.nanorm.exceptions.SessionException;
  * @version 1.0 19.06.2008
  */
 public class JTASessionSpi implements SessionSpi {
-	private final DataSource dataSource;
+    private final DataSource dataSource;
 
-	private final UserTransaction userTransaction;
+    private final UserTransaction userTransaction;
 
-	private boolean commmitted;
+    private boolean commmitted;
 
-	private boolean newTransaction;
+    private boolean newTransaction;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param dataSource {@link DataSource} to use for this session.
-	 * @param userTransaction {@link UserTransaction} instance
-	 * 
-	 */
-	public JTASessionSpi(DataSource dataSource, UserTransaction userTransaction) {
-		this.dataSource = dataSource;
+    /**
+     * Constructor.
+     * 
+     * @param dataSource {@link DataSource} to use for this session.
+     * @param userTransaction {@link UserTransaction} instance
+     * 
+     */
+    public JTASessionSpi(DataSource dataSource, UserTransaction userTransaction) {
+        this.dataSource = dataSource;
 
-		this.userTransaction = userTransaction;
-		
-		try {
-			newTransaction = (userTransaction.getStatus() == Status.STATUS_NO_TRANSACTION);
-		} catch (Exception e) {
-			throw new SessionException("Failed to check transaction status!", e);
-		}
-		if (newTransaction) {
-			try {
-				userTransaction.begin();
-			} catch (Exception e) {
-				throw new SessionException("Failed to start new transaction!",
-						e);
-			}
-		}
-	}
+        this.userTransaction = userTransaction;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void commit() {
-		if (newTransaction) {
-			try {
-				userTransaction.commit();
-			} catch (Exception e) {
-				throw new SessionException("Cannot commit JTA transaction!", e);
-			}
-		}
-		commmitted = true;
-	}
+        try {
+            newTransaction = (userTransaction.getStatus() == Status.STATUS_NO_TRANSACTION);
+        } catch (Exception e) {
+            throw new SessionException("Failed to check transaction status!", e);
+        }
+        if (newTransaction) {
+            try {
+                userTransaction.begin();
+            } catch (Exception e) {
+                throw new SessionException("Failed to start new transaction!", e);
+            }
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void end() {
-		// Since we started the transaction, we should finish it.
-		if (newTransaction) {
-			rollback();
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void commit() {
+        if (newTransaction) {
+            try {
+                userTransaction.commit();
+            } catch (Exception e) {
+                throw new SessionException("Cannot commit JTA transaction!", e);
+            }
+        }
+        commmitted = true;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Connection getConnection() {
-		try {
-			Connection connection = dataSource.getConnection();
-			if (connection.getAutoCommit()) {
-				connection.setAutoCommit(false);
-			}
-			return connection;
-		} catch (SQLException e) {
-			throw new DataException(
-					"SQL exception occured while getting connection!", e);
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void end() {
+        // Since we started the transaction, we should finish it.
+        if (newTransaction) {
+            rollback();
+        }
+    }
 
-	/**
-	 * Always returns true, since we return new connection for every request.
-	 * 
-	 * @return always true
-	 */
-	public boolean isAllowMultipleQueries() {
-		return true;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public Connection getConnection() {
+        try {
+            Connection connection = dataSource.getConnection();
+            if (connection.getAutoCommit()) {
+                connection.setAutoCommit(false);
+            }
+            return connection;
+        } catch (SQLException e) {
+            throw new DataException("SQL exception occured while getting connection!", e);
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void releaseConnection(Connection conn) {
-		try {
-			conn.close();
-		} catch (SQLException e) {
-			throw new DataException("Error releasing the connection!", e);
-		}
-	}
+    /**
+     * Always returns true, since we return new connection for every request.
+     * 
+     * @return always true
+     */
+    public boolean isAllowMultipleQueries() {
+        return true;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void rollback() {
-		if (!commmitted) {
-			try {
-				if (newTransaction) {
-					userTransaction.rollback();
-				} else {
-					userTransaction.setRollbackOnly();
-				}
-			} catch (SystemException e) {
-				throw new SessionException(
-						"Failed to rollback the JTA transaction!", e);
-			}
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void releaseConnection(Connection conn) {
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            throw new DataException("Error releasing the connection!", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void rollback() {
+        if (!commmitted) {
+            try {
+                if (newTransaction) {
+                    userTransaction.rollback();
+                } else {
+                    userTransaction.setRollbackOnly();
+                }
+            } catch (SystemException e) {
+                throw new SessionException("Failed to rollback the JTA transaction!", e);
+            }
+        }
+    }
 }

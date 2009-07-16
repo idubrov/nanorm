@@ -25,59 +25,59 @@ import com.google.code.nanorm.internal.mapping.result.DataSinkSource;
  */
 public final class DataSinkKey {
 
-	private final DataSinkSource source;
+    private final DataSinkSource source;
 
-	private final Object target;
+    private final Object target;
 
-	/**
-	 * Constructor.
-	 * @param source data sink source
-	 * @param target sink target
-	 */
-	public DataSinkKey(DataSinkSource source, Object target) {
-		this.source = source;
-		this.target = target;
-	}
+    /**
+     * Constructor.
+     * @param source data sink source
+     * @param target sink target
+     */
+    public DataSinkKey(DataSinkSource source, Object target) {
+        this.source = source;
+        this.target = target;
+    }
 
-	/** @return the source */
-	public DataSinkSource getSource() {
-		return source;
-	}
+    /** @return the source */
+    public DataSinkSource getSource() {
+        return source;
+    }
 
-	/** @return the target */
-	public Object getTarget() {
-		return target;
-	}
+    /** @return the target */
+    public Object getTarget() {
+        return target;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (obj.getClass() != DataSinkKey.class) {
-			return false;
-		}
-		DataSinkKey other = (DataSinkKey) obj;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (obj.getClass() != DataSinkKey.class) {
+            return false;
+        }
+        DataSinkKey other = (DataSinkKey) obj;
 
-		// Use identity equality
-		return other.source == source && other.target == target;
-	}
+        // Use identity equality
+        return other.source == source && other.target == target;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((source == null) ? 0 : source.hashCode());
-		result = prime * result + ((target == null) ? 0 : target.hashCode());
-		return result;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((source == null) ? 0 : source.hashCode());
+        result = prime * result + ((target == null) ? 0 : target.hashCode());
+        return result;
+    }
 }

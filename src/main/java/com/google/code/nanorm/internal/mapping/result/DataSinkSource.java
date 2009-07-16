@@ -28,10 +28,10 @@ import com.google.code.nanorm.DataSink;
  */
 public interface DataSinkSource {
 
-	/**
-	 * Create {@link DataSink} instance bound to given object instance.
-	 * @param instance object instance
-	 * @return data sink instance
-	 */
-	DataSink<Object> forInstance(Object instance);
+    /**
+     * Create {@link DataSink} instance bound to given object instance.
+     * @param instance object instance
+     * @return data sink instance
+     */
+    DataSink<Object> forInstance(Object instance);
 }

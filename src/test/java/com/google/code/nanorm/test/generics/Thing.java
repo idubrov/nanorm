@@ -17,7 +17,7 @@
 package com.google.code.nanorm.test.generics;
 
 /**
- *
+ * 
  * @author Ivan Dubrov
  * @version 1.0 20.06.2008
  */
@@ -25,7 +25,7 @@ package com.google.code.nanorm.test.generics;
 public class Thing {
 
     private String name;
-    
+
     public Thing() {
         // Nothing...
     }

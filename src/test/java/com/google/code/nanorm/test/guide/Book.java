@@ -24,11 +24,11 @@ import java.sql.Date;
  */
 public class Book {
     private int id;
-    
+
     private String name;
-    
+
     private String author;
-    
+
     private Date published;
 
     /**
@@ -38,7 +38,7 @@ public class Book {
     public int getId() {
         return id;
     }
-    
+
     /**
      * Setter for id.
      * @param id id
@@ -46,7 +46,7 @@ public class Book {
     public void setId(int id) {
         this.id = id;
     }
-    
+
     /**
      * Getter for name.
      * @return name
@@ -54,7 +54,7 @@ public class Book {
     public String getName() {
         return name;
     }
-    
+
     /**
      * Setter for name.
      * @param name name
@@ -62,7 +62,7 @@ public class Book {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     /**
      * Getter for author.
      * @return author
@@ -70,7 +70,7 @@ public class Book {
     public String getAuthor() {
         return author;
     }
-    
+
     /**
      * Setter for author.
      * @param author author
@@ -78,13 +78,13 @@ public class Book {
     public void setAuthor(String author) {
         this.author = author;
     }
-    
+
     /**
      * Getter for published.
      * @return published
      */
     public Date getPublished() {
-		return published;
+        return published;
     }
 
     /**
@@ -92,6 +92,6 @@ public class Book {
      * @param published published
      */
     public void setPublished(Date published) {
-		this.published = published;
-	}
+        this.published = published;
+    }
 }

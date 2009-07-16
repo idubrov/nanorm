@@ -21,15 +21,15 @@ package com.google.code.nanorm.internal.config;
  * @author Ivan Dubrov
  */
 public enum QueryKind {
-	/** Select statement. */
-	SELECT,
-	
-	/** Insert statement. */
-	INSERT,
-	
-	/** Update statement. */
-	UPDATE,
-	
-	/** Call statement. */
-	CALL;
+    /** Select statement. */
+    SELECT,
+
+    /** Insert statement. */
+    INSERT,
+
+    /** Update statement. */
+    UPDATE,
+
+    /** Call statement. */
+    CALL;
 }

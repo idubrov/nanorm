@@ -26,12 +26,12 @@ import com.google.code.nanorm.internal.mapping.parameter.ParameterMapper;
  * 
  */
 public interface BoundFragment {
-	/**
-	 * Append SQL fragment, parameter values and parameter types to given
-	 * collections.
-	 * 
-	 * @param builder SQL builder
-	 * @param parameters collection of parameters
-	 */
-	void generate(StringBuilder builder, List<ParameterMapper> parameters);
+    /**
+     * Append SQL fragment, parameter values and parameter types to given
+     * collections.
+     * 
+     * @param builder SQL builder
+     * @param parameters collection of parameters
+     */
+    void generate(StringBuilder builder, List<ParameterMapper> parameters);
 }

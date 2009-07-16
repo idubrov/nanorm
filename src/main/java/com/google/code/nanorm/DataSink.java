@@ -23,8 +23,8 @@ package com.google.code.nanorm;
  * </p>
  * <p>
  * Instances could push the data to the destination immediately or collect the
- * data and push it when {@link #commitData} is called. After the {@link #commitData()}
- * is called, no more data is pushed to the sink.
+ * data and push it when {@link #commitData} is called. After the
+ * {@link #commitData()} is called, no more data is pushed to the sink.
  * </p>
  * <p>
  * Instances are not thread-safe.
@@ -42,19 +42,19 @@ package com.google.code.nanorm;
  */
 public interface DataSink<T> {
 
-	/**
-	 * <p>
-	 * Push the data into the sink.
-	 * </p>
-	 * 
-	 * @param obj data
-	 */
-	void pushData(T obj);
+    /**
+     * <p>
+     * Push the data into the sink.
+     * </p>
+     * 
+     * @param obj data
+     */
+    void pushData(T obj);
 
-	/**
-	 * <p>
-	 * After this method is invoked, no more data will be pushed to this sink.
-	 * </p>
-	 */
-	void commitData();
+    /**
+     * <p>
+     * After this method is invoked, no more data will be pushed to this sink.
+     * </p>
+     */
+    void commitData();
 }

@@ -30,7 +30,7 @@ import com.google.code.nanorm.test.common.MapperTestBase;
 public class TestPropertiesResultMap extends MapperTestBase {
     public static class TestBean {
         private int id;
-        
+
         private String subJeCT;
 
         /** @return Returns the id. */
@@ -53,12 +53,12 @@ public class TestPropertiesResultMap extends MapperTestBase {
             this.subJeCT = moDeL;
         }
     }
-    
+
     public interface Mapper {
         @Select("SELECT id, subject FROM articles WHERE ID = ${1}")
         TestBean getTestBean(int id);
     }
-    
+
     @Test
     public void testAutoMappingCase() throws Exception {
         Mapper mapper = factory.createMapper(Mapper.class);
@@ -66,5 +66,5 @@ public class TestPropertiesResultMap extends MapperTestBase {
         Assert.assertEquals(1, testBean.getId());
         Assert.assertEquals("World Domination", testBean.getSubJeCT());
     }
-    
+
 }
