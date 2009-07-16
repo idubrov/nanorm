@@ -170,14 +170,14 @@ public class TestCoreTypesResultMap extends MapperTestBase {
 		mapper.insert(17, bean);
 		CoreTypesBean bean2 = mapper.select(17);
 
-		assertEmpty(bean, bean2);
+		Assert.assertEquals(bean, bean2);
 		
 		CoreTypesBean bean3 = new CoreTypesBean();
 		bean3.setId(18);
 		mapper.insert(18, bean3);
 		CoreTypesBean bean4 = mapper.select2(18);
 
-		assertEmpty(bean3, bean4);
+		Assert.assertEquals(bean3, bean4);
 	}
 	
 	/**
@@ -196,33 +196,18 @@ public class TestCoreTypesResultMap extends MapperTestBase {
 			}
 		}
 	}
-	
-	private void assertEmpty(CoreTypesBean bean, CoreTypesBean bean2) {
-		// Some values are transformed from NULLs to zero values
-		Assert.assertEquals(Boolean.FALSE, bean2.getWrapBoolean());
-		bean.setWrapBoolean(Boolean.FALSE);
-		
-		Assert.assertEquals(0, (byte) bean2.getWrapByte());
-		bean.setWrapByte((byte) 0);
-		
-		Assert.assertEquals(0, (double) bean2.getWrapDouble(), 0.01);
-		bean.setWrapDouble(0.0);
 
-		Assert.assertEquals(0, (float) bean2.getWrapFloat(), 0.01);
-		bean.setWrapFloat(0.0F);
-		
-		Assert.assertEquals(0, (int) bean2.getWrapInt());
-		bean.setWrapInt(0);
-		
-		Assert.assertEquals(0, (long) bean2.getWrapLong());
-		bean.setWrapLong(0L);
-		
-		Assert.assertEquals(0, (short) bean2.getWrapShort());
-		bean.setWrapShort((short) 0);
-		
-		// After adjustions, they should be equal
-		Assert.assertEquals(bean, bean2);
-	}
+    /**
+     * Test that null properly converted for primitive and wrapper types 
+     */
+    @Test
+    public void testNullConversion() {
+        Mapper mapper = factory.createMapper(Mapper.class);
+        CoreTypesBean emptyBean = new CoreTypesBean();
+        emptyBean.setId(2);
+        CoreTypesBean bean1 = mapper.select(2);
+        Assert.assertEquals(emptyBean, bean1);
+    }
 
 	private void assertData(CoreTypesBean bean) {
 		Assert.assertEquals(37, bean.getPrimByte());
@@ -242,10 +227,10 @@ public class TestCoreTypesResultMap extends MapperTestBase {
 		Assert.assertEquals(44.5, bean.getPrimDouble(), 0.01);
 		Assert.assertEquals(-47.125, (double) bean.getWrapDouble(), 0.01);
 		Assert.assertEquals("Hello, H2!", bean.getString());
-		Assert.assertEquals(new Date(1165795200000L), bean.getSqlDate());
-		Assert.assertEquals(new Time(59521000L), bean.getSqlTime());
-		Assert.assertEquals(new Timestamp(1215540491000L), bean.getSqlTimestamp());
-		Assert.assertEquals(new java.util.Date(1244388214000L), bean.getDate());
+		Assert.assertEquals(new Date(1165795200000L).getTime(), bean.getSqlDate().getTime());
+		Assert.assertEquals(new Time(59521000L).getTime(), bean.getSqlTime().getTime());
+		Assert.assertEquals(new Timestamp(1215540491000L).getTime(), bean.getSqlTimestamp().getTime());
+		Assert.assertEquals(new java.util.Date(1244388214000L).getTime(), bean.getDate().getTime());
 		Assert.assertArrayEquals(new byte[] { 0x1a, 0x5c, 0x6f }, bean.getBytearr());
 		Assert.assertEquals(new Locale("ru", "RU"), bean.getLocale());
 	}

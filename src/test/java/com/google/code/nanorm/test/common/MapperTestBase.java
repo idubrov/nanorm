@@ -81,6 +81,9 @@ public class MapperTestBase {
 				+ "44.5, -47.125, 'Hello, H2!', "
 				+ "'2009-06-07 15:23:34', '2006-12-11', '16:32:01', '2008-07-08 18:08:11'," 
 				+ "'1A5C6F', 'ru_RU')");
+		
+		// For nulls testings
+		execute("INSERT INTO CORE(id) VALUES(2)");
 
 		// Create some categories
 		execute("CREATE TABLE CATEGORIES(id INTEGER, title VARCHAR(50), year INTEGER)");
