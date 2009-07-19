@@ -34,6 +34,25 @@ import com.google.code.nanorm.internal.config.StatementConfig;
 /**
  * ASM-based mapper implementation builder.
  * 
+ * Generates a class that implements mapper interface (or extends abstract
+ * class). The implementation has the structure:
+ * 
+ * <code>
+ * public class MapperImpl implements MapperIface {
+ *      private QueryDelegate delegate;
+ *      private StatementConfig[] configs;
+ *     
+ *      public MapperImpl(QueryDelegate delegate, StatementConfig[] config) {
+ *          this.delegate = delegate;
+ *          this.config = config;
+ *      }
+ *      
+ *      public [Result] [method](arg0, arg1, ...) {
+ *          return delegate.query(configs[index], args);
+ *      }
+ * }
+ * </code>
+ * 
  * @author Ivan Dubrov
  * @version 1.0 22.06.2008
  */
