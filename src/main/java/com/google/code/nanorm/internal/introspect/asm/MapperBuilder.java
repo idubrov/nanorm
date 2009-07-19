@@ -56,8 +56,8 @@ public class MapperBuilder {
             cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, name, null, "java/lang/Object",
                     new String[] {mapper.getName().replace('.', '/') });
         } else {
-            cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, name, null, mapper.getName().replace('.', '/'),
-                    null);
+            cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, name, null, mapper.getName().replace('.',
+                    '/'), null);
         }
 
         cw.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_FINAL, "delegate", QUERY_DELEGATE_TYPE
@@ -68,8 +68,7 @@ public class MapperBuilder {
 
         if (mapper.isInterface()) {
             visitConstructor(cw, owner, OBJECT_TYPE);
-        }
-        else {
+        } else {
             visitConstructor(cw, owner, Type.getType(mapper));
         }
 
