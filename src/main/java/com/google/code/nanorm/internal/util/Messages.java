@@ -382,6 +382,18 @@ public class Messages {
                 resultMap.id(), location(mapper, method));
     }
 
+    /**
+     * Generate error message for case when mapper is class-driven mapper and
+     * introspection factory does not support such mappers.
+     * @param mapper mapper
+     * @return message
+     */
+    public static String classesNotSupported(Class<?> mapper) {
+        return MessageFormat.format("Mapper ''{0}'' could not be configured since introspection "
+                + "factory does not support mapping abstract classes. Use ASM factory.", mapper
+                .getName());
+    }
+
     private static Class<?> mapper(Class<?> override, Class<?> mapper) {
         return override != Object.class ? override : mapper;
     }

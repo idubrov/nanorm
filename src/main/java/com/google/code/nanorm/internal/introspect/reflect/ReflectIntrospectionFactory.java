@@ -44,6 +44,13 @@ public class ReflectIntrospectionFactory extends AbstractIntrospectionFactory {
     private final Map<AccessorKey, Method> setters = new ConcurrentHashMap<AccessorKey, Method>();
 
     /**
+     * {@inheritDoc}
+     */
+    public boolean isAbstractClassesSupported() {
+        return false;
+    }
+
+    /**
      * @see com.google.code.nanorm.internal.introspect.IntrospectionFactory#buildGetter(java.lang.Class,
      * java.lang.String)
      */
@@ -113,6 +120,11 @@ public class ReflectIntrospectionFactory extends AbstractIntrospectionFactory {
      */
     public <T> T createMapper(Class<T> interfaze, InternalConfiguration config,
             QueryDelegate delegate) {
+        if (!interfaze.isInterface()) {
+            throw new IllegalArgumentException(
+                    "Non interface mappers doesn't supported by reflection based "
+                            + "factory. Use ASM factory.");
+        }
         return interfaze.cast(Proxy.newProxyInstance(getClass().getClassLoader(),
                 new Class<?>[] {interfaze }, new MapperInvocationHandler(interfaze, config,
                         delegate)));

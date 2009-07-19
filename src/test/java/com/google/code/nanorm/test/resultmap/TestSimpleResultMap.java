@@ -89,6 +89,17 @@ public class TestSimpleResultMap extends MapperTestBase {
         Timestamp[] selectTimestampArray();
     }
 
+    public static abstract class Mapper2 {
+        // No result map -- automatic mapping (no default map as well)
+        @Select("SELECT id, subject as title, year FROM articles WHERE ID = ${1}")
+        public abstract Publication getPublicationById1(int id);
+
+        // Test abstract class delegation
+        public Publication getPublicationByIdDelegate(int id) {
+            return getPublicationById1(id);
+        }
+    }
+
     @Test
     /*
      * Test automatic result mapping
@@ -226,5 +237,42 @@ public class TestSimpleResultMap extends MapperTestBase {
         Assert.assertEquals(2, arr.length);
         Assert.assertEquals(new Timestamp(1244388214000L).getTime(), arr[0].getTime());
         Assert.assertEquals(new Timestamp(1262499474000L).getTime(), arr[1].getTime());
+    }
+
+    /**
+     * TEST: Configure mapper defined by abstract class rather than interface.
+     * Invoke mapped method to select the data.
+     * 
+     * EXPECT: Data is mapped successfully and return value matches the
+     * expected.
+     * @throws Exception any exception
+     */
+    @Test
+    public void testResultMap1WithAbstract() throws Exception {
+        Mapper2 mapper = factory.createMapper(Mapper2.class);
+        Publication pub = mapper.getPublicationById1(2);
+        Assert.assertEquals(2, pub.getId());
+        Assert.assertEquals(2008, pub.getYear());
+        Assert.assertEquals(null, pub.getArticle().getSubject());
+        Assert.assertEquals(null, pub.getArticle().getBody());
+    }
+
+    /**
+     * TEST: Configure mapper defined by abstract class rather than interface.
+     * Invoke method (implemented by the abstract class) that in turn calls the
+     * mapped method to select the data.
+     * 
+     * EXPECT: Data is mapped successfully and return value matches the
+     * expected.
+     * @throws Exception any exception
+     */
+    @Test
+    public void testResultMap1WithAbstractDelegate() throws Exception {
+        Mapper2 mapper = factory.createMapper(Mapper2.class);
+        Publication pub = mapper.getPublicationByIdDelegate(2);
+        Assert.assertEquals(2, pub.getId());
+        Assert.assertEquals(2008, pub.getYear());
+        Assert.assertEquals(null, pub.getArticle().getSubject());
+        Assert.assertEquals(null, pub.getArticle().getBody());
     }
 }

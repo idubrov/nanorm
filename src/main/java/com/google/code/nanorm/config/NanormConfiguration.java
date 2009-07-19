@@ -59,8 +59,18 @@ public class NanormConfiguration {
      * Constructor.
      */
     public NanormConfiguration() {
+        this(false);
+    }
+
+    /**
+     * Constructor.
+     * @param noASM {@literal true} to disable usage of ASM library. Only
+     * reflection will be used. Note that class-driven mappers will not work in
+     * this case.
+     */
+    public NanormConfiguration(boolean noASM) {
         typeHandlerFactory = new TypeHandlerFactoryImpl();
-        introspectionFactory = detectFactory();
+        introspectionFactory = noASM ? new ReflectIntrospectionFactory() : detectFactory();
         config = new InternalConfiguration(typeHandlerFactory, introspectionFactory);
     }
 

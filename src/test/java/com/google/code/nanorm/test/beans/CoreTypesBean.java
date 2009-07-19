@@ -459,6 +459,9 @@ public class CoreTypesBean {
         return true;
     }
 
+    /**
+     * @{inheritDoc
+     */
     @Override
     public String toString() {
         return new ToStringBuilder(this).append("id", id).append("primByte", primByte).append(

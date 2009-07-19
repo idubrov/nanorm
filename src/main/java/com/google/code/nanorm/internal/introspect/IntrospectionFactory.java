@@ -36,6 +36,13 @@ public interface IntrospectionFactory {
     String ZERO_PARAMETER_ALIAS = "value";
 
     /**
+     * Check if given introspection factory supports abstract classes or not.
+     * @return {@literal true} if given introspection factory supports abstract
+     * classes, otherwise only interface-driven mappers are supported.
+     */
+    boolean isAbstractClassesSupported();
+
+    /**
      * Build setter instance.
      * 
      * @param beanClass bean class

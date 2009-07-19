@@ -18,6 +18,7 @@ package com.google.code.nanorm.internal.introspect.asm;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
+import java.lang.reflect.Modifier;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
@@ -68,6 +69,13 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
             }
         });
         accessors = new ConcurrentHashMap<AccessorKey, Object>();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isAbstractClassesSupported() {
+        return true;
     }
 
     /**
@@ -145,22 +153,26 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
     /**
      * {@inheritDoc}
      */
-    public <T> T createMapper(Class<T> interfaze, InternalConfiguration config,
+    public <T> T createMapper(Class<T> mapper, InternalConfiguration config,
             QueryDelegate delegate) {
 
         // TODO: Cache!
         List<MethodConfig> methods = new ArrayList<MethodConfig>();
         List<StatementConfig> configs = new ArrayList<StatementConfig>();
-        for (java.lang.reflect.Method m : interfaze.getMethods()) {
-            StatementConfig stConfig = config.getStatementConfig(interfaze, m);
-
-            MethodConfig cfg = new MethodConfig(m, methods.size());
-            methods.add(cfg);
-            configs.add(stConfig);
+        
+        // Generate list of all abstract methods.
+        for (java.lang.reflect.Method m : mapper.getMethods()) {
+            if (Modifier.isAbstract(m.getModifiers())) {
+                StatementConfig stConfig = config.getStatementConfig(mapper, m);
+    
+                MethodConfig cfg = new MethodConfig(m, methods.size());
+                methods.add(cfg);
+                configs.add(stConfig);
+            }
         }
 
         String name = "com/google/code/nanorm/generated/Mapper" + counter.incrementAndGet();
-        byte[] code = MapperBuilder.buildMapper(name, interfaze, methods
+        byte[] code = MapperBuilder.buildMapper(name, mapper, methods
                 .toArray(new MethodConfig[methods.size()]));
 
         Class<?> clazz = defineClass(name.replace('/', '.'), code);
@@ -173,7 +185,7 @@ public class ASMIntrospectionFactory extends AbstractIntrospectionFactory {
         } catch (Exception e) {
             throw new IntrospectionException("Failed to create mapper instance!", e);
         }
-        return interfaze.cast(instance);
+        return mapper.cast(instance);
     }
 
     /**

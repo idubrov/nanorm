@@ -43,17 +43,22 @@ public class MapperBuilder {
      * Build mapper.
      * 
      * @param name class name
-     * @param interfaze mapper interface
+     * @param mapper mapper interface or base class
      * @param configs method configurations
      * @return mapper byte-code
      */
-    public static byte[] buildMapper(String name, Class<?> interfaze, MethodConfig[] configs) {
+    public static byte[] buildMapper(String name, Class<?> mapper, MethodConfig[] configs) {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 
         Type owner = Type.getType('L' + name + ';');
 
-        cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, name, null, "java/lang/Object",
-                new String[] {interfaze.getName().replace('.', '/') });
+        if (mapper.isInterface()) {
+            cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, name, null, "java/lang/Object",
+                    new String[] {mapper.getName().replace('.', '/') });
+        } else {
+            cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, name, null, mapper.getName().replace('.', '/'),
+                    null);
+        }
 
         cw.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_FINAL, "delegate", QUERY_DELEGATE_TYPE
                 .getDescriptor(), null, null);
@@ -61,7 +66,12 @@ public class MapperBuilder {
         cw.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_FINAL, "configs",
                 STATEMENT_CONFIGS_ARR_TYPE.getDescriptor(), null, null);
 
-        visitConstructor(cw, owner);
+        if (mapper.isInterface()) {
+            visitConstructor(cw, owner, OBJECT_TYPE);
+        }
+        else {
+            visitConstructor(cw, owner, Type.getType(mapper));
+        }
 
         for (MethodConfig cfg : configs) {
             visitMethod(owner, cw, cfg);
@@ -77,12 +87,13 @@ public class MapperBuilder {
      * 
      * @param cw class writer
      * @param owner self type
+     * @param baseType
      */
-    private static void visitConstructor(ClassWriter cw, Type owner) {
+    private static void visitConstructor(ClassWriter cw, Type owner, Type baseType) {
         GeneratorAdapter mg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, MAPPER_CTOR, null, null,
                 cw);
         mg.loadThis();
-        mg.invokeConstructor(OBJECT_TYPE, CTOR);
+        mg.invokeConstructor(baseType, CTOR);
         mg.loadThis();
         mg.loadArg(0);
         mg.putField(owner, "delegate", QUERY_DELEGATE_TYPE);

@@ -18,6 +18,7 @@ package com.google.code.nanorm.internal.config;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -147,6 +148,10 @@ public class InternalConfiguration {
      * @throws ConfigurationException configuration is invalid
      */
     public void configure(Class<?> mapper) throws ConfigurationException {
+        if (!introspectionFactory.isAbstractClassesSupported() && !mapper.isInterface()) {
+            throw new ConfigurationException(Messages.classesNotSupported(mapper));
+        }
+
         synchronized (this) {
             if (mapped.add(mapper)) {
                 // Configure super mappers first
@@ -154,12 +159,24 @@ public class InternalConfiguration {
                     configure(superMapper);
                 }
 
-                LOGGER.info("Configuring mapper interface " + mapper.getName());
+                if (!mapper.isInterface()) {
+                    final Class<?> superClass = mapper.getSuperclass();
+                    // skip Object.class
+                    if (superClass != Object.class)
+                        configure(superClass);
+                }
 
-                // Configure mapper itself
+                LOGGER.info("Configuring mapper {} {}", mapper.isInterface() ? "interface"
+                        : "class", mapper.getName());
+
+                // Configure mapper itself.
                 processResultMaps(mapper);
+
+                // Process all abstract methods
                 for (Method method : mapper.getMethods()) {
-                    processMethod(mapper, method);
+                    if (Modifier.isAbstract(method.getModifiers())) {
+                        processMethod(mapper, method);
+                    }
                 }
 
                 postProcess();

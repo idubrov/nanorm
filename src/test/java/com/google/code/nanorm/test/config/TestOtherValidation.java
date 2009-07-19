@@ -85,4 +85,26 @@ public class TestOtherValidation {
                     "Mapper2");
         }
     }
+
+    private abstract class Mapper3 {
+        @Select("SELECT 1")
+        abstract int selectSome(int id);
+    }
+
+    /**
+     * TEST: Try configuring mapper class with reflection introspection factory
+     * used.
+     * 
+     * EXPECT: Configuration exception is thrown that contains certain
+     * information strings.
+     */
+    @Test
+    public void testClassMapperNoASM() {
+        try {
+            new NanormConfiguration(true).configure(Mapper3.class);
+            Assert.fail();
+        } catch (ConfigurationException e) {
+            assertContains(e, "class", "abstract", "factory", "introspection", "Mapper3");
+        }
+    }
 }
