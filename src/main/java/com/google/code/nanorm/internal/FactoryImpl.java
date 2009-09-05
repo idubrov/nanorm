@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.google.code.nanorm.DataSink;
 import com.google.code.nanorm.NanormFactory;
 import com.google.code.nanorm.Session;
+import com.google.code.nanorm.annotations.FetchDirection;
 import com.google.code.nanorm.annotations.Options;
 import com.google.code.nanorm.annotations.SelectKeyType;
 import com.google.code.nanorm.config.SessionConfig;
@@ -304,11 +305,20 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
     private void updateOptions(PreparedStatement st, Options opts) throws SQLException {
         if (opts != null) {
             st.setFetchSize(opts.fetchSize());
+
+            int dir = ResultSet.FETCH_FORWARD;
+            if (opts.direction() == FetchDirection.REVERSE) {
+                dir = ResultSet.FETCH_REVERSE;
+            } else if (opts.direction() == FetchDirection.UNKNOWN) {
+                dir = ResultSet.FETCH_UNKNOWN;
+            }
+            st.setFetchDirection(dir);
         }
     }
 
     /**
-     * Process the result set. Iterate through the rows and map the data to the beans.
+     * Process the result set. Iterate through the rows and map the data to the
+     * beans.
      * 
      * @param stConfig statement config
      * @param args statement arguments
@@ -385,8 +395,9 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
      * AFTER and "after" is true or if key type is BEFORE and "after" is false).
      * @param request request reference
      * @param stConfig main statement config
-     * @param after flag indicating if this invocation made before main query or after
-     * @param args main query parameters 
+     * @param after flag indicating if this invocation made before main query or
+     * after
+     * @param args main query parameters
      */
     private void selectKey(Request request, StatementConfig stConfig, boolean after, Object[] args) {
         boolean isKeyAfter = stConfig.getSelectKeyType() == SelectKeyType.AFTER;

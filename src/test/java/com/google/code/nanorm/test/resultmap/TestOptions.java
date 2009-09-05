@@ -18,11 +18,9 @@ package com.google.code.nanorm.test.resultmap;
 
 import static org.junit.Assert.assertEquals;
 
-import java.sql.ResultSet;
-
 import org.junit.Test;
 
-import com.google.code.nanorm.Session;
+import com.google.code.nanorm.annotations.FetchDirection;
 import com.google.code.nanorm.annotations.Options;
 import com.google.code.nanorm.annotations.Scalar;
 import com.google.code.nanorm.annotations.Select;
@@ -46,6 +44,11 @@ public class TestOptions extends MapperTestBase {
         @Select("SELECT id FROM core WHERE id = ${1}")
         @Scalar
         int selectFetchParent(int id);
+        
+        @Select("SELECT id FROM core WHERE id = ${1}")
+        @Scalar
+        @Options(direction = FetchDirection.REVERSE)
+        int selectFetchReverse(int id);
     }
 
     /**
@@ -59,5 +62,7 @@ public class TestOptions extends MapperTestBase {
         assertEquals(1, mapper.selectFetchOne(1));
         
         assertEquals(1, mapper.selectFetchParent(1));
+        
+        assertEquals(1, mapper.selectFetchReverse(1));
     }
 }
