@@ -31,8 +31,6 @@ import org.slf4j.LoggerFactory;
 import com.google.code.nanorm.DataSink;
 import com.google.code.nanorm.NanormFactory;
 import com.google.code.nanorm.Session;
-import com.google.code.nanorm.annotations.FetchDirection;
-import com.google.code.nanorm.annotations.Options;
 import com.google.code.nanorm.annotations.SelectKeyType;
 import com.google.code.nanorm.config.SessionConfig;
 import com.google.code.nanorm.exceptions.ConfigurationException;
@@ -202,13 +200,14 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
                 }
 
                 // Should we get key using JDBC getGeneratedKeys
-                boolean isJDBCKey = stConfig.getSelectKeyType() == SelectKeyType.AFTER
+                boolean hasJDBCKey = stConfig.getSelectKeyType() == SelectKeyType.AFTER
                         && stConfig.getSelectKey().getStatementBuilder() == null;
 
                 // Prepare the statement
                 PreparedStatement st;
                 if (stConfig.getKind() == QueryKind.CALL) {
-                    st = conn.prepareCall(sql.toString());
+                    st = conn.prepareCall(sql.toString(), stConfig.getResultSetType(), stConfig
+                            .getResultSetConcurrency());
 
                     // Register OUT parameters
                     CallableStatement cs = (CallableStatement) st;
@@ -217,13 +216,18 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
                         mapper.registerOutParameter(config.getTypeHandlerFactory(), cs);
                     }
                 } else {
-                    st = isJDBCKey ? conn.prepareStatement(sql.toString(),
-                            Statement.RETURN_GENERATED_KEYS) : conn.prepareStatement(sql
-                            .toString());
+                    if (hasJDBCKey) {
+                        st = conn.prepareStatement(sql.toString(),
+                                Statement.RETURN_GENERATED_KEYS);
+                    } else {
+                        st = conn.prepareStatement(sql.toString(), stConfig.getResultSetType(),
+                                stConfig.getResultSetConcurrency());
+                    }
                 }
 
                 // Set the options on the prepared statement
-                updateOptions(st, stConfig.getOptions());
+                st.setFetchSize(stConfig.getFetchSize());
+                st.setFetchDirection(stConfig.getFetchDirection());
 
                 // Close statement after this try
                 try {
@@ -236,7 +240,7 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
                     if (stConfig.getKind() == QueryKind.INSERT) {
                         st.executeUpdate();
 
-                        if (isJDBCKey) {
+                        if (hasJDBCKey) {
                             // If we use getGeneratedKeys, we need to process
                             // the result set with generated keys as regular
                             // result set
@@ -294,26 +298,6 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
             LOGGER.debug("Query result is " + request.getResult());
         }
         return request.getResult();
-    }
-
-    /**
-     * Update options on the prepared statement.
-     * @param st
-     * @param config
-     * @throws SQLException option value is invalid
-     */
-    private void updateOptions(PreparedStatement st, Options opts) throws SQLException {
-        if (opts != null) {
-            st.setFetchSize(opts.fetchSize());
-
-            int dir = ResultSet.FETCH_FORWARD;
-            if (opts.direction() == FetchDirection.REVERSE) {
-                dir = ResultSet.FETCH_REVERSE;
-            } else if (opts.direction() == FetchDirection.UNKNOWN) {
-                dir = ResultSet.FETCH_UNKNOWN;
-            }
-            st.setFetchDirection(dir);
-        }
     }
 
     /**

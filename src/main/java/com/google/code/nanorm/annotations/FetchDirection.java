@@ -17,24 +17,36 @@
 package com.google.code.nanorm.annotations;
 
 /**
- * Result set direction.
- * @author Ivan Dubrov
+ * Result set direction options.
  * 
+ * @author Ivan Dubrov
  */
 public enum FetchDirection {
     /**
-     * Forward direction. Equivalent of {@link java.sql.ResultSet#FETCH_FORWARD}
+     * The constant indicating that the rows in a result set will be 
+     * processed in a forward direction; first-to-last.
+     * This constant is used by the method <code>setFetchDirection</code>
+     * as a hint to the driver, which the driver may ignore.
+     * @see java.sql.ResultSet#FETCH_FORWARD
      */
     FORWARD,
 
     /**
-     * Reverse direction. Equivalent of {@link java.sql.ResultSet#FETCH_REVERSE}
+     * The constant indicating that the rows in a result set will be 
+     * processed in a reverse direction; last-to-first.
+     * This constant is used by the method <code>setFetchDirection</code>
+     * as a hint to the driver, which the driver may ignore.
+     * @see java.sql.ResultSet#FETCH_REVERSE
      */
     REVERSE,
 
+
     /**
-     * Unknown direction. Equivalent of {@link java.sql.ResultSet#FETCH_UNKNOWN}
+     * The constant indicating that the order in which rows in a 
+     * result set will be processed is unknown.
+     * This constant is used by the method <code>setFetchDirection</code>
+     * as a hint to the driver, which the driver may ignore.
+     * @see java.sql.ResultSet#FETCH_UNKNOWN
      */
     UNKNOWN;
-
 }

@@ -50,10 +50,32 @@ public @interface Options {
      * @return fetch size to use for the result set. 0 means the default size.
      */
     int fetchSize() default 0;
-    
+
     /**
-     * Specify the {@link ResultSet} direction. 
+     * Specify the {@link ResultSet} direction.
      * @return result set direction
      */
     FetchDirection direction() default FetchDirection.FORWARD;
+
+    /**
+     * <p>
+     * Specify result set direction.
+     * </p>
+     * <p>
+     * Note: does not have effect if JDBC-driven auto-generated keys are used.
+     * </p>
+     * @return result set type
+     */
+    ResultSetType resultSetType() default ResultSetType.TYPE_FORWARD_ONLY;
+
+    /**
+     * <p>
+     * Specify result set concurrency.
+     * </p>
+     * <p>
+     * Note: does not have effect if JDBC-driven auto-generated keys are used.
+     * </p>
+     * @return result set concurrency.
+     */
+    ResultSetConcurrency concurrency() default ResultSetConcurrency.CONCUR_READ_ONLY;
 }

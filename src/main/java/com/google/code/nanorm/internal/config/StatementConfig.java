@@ -16,10 +16,14 @@
 package com.google.code.nanorm.internal.config;
 
 import java.lang.reflect.Type;
+import java.sql.ResultSet;
 
 import javax.swing.text.html.Option;
 
+import com.google.code.nanorm.annotations.FetchDirection;
 import com.google.code.nanorm.annotations.Options;
+import com.google.code.nanorm.annotations.ResultSetConcurrency;
+import com.google.code.nanorm.annotations.ResultSetType;
 import com.google.code.nanorm.annotations.SelectKeyType;
 import com.google.code.nanorm.internal.Fragment;
 import com.google.code.nanorm.internal.introspect.Setter;
@@ -194,6 +198,58 @@ public class StatementConfig {
      */
     public void setOptions(Options options) {
         this.options = options;
+    }
+
+    /**
+     * Get the result set type.
+     * @return result set type.
+     */
+    public int getResultSetType() {
+        int type = ResultSet.TYPE_FORWARD_ONLY;
+        if (options != null) {
+            if (options.resultSetType() == ResultSetType.TYPE_SCROLL_INSENSITIVE) {
+                type = ResultSet.TYPE_SCROLL_INSENSITIVE;
+            } else if (options.resultSetType() == ResultSetType.TYPE_SCROLL_SENSITIVE) {
+                type = ResultSet.TYPE_SCROLL_SENSITIVE;
+            }
+        }
+        return type;
+    }
+
+    /**
+     * Get result set concurrency.
+     * @return result set concurrency.
+     */
+    public int getResultSetConcurrency() {
+        int concur = ResultSet.CONCUR_READ_ONLY;
+        if (options != null && options.concurrency() == ResultSetConcurrency.CONCUR_UPDATABLE) {
+            concur = ResultSet.CONCUR_UPDATABLE;
+        }
+        return concur;
+    }
+    
+    /**
+     * Get fetch direction.
+     * @return fetch direction
+     */
+    public int getFetchDirection() {
+        int dir = ResultSet.FETCH_FORWARD;
+        if(options != null) {
+            if (options.direction() == FetchDirection.REVERSE) {
+                dir = ResultSet.FETCH_REVERSE;
+            } else if (options.direction() == FetchDirection.UNKNOWN) {
+                dir = ResultSet.FETCH_UNKNOWN;
+            }
+        }
+        return dir;
+    }
+    
+    /**
+     * Get fetch size.
+     * @return fetch size.
+     */
+    public int getFetchSize() {
+        return options != null ? options.fetchSize() : 0;
     }
 
     /**
