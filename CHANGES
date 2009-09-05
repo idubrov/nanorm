@@ -1,5 +1,8 @@
 0.4.4, unreleased
     * Added support for abstract class mapper definition (issue #19)
+    * Implemented support for ResultSet/Statement options (issue #20)
+    * Now annotations from mapper class/interface and its methods are copied
+      to the generated class and methods (issue #21).
 
 0.4.3, released 2009-07-16
     * Added ability to enable/disable auto-session support. Note that auto-session
