@@ -17,6 +17,9 @@ package com.google.code.nanorm.internal.config;
 
 import java.lang.reflect.Type;
 
+import javax.swing.text.html.Option;
+
+import com.google.code.nanorm.annotations.Options;
 import com.google.code.nanorm.annotations.SelectKeyType;
 import com.google.code.nanorm.internal.Fragment;
 import com.google.code.nanorm.internal.introspect.Setter;
@@ -56,6 +59,8 @@ public class StatementConfig {
     private SelectKeyType selectKeyType;
 
     private Setter keySetter;
+
+    private Options options;
 
     /**
      * Constructor.
@@ -176,6 +181,22 @@ public class StatementConfig {
     }
 
     /**
+     * Get the options.
+     * @return options.
+     */
+    public Options getOptions() {
+        return options;
+    }
+
+    /**
+     * Set the options.
+     * @param options options
+     */
+    public void setOptions(Options options) {
+        this.options = options;
+    }
+
+    /**
      * @see java.lang.Object#toString()
      */
     @Override
@@ -183,6 +204,6 @@ public class StatementConfig {
         return new ToStringBuilder(this).append("id", id).append("kind", kind).append(
                 "resultType", resultType).append("rowMapper", rowMapper).append("fragment",
                 fragment).append("parameterTypes", parameterTypes).append("selectKey", selectKey)
-                .append("selectKeyType", selectKeyType).toString();
+                .append("selectKeyType", selectKeyType).append("options", options).toString();
     }
 }

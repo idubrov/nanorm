@@ -16,9 +16,9 @@
 package com.google.code.nanorm.internal.config;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,6 +34,7 @@ import com.google.code.nanorm.SQLSource;
 import com.google.code.nanorm.TypeHandlerFactory;
 import com.google.code.nanorm.annotations.Call;
 import com.google.code.nanorm.annotations.Insert;
+import com.google.code.nanorm.annotations.Options;
 import com.google.code.nanorm.annotations.Property;
 import com.google.code.nanorm.annotations.ResultMap;
 import com.google.code.nanorm.annotations.ResultMapList;
@@ -362,6 +363,9 @@ public class InternalConfiguration {
 
         stConfig.setParameterTypes(method.getGenericParameterTypes());
 
+        // Lookup the options for the statement
+        stConfig.setOptions(lookupOptions(mapper, method));
+
         // Put it two times: one time with parameter types, for regular
         // processing
         statementsConfig.put(key, stConfig);
@@ -371,6 +375,22 @@ public class InternalConfiguration {
         // query is searched by mapper class and query name only)
         StatementKey key2 = new StatementKey(key.getMapper(), key.getName(), null);
         statementsConfig.put(key2, stConfig);
+    }
+
+    /**
+     * Lookup the query options for given query method.
+     * @param mapper mapper class/interface
+     * @param method query method
+     * @return options or {@literal null} if no options are found.
+     */
+    private Options lookupOptions(Class<?> mapper, Method method) {
+        Options opts = method.getAnnotation(Options.class);
+        while(opts == null && mapper != null && mapper != Object.class) {
+            opts = mapper.getAnnotation(Options.class);
+            mapper = mapper.getSuperclass();
+        }
+        
+        return opts;
     }
 
     // TODO: Move to separate helper class

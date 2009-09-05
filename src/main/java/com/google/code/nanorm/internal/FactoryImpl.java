@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.google.code.nanorm.DataSink;
 import com.google.code.nanorm.NanormFactory;
 import com.google.code.nanorm.Session;
+import com.google.code.nanorm.annotations.Options;
 import com.google.code.nanorm.annotations.SelectKeyType;
 import com.google.code.nanorm.config.SessionConfig;
 import com.google.code.nanorm.exceptions.ConfigurationException;
@@ -219,6 +220,10 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
                             Statement.RETURN_GENERATED_KEYS) : conn.prepareStatement(sql
                             .toString());
                 }
+
+                // Set the options on the prepared statement
+                updateOptions(st, stConfig.getOptions());
+
                 // Close statement after this try
                 try {
                     // Map parameters to the statement
@@ -232,8 +237,8 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
 
                         if (isJDBCKey) {
                             // If we use getGeneratedKeys, we need to process
-                            // the result set
-                            // with generated keys as regular result set
+                            // the result set with generated keys as regular
+                            // result set
                             processResultSet(stConfig.getSelectKey(), args, request, st
                                     .getGeneratedKeys());
 
@@ -290,6 +295,27 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
         return request.getResult();
     }
 
+    /**
+     * Update options on the prepared statement.
+     * @param st
+     * @param config
+     * @throws SQLException option value is invalid
+     */
+    private void updateOptions(PreparedStatement st, Options opts) throws SQLException {
+        if (opts != null) {
+            st.setFetchSize(opts.fetchSize());
+        }
+    }
+
+    /**
+     * Process the result set. Iterate through the rows and map the data to the beans.
+     * 
+     * @param stConfig statement config
+     * @param args statement arguments
+     * @param request request reference
+     * @param rs result set
+     * @throws SQLException
+     */
     private void processResultSet(StatementConfig stConfig, Object[] args, Request request,
             ResultSet rs) throws SQLException {
 
@@ -338,6 +364,10 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
         return sink;
     }
 
+    /**
+     * Check statement return type is not primitive. Throws exception otherwise.
+     * @param stConfig statement config
+     */
     private void checkNotPrimitive(StatementConfig stConfig) {
         Type type = stConfig.getResultType();
 
@@ -349,6 +379,15 @@ public class FactoryImpl implements NanormFactory, QueryDelegate {
         }
     }
 
+    /**
+     * Execute the key selection query. Only queries if key type matches the
+     * "after" parameter (in other words, the key is selected if key type is
+     * AFTER and "after" is true or if key type is BEFORE and "after" is false).
+     * @param request request reference
+     * @param stConfig main statement config
+     * @param after flag indicating if this invocation made before main query or after
+     * @param args main query parameters 
+     */
     private void selectKey(Request request, StatementConfig stConfig, boolean after, Object[] args) {
         boolean isKeyAfter = stConfig.getSelectKeyType() == SelectKeyType.AFTER;
 

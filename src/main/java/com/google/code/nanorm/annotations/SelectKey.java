@@ -21,7 +21,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * TODO: Javadoc
+ * <p>
+ * Indicate that primary key should be selected by executing additional query.
+ * Primary key be selected before the main query (pre-generated) or after the
+ * query itself (lookup last sequence value, for example).
+ * </p>
  * 
  * @author Ivan Dubrov
  */
