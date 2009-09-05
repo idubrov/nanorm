@@ -18,8 +18,6 @@ package com.google.code.nanorm.internal.config;
 import java.lang.reflect.Type;
 import java.sql.ResultSet;
 
-import javax.swing.text.html.Option;
-
 import com.google.code.nanorm.annotations.FetchDirection;
 import com.google.code.nanorm.annotations.Options;
 import com.google.code.nanorm.annotations.ResultSetConcurrency;
