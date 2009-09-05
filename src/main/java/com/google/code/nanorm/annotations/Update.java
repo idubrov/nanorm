@@ -41,7 +41,7 @@ import com.google.code.nanorm.SQLSource;
  * @author Ivan Dubrov
  * @version 1.0 27.05.2008
  */
-@Target( {ElementType.METHOD, ElementType.TYPE })
+@Target( {ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Update {
     /**

@@ -29,7 +29,7 @@ import com.google.code.nanorm.SQLSource;
  * {@link Update#sqlSource()} or {@link Call#sqlSource()} instead.
  * @author Ivan Dubrov
  */
-@Target( {ElementType.METHOD, ElementType.TYPE })
+@Target( {ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Deprecated
 public @interface Source {
