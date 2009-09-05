@@ -23,7 +23,14 @@ import static com.google.code.nanorm.internal.introspect.asm.Constants.QUERY_DEL
 import static com.google.code.nanorm.internal.introspect.asm.Constants.QUERY_METHOD;
 import static com.google.code.nanorm.internal.introspect.asm.Constants.STATEMENT_CONFIGS_ARR_TYPE;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.InvocationTargetException;
+
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
@@ -79,6 +86,9 @@ public class MapperBuilder {
                     '/'), null);
         }
 
+        // Copy the annotations
+        copyAnnotations(mapper, cw, null);
+
         cw.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_FINAL, "delegate", QUERY_DELEGATE_TYPE
                 .getDescriptor(), null, null);
 
@@ -98,6 +108,88 @@ public class MapperBuilder {
         cw.visitEnd();
 
         return cw.toByteArray();
+    }
+
+    /**
+     * Copy annotations from annotated element to given class/method definition.
+     * @param element annotated element
+     * @param classVisitor class visitor or {@literal null}.
+     * @param methodVisitor method visitor or {@literal null}.
+     */
+    private static void copyAnnotations(AnnotatedElement element, ClassVisitor classVisitor,
+            MethodVisitor methodVisitor) {
+        final Annotation[] annotations = element.getDeclaredAnnotations();
+        if (annotations != null) {
+            for (Annotation annotation : annotations) {
+                String desc = Type.getDescriptor(annotation.annotationType());
+
+                final AnnotationVisitor visitor;
+                if (classVisitor != null) {
+                    visitor = classVisitor.visitAnnotation(desc, true);
+                } else {
+                    visitor = methodVisitor.visitAnnotation(desc, true);
+                }
+                visitAnnotation(visitor, annotation);
+            }
+        }
+    }
+
+    /**
+     * Copy the annotation.
+     * @param visitor annotation visitor
+     * @param annotation annotation
+     */
+    private static void visitAnnotation(AnnotationVisitor visitor, Annotation annotation) {
+        final java.lang.reflect.Method[] methods = annotation.annotationType()
+                .getDeclaredMethods();
+        for (java.lang.reflect.Method method : methods) {
+            try {
+                Object obj = method.invoke(annotation);
+
+                final String name = method.getName();
+                visitAnnotationProperty(name, obj, visitor);
+
+            } catch (IllegalAccessException e) {
+                throw new IllegalStateException("Failed to copy annotation.", e);
+            } catch (InvocationTargetException e) {
+                throw new IllegalStateException("Failed to copy annotation.", e);
+            }
+        }
+        visitor.visitEnd();
+    }
+
+    /**
+     * Visit annotation property (String, primitive value, class reference or
+     * other annotation)
+     * @param name annotation name
+     * @param obj value
+     * @param visitor annotation visitar
+     */
+    private static void visitAnnotationProperty(String name, Object obj, AnnotationVisitor visitor) {
+        final Class<?> objClass = obj.getClass();
+        if (objClass.isArray()) {
+            // Array
+            final AnnotationVisitor arrayVisitor = visitor.visitArray(name);
+            for (Object o : (Object[]) obj) {
+                visitAnnotationProperty(name, o, arrayVisitor);
+            }
+            arrayVisitor.visitEnd();
+        } else if (objClass.isEnum()) {
+            // Enumeration
+            visitor.visitEnum(name, Type.getDescriptor(obj.getClass()), obj.toString());
+        } else if (Annotation.class.isAssignableFrom(obj.getClass())) {
+            // Nested annotation
+            Annotation nested = (Annotation) obj;
+            AnnotationVisitor nestedVisitor = visitor.visitAnnotation(name, Type
+                    .getDescriptor(nested.annotationType()));
+            visitAnnotation(nestedVisitor, nested);
+        } else if (obj instanceof Class<?>) {
+            // Class reference
+            visitor.visit(name, Type.getDescriptor((Class<?>) obj));
+        } else {
+            // String or primitive type
+            visitor.visit(name, obj);
+        }
     }
 
     /**
@@ -158,5 +250,8 @@ public class MapperBuilder {
         mg.unbox(returnType);
         mg.returnValue();
         mg.endMethod();
+
+        // Copy the annotations
+        copyAnnotations(ifaceMethod, null, mg);
     }
 }
