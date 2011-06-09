@@ -153,19 +153,41 @@ public class TypeOracle {
      * @return resolved method arguments
      */
     public static Type[] resolveMethodArguments(Method method, Type contextCls) {
-        Class<?> methodCls = method.getDeclaringClass();
-
+    	Type context = resolvePath(method.getDeclaringClass(), contextCls);
+    	
+        // Now we propagated all type information from the contextCls to the
+        // method class
+        // Let's resolve generic parameters
+        Type[] params = method.getGenericParameterTypes();
+        for (int i = 0; i < params.length; ++i) {
+            params[i] = resolveClass(resolve(params[i], context));
+        }
+        return params;
+    }
+    
+    /**
+     * Resolve type arguments of the class starting from given source type.
+     * The target class must belong to the source type hierarchy.
+     * 
+     * First it searches for the path from the contextCls to the given class.
+     * Then it propagates all type information from the context type to the
+     * target class.
+     * 
+     * @param target target class to resolve type arguments for
+     * @param source context type
+     * @return target class with resolved type parameters
+     */
+    public static Type resolvePath(Type target, Type source) {
         Type context = null;
 
-        if (methodCls == contextCls) {
+        if (target == source) {
             // Quick path, nothing to resolve
-            context = contextCls;
+            context = source;
         } else {
             List<Type> path = new ArrayList<Type>();
-            if (!findPath(path, contextCls, methodCls)) {
-                throw new IllegalArgumentException("Class " + methodCls
-                        + " which declares method " + method.getName()
-                        + " does not belong to the hierarchy of " + contextCls);
+            if (!findPath(path, source, target)) {
+                throw new IllegalArgumentException("Class " + target
+                        + " does not belong to the hierarchy of " + source);
             }
 
             for (Type type : path) {
@@ -177,14 +199,7 @@ public class TypeOracle {
             }
         }
 
-        // Now we propagated all type information from the contextCls to the
-        // method class
-        // Let's resolve generic parameters
-        Type[] params = method.getGenericParameterTypes();
-        for (int i = 0; i < params.length; ++i) {
-            params[i] = resolveClass(resolve(params[i], context));
-        }
-        return params;
+        return context;
     }
 
     /**
