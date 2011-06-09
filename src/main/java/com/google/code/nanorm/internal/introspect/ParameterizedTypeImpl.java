@@ -39,8 +39,9 @@ public class ParameterizedTypeImpl implements ParameterizedType {
      * @param rawType raw type
      */
     public ParameterizedTypeImpl(Class<?> rawType) {
-        this.rawType = rawType;
-        this.actualTypeArguments = new Type[0];
+        // We don't have the substitutions, so set actual type
+        // arguments to type variables itself
+        this(rawType, rawType.getTypeParameters());
     }
 
     /**
